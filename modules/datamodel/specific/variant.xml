@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis">
+	<module name="variant">
+		<description>This module extends Pheno-OM with Feature types to
+			represent seqeuence variant observations. Hence, the typical usage
+			will be 'Individual {- observation -} SequenceFeature. (analogues for
+			Samples, Panels). Also details on SequenceFeatures, such as allele
+			counts, can be reported using a 3-way relationship. E.g.
+			Panel(gonl) {- observation(relation=Feature(name=AlleleCount)), value=6) -} SequenceFeature
+			.
+		</description>
+		<entity name="GenomeBuild" extends="ObservationElement">
+			<description>Reference to the genome build used. TODO: expand with
+				link to genome build file/version/database ids etc. E.g. 'hg19'.
+			</description>
+			<field name="Species" type="xref" xref_entity="Species"
+				description="Species that this genome build is made for." />
+			<field name="Files" type="mref" xref_entity="MolgenisFile"
+				description="Typically a link to files containing the reference sequence, or BED file listing the genes." />
+			<unique fields="Name" />
+		</entity>
+		<entity name="Chromosome" extends="ObservableFeature">
+			<description>Name of a nucleotide sequence located on a genome assembly/build. 
+			Usually a chromosome, but can also be a chromosomal fragment like a clone, contig, super-contig, scaffold, etc.. 
+			E.g. '1', 'Chr1', 'X' or 'Mt'.
+			</description>
+			<field name="genomeBuild" type="xref" xref_entity="GenomeBuild" />
+			<field name="orderNr" type="int"
+				description="Sorting order of chromosomes within the species." />
+			<field name="isAutosomal" type="bool"
+				description="If true there is an equal number of chromosomes in male/females. If false, it's a sex chromosome." />
+			<field name="bpLength" type="int" nillable="true"
+				description="Length of the chromosome in the genome build." />
+			<unique fields="genomeBuild,name" description="Chromosome belongs to species. E.g. hg19:chr1" />
+		</entity>
+		<entity name="SequenceFeature" abstract="true">
+			<decription>SequenceFeature is a minimal description for sequence
+				properties. It is used as basis for specific SequenceFeatures such
+				as gene, exon, domain, variant, transcript, protein.
+			</decription>
+			<field name="chr" type="xref" xref_entity="Chromosome"
+				description="reference chromosome used. Note: we treat each chromosome build as unique!" />
+			<field name="startBP" type="int"
+				description="start position respective of reference sequence" />
+			<field name="endBP" type="int"
+				description="end position respective of reference sequence" />
+			<!-- used to be called 'start' and 'end' but that is a reserved word in 
+				some database enginges -->
+			<field name="dbRefs" type="mref" xref_entity="OntologyTerm" />
+		</entity>
+		<entity name="SequenceVariant" implements="SequenceFeature"
+			extends="ObservableFeature">
+			<description>
+				Describe sequence variants respective to a reference chromosome/contig. Example
+				usage:
+				<table>
+					<tr>
+						<td>target</td>
+						<td>feature</td>
+						<td>relation</td>
+						<td>value</td>
+					</tr>
+					<tr>
+						<td>Individual(Patient1)</td>
+						<td>SequenceVariant(variantType=snp,ref=A,alt=T)</td>
+						<td>OntologyTerm(Phased Genotype)</td>
+						<td>T/A</td>
+					</tr>
+					<tr>
+						<td>Panel(GoNL)</td>
+						<td>SequenceVariant(variantType=snp,ref=A,alt=T)</td>
+						<td>OntologyTerm(Allele Count)</td>
+						<td>6</td>
+					</tr>
+				</table>
+			</description>
+			<field name="variantType" type="enum" enum_options="[snp,indel,cnv]"
+				default="snp" description="type of the variant" />
+			<field name="ref"
+				description="sequence in the reference. Very long sequences variants will be stored elsewhere." />
+			<field name="alt"
+				description="alternative sequences observed, if multiple then seperated by ','" />
+			<!--  field name="parentalOrigin" label="Parental origin" type="enum" enum_options="[maternal,paternal,unknown]"
+				default="unknown" description="where this variant was inherited from" /> -->
+		</entity>
+		<entity name="Gene" implements="SequenceFeature" extends="ObservableFeature">
+			<field name="nuclSequence" type="text"
+				description="Nucleotide sequence (bases) of the gene." label="Nucleotide sequence" />
+		</entity>
+		<entity name="Transcript" implements="SequenceFeature" extends="ObservableFeature">
+			<field name="mrnaSequence" type="text"
+				description="Nucleotide sequence (bases) of the transcript" label="Nucleotide sequence" />
+		</entity>
+		<!--  
+		<entity name="Allele" extends="ObservableFeature">
+			<description></description>
+		</entity>
+		<entity name="Haplotype" extends="ObservableFeature">
+			<description></description>
+		</entity>
+		<entity name="Genotype" extends="ObservableFeature">
+			<description></description>
+		</entity>
+		-->
+		<!--  
+		<entity name="VariantCombo" extends="ObservableFeature">
+			<description>
+				In a given patient, we may be interested in variation occurring in more than 
+				one gene (digenic inheritance). In the example given by Juha, below, we have one 
+				gene with two haplotypes: a pair (or more) of two different variations on 
+				each copy of the gene. The model as currently proposed suggests you can phase 
+				variants, but a significant problem arises in the case where you may not have 
+				access to parental DNA samples that allow you to phase variants. For example, 
+				there may be haplotypes at the 5’ and 3’ ends of a gene or region, but without 
+				parental DNA we can’t phase them. The core issue here seems to be that all examples 
+				to this point rely on the assumption that we can phase two or more variants, 
+				which may not always be the case. 
+
+				It has been proposed that we work up from the simplest use case: a single sequence 
+				alteration/variation in one copy of a gene (in the current model, this is a SequenceVariant) 
+				and introduce a concept of ‘combos’ to group these, to build up the more complicated 
+				examples. Raymond has pointed out that as the term 'combo' is not commonly used 
+				in genetics so it should probably remain a modelling concept, and kept out of the UI, 
+				but we define it to mean "haplotype combination" and/or "variant combination" 
+
+				The current discussion focuses on the DNA perspective on the core model, where these concepts 
+				(genes, regions, variants, chromosomes etc.) are ObservableFeatures, but in the 
+				pathogenicity domain they will become the ObservationTargets, and the ObservableFeature 
+				will be the pathogenicity of interest, so we need to be mindful of how exactly we group 
+				variants now as this will have an impact on the type of complex DNA elements on which 
+				we can make pathogenicity assignments.
+				
+				Juha's example:
+				patient1
+					genotype1
+						gene1
+						haplotype (allele1)
+							variant1, variant2...
+						haplotype (allele2)
+							variant4, variant5..
+
+					genotype2
+						gene2
+						haplotype (allele1)
+							variant6, variant17
+						haplotype (allele2)
+							variant8, variant19
+			</description>
+			<field name="variants" type="mref" xref_entity="SequenceVariant"
+				description="List of variants that make up this combo" />
+			<field name="comboPhase" type="text" 
+				description="To record whether the variants in this combo are in cis, trans or if this information is unknown" />
+ 		</entity> -->
+		
+	</module>
+</molgenis>

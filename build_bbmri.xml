@@ -1,0 +1,29 @@
+<!-- compute means generating as described, than compile the apps we depend on -->
+<project>
+	<!-- this name is used to name the war file -->
+	<property name="app_name" value="bbmri"/>
+	
+	<!-- this holds all the settings for the generator -->
+	<property name="app_properties" value="apps/bbmri/org/molgenis/biobank/bbmri.molgenis.properties" />
+	
+	<!-- this determines what handwritten modules should be loaded -->
+	<path id="app.class.path">
+		<pathelement location="apps/bbmri" />
+		<pathelement location="apps/catalogue" />
+		<pathelement location="modules/auth" />
+		<pathelement location="modules/pheno" />
+		<pathelement location="modules/file" />
+		<pathelement location="modules/datamodel" />
+		<pathelement location="modules/settings" />
+		<pathelement location="modules/import"/>
+		<pathelement location="modules/search"/>
+		<pathelement location="modules/decorators/core" />
+		<pathelement location="modules/decorators/auth" />
+		<pathelement location="modules/decorators/pheno" />
+		<pathelement location="modules/webserver" />
+	</path>
+	
+	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
+	<import file="build_common.xml"/>
+
+</project>

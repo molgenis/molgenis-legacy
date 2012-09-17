@@ -1,0 +1,81 @@
+name;unit;targetType;panelLabel;temporal;dataType;description
+TypeOfGroup;String;;;false;string;To label a group of targets.
+Species;TargetLink;panel;Species;false;xref;To set the species of an animal.
+Sex;TargetLink;panel;Sex;false;xref;To set the sex of an animal.
+Location;TargetLink;location;;false;xref;To set the location of a target.
+Weight;Gram;;;true;decimal;To set the weight of a target.
+ParentgroupFather;TargetLink;individual;;false;xref;To link a parent-group to an animal that may be a father.
+ParentgroupMother;TargetLink;individual;;false;xref;To link a parent-group to an animal that may be a mother.
+Certain;Boolean;;;false;bool;To indicate whether the parenthood of an animal regarding a parent-group is certain.
+Father;TargetLink;individual;;false;xref;To link an animal to its father.
+Mother;TargetLink;individual;;false;xref;To link an animal to its mother.
+Group;TargetLink;panel;;false;xref;To add a target to a panel.
+Parentgroup;TargetLink;panel;Parentgroup;false;xref;To link a litter to a parent-group.
+DateOfBirth;Datetime;;;true;datetime;To set a target's or a litter's date of birth.
+Size;Number;;;true;int;To set the size of a target-group, for instance a litter.
+WeanSize;Number;;;true;int;To set the wean size of a litter.
+WeanSizeFemale;Number;;;true;int;To set the number of females in a litter when weaning.
+WeanSizeMale;Number;;;true;int;To set the number of males in a litter when weaning.
+WeanSizeUnknown;Number;;;true;int;To set the number of animals of unknown sex in a litter when weaning.
+Street;String;;;false;string;To set the street part of an address.
+Housenumber;Number;;;false;int;To set the house-number part of an address.
+City;String;;;false;string;To set the city part of an address.
+CustomID;String;;;false;string;To set a target's custom ID.
+WeanDate;Datetime;;;true;datetime;To set a litter's or target's date of weaning.
+GenotypeDate;Datetime;;;true;datetime;To set a litter's date of genotyping.
+CageCleanDate;Datetime;;;true;datetime;To set a target's date of cage cleaning.
+DeathDate;Datetime;;;true;datetime;To set a target's date of death.
+Active;String;;;false;string;To register a target's activity span.
+Background;TargetLink;panel;Background;false;xref;To set an animal's genotypic background.
+Source;TargetLink;panel;Source;false;xref;To link an animal or a breeding line to a source.
+Line;TargetLink;panel;Line;false;xref;To link a parentgroup to a breeding line.
+LineInfoLink;String;;;false;string;To provide a link to a website with information about this line.
+LineJAXName;String;;;false;string;To provide the full line name according to JAX mouse nomenclature
+LineFullName;String;;;false;string;To provide the full line name according to some internal nomenclature
+SourceType;String;;;false;string;To set the type of an animal source (used in VWA Report 4).
+SourceTypeSubproject;String;;;false;string;To set the animal's source type, when it enters a DEC subproject (used in VWA Report 5).
+ParticipantGroup;String;;;false;string;To set the participant group an animal is considered part of.
+OldAnimalDBRemarks;String;;;false;string;To store remarks about the animal in the animal table, from the old version of AnimalDB.
+Remark;String;;;false;string;To store remarks about the animal.
+Litter;TargetLink;panel;Litter;false;xref;To link an animal to a litter.
+ExperimentNr;String;;;false;string;To set a (sub)experiment's number.
+ExperimentTitle;String;;;false;string;To set a (sub)experiment's title.
+DecSubprojectApplicationPdf;String;;;false;string;To set a link to a PDF file with the (sub)experiment's DEC application.
+DecApplicationPdf;String;;;false;string;To set a link to a PDF file with the DEC application.
+DecApprovalPdf;String;;;false;string;To set a link to a PDF file with the DEC approval.
+DecApplication;TargetLink;panel;DecApplication;false;xref;To link a DEC subproject (experiment) to a DEC application.
+DecNr;String;;;false;string;To set a DEC application's DEC number.
+DecTitle;String;;;false;string;To set the title of a DEC project.
+DecApplicantId;String;;;false;string;To link a DEC application to a user with this ID in the old version of AnimalDB.
+DecBudget;String;;;false;string;To set the maximum amount of animals that can be used in a main DEC project.
+DecSubprojectBudget;String;;;false;string;To set the maximum amount of animals that can be used in a DEC subproject.
+Anaesthesia;String;;;false;string;To set the Anaesthesia value of (an animal in) an experiment.
+PainManagement;String;;;false;string;To set the PainManagement value of (an animal in) an experiment.
+AnimalEndStatus;String;;;false;string;To set the AnimalEndStatus value of an experiment.
+LawDef;String;;;false;string;To set the Lawdef value of an experiment.
+ToxRes;String;;;false;string;To set the ToxRes value of an experiment.
+SpecialTechn;String;;;false;string;To set the SpecialTechn value of an experiment.
+Goal;String;;;false;string;To set the Goal of an experiment.
+Concern;String;;;false;string;To set the Concern value of an experiment.
+FieldBiology;Boolean;;;false;bool;To indicate whether a DEC application is related to field biology.
+ExpectedDiscomfort;String;;;false;string;To set the expected discomfort of an animal in an experiment.
+ActualDiscomfort;String;;;false;string;To set the actual discomfort of an animal in an experiment.
+AnimalType;String;;;false;string;To set the animal type.
+ExpectedAnimalEndStatus;String;;;false;string;To set the expected end status of an animal in an experiment.
+ActualAnimalEndStatus;String;;;false;string;To set the actual end status of an animal in an experiment.
+Experiment;TargetLink;panel;Experiment;false;xref;To link an animal to a DEC subproject (experiment).
+FromExperiment;TargetLink;panel;Experiment;false;xref;To remove an animal from a DEC subproject (experiment).
+GeneModification;String;;;false;string;A genetic modification to a gene in an animal.
+GeneState;String;;;false;string;To indicate whether an animal is homo- or heterozygous for a gene modification.
+VWASpecies;String;;;false;string;To give a species the name the VWA uses for it.
+LatinSpecies;String;;;false;string;To give a species its scientific (Latin) name.
+DutchSpecies;String;;;false;string;To give a species its Dutch name.
+StartDate;Datetime;;;true;datetime;To set a (sub)project's start date.
+EndDate;Datetime;;;true;datetime;To set a (sub)project's end date.
+Removal;String;;;false;string;To register an animal's removal.
+Article;Number;;;false;int;To set an actor's Article status according to the Law, e.g. Article 9.
+MolgenisUserId;Number;;;false;int;To set an actor's corresponding MolgenisUser ID.
+TransponderId;String;;;false;string;To set the ID of an animal's transponder.
+Color;String;;;false;string;To set an animal's color.
+Earmark;String;;;false;string;To set an animal's earmark.
+ResponsibleResearcher;String;;;false;string;To set the researcher responsible for this animal.

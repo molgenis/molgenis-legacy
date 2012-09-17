@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #Thu Jul 19 21:06:13 CEST 2012
+=======
+#Thu Jul 19 21:04:48 CEST 2012
+>>>>>>> 6d7b06e718044e8ea366d015185a7bb5456aa81b
 eclipse.preferences.version=1
 editor_save_participant_org.eclipse.jdt.ui.postsavelistener.cleanup=true
 formatter_profile=_molgenis
@@ -54,4 +58,8 @@ sp_cleanup.use_parentheses_in_expressions=false
 sp_cleanup.use_this_for_non_static_field_access=false
 sp_cleanup.use_this_for_non_static_field_access_only_if_necessary=true
 sp_cleanup.use_this_for_non_static_method_access=false
+<<<<<<< HEAD
 sp_cleanup.use_this_for_non_static_method_access_only_if_necessary=true
+=======
+sp_cleanup.use_this_for_non_static_method_access_only_if_necessary=true
+>>>>>>> 6d7b06e718044e8ea366d015185a7bb5456aa81b

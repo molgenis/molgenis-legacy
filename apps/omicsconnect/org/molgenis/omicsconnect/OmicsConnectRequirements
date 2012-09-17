@@ -1,0 +1,115 @@
+= OmicsConnect wiki =
+
+This page reports current issues and plans with omicsconnect.
+
+NB this document formatted in trac wiki format, so we can include it online. Syntax:
+* unsolved issues
+* ~~ solved issues ~~
+>> comments
+
+== showstoppers ==
+
+* mrefs master/detail forms don't behave well. Examples:
+	* adding new citations for study.
+	* adding new measurement to protocol 
+	
+== discussion items ==
+
+* Phenotype method <-> protocol / measurement
+* Who does contribution: Person or an PersonAffiliation?	
+
+== wanted entities ==
+
+Domain model:
+
+'''observation'''
+* Characteristic: 'is a' or 'has a' statements about an object
+* ObservableFeature: characteristic observed (is/has) or question asked (what is?)
+	* Measurement: feature defined by description, unit, dataType, permittedValue
+	* PermittedValue: a categorical value state for Measurement 
+* ObservationTarget: target of observation
+	* Individual: ObservationTarget consisting of one individual
+	* Panel: ObservationTarget consisting of group of individuals
+* Protocol: procedure of observation on a defined set of features
+	* discussion: many-to-many OR xref relation with Feature?
+	* see PhenotypeMethod discussion
+* ProtocolApplication: one bundle of values for exactly one target
+	* xref to ObservationTarget (e.g. Individual, but also SNP)
+	* xref to Protocol
+	* discussion: xref to DataSet?
+* Observation: value relation between ProtocolApplication and ObservableFeature
+	* xref to ProtocolApplication
+	* xref to ObservableFeature
+	* (no xref to Target, this is via ProtocolApplication)
+
+'''organization'''
+* Study: a bundle of experiments typically published in a paper
+	* discussion: bundle of Experiment, i.e. StudyElement?
+* Experiment: a story of experimental objectives and outcomes
+	* discussion: refers to dataSets?
+* DataSet: a group of ProtocolApplication
+	* discussion: homogeneous (i.e. using one protocol only?)
+* SelectionCriteria: conditions of relationship between Panel
+	* xref to Source and Target panel
+	* has: number of individuals, details
+	* discussion: how to formalize
+
+'''attribution'''
+* Contact: an entity having contact details such as address
+* Person: to refer to natural actors in the process
+* Organization: organization actor
+* PersonAffiliation: association between individual and Organization
+* Submission: the event of data contribution
+	* dicussion: what are Submissable items? I.e. can have Contribution
+* Contribution: metadata describing Role of Person in a Study (?)
+
+'''references'''
+* Hotlinks: hyperlinks to external? Or internal?
+* Citation: literature reference
+	* discussion: what entities can have references?
+* OntologyReference: reference to coding lists
+	* Species: reference to species definitions
+* AlternateIds: alternative identifiers
+* FeatureAnnotion: qualitative association between Feature and OntologyTerm
+	* has 'exactmatch' and 'description'
+	
+'''genome'''
+* SequenceCharacteristic
+	* Marker: genomic variable site
+	* Allele: alternative alleles of marker
+	* Genotype: valid genotypes for a marker
+* SequenceRelation
+
+	
+'''gwas central specific'''
+* FrequencyCluster
+	* can be modelled as Protocol?
+* GenotypeFrequency
+	* can be modelled as Protocol?
+* AlleleFrequency
+	* can be modelled as Protocol?
+* SamplePanel
+	* is a Panel with panelType=SamplePanel?
+	* is a Panel with panelType=AssayedPanel?
+* UsedMarkerset
+	* can be modelled as Protocol? or DataSet?
+* EffectSize
+	* can be modelled as Protocol?
+
+== checklist of requirements ==
+
+* study and person should have qualified 'contribution' denoting 'role' in study
+* both study and data sets can be submissions (what else?)
+* submission can have contributions (== role in submission)
+* person can have more than one affiliation, how does that relate to role?
+* remove fax and phone
+* study design should come from an ontology
+* need a way to link panels (e.g. sample panel, assayed panel)
+* hotlinks to see only hotlinks related to a specific element, e.g only see experimental specific hotlinks in experiments?
+
+== FAQ ==
+
+Q: Where do I add panel specific information e.g. population information, number of males/females, Geographical location
+>> A: these are a ProtocolApplication having panel as target
+Q: where to add species?
+>> A: species are special kind of ontology term

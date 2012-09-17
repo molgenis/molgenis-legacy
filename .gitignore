@@ -3,7 +3,12 @@ bin/
 build/
 target/
 tmp/
-target/
+classes/
+tmp/
+hsqldb/
+handwritten/
+generated/
+WebContent/WEB-INF/lib/
 
 ## Always ignore these
 *~
@@ -11,9 +16,16 @@ target/
 *.DS_Store
 *.swp
 *.out
+*.passwd
 
 ## Netbeans private
 nbproject/private/
+
+## IntelliJ private
+.idea/
+molgenis_apps.eml
+molgenis_apps.iml
+
 
 ## General java
 *.class
@@ -28,6 +40,21 @@ tmp*
 log*
 .classpath
 /.externalToolBuilders
-/.settings
 /test-output
-/target/
+*.svn
+*.orig
+*.java~
+/bin
+/test-output
+/generated
+/target
+logger.out*
+/bin
+/dist
+/.settings/*
+!/.settings/template*
+.project
+/WebContent/WEB-INF/classes
+/generated/java
+!/.settings/template*
+/apps/catalogue/plugins/hl7parser/PropertiesPath.java

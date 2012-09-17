@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script src="jqGrid/jquery-1.5.2.min.js"></script>
+<script src="jqGrid/grid.locale-en.js" type="text/javascript"></script>
+<script src="jqGrid/jquery.jqGrid.min.js" type="text/javascript"></script>
+<script src="jqGrid/jquery.json-2.3.min.js" type="text/javascript"></script>
+
+
+<script src="jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js" type="text/javascript"></script>
+<script src="jquery/development-bundle/ui/jquery.ui.dialog.js" type="text/javascript"></script>
+<script src="jquery/development-bundle/ui/jquery.ui.datepicker.js" type="text/javascript"></script>
+
+<link rel="stylesheet" type="text/css" media="screen" href="jquery/development-bundle/themes/smoothness/jquery-ui-1.8.7.custom.css">
+<link rel="stylesheet" type="text/css" media="screen" href="jqGrid/ui.jqgrid.css">
+<link rel="stylesheet" type="text/css" media="screen" href="jqGrid/ui.multiselect.css">
+
+<script type="text/javascript" src="jstree_pre1.0_fix_1/jquery.jstree.js"></script>
+
+<script type="text/javascript"><!--
+var url = "jqGridBackend"
+var colNames;
+var colModel;
+
+function loadColNames(selectedCols) {    
+    var cols = $.toJSON( selectedCols );
+    $.ajax({url : url + "?op=getColumnNames",
+        async: false,
+        data: {selectedCols : cols},
+        dataType: "json",
+        success: function(data) {
+            colNames = data;
+        },
+        error: function (xhr, ajaxOptions, thrownError){
+            alert("failed to loadColNames"); 
+            alert(xhr.status);
+            alert(thrownError);
+        }   
+    });
+}
+
+function loadColModel(selectedCols) {
+    var cols = $.toJSON( selectedCols );
+    $.ajax({url : url + "?op=getColModel",
+        async: false,
+        data: {selectedCols : cols},        
+        success: function(data) {        	
+            colModel = eval(data);
+        },
+        error: function (xhr, ajaxOptions, thrownError){
+            alert("failed to loadColNames"); 
+            alert(xhr.status);
+            alert(thrownError);
+        }   
+    });    
+}
+
+function createGrid(selectedCols) {
+	    var cols = $.toJSON( selectedCols );
+    jQuery("#list").jqGrid({
+                    url: url + '?tableName=TEST001_LL_BEZOEK1&schema=molgenis',
+                    postData : {selectedCols : cols},
+                    datatype: "xml",
+                    colNames: colNames,
+                    colModel: colModel,
+                    rowNum:10,
+                    rowList:[10,20,30],
+                    pager: '#pager',
+                    viewrecords: true,
+                    sortorder: "desc",
+                    caption:"Matrix!",
+                    forceFit : true
+            });
+    jQuery("#list").jqGrid('navGrid','#pager',{edit:false,add:false,del:false,search:true,refresh:true},
+                    {}, // edit options
+                    {}, // add options
+                    {}, //del options
+                    {multipleSearch:true}
+                    );		        
+}    
+    
+$(document).ready(function(){
+    loadColNames(null);
+    loadColModel(null);
+    createGrid(null);
+
+    var tree = $("#tree").jstree({
+            "json_data" : {
+                    "ajax" : {
+                            "url" : url + "?op=jsTreeJson"
+                            }
+                    }
+            ,		
+            "progressive_render" : true, 
+            "plugins" : [ "themes", "json_data", "checkbox", "sort", "ui" ]
+    });
+
+    tree.bind("loaded.jstree", function (event, data) {
+    	var patientNode = $("div#tree ul li:contains('PATIENT')");
+    	$('#tree').jstree("check_node",patientNode);
+ 	});
+
+    $("#tree").bind("change_state.jstree", function (e, d) {
+        if ((d.args[0].tagName == "A" || d.args[0].tagName == "INS") &&
+          (d.inst.data.core.refreshing != true && d.inst.data.core.refreshing != "undefined")) {
+//              $("#list").trigger("reloadGrid");
+//              alert(d.rslt.attr("id"));
+        }
+    });
+	
+        
+    $('#getSelected').click(function() {
+        var selectedColumnIds = []; 
+        $("#tree").jstree("get_checked",null,true).each 
+            (function () { 
+                selectedColumnIds.push(this.id); 
+            }); 
+        $("#list").jqGrid('GridUnload');
+        loadColNames(selectedColumnIds);
+        loadColModel(selectedColumnIds);
+        createGrid(selectedColumnIds);
+    });  
+    
+    $('#exportData').click(function() {
+        $( "#dialog-form" ).dialog( "open" );
+    });
+
+$( "#dialog-form" ).dialog({
+    autoOpen: false,
+    height: 300,
+    width: 350,
+    modal: true,
+    buttons: {
+            "Export": function() {
+            	var exportType = $("input[name='exportType']:checked").val();
+            	var exportSelection = $("input[name='exportSelection']:checked").val();
+
+              	var myUrl = jQuery("#list").jqGrid('getGridParam', 'url');
+              	var postData = jQuery("#list").jqGrid('getGridParam', 'postData');
+
+
+				$.each(postData, function(key, value) {
+					myUrl += "&"+key+"="+encodeURIComponent(value);
+				});
+            	
+                //e.preventDefault();  //stop the browser from following
+                window.location.href = myUrl + "&exportType=" +exportType + "&exportSelection=" + exportSelection;
+            },
+            Cancel: function() {
+                $( this ).dialog( "close" );
+            }
+    },
+    close: function() {
+    }
+});    
+        
+});
+
+--></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Datagrid Demo</title>
+</head>
+<body>
+
+<!--
+    <p>Date: <input type="text" id="datepicker"></p>
+-->
+<div id="tree" class="tree">
+</div>
+
+<div>
+    <button id="getSelected">load data</button>
+</div>
+    
+
+<table id="list"></table>
+<div id="pager"></div>
+       
+<button id="exportData">export data</button>
+    
+<div id="dialog-form" title="Export data">
+	<form>
+	<fieldset>
+            <label >File type</label><br>
+            <input type="radio" name="exportType" value="Excel" checked>Excel<br>
+            <input type="radio" name="exportType" value="Spss">Spss<br> 
+            <input type="radio" name="exportType" value="Csv">Csv<br> 
+            <label>Export option</label><br>
+            <input type="radio" name="exportSelection" value="All" checked>All<br>
+            <input type="radio" name="exportSelection" value="Grid">Grid<br> 
+	</fieldset>
+	</form>
+</div>
+</body>
+</html>

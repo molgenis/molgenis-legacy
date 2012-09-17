@@ -1,0 +1,22 @@
+<molgenis name="xqtl_euratrans" label="RatQTL">
+
+	<plugin name="MolgenisHeader" type="org.molgenis.euratrans.header.MolgenisHeader" />
+	<plugin name="FeedbackForm" type="org.molgenis.feedback.FeedbackForm" />
+
+	<menu name="main">
+		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.ClusterDemo" />
+		<include file="apps/euratrans/org/molgenis/euratrans/browsedata.xml" />
+		<plugin label="Find QTLs" name="QtlFinderPublic2" type="plugins.qtlfinder2.QtlFinder2" 
+			group="biologist" /> <plugin label="Genome browser" name="GenomeBrowser" 
+			type="plugins.genomebrowser.GenomeBrowser" group="biologist" />
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/importdata.xml" />
+		<plugin label="Run QTL mapping" name="Cluster"
+			type="plugins.cluster.ClusterPlugin" group="biologist" />
+		<include
+			file="apps/xqtl/org/molgenis/xqtl/gui/configureanalysis.xml" />
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/utilities.xml" />
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/admin.xml" />
+		<plugin label="Login" name="UserLogin"
+			type="plugins.autohidelogin.AutoHideLogin" />
+	</menu>
+</molgenis>

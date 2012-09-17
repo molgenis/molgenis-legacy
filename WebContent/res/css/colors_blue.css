@@ -1,0 +1,46 @@
+/**546EF5*/ 
+
+/**color of title*/
+#header {
+	color: #546EF5;
+}
+
+/**overall background*/
+body,#header,#navigation,#information,#footer {
+	background: white;
+}
+
+/**highlight background*/
+.formscreen,.form_new,.form_filter,.embedtable,.popup {
+	background: #E4E8FD;
+}
+
+/**shade header*/
+.leftNavigationSelected,.navigationSelected,.form_header {
+	background: #546EF5;
+}
+
+/**highlight*/
+.leftNavigationNotSelected,.navigationNotSelected {
+	background: #F5DB54;
+	color: black;
+}
+
+/**shade borders*/
+.leftNavigationSelected,.navigationSelected,.formscreen,.form_new,.form_filter,.popup
+{
+	border-color: #546EF5;
+}
+
+/**font color*/
+.leftNavigationSelected,.navigationSelected {
+	color: white;
+}
+
+.form_listrow0 {
+	background: #BEF554;
+}
+
+.form_listrow1 {
+	background: #54F58A;
+}

@@ -1,0 +1,21 @@
+<molgenis name="sandbox" label="Sandbox for testing small things :-)">
+	<!-- plugin name="molgenis_header" type="plugins.header.MolgenisHeader" 
+		/ -->		
+	<plugin name="BootstrapTest" type="org.molgenis.sandbox.ui.BootstrapTest"/>
+	<menu name="sandboxmain" position="left">
+		<form name="ExampleInvestigationData" entity="Investigation">
+			<menu name="ExampleData">
+				<form name="Individuals" entity="Individual" />
+				<form name="Measurements" entity="Measurement" />
+				<form name="ObservedValues" entity="ObservedValue" />
+			</menu>
+		</form>
+		<menu name="WidgetExamples">
+			<plugin name="LayoutTests" type="org.molgenis.sandbox.ui.LayoutTests" />
+			<plugin name="InputsTest" type="org.molgenis.sandbox.ui.InputsTest" />
+			<plugin name="HtmlEditor" type="org.molgenis.sandbox.ui.HtmlEditor" />
+			<plugin name="FreemarkerEditor" type="org.molgenis.sandbox.ui.FreemarkerEditor" />
+			<form name="fieldtest" entity="FieldTest" compact_view="name" />
+		</menu>
+	</menu>
+</molgenis>

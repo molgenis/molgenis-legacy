@@ -1,0 +1,127 @@
+<html>
+<head>
+<link href="designgg.css" rel="stylesheet" type="text/css" />
+<title>designGG : Help</title>
+</head>
+
+<body>
+<h2>Help on using this web tool</h2>
+<center>
+<div style="text-align: center;"><input type="submit"
+	name="__action" value="back" onclick="window.location='../molgenis.do';" /></div>
+<table width="80%">
+	<tr>
+		<td>
+		<fieldset><legend>1. Define analysis platform </legend>
+		<table>
+			<tr>
+				<td>&nbsp;&nbsp;&nbsp;</td>
+				<td align=justify>
+				<div><b>Choose the platform for your experiment. </b><br>
+				<br>
+				For those experiments that involve pairing samples on the same
+				array/chip/assay, click on "dual channel". Otherwise select "single
+				channel".<br>
+				<br>
+				For example, if you are going to perform a one-color gene expression
+				microarray experiment (e.g., using Affymetrix genechips), click on
+				"single channel", while if you are going to perform a two color
+				microarray experiment (e.g., on a two-color Agilent microarray),
+				select "dual channel". <br>
+				<br>
+				The algorithm provided here is not restricted to designing
+				microarray experiments and it can be applied to any type of
+				genetical genomics studies with multiple conditions.</div>
+				</td>
+				<td>&nbsp;&nbsp;&nbsp;</td>
+			</tr>
+		</table>
+		</fieldset>
+		</td>
+	</tr>
+
+	<tr>
+		<td>
+		<fieldset><legend>2. Define individual genotypes </legend>
+		<table>
+			<tr>
+				<td>&nbsp;&nbsp;&nbsp;</td>
+				<td align=justify>
+				<div><b> Upload a tab delimited file listing the genotype
+				for all strains available for the experiment. </b><br>
+				<br>
+				This table should provide genotypes for all individuals (one column
+				per individual) at different genotypic markers (one row per marker).
+				Corresponding individual and marker names can also be included as
+				column and row names enclosed in quotation marks. Each cell contains
+				a genotype label (e.g. A or B for the parental alleles, H for
+				heterozygous loci; NA for missing data). <br/>An example of the file
+				format is shown in the figure on the webpage and also in the linked
+				example file.</div>
+				</td>
+				<td>&nbsp;&nbsp;&nbsp;</td>
+			</tr>
+		</table>
+		</fieldset>
+		</td>
+	</tr>
+
+	<tr>
+		<td>
+		<fieldset><legend>3. Define experimental factors </legend>
+		<table>
+			<tr>
+				<td>&nbsp;&nbsp;&nbsp;</td>
+				<td align=justify>
+				<div><b> Specify the number of environmental factors. </b><br>
+				<br>
+				DesignGG now supports up to three factors. It should be noted that
+				each factor must have at least two levels.<br>
+				The levels of each factor can be quantitative (e.g., different
+				temperatures) or qualitative (e.g., different tissue types), but
+				never duplicated within the same factor. When there is no
+				environmental factor,this tool provides an optimal design based on
+				the distant pair algorithm <a href="references.html"
+					style="text-decoration: none;">[13]</a>. Because of computational
+				constraints, at most 10 levels can be specified per factor. <br>
+				<br>
+				As advanced option, alternative weights can be given to genetic and
+				environmental factors. Therefore the full model is shown and decimal
+				numbers can be used to change the weights of individual terms (or
+				interaction terms). Details can be found at <a href="parameters.html">explanation of designGG parameters</a>.</div>
+				</td>
+				<td>&nbsp;&nbsp;&nbsp;</td>
+			</tr>
+		</table>
+		</fieldset>
+		</td>
+	</tr>
+
+	<tr>
+		<td>
+		<fieldset><legend>4. Set constraints </legend>
+		<table>
+			<tr>
+				<td>&nbsp;&nbsp;&nbsp;</td>
+				<td align=justify>
+				<div><b> Either the number of slides (arrays/assays) that
+				are available for the experiment or the number of samples per
+				condition has to be specified. </b><br>
+				<br>
+				The number of slides should be equal to or larger than the total
+				number of conditions. Alternatively, the number of strains per
+				condition should be larger than 1.<br>
+				<br>
+				Because of computational constraints, no more than 100 arrays per
+				condition (or 10<sup>5</sup> arrays in total) can be used.</div>
+				</td>
+				<td>&nbsp;&nbsp;&nbsp;</td>
+			</tr>
+		</table>
+		</fieldset>
+		</td>
+	</tr>
+</table>
+</center>
+</body>
+</html>

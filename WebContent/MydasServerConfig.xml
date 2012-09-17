@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2007 Philip Jones, EMBL-European Bioinformatics Institute
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  ~
+  ~ For further details of the mydas project, including source code,
+  ~ downloads and documentation, please see:
+  ~
+  ~ http://code.google.com/p/mydas/
+  ~
+  -->
+
+<!--mydasserver xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="http://mydas.googlecode.com/svn/trunk/mydas/server_core/src/main/resources/mydasserverconfig.xsd"-->
+ <mydasserver xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- The global element holds details of configuration common to the entire server. -->
+    <global>
+        
+        <!-- The URL of the DAS server up to and including /das/ (e.g. http://www.ebi.ac.uk/das-srv/uniprot/das/)
+        This should be the external URL.  (Allows correct access to the service through reverse-proxies etc.)-->
+        <baseurl>http://localhost:8080/xgap_1_4_distro/das/</baseurl>
+        
+        <!-- A boolean switch indicating if the output from the DAS server should be compressed or not.
+
+         Note that compression does not work with jetty, hence this is set to false here, but you are
+         advised to set this to true for deploying your DAS source on a full featured web server. -->
+        <gzipped>false</gzipped>
+
+        <!-- If set to true, then if the browser points to /das or /das/ then
+            the output of the dsn command should be displayed.  This is
+            useful for creating a home page based upon the data source
+            details.-->
+        <slash-das-points-to-dsn>true</slash-das-points-to-dsn>
+        
+        <!-- The name of the default DAS stylesheet to be used for all of the defined datasources.
+        This can be overridden for individual datasources by including a stylesheet element for them. -->
+        <default-stylesheet>TEST.style</default-stylesheet>
+
+        <!-- Gives the URI of an XSLT transformation that can be used by the browser
+            to present the dsn command response in a human-readable format.
+            Optional - the processing instruction will only be included if this
+            element is present. -->
+        <!--<dsn-xslt-url>/xslt/dsn.xsl</dsn-xslt-url>-->
+
+        <!-- NOTE - THE XSLTs LISTED BELOW (COMMENTED OUT) ARE UNDER DEVELOPMENT, SO NOT
+        CURRENTLY AVAILABLE.  You can of course substitute your own XSLT and provide a link
+        to it here. -->
+
+        <!-- Gives the URI of an XSLT transformation that can be used by the browser
+            to present the dna command response in a human-readable format.
+            Optional - the processing instruction will only be included if this
+            element is present. -->
+        <!--<dna-xslt-url>/xslt/dna.xsl</dna-xslt-url>-->
+
+        <!-- Gives the URI of an XSLT transformation that can be used by the browser
+            to present the entry-points command response in a human-readable format.
+            Optional - the processing instruction will only be included if this
+            element is present.-->
+        <!--<entry-points-xslt-url>/xslt/entry-point.xsl</entry-points-xslt-url>-->
+
+        <!-- Gives the URI of an XSLT transformation that can be used by the browser
+          to present the sequence command response in a human-readable format.
+          Optional - the processing instruction will only be included if this
+          element is present. -->
+        <!--<sequence-xslt-url>/xslt/sequence.xsl</sequence-xslt-url>-->
+
+        <!-- Gives the URI of an XSLT transformation that can be used by the browser
+            to present the features command response in a human-readable format.
+            Optional - the processing instruction will only be included if this
+            element is present. -->
+        <!--<features-xslt-url>/xslt/features.xsl</features-xslt-url>-->
+
+        <!-- Gives the URI of an XSLT transformation that can be used by the browser
+            to present the types command response in a human-readable format.
+            Optional - the processing instruction will only be included if this
+            element is present. -->
+        <!--<types-xslt-url>/xslt/types.xsl</types-xslt-url>-->
+
+        <!-- These global properties are made available to all the plugin classes
+        through the DataSource interface, so the plugin author can
+        add arbitrary additional configuration to their data source. -->
+    </global>
+    <!-- The enclosing element for one or more datasource definitions. -->
+    <datasources>
+        <!-- Configuration for a single data source. All the information annotated in this
+        element will be available to the DataSource class.
+        Attributes:
+        uri: The uri (required) attribute uniquely identifies the group of sources, and must be globally unique, as provided in the /DASDSN/DSN/SOURCE element of the XML returned by the DAS source command.
+        title: The title (required) attribute is a short text label suitable for display.
+        description: description (required) attribute is a longer text description.
+        doc_href: The doc_href (optional) attribute is a URL location where more information about the data is available.
+        -->
+		
+        <datasource uri="xgapTest"
+                    title="XGAP Test"
+                    description="Data source test using the XGAP database"
+                    doc_href="http://www.xgap.org/"
+                    mapmaster="CS_DS94">
+                        <maintainer email="kjhofstede@gmail.com" />
+
+                        <version uri="xgapTest" created="2010-04-07">
+                    <class>mydas.examples.XgapTestDataSource</class>
+                                <coordinates    uri=""
+                                                                source=""
+                                                                authority=""
+                                                                taxid=""
+                                                                test_range="">Xgap</coordinates>
+                                <capability     type="das1:sources"
+                                                query_uri="http://localhost:8080/xgap_1_4_distro/das/xgapTest" />
+                                <capability     type="das1:types"
+                                                query_uri="http://localhost:8080/xgap_1_4_distro/das/xgapTest/types" />
+                                <capability     type="das1:features"
+                                                query_uri="http://localhost:8080/xgap_1_4_distro/das/xgapTest/features" />
+                                <capability     type="das1:feature-by-id"
+                                                query_uri="http://localhost:8080/xgap_1_4_distro/das/xgapTest/features" />
+                                <capability     type="das1:stylesheet"
+                                                query_uri="http://localhost:8080/xgap_1_4_distro/das/xgapTest/stylesheet" />
+                                <capability     type="das1:unknown-feature"     />
+                        </version>
+
+            <dna-command-enabled>true</dna-command-enabled>
+            <features-strictly-enclosed>true</features-strictly-enclosed>
+            <use-feature-id-for-feature-label>true</use-feature-id-for-feature-label>
+            <include-types-with-zero-count>true</include-types-with-zero-count>
+        </datasource>
+
+    </datasources>
+</mydasserver>

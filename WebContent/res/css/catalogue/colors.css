@@ -1,0 +1,111 @@
+/**5DA55B*/
+
+#container {
+	width: 900px;
+}
+
+/**color of title*/
+#header {
+    color: #5B82A4;
+}
+
+/**overall background*/
+body,#header,#navigation,#information,#footer {
+    background: white;
+}
+
+/** screenbody */
+.screenbody {
+	background: white;
+	width: undefined;
+}
+
+/**highlight background*/
+.formscreen, .form_new, .form_filter, .embedtable, .popup, .form_new,.form_filter {
+    background: #EEF5F5;
+}
+
+/**shade header*/
+.leftNavigationSelected,.navigationSelected,.form_header, td.submenuitem:hover {
+    background: #123481;
+}
+
+/** highlight oragne on hover */
+.leftNavigationNotSelected:hover,.navigationNotSelected:hover, td.submenuitem:hover, .menuitem:hover {
+    background: #FF7D00;
+}
+
+.form_title {
+	height: 24px;
+}
+
+.bt-active {
+	background: #DCE3F7;
+}
+
+.point:hover {
+	background: #FF7D00;
+	cursor: pointer;
+}
+
+/**highlight*/
+.leftNavigationNotSelected,.navigationNotSelected, .form_menu   {
+    background: #123481;
+    color: white;
+    background-image: url('../../img/catalogue/blue.png');
+    background-repeat: repeat-x;
+    height: 32px;
+    font-weight: normal;
+    padding: 5px;
+    border-color: #123481;
+}
+
+.submenuitem{
+	background: #123481;
+	color: white;
+    h: expression(onmouseover=new Function("this.style.backgroundColor='#5E9E9E'; this.style.color='#fff';"),
+                       onmouseout=new Function("this.style.backgroundColor='#BDD7D7'; this.style.color='black';")); 
+    /*ie hack for td.submenuitem:hover*/
+    
+}
+
+/**shade borders*/
+.leftNavigationSelected,.navigationSelected,.formscreen,.form_new,.form_filter,.popup, .form_menu 
+{
+    border-color: #123481;
+}
+
+/**font color*/
+.leftNavigationSelected,.navigationSelected {
+    color: white;
+    height: 32px;
+    padding: 5px;
+}
+
+.form_listrow0 {
+    background: white;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #5E9E9E;
+}
+
+.listtable th {
+	color: #123481;
+	font-weight: bold;
+}
+
+.listtable th, .form_listrow1 {
+    background: #DCE3F7;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #DCE3F7;
+}
+
+.box-body-label {
+	background: #DCE3F7;
+	font-weight: bold;
+	padding: 5px;
+	margin: 1px;
+	width: 10px !important;
+	border: solid thin white;
+}

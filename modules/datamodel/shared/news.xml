@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis">
+	<module name="news">
+		<entity name="MolgenisNews" system="true">
+			<field name="id" type="autoid" hidden="true"/>
+			<field name="title"/>
+			<field name="subtitle"/>
+			<field name="text_" type="text"/>
+			<field name="date_" type="date" nillable="true"/>
+			<field name="author"/>
+		</entity>
+	</module>
+</molgenis>

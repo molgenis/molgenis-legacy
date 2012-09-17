@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<molgenis name="animaldb" label="AnimalDB">
+
+	<plugin name="AnimalDBHeader" type="org.molgenis.animaldb.plugins.accessibility.AnimalDBHeader" />
+
+	<menu name="mainmenu" position="top_left">
+		
+		<!-- AnimalDBWelcomeScreenPlugin; Goal: start screen with news items; Flavor: Freemarker -->
+		<plugin name="AnimalDBWelcomeScreen" type="org.molgenis.animaldb.plugins.accessibility.AnimalDBWelcomeScreenPlugin"
+			label="Welcome" />
+		
+		<!-- ManualPlugin; Goal: provide links to AnimalDB manuals; Flavor: Freemarker -->
+		<plugin name="Manual" type="org.molgenis.animaldb.plugins.accessibility.ManualPlugin"
+			label="Manuals" />
+		
+		<menu name="animalmenu" position="left" label="Animals">
+			<!-- ListPluginMatrix; Goal: matrix for viewing animal values; Flavor: Java-only -->
+			<plugin name="DataViewer" type="org.molgenis.animaldb.plugins.viewers.ListPluginMatrix"
+				label="Data viewer" />
+			<!-- ListPluginMatrix; Goal: view values for one animal, in a timeline; Flavor: Java-only -->
+			<plugin name="TimelineViewer" type="org.molgenis.animaldb.plugins.viewers.EventViewerPluginMatrix"
+				label="Timeline viewer" />
+			<!-- ViewFamily; Goal: view litter and genotype info for one animal; Flavor: Freemarker -->
+			<plugin name="ViewFamily" type="org.molgenis.animaldb.plugins.viewers.ViewFamily"
+				label="Family viewer" />
+			<!-- AddAnimalPlugin; Goal: bring in animals other than through breeding; Flavor: Java-only -->
+			<plugin name="AddAnimal" type="org.molgenis.animaldb.plugins.animal.AddAnimalPlugin"
+				label="Bring in animals" />
+			<!-- Breeding; Goal: create and browse parentgroups + create, wean, genotype and browse litters, print cage labels; Flavor: Freemarker -->
+			<plugin name="Breeding" type="org.molgenis.animaldb.plugins.breeding.Breedingnew"
+				label="Breeding" />
+			
+			<!-- RemAnimalPluginMatrix; Goal: remove animals; Flavor: Java-only -->
+			<plugin name="RemAnimal" type="org.molgenis.animaldb.plugins.animal.RemAnimalPluginMatrix"
+				label="Remove animals" />
+			<!-- LocationPlugin; Goal: manage animals in locations; Flavor: Freemarker -->
+			<plugin name="LocationPlugin" type="org.molgenis.animaldb.plugins.animal.LocationPlugin"
+				label="Animals in locations" />
+			<!-- PrintLabelPlugin; Goal: print (cage) labels with any kind of info on them; Flavor: Java-only -->
+			<plugin name="PrintLabels" type="org.molgenis.animaldb.plugins.administration.PrintLabelPlugin"
+				label="(Cage) labels" />
+		</menu>
+		
+		<menu name="decmenu" position="left" label="DEC and NVWA">
+			<!-- DecStatus; Goal: start screen with a quick overview of all active DECs and their subprojects; Flavor: Java-only -->
+			<plugin name="DecStatus" type="org.molgenis.animaldb.plugins.administration.DecStatus"
+				label="DEC status portal" />
+			<!-- ShowDecProjects; Goal: create, edit and browse DEC projects; Flavor: Freemarker -->
+			<plugin name="AddProject" type="org.molgenis.animaldb.plugins.administration.ShowDecProjects"
+				label="DEC applications" />
+			<!-- ShowDecSubprojects; Goal: create, edit and browse DEC subprojects; Flavor: Freemarker -->
+			<plugin name="AddSubproject" type="org.molgenis.animaldb.plugins.administration.ShowDecSubprojects"
+				label="DEC subprojects" />
+			<!-- YearlyReportModule; Goal: create yearly reports for the NVWA; Flavor: Freemarker -->
+			<plugin name="YearlyReportModule" type="org.molgenis.animaldb.plugins.administration.YearlyReportModule"
+				label="Yearly report" />
+		</menu>
+		
+		<!-- Batches currently not in active use in AnimalDB, so commented out for now -->
+		<!-- menu name="batches" position="left" label="Batches">	
+			<form name="ManageBatches" entity="MolgenisBatch" label="Batches" />
+			<form name="ManageBatchEntities" entity="MolgenisBatchEntity" label="Batch entities" />
+			<plugin name="Batch" type="plugins.batch.BatchPlugin"
+				label="Batch management" />
+			<plugin name="BatchView" type="plugins.batch.BatchViewPlugin"
+				label="Batch viewer" />
+		</menu -->
+			
+		<menu name="Settings" position="left" label="Settings">
+			<!-- ManageLines; Goal: create, edit and browse breeding lines; Flavor: Freemarker -->
+			<plugin name="ManageLines" type="org.molgenis.animaldb.plugins.breeding.ManageLines"
+				label="Breeding lines" />
+			<!-- LocationInfoPlugin; Goal: create, import and browse locations; Flavor: Freemarker -->
+			<plugin name="Locations" type="org.molgenis.animaldb.plugins.settings.LocationInfoPlugin"
+				label="Locations" />
+			<!-- SpeciesPlugin; Goal: create and browse species; Flavor: Freemarker -->
+			<plugin name="Species" type="org.molgenis.animaldb.plugins.settings.SpeciesPlugin"
+				label="Species" />
+			<!-- GenePlugin; Goal: create and browse gene modifications; Flavor: Freemarker -->
+			<plugin name="Genes" type="org.molgenis.animaldb.plugins.settings.GenePlugin"
+				label="Gene modifications" />
+			<!-- BackgroundPlugin; Goal: create and browse genetic backgrounds; Flavor: Freemarker -->
+			<plugin name="Backgrounds" type="org.molgenis.animaldb.plugins.settings.BackgroundPlugin"
+				label="Backgrounds" />
+			<menu name="errorcorrectmenu" position="left" label="Correct errors">
+				<!-- ErrorCorrectionIndividualPlugin; Goal: (un)delete animals; Flavor: Freemarker -->
+				<plugin name="ErrorCorrectionIndividual" type="org.molgenis.animaldb.plugins.system.ErrorCorrectionIndividualPlugin"
+					label="Animals" />
+				<!-- ErrorCorrectionPlugin; Goal: (un)delete values; Flavor: Freemarker -->
+				<plugin name="ErrorCorrectionValue" type="org.molgenis.animaldb.plugins.system.ErrorCorrectionPlugin"
+					label="Values" />
+			</menu>
+		</menu>
+		
+		<menu name="Admin" position="left" label="Admin">
+			
+			<menu name="securitymenu" position="left" label="Security">
+				<!-- AnimalDbUsers; Goal: manage rights on investigations, create new users; Flavor: Freemarker -->
+				<plugin name="AnimalDbUsers" type="org.molgenis.animaldb.plugins.system.AnimalDbUsers" 
+					label="Manage users and investigations" />
+				<!-- PersonToUser; Goal: upgrade persons to users; Flavor: Freemarker -->
+				<plugin name="UserToPersonPlugin" type="org.molgenis.auth.service.persontouser.PersonToUser"
+					label="Upgrade persons to users"  />
+				<!-- PermissionManagementPlugin; Goal: manage permissions; Flavor: Freemarker -->
+				<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"
+					label="Permission management" />
+				<menu name="secmenu" position="left" label="Security tables">
+					<form name="MolgenisUser" entity="MolgenisUser" view="list" label="Users"/>
+					<form name="Persons" entity="Person" />
+					<form name="Institutes" entity="Institute" /> 
+					<form name="MolgenisGroup" entity="MolgenisGroup" view="list" label="Groups"/>
+					<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink" view="list" label="Users in groups"/>
+					<form name="MolgenisEntity" entity="MolgenisEntity" view="list" label="Entities"/>
+					<form name="MolgenisPermission" entity="MolgenisPermission" view="list" label="Permissions"/>
+				</menu>
+			</menu>
+			
+			<menu name="systemmenu" position="left" label="System">
+				<!-- PreFillDatabasePlugin; Goal: reset the database, putting back only the basic security entries; Flavor: Freemarker -->
+				<!--<plugin name="PreFillDatabase" type="org.molgenis.animaldb.plugins.system.PreFillDatabasePlugin"
+					label="Reset database" />-->
+				<!-- LoadLegacyPlugin; Goal: import legacy data from a ZIP, TXT or CSV file; Flavor: Freemarker -->
+				<plugin name="LoadLegacy" type="org.molgenis.animaldb.plugins.system.LoadLegacyPlugin"
+					label="Import database" />
+				<!-- Archiver; Goal: export your whole database as a TAR.GZ file and import it again; Flavor: Freemarker -->
+				<plugin name="SimpleArchiver" type="plugins.archiver.Archiver" label="Import/export database" />
+				<!-- Archiver; Goal: apply a protocol (set of measurements) to one or more animals; Flavor: Java-only -->
+				<plugin name="ApplyProtocol" type="org.molgenis.protocol.ApplyProtocolPlugin"
+					label="Make/edit values" />
+				<!-- CascadingDeleteAnimalsPlugin; Goal: definitively delete animals and the values that have been applied to them; Flavor: Freemarker -->
+				<plugin name="CascadingDeleteAnimals" type="org.molgenis.animaldb.plugins.system.CascadingDeleteAnimalsPlugin"
+					label="Delete targets" />
+				<!-- SetCustomLabelFeaturePlugin; Goal: choose a measurement whose values to use as labels for animals instead of their names; Flavor: Freemarker -->
+				<!-- <plugin name="SetCustomLabelFeature" type="org.molgenis.animaldb.plugins.system.SetCustomLabelFeaturePlugin"
+					label="Set custom label feature" /> -->
+				<menu name="tablemenu" position="left" label="Content tables">
+					<form name="investigation" entity="Investigation" view="list" label="Investigations" />
+					<form name="ontology" entity="Ontology" view="list" label="Ontologies" />
+					<form name="ontologyterm" entity="OntologyTerm" view="list" label="Ontology terms" />
+					<form name="category" entity="Category" view="list" label="Categories" />
+					<form name="individual" entity="Individual" view="list" label="Individuals" />
+					<form name="panel" entity="Panel" view="list" label="Panels" />
+					<form name="location" entity="Location" view="list" label="Locations" />
+					<form name="measurement" entity="Measurement" view="list" label="Measurements" />
+					<form name="protocol" entity="Protocol" view="list" label="Protocols" />
+					<form name="protocolapplication" entity="ProtocolApplication" view="list" label="Protocol applications" />
+					<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />
+					<form name="prefix" entity="NamePrefix" view="list" label="Name prefixes" />
+					<form name="news" entity="MolgenisNews" view="list" label="Frontpage items" />
+					<form name="files" entity="AnimalDbFile" view="list" label="Files">
+						<plugin name="Viewer" type="org.molgenis.animaldb.plugins.viewers.AnimalDbFileViewer" />
+					</form>
+				</menu>
+				<menu name="deltablemenu" position="left" label="Deletion tables">
+					<form name="delindividual" entity="DeletedIndividual" view="list" label="Individuals" />
+					<form name="delobservedvalue" entity="DeletedObservedValue" view="list" label="Values" />
+				</menu>
+				<plugin label="File storage" name="FileStorage" type="plugins.system.settings.Settings" />
+			</menu>
+		</menu>
+
+		<!-- menu name="searchmenu" position="left" label="Search">
+			<plugin name="SimpleDbSearch" label="Simple search" type="plugin.search.SimpleWholeDatabaseSearch" />
+		</menu -->
+		
+		<!-- UserLogin; Goal: log in and, once logged in, change your account details or log out; Flavor: Freemarker -->
+		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Logout/account settings"/>
+	    
+	</menu>
+
+</molgenis>

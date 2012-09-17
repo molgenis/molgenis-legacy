@@ -1,0 +1,51 @@
+/**A3BBD4*/ /**color of title*/
+#header {
+	color: #415F7E;
+}
+
+/**overall background*/
+body,#header,#navigation,#information,#footer {
+	background: #F8F8F2;
+}
+
+/**background of the areas*/
+.formscreen,.form_new,.form_filter,.embedtable,.popup {
+	background: #E8EEF4;
+}
+
+/**shade header*/
+.leftNavigationSelected,.navigationSelected,.form_header {
+	background: #415F7E;
+}
+
+/**highlight*/
+.leftNavigationNotSelected,.navigationNotSelected {
+	background: #B4C5D7;
+	color: #000000;
+}
+
+.submenuitem{
+	h: expression(onmouseover=new Function("this.style.backgroundColor='#B4C5D7'; this.style.color='#FFFFFF';"),
+                       onmouseout=new Function("this.style.backgroundColor='#E8EEF4'; this.style.color='#000000';"));	
+	/*ie hack for td.submenuitem:hover*/
+	
+}
+
+/**shade borders*/
+.leftNavigationSelected,.navigationSelected,.formscreen,.form_new,.form_filter,.popup
+	{
+	border-color: #415F7E;
+}
+
+/**font color*/
+.leftNavigationSelected,.navigationSelected {
+	color: #FFFFFF;
+}
+
+.form_listrow0 {
+	background: #A3D3D3;
+}
+
+.form_listrow1 {
+	background: #A3BBD4;
+}

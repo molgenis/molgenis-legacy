@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:ajax="https://ajax4jsf.dev.java.net/ajax">
+    <head>
+        <script type="text/javascript">
+                function setCaretToEnd (e) {
+                    var control = $((e.target ? e.target : e.srcElement).id);
+                    if (control.createTextRange) {
+                        var range = control.createTextRange();
+                        range.collapse(false);
+                        range.select();
+                    }
+                    else if (control.setSelectionRange) {
+                        control.focus();
+                        var length = control.value.length;
+                        control.setSelectionRange(length, length);
+                    }
+                    control.selectionStart = control.selectionEnd = control.value.length;
+                }
+        </script>
+        <title>Matrix Viewer</title>
+    </head>
+    <body>
+        <f:view>
+            <a4j:form>
+                  <a4j:status id="commonstatus"  startText="In progress..." stopText="Complete"/>
+                <h:messages/>
+                <rich:messages/>
+                <a4j:queue id="eventQueue" />
+
+                <rich:panel header="Select a Dataset">
+                    <h:selectOneMenu valueChangeListener="#{MatrixBean.selectInvestigation}">
+                        <f:selectItem itemLabel="Select..." itemValue=""/>
+                        <f:selectItems value="#{MatrixBean.investegationItems}"/>
+                        <a4j:support event="onchange" reRender="pnlDataViewer"/>
+                    </h:selectOneMenu>
+                </rich:panel>
+
+                <a4j:outputPanel id="pnlDataViewer">
+
+                    <rich:panel header="Data Viewer" rendered="#{not empty MatrixBean.selectedInvestigation}">
+                        <rich:panel header="Feature By Group Selector">
+                            <h:panelGrid columns="3">
+                                <rich:comboBox id="cmbFeatureGroups"
+                                               value="#{MatrixBean.selectedFeatureGroup}"
+                                               valueChangeListener="#{MatrixBean.cmbFeatureGroupSelected}"
+                                               suggestionValues="#{MatrixBean.featureGroups}"
+                                               directInputSuggestions="true" defaultLabel="Enter some value">
+                                    <a4j:support event="onchange" reRender="cmbFeature" />
+                                </rich:comboBox>
+
+                                <rich:comboBox id="cmbFeature"
+                                               value="#{MatrixBean.selectedFeature}"
+                                               disabled="#{empty MatrixBean.features}"
+                                               suggestionValues="#{MatrixBean.features}"
+                                               directInputSuggestions="true" defaultLabel="Enter some value">
+                                    <a4j:support event="onchange" reRender="btnAddColumn" />
+                                </rich:comboBox>
+                                <a4j:commandButton value="add column" id="btnAddColumn"
+                                                   disabled="#{empty MatrixBean.selectedFeature}"
+                                                   action="#{MatrixBean.addColumn}" reRender="pnlMatrix" />
+                                <a4j:commandButton value="add all column" id="btnAddAllColumn"
+                                                   action="#{MatrixBean.addAllColumns}" reRender="pnlMatrix" />
+                                <a4j:commandButton value="remove all column" id="btnRemoveAllColumn"
+                                                   action="#{MatrixBean.removeAllColumns}" reRender="pnlMatrix" />
+                            </h:panelGrid>
+                        </rich:panel>
+
+                        <rich:panel id="pnlMatrix" header="Matrix Viewer">
+                            <rich:panel header="columnPager">
+                                <h:panelGrid columns="6">
+                                    <a4j:commandButton image="/generated-res/img/first.png" disabled="#{!MatrixBean.hasPrev}" actionListener="#{MatrixBean.first}" value="first" reRender="pnlMatrix"/>
+                                    <a4j:commandButton disabled="#{!MatrixBean.hasPrev}" image="/generated-res/img/prev.png" actionListener="#{MatrixBean.prev}" value="prev" reRender="pnlMatrix"/>
+                                    <h:outputText value="#{MatrixBean.currentPageIndex + 1}"/>
+                                    <h:outputText value=" / #{MatrixBean.numberOfColumns / MatrixBean.columnPageSize}"/>
+                                    <a4j:commandButton disabled="#{!MatrixBean.hasNext}" image="/generated-res/img/next.png"  actionListener="#{MatrixBean.next}" value="next" reRender="pnlMatrix"/>
+                                    <a4j:commandButton image="/generated-res/img/last.png" disabled="#{!MatrixBean.hasNext}" actionListener="#{MatrixBean.last}" value="last" reRender="pnlMatrix"/>
+                                </h:panelGrid>
+                            </rich:panel>
+                            <rich:extendedDataTable
+                                id="dataTable"
+                                value="#{MatrixBean.dataModel}" var="row"
+                                tableState="#{MatrixBean.tableState}"
+                                rows="#{MatrixBean.pageSize}" rowKeyVar="rowNr">
+                                <rich:columns
+                                    value="#{MatrixBean.dataModel.matrix.visableColumns}" var="column"
+                                    label="#{column.name}" index="index" id="column#{index}" width="*">
+                                    <f:facet name="header">
+                                        <h:panelGrid columns="1">
+                                            <h:panelGrid columns="2">
+                                                <a4j:commandButton image="/generated-res/img/sort_#{column.ordering}.gif" value="#{column.ordering}"  id="column#{index}header" reRender="dataTable" >
+                                                    <a4j:actionparam  name="sortColumn" value="#{column.name}" assignTo="#{MatrixBean.sortColumn}" actionListener="#{MatrixBean.changeOrdering}"/>
+                                                </a4j:commandButton>
+                                                <h:outputText value="#{column.name}"/>
+                                            </h:panelGrid>
+                                            <h:panelGrid columns="1">
+                                                <h:inputText id="filter#{index}" value="#{column.filter}" style="
+                                                             #{column.invalidFilter eq true ? 'background-color:red' : 'background-color:green'}">
+                                                    <a4j:support event="onkeyup" reRender="pnlMatrix, filter#{index}"
+                                                                 process="filter#{index}"
+                                                                 actionListener="#{column.changeFilter}"
+                                                                 eventsQueue="filterQueue" ignoreDupResponses="true" requestDelay="1000"/>
+                                                </h:inputText>
+                                            </h:panelGrid>
+
+                                        </h:panelGrid>
+
+                                    </f:facet>
+                                    <h:outputText value="#{row[index+1]}" />
+                                </rich:columns>
+                                <f:facet name="footer">
+                                    <h:panelGroup>
+                                        <h:panelGrid columns="2">
+                                            <rich:datascroller id="datascroller" reRender="dataTable"
+                                                               pageIndexVar="pageIndex" pagesVar="pages" ajaxSingle="true" />
+                                            <h:outputText value="rows: #{MatrixBean.numberOfRows}"/>
+                                        </h:panelGrid>
+                                    </h:panelGroup>
+                                </f:facet>
+                            </rich:extendedDataTable>
+
+                            <rich:panel header="export">
+                                <ajax:commandButton id="excelExport" value="excel" >
+                                    <ajax:actionparam assignTo="#{MatrixBean.exportType}" name="exportType" value="excel"/>
+                                    <rich:componentControl for="panel" attachTo="excelExport" operation="show" event="onclick"/>
+                                </ajax:commandButton>
+                                <ajax:commandButton id="spssExport" value="spss" >
+                                    <ajax:actionparam assignTo="#{MatrixBean.exportType}" name="exportType" value="spss"/>
+                                    <rich:componentControl for="panel" attachTo="spssExport" operation="show" event="onclick"/>
+                                </ajax:commandButton>
+                            </rich:panel>
+                        </rich:panel>
+
+                        <rich:modalPanel id="panel" width="350" height="150">
+                            <f:facet name="header">
+                                <h:panelGroup>
+                                    <h:outputText value="Export Options"></h:outputText>
+                                </h:panelGroup>
+                            </f:facet>
+                            <f:facet name="controls">
+                                <h:panelGroup>
+                                    <h:graphicImage value="/images/modal/close.png" styleClass="hidelink" id="hidelink"/>
+                                    <rich:componentControl for="panel" attachTo="hidelink" operation="hide" event="onclick"/>
+                                </h:panelGroup>
+                            </f:facet>
+                            <h:selectOneRadio id="exportOptions" layout="pageDirection" value="#{MatrixBean.exportOption}">
+                                <f:selectItem id="All" itemLabel="All" itemValue="All" />
+                                <f:selectItem id="ExportVisable" itemLabel="Condtion" itemValue="ExportVisable" />
+                            </h:selectOneRadio>
+
+<!--                            <h:selectBooleanCheckbox value="#{MatrixBean.exportAllColumns}"/>-->
+
+                            <h:panelGroup>
+                                <h:commandButton id="exportButton" value="Export" actionListener="#{MatrixBean.cmbExport}">
+                                    <rich:componentControl for="panel" attachTo="exportButton" operation="hide" event="onclick"/>
+                                </h:commandButton>
+                            </h:panelGroup>
+                        </rich:modalPanel>
+
+
+
+                    </rich:panel>
+                </a4j:outputPanel>
+            </a4j:form>
+        </f:view>
+    </body>
+</html>

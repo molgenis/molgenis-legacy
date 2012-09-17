@@ -1,0 +1,102 @@
+body {
+	text-align: center;
+	font-family: Arial;
+}
+
+h1 {
+	font: Arial;
+}
+
+legend {
+	color: #000;
+}
+
+legend {
+	font: 12pt Verdana;
+	font-weight: bold;
+	padding-right: 5px;
+	color: #cc0000;
+}
+legend2 {
+	text-align: center;
+	font: 12pt Verdana;
+	font-weight: bold;
+	padding-right: 5px;
+	color: #cc0000;
+}
+
+fieldset {
+	margin-bottom: 10px;
+	border-radius: 15px;
+	-moz-border-radius: 15px;
+}
+
+
+
+.head {
+	text-align: center;
+}
+
+.description {
+	text-align: left;
+	padding: 15px;
+	font-style: italic;
+	margin-left: auto;
+	margin-top: 10px;
+	margin-left: auto;
+	width: 250px;
+}
+
+.parameters {
+	padding: 10px;
+	width: 800px;
+	-moz-border-radius: 20px;
+	margin: 0px auto;
+}
+
+td {
+	vertical-align: top;
+	padding-top: 10px;
+}
+
+input,label,select {
+	
+}
+
+.darkblue>td {
+	border: solid thin darkblue;
+}
+
+label {
+	font-family: Verdana;
+	white-space: nowrap;
+}
+
+button{
+	width: 25px;
+}
+
+/* unvisited link */
+a:link {
+	color: darkblue;
+	text-decoration: none
+}     
+
+/* visited link */
+a:visited {
+	color: darkred;
+	text-decoration: none
+}  
+
+/* mouse over link */
+a:hover {
+	text-decoration: underline;
+	color: blue;
+	
+}   
+
+/* selected link */
+a:active {
+	color: blue;
+	text-decoration: blink
+}   

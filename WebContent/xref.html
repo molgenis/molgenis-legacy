@@ -1,0 +1,204 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<script type="text/javascript">
+function showXrefInput(input, xref_entity, xref_field, xref_label) {
+	var id = input.name + "_" + input.form.name;
+
+	//hide any other xrefInputDivs
+	if (window.xrefInputDiv && window.xrefInputDiv.id != id)
+		window.xrefInputDiv.style.display = "none";
+
+	//create if not exists
+	if (document.getElementById(id) == null) {
+		//alert("create"); 
+		var myInput = new XrefInput(input, xref_entity, xref_field, xref_label);
+		window.xrefInputDiv = myInput.xref;
+		input.focus();
+		input.blur();		
+	} else {
+		window.xrefInputDiv = document.getElementById(id);
+		//hide if shown, else show 
+		if (window.xrefInputDiv.style.display == "block")
+		{
+			window.xrefInputDiv.style.display = "none";
+			input.focus();
+			input.blur();
+		}
+		else
+		{
+			window.xrefInputDiv.style.display = "block";
+			input.focus();
+			input.blur();
+		}
+	}
+}
+
+//constructor
+function XrefInput(input, xref_entity, xref_field, xref_label) {
+	//alert("constructor"); 
+	this.init(input, xref_entity, xref_field, xref_label);
+}
+
+//define class prototype
+XrefInput.prototype = {
+	init : function(input, xref_entity, xref_field, xref_label) {
+		//alert("init");
+	this.input = input;
+	
+	this.xref_entity = xref_entity;
+	this.xref_field = xref_field;
+	this.xref_label = xref_label;
+
+	//create the xref div
+	this.xref = document.createElement("div");
+	this.xref.className = "xrefinput";
+	this.xref.style.display = "block";
+	this.xref.style.width = "200px";
+	this.xref.style.border = "solid thin black";
+	this.xref.id = input.name + "_" + input.form.name;
+	
+
+	//add the div as child of the input
+	this.input.parentNode.insertBefore(this.xref, this.input.nextSibling);
+	this.xref.setAttribute("XrefInputObject", this); //???
+
+	//add the search box
+	this.xref.appendChild(document.createTextNode("search:"));
+	this.search = document.createElement("input");
+	this.xref.appendChild(this.search);
+	this.xref.appendChild(document.createElement("br"));
+
+	//initialize with current selection if any 
+	this.xref.value = this.input.value;
+	if(this.input.options.length > 0)
+	{
+		this.search.value = this.input.options[0].text;
+	} 
+
+
+	//add a handler to the search box to update select when changed 
+	var _this = this;
+	this.addEvent(this.search, "keyup", function(e) {
+		_this.reload();
+	});
+
+	//add the select box 
+	this.select = document.createElement("select");
+	this.select.multiple = "true";
+	this.select.style.width = "100%";
+	this.xref.appendChild(this.select);
+
+	//add handler so the input is updated when clicking one select option
+	this.addEvent(this.select, "click", function(e) {
+		if(_this.select.options.length > 0)
+		{
+			//alert("clicked option "+ _this.select.options[_this.select.selectedIndex].value);
+			_this.input.options[0].value = _this.select.options[_this.select.selectedIndex].value;
+			_this.input.options[0].text = _this.select.options[_this.select.selectedIndex].text;
+			_this.xref.style.display = "none";
+		}
+		
+	});		
+},
+/* reload function*/
+reload : function() {
+	//alert("reload"); 
+
+	//load the select box contents via AJAX 
+	var url = "xref/find?xref_entity="+this.xref_entity+"&xref_field="+this.xref_field+"&xref_label="+this.xref_label+"&xref_filter="+this.search.value;
+	//alert(url);
+
+	// branch for native XMLHttpRequest object
+	var _this = this;
+
+	req = false;
+	if (window.XMLHttpRequest  && !(window.ActiveXObject)) //NOT IE
+	{
+		req = new XMLHttpRequest();
+	}
+	else if (window.ActiveXObject) {
+		req = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+
+	if (req) {
+		req.onreadystatechange = function(e) {
+			// only if req shows "complete" 
+			if (req.readyState == 4) {
+				// only if "OK" 
+			if (req.status == 200) {
+				// ...processing statements go here...
+				var options = eval('(' + req.responseText + ')');
+				_this.redrawOptions(options);
+			} else {
+				alert("There was a problem retrieving the XML data:\n"
+						+ req.statusText);
+			}
+		}
+		};
+		req.open("GET", url, true);
+		req.send("");
+	}
+},
+redrawOptions : function(options) {
+	//remove existing options this.select.options; 
+	for (i = this.select.options.length - 1; i >=0; i--) 
+	{
+		this.select.removeChild(this.select.options[i]);
+	}
+
+	//add the current options
+	for ( var i in options) {
+		var option = document.createElement("option");
+
+		//add the value
+		option.value = i;
+
+		//add option to select box
+		this.select.appendChild(option);
+
+		option.text = options[i];
+	}
+},
+handleAjax: function(e) {
+	//alert("render");
+		// only if req shows "complete" 
+		if (req.readyState == 4) 
+		{
+			// only if "OK" 
+			if (req.status == 200) 
+			{
+				var options = eval('(' + req.responseText + ')');
+				this.redrawOptions(options);
+			} else 
+			{
+			alert("There was a problem retrieving the XML data:\n"
+					+ req.statusText);
+			}
+		}
+	},
+/*helper function to add events for both IE and FF in one call
+@obj = the oject to add the event ont
+@eventname = name of the event minus the 'on', e.g. 'click' means 'onclick'
+@func = the function to be called if this event happens
+ */
+addEvent : function(obj, eventname, func) {
+	//alert(eventname);
+	if (navigator.userAgent.match(/MSIE/)) {
+		obj.attachEvent("on" + eventname, func);
+	} else {
+		obj.addEventListener(eventname, func, true);
+	}
+}
+}
+</script>
+</head>
+<body>
+
+
+<form name="myform"><select name="myselect"
+	onclick="showXrefInput(this,'xgap_1_3_distro.data.types.Gene','id','name');">
+	<option value="1">GeneX</option>
+</select></form>
+</body>
+</html>

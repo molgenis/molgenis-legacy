@@ -1,0 +1,260 @@
+body {
+	font-size: 10pt;
+	font-family: verdana;
+}
+
+/**5DA55B*/ 
+
+/**color of title*/
+.colorOfTitle,#subheader,#separator {
+	color: #ff7d00;
+}
+
+#header {
+	color: #000000;
+}
+
+/**overall background*/
+.overallBackground,.matrixRowColorEmpty,body,#header,#navigation,#information,#footer {
+	background: white;
+	border-top-color: #ff7d00;
+}
+
+/**matrix inner table and cells*/
+.tableBorder,.matrixTableCell{
+	border-color: white;
+}
+
+/**highlight background*/
+.highlightBackground,.formscreen, .form_new, .form_filter, .embedtable, .popup, .form_new,.form_filter {
+	background: #F8FAFB;
+}
+
+/**shade header*/
+.shadeHeader,.leftNavigationSelected,.navigationSelected,.form_header, td.submenuitem:hover {
+	background: #ff7d00;
+}
+
+/**highlight*/
+.highlight,.leftNavigationNotSelected,.navigationNotSelected, .form_menu, .submenuitem   {
+	background: white;
+	border: none;
+	color: #2142FD;
+}
+
+.submenuitem{
+	h: expression(onmouseover=new Function("this.style.backgroundColor='#5B82A4'; this.style.color='#fff';"),
+                       onmouseout=new Function("this.style.backgroundColor='#BDCDDA'; this.style.color='black';"));	
+	/*ie hack for td.submenuitem:hover*/
+	
+}
+
+/**shade borders*/
+.shadeBorder,.leftNavigationSelected,.navigationSelected,.formscreen,.form_new,.form_filter,.popup, .form_menu 
+{
+	border-color: #ff7d00;
+}
+
+/**font color*/
+.fontColor,.leftNavigationSelected,.navigationSelected {
+	color: white;
+}
+
+.matrixRowColor0,.form_listrow0,.tableheader {
+	background: #CACACA;
+}
+
+.matrixRowColor1,.form_listrow1 {
+	/*background: #BCD6DA;*/
+	background: #EEEEEE;
+}
+
+.form_listrow2 {
+	background: #DDDDDD;
+}
+	
+input, select {
+	color: #666666;
+	background: #DDDDDD;
+}
+
+.pd1 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd2 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd3 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd4 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd5 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd6 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd7 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd8 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd9 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd10 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd11 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd12 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd13 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd14 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd15 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd16 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd17 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd18 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd19 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd20 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd21 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd22 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd23 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd24 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd25 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd26 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd27 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd28 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd29 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd30 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd31 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd32 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd33 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd34 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd35 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd36 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd37 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd38 {
+	background: #6dcbfe;
+	border-color:#000000;
+}

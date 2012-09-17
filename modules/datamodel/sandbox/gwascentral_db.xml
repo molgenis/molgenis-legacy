@@ -1,0 +1,476 @@
+<molgenis name="hgvbase" label="GWAS Central Curation Tool">
+	
+    <entity name="AlleleFrequency">
+        <field name="AlleleFrequencyID" length="10" label="Allele frequency ID" type="autoid"/>
+        <field name="FrequencyClusterID" length="12" label="Frequency cluster ID" type="xref" nillable="true" xref_field="FrequencyCluster.FrequencyClusterID"/>
+        <field name="AlleleCombo" label="Allele combo" length="767" type="text" nillable="true"/>
+        <field name="FrequencyAsProportion" label="Frequency as proportion" type="decimal"/>
+    </entity>
+	
+    <entity name="AnalysisMethod" decorator="decorators.AnalysisMethodDecorator" xref_label="Identifier" >
+        <field name="AnalysisMethodID" label="Analysis method ID" type="autoid" hidden="true" default="0" />
+        <field name="Identifier" length="15" label="Analysis method identifier" readonly="true" unique="true"/>
+        <field name="SubmittedInStudyIdentifier" length="15" label="Submitted in study identifier" readonly="true" nillable="true" />
+        <field name="Name" length="100" nillable="true"/>
+        <field name="Label" hidden="true" length="10" nillable="true"/>
+        <field name="Accession" hidden="true" length="15" nillable="true"/>
+        <field name="AccessionVersion" hidden="true" length="10" label="Accession version" nillable="true"/>
+        <field name="Description" type="text" nillable="true"/>
+        <field name="ProtocolParameters" label="Protocol parameters" type="text" nillable="true"/>
+		
+		<field name="Studies" label="Studies" type="mref" xref_field="Study.StudyID" xref_label="Identifier" mref_name="StudyAnalysisMethod" mref_localid="AnalysisMethodID" mref_remoteid="StudyID"/>
+    </entity>
+    
+    <entity name="Assayedpanel" xref_label="Identifier" decorator="decorators.AssayedPanelDecorator">
+        <field name="AssayedpanelID" label="Assayed panel ID" type="autoid" hidden="true" default="0" />
+        <field name="Identifier" length="15" label="Assayed panel identifier" readonly="true" unique="true"/>
+        <field name="StudyID" label="Study identifier" type="xref" xref_field="Study.StudyID"/>
+        <field name="Name" length="100" nillable="true"/>
+        <field name="Description" type="text" nillable="true"/>
+        <field name="TotalNumberOfIndividuals" label="Total number of individuals" type="int" nillable="true" description="*...but required for association datasets"/>
+        <field name="NumberOfSexMale" label="Number of males" type="int" nillable="true"/>
+        <field name="NumberOfSexFemale" label="Number of females" type="int" nillable="true"/>
+        <field name="NumberOfSexUnknown" label="Number of unknown sex" type="int" nillable="true"/>
+        <field name="NumberOfProbands" label="Number of probands" type="int" nillable="true" description="field used only if Composition = 'Trios'"/>
+        <field name="NumberOfParents" label="Number of parents" type="int" nillable="true" description="field used only if Composition = 'Trios'"/>
+	</entity>
+	
+	<!-- Not used in the curation tool -->
+	<!-- entity name="AuthorCommunication">
+		<field name="AuthorCommunicationID" label="Author communication ID" type="autoid"/>
+		<field name="StudyID" label="Study ID" type="int" />
+		<field name="ContactID" label="Contact ID" type="int" />
+		<field name="ContactName" label="Contact name" type="varchar" length="500" />
+		<field name="DateContacted" label="Date contacted" type="date" />
+		<field name="DateResponse" label="Date of response" type="date" />
+		<field name="TypeOfResponse" label="Type of response" type="enum" enum_options="[Public response and released additional data,Private response and released additional data,Public response,Private response,E-mail bounce]" />
+		<field name="ResponseText" label="Response text" type="text"/>
+	</entity> -->
+	
+	<!-- Not used in the curation tool -->
+	<!-- NB 'Database' is reserved Java and/or SQL word -->
+	<!--entity name="Build">
+        <field name="BuildID" type="autoid"/>
+        <field name="Database" unique="true"/>
+        <field name="FullName" nillable="true"/>
+        <field name="URL" nillable="true"/>
+        <field name="Build" description="Start at 21 for HGVbase-G2P. Latest download for dbSNP" default="N/A"/>
+        <field name="Date" type="date" default="0000-00-00"/>
+        </entity-->
+    
+ 	<entity name="Citation" decorator="decorators.CitationDecorator" >
+	<!--entity name="Citation" -->
+        <field name="CitationID" label="Citation ID" type="autoid" hidden="true" default="0" />
+		<field name="DOI" length="500" nillable="true" unique="true"/>
+        <field name="PubmedID" label="Pubmed ID" type="int" unique="true"/>
+        <field name="Authors" type="text" nillable="true"/>
+        <field name="Title" length="250" nillable="true"/>
+        <field name="Detail" length="250" nillable="true"/>
+        <field name="MeshTerms" label="Mesh terms" type="text" nillable="true"/>
+		<field name="IsPrimary" label="Is this a primary citation?" type="enum" enum_options="[yes,no]" default="no" />
+		
+		<field name="Studies" label="Studies" type="mref" xref_field="Study.StudyID" xref_label="Identifier" mref_name="StudyCitation" mref_localid="CitationID" mref_remoteid="StudyID"/>
+    </entity>
+    
+    <entity name="Contribution" decorator="decorators.ContributionDecorator">
+        <field name="ContributionID" label="Contribution ID" type="autoid" hidden="true" default="0" />
+        <field name="ResearcherID" label="Researcher name" type="xref" xref_field="Researcher.ResearcherID"/>
+        <field name="SubmissionID" label="Submission name" type="xref" xref_field="Submission.SubmissionID" xref_cascade="true" />
+        <field name="IsSubmitter" label="Submitter?" type="enum" enum_options="[yes,no]" />
+        <field name="IsAuthor" label="Author?" type="enum" enum_options="[yes,no]" />
+        <field name="IsSource" label="Source?" type="enum" enum_options="[yes,no]" />
+    </entity>
+    
+	<!-- Not used in the curation tool -->
+	<!--entity name="EffectSize">
+		<field name="EffectSizeID" label="Effect size ID" type="autoid" hidden="true" default="0" />
+		<field name="UsedmarkersetID" label="Usedmarkerset ID" type="xref" xref_field="Usedmarkerset.UsedmarkersetID"/>
+		<field name="RiskAlleleFrequencyID" label="Risk allele frequency ID" type="xref" xref_field="AlleleFrequency.AlleleFrequencyID" />
+		<field name="Type" label="Type" type="enum" enum_options="[OR,BC,RR,DP]" />
+		<field name="Value" label="Value" type="decimal" />
+		<field name="Lower95Bound" label="Lower 95 bound" type="decimal" />
+		<field name="Upper95Bound" label="Upper 95 bound" type="decimal" />
+		<field name="StdError" label="Std error" type="decimal" />
+		<field name="Description" label="Description" type="text" />
+		<unique fields="RiskAlleleFrequencyID,UsedmarkersetID" />
+	</entity-->
+	
+	<entity name="Experiment" xref_label="Identifier" decorator="decorators.ExperimentDecorator">
+        <field name="ExperimentID" label="Experiment ID" type="autoid" hidden="true" default="0"/>
+        <field name="Identifier" length="15" label="Experiment identifier" readonly="true" unique="true"/>
+        <field name="StudyID" label="Study identifier" type="xref" xref_field="Study.StudyID"/>
+        <field name="PhenotypeMethodID" label="Phenotype method identifier" type="xref" nillable="true" xref_field="PhenotypeMethod.PhenotypeMethodID"  />
+        <field name="Name" length="100" nillable="true"/>
+        <field name="Design" length="50" nillable="true"/>
+        <field name="Label" length="10" hidden="true" nillable="true"/>
+        <field name="Accession" length="15" hidden="true" nillable="true"/>
+        <field name="AccessionVersion" hidden="true" length="10" label="Accession version" nillable="true"/>
+        <field name="Description" type="text" nillable="true"/>
+        <field name="ExperimentType" length="100" label="Experiment type" description="In (SELECT [Type] FROM [Experiment_TypeList];)" default=""/>
+        <field name="TotalMarkersTested" label="Total markers tested" type="int" nillable="true"/>
+        <field name="TotalMarkersImported" label="Total markers imported" type="int" readonly="true" nillable="true"/>
+        <field name="Objective" type="text" nillable="true" />
+        <field name="Outcome" type="text" nillable="true" />
+        <field name="Comments" type="text" nillable="true"/>
+        <field name="IndividualDataStatement" label="Individual data statement" type="text" nillable="true" default="Access to individual-level data must be made to the study authors" />
+        <field name="FrequencySummary" label="Frequency summary" type="text" nillable="true"/>
+        <field name="SignificanceSummary" label="Significance summary" type="text" nillable="true"/>
+        <field name="TimeCreated" label="Time created" readonly="true" type="datetime"/>
+        <field name="PlatformNames" hidden="true" default="0" label="Platform names" nillable="true"/>
+		<field name="ImportConfig" type="text" label="Import config" nillable="true"/>
+        
+        <field name="Assayedpanels" label="Assayed panels"  default="0" type="mref" xref_field="Assayedpanel.AssayedpanelID" xref_label="Identifier" mref_name="ExperimentAssayedpanel" mref_localid="ExperimentID" mref_remoteid="AssayedpanelID"></field>
+   		<field name="ExpHotlinks" label="Hotlinks" hidden="true" default="0" type="mref" xref_field="Hotlink.HotlinkID" xref_label="HotlinkLabel" mref_name="ExperimentHotlink" mref_localid="ExperimentID" mref_remoteid="HotlinkID" />
+   		<field name="Platform" label="Platforms" default="0" type="mref" xref_field="Platform.PlatformID" xref_label="PlatformName" mref_name="ExperimentPlatform" mref_localid="ExperimentID" mref_remoteid="PlatformID" />
+    </entity>
+	
+	<entity name="ExperimentAssayedpanel">
+        <field name="ExperimentAssayedpanelID" label="Experiment assayed panel ID" type="autoid"/>
+        <field name="AssayedpanelID" label="Assayed panel ID" type="xref" xref_field="Assayedpanel.AssayedpanelID"/>
+        <field name="ExperimentID" label="Experiment ID" type="xref" xref_field="Experiment.ExperimentID"/>
+        <unique fields="ExperimentID,AssayedpanelID"/>
+        </entity>
+	
+	<entity name="ExperimentHotlink">
+		<field name="ExperimentHotlinkID" type="autoid" />
+		<field name="ExperimentID" type="xref" default="0" xref_field="Experiment.ExperimentID" />
+		<field name="HotlinkID" type="xref" default="0" xref_field="Hotlink.HotlinkID" />
+		<unique fields="ExperimentID,HotlinkID"/>
+	</entity>
+    
+    <entity name="ExperimentPlatform">
+        <field name="ExperimentPlatformID" label="Experiment platform ID" type="autoid" hidden="true" default="0" />
+        <field name="PlatformID" label="Platform name" type="xref" xref_field="Platform.PlatformID"/>
+        <field name="ExperimentID" label="Experiment identifier" type="xref" xref_field="Experiment.ExperimentID"  />
+        <unique fields="PlatformID,ExperimentID"/>
+    </entity>
+	
+	<entity name="FCS">
+        <field name="FCSID" label="FCS ID" type="autoid"/>
+        <field name="SignificanceID" label="Significance ID" type="xref" xref_field="Significance.SignificanceID"/>
+        <field name="FrequencyClusterID" label="Frequency cluster ID" type="xref" xref_field="FrequencyCluster.FrequencyClusterID"/>
+        <unique fields="SignificanceID,FrequencyClusterID"/>
+    </entity>
+	
+	<entity name="FrequencyCluster">
+        <field name="FrequencyClusterID" label="Frequency cluster ID" type="autoid"/>
+        <field name="UsedmarkersetID" label="Used marker set ID" type="xref" xref_field="Usedmarkerset.UsedmarkersetID"/>
+        <field name="MarkerID" label="Marker ID" type="int"/>
+        <field name="ExperimentID" label="Experiment ID" type="xref" nillable="true" xref_field="Experiment.ExperimentID"/>
+        <field name="AssayedpanelID" label="Assayed panel ID" type="xref" xref_field="Assayedpanel.AssayedpanelID"/>
+        <field name="NumberOfGenotypedSamples" label="Number of genotyped samples" type="int"/>
+        <field name="PValueHWE" label="P-value HWE" type="decimal" nillable="true"/>
+    </entity>
+	
+	<entity name="GenotypeFrequency">
+        <field name="GenotypeFrequencyID" label="Genotype frequency ID" type="autoid"/>
+        <field name="FrequencyClusterID" label="Frequency cluster ID" type="xref" nillable="true" xref_field="FrequencyCluster.FrequencyClusterID"/>
+        <field name="GenotypeCombo" length="767" label="Genotype combo" nillable="true"/>
+        <field name="FrequencyAsProportion" label="Frequency as proportion" type="decimal"/>
+        <field name="NumberSamplesWithGenotype" label="Number of samples with genotype" type="int" nillable="true"/>
+    </entity>
+	
+	<entity name="Hotlink" xref_label="HotlinkLabel" decorator="decorators.HotlinkDecorator" >
+        <field name="HotlinkID" label="Hotlink ID" type="autoid" hidden="true" default="0" />
+        <field name="HotlinkLabel" length="100" label="Hotlink label" description="Indicate where the URL is pointing, e.g. &quot;dbSNP refSNP report&quot;"/>
+		<field name="UrlPrefix" length="300" label="URL prefix" />
+        <field name="UrlSuffix" length="100" label="URL suffix" nillable="true"/>
+        <field name="Identifier" length="15" label="Identifier" nillable="true"/>
+		
+		<field name="Studies" label="Studies" nillable="true" type="mref" xref_field="Study.StudyID" xref_label="Identifier" mref_name="StudyHotlink" mref_localid="HotlinkID" mref_remoteid="StudyID" />
+		<field name="Experiments" nillable="true" label="Experiments" type="mref" xref_field="Experiment.ExperimentID" xref_label="Identifier" mref_name="ExperimentHotlink" mref_localid="HotlinkID" mref_remoteid="ExperimentID" />
+		<field name="Resultsets" nillable="true" label="Result sets" type="mref" xref_field="Resultset.ResultsetID" xref_label="Identifier" mref_name="ResultsetHotlink" mref_localid="HotlinkID" mref_remoteid="ResultsetID" />
+		<field name="PhenotypeMethods" nillable="true" label="Phenotype methods" type="mref" xref_field="PhenotypeMethod.PhenotypeMethodID" xref_label="Identifier" mref_name="PhenotypeMethodHotlink" mref_localid="HotlinkID" mref_remoteid="PhenotypeMethodID" />
+		<field name="Samplepanels" nillable="true" label="Sample panels" type="mref" xref_field="Samplepanel.SamplepanelID" xref_label="Identifier" mref_name="SamplepanelHotlink" mref_localid="HotlinkID" mref_remoteid="SamplepanelID" />
+		<unique fields="HotlinkID,HotlinkLabel"/>
+    </entity>
+	
+    <entity name="PhenotypeAnnotation" decorator="decorators.PhenotypeAnnotationDecorator">
+        <field name="PhenotypeAnnotationID" label="Phenotype annotation ID" type="autoid" hidden="true" default="0" />
+        <field name="AnnotationOrigin" label="Annotation origin" nillable="true"  type="enum" enum_options="[mesh,hpo,unknown]" />
+		<field name="PhenotypeIdentifier" length="30" nillable="true" label="Phenotype identifier (MeSH ID)" />
+        <field name="ExactMatch" label="Exact match (0: false, 1: true)" type="enum" enum_options="[1,0]"/>
+		
+		<field name="PhenotypeProperties" label="Phenotype properties" hidden="true" default="0" type="mref" xref_field="PhenotypeProperty.PhenotypePropertyID" xref_label="Name" mref_name="PPPA" mref_localid="PhenotypeAnnotationID" mref_remoteid="PhenotypePropertyID"/>
+		<unique fields="PhenotypeAnnotationID,PhenotypeIdentifier"/>
+    </entity>
+    
+    <entity name="PhenotypeMethod" xref_label="Identifier" decorator="decorators.PhenotypeMethodDecorator">
+        <field name="PhenotypeMethodID" label="Phenotype method ID" type="autoid" hidden="true" default="0" />
+        <field name="Identifier" length="15" label="Phenotype method identifier" readonly="true" unique="true"/>
+        <field name="StudyID" label="Study identifier" type="xref" description="Points to study that this method came in" xref_field="Study.StudyID" />
+        <field name="PhenotypePropertyID" label="Phenotype property name" type="xref" xref_field="PhenotypeProperty.PhenotypePropertyID"/>
+        <field name="Name" length="255" nillable="true"/>
+        <field name="Description" type="text" nillable="true"/>
+        <field name="Sample" length="100" nillable="true" description="Biological system or sample type being assessed"/>
+        <field name="MeasuredAttribute" length="100"  label="Measured attribute" nillable="true" description="i.e., analyte/feature &amp; property being tested, E.g., Alzheimers Disease state, NaCl concentration"/>
+        <field name="VariableType" length="25" label="Variable type" nillable="true" description="Kind of variable: &quot;Continuous&quot;, &quot;nominal&quot; or &quot;ordinal&quot;"/>
+        <field name="Unit" length="25" nillable="true" description="Unit of measurement (e.g. kg)"/>
+        <field name="Circumstance" type="text" nillable="true" description="Any particular conditions under which the test is done"/>
+        <field name="TimeInstant" label="Time instant" type="text" nillable="true" description="Either; when was the assessment done"/>
+        <field name="TimePeriod" label="Time period" type="text" nillable="true" description="Or; over what period was the assessment done"/>
+        <field name="Details" type="text" nillable="true" description="Any other specific details of the test"/>
+
+   		<field name="Hotlinks" label="Phenotype method hotlinks" hidden="true" default="0" type="mref" xref_field="Hotlink.HotlinkID" xref_label="HotlinkLabel" mref_name="PhenotypeMethodHotlink" mref_localid="PhenotypeMethodID" mref_remoteid="HotlinkID" />
+    </entity>
+    
+	<entity name="PhenotypeMethodCitation">
+        <field name="PhenotypeMethodCitationID" label="Phenotype method citation ID" type="autoid"/>
+        <field name="PhenotypeMethodID" label="Phenotype method ID" type="xref" default="0" xref_field="PhenotypeMethod.PhenotypeMethodID"/>
+        <field name="CitationID" label="Citation ID" type="xref" default="0" xref_field="Citation.CitationID"/>
+        <unique fields="PhenotypeMethodID,CitationID"/>
+    </entity>
+	
+	<entity name="PhenotypeMethodHotlink">
+		<field name="PhenotypeMethodHotlinkID" type="autoid" />
+		<field name="PhenotypeMethodID" type="xref" default="0" xref_field="PhenotypeMethod.PhenotypeMethodID" />
+		<field name="HotlinkID" type="xref" default="0" xref_field="Hotlink.HotlinkID" />
+		<unique fields="PhenotypeMethodID,HotlinkID"/>
+	</entity>
+    
+    <entity name="PhenotypeProperty" xref_label="Name" decorator="decorators.PhenotypePropertyDecorator">
+        <field name="PhenotypePropertyID" label="Phenotype property ID" type="autoid" hidden="true" default="0" />
+        <field name="Name" length="255" nillable="true" unique="true"/>
+        <field name="Description" type="text" nillable="true"/>
+		
+		<field name="PhenotypeAnnotations" label="Phenotype annotations" type="mref" xref_field="PhenotypeAnnotation.PhenotypeAnnotationID" xref_label="PhenotypeIdentifier" mref_name="PPPA" mref_localid="PhenotypePropertyID" mref_remoteid="PhenotypeAnnotationID"/>
+    </entity>
+	
+	<!-- Not used in the curation tool -->
+	<!--entity name="PhenotypePropertyCitation">
+        <field name="PhenotypePropertyCitationID" label="Phenotype property citation ID" type="autoid"/>
+        <field name="PhenotypePropertyID" label="Phenotype property ID" /-->
+        <!--field name="PhenotypePropertyID" label="Phenotype property ID" type="xref" default="0" xref_field="PhenotypeProperty.PhenotypePropertyID"/-->
+		<!--field name="CitationID" label="Citation ID" type="xref" default="0" xref_field="Citation.CitationID"/-->
+        <!--unique fields="PhenotypePropertyID,CitationID"/-->
+    <!--/entity-->
+	
+	<entity name="PhenotypeValue" decorator="decorators.PhenotypeValueDecorator">
+        <field name="PhenotypeValueID" label="Phenotype value ID" type="autoid" hidden="true" default="0" />
+        <field name="PhenotypeMethodID" label="Phenotype method identifier" type="xref" description="Reference to the method used to generate this value" xref_field="PhenotypeMethod.PhenotypeMethodID"  />
+        <field name="SamplepanelID" label="Sample panel identifier" type="xref" nillable="true" description="Reference to the Samplepanel that was measured with the method to get this value (if applicable; not all values are connected to a panel)" xref_field="Samplepanel.SamplepanelID"  />
+		<field name="Value" length="500" description="The actual result from the measurement (returned by the assay)  for the individuals on the panel. Can be a mean if variable is continuous (e.g. mean weight)"/>
+        <field name="ValueRank" label="Value rank" type="int" nillable="true" description="Rank of this value, if this is an ordinal (or ranked) variable."/>
+        <field name="ValueIsMean" length="3" label="Value is mean" nillable="true" description="Flag indicating whether the value is a mean (for a continuous variable) or not"/>
+        <field name="StdDev" label="Standard deviation" type="decimal" nillable="true" description="Standard deviation (for continuous variables)"/>
+        <field name="Median" type="decimal" nillable="true" description="Median (for continuous variables)"/>
+        <field name="Min" type="decimal" nillable="true" description="Minimum value (for continuous variables)"/>
+        <field name="Max" type="decimal" nillable="true" description="Maximum value (for continuous variables)"/>
+        <field name="NumberOfIndividuals" label="Number of individuals" type="int" nillable="true" description="Number of individuals with this value if variable is discreet, or contributing to mean (if variable is continuous)"/>
+        <field name="Qualifier" length="100" nillable="true" description="Can be used for setting thresholds (e.g. weight &gt; 80kg) when splitting up panels."/>
+        <unique fields="PhenotypeMethodID,SamplepanelID,Value"/>
+    </entity>
+	
+	 <entity name="Platform" xref_label="PlatformName" decorator="decorators.PlatformDecorator">
+        <field name="PlatformID" label="Platform ID" type="autoid" hidden="true" default="0" />
+        <field name="PlatformName" length="100" label="Platform name" unique="true"/>
+        <field name="Loci" type="text" nillable="true" />
+		
+		<field name="Experiments" label="Experiments" hidden="true" default="0" type="mref" xref_field="Experiment.ExperimentID" xref_label="Identifier" mref_name="ExperimentPlatform" mref_localid="PlatformID" mref_remoteid="ExperimentID" />
+    </entity>
+    
+    <entity name="PPPA"> 
+        <field name="PPPAID" type="autoid"/>
+        <field name="PhenotypePropertyID" type="xref" xref_field="PhenotypeProperty.PhenotypePropertyID" />
+        <field name="PhenotypeAnnotationID" type="xref" xref_field="PhenotypeAnnotation.PhenotypeAnnotationID" />
+		<unique fields="PhenotypePropertyID,PhenotypeAnnotationID"/>
+    </entity>
+	
+	<entity name="Properties">
+		<field name="name" length="100" />
+		<field name="value" length="100" />
+		<unique fields="name" />
+	</entity>
+	
+    <entity name="Researcher" xref_label="ShortName" decorator="decorators.ResearcherDecorator" >
+        <field name="ResearcherID" label="Researcher ID" type="autoid" hidden="true" default="0" />
+        <field name="UniqueLabel" length="20" label="Unique label" nillable="true" unique="true"/>
+        <field name="ShortName" length="100" label="Short name" />
+        <field name="FullName" length="200" label="Full name" nillable="true"/>
+        <field name="Department" length="100" nillable="true"/>
+        <field name="Institution" length="100" />
+        <field name="Address" length="250" nillable="true"/>
+        <field name="Phone" length="50" nillable="true"/>
+        <field name="Fax" length="30" nillable="true"/>
+        <field name="Email" length="150" label="E-mail" nillable="true"/>
+        <field name="WWW" length="100" nillable="true"/>
+        <unique fields="ResearcherID,ShortName"/>
+    </entity>
+	
+	<entity name="Resultset" xref_label="Identifier" decorator="decorators.ResultsetDecorator">
+        <field name="ResultsetID" label="Data set ID" type="autoid" hidden="true" default="0" />
+        <field name="Identifier" length="15" label="Data set identifier" readonly="true" unique="true"/>
+        <field name="ExperimentID" label="Experiment identifier" type="xref" xref_field="Experiment.ExperimentID"  />
+        <field name="AnalysisMethodID" label="Analysis method identifier" type="xref" nillable="true" xref_field="AnalysisMethod.AnalysisMethodID"  />
+        <field name="Name" length="100" nillable="true"/>
+        <field name="Label" length="10" hidden="true" nillable="true"/>
+        <field name="Accession" length="15" hidden="true" nillable="true"/>
+        <field name="AccessionVersion" hidden="true" length="10" label="Accession version" nillable="true"/>
+        <field name="Description" type="text" nillable="true"/>
+        <field name="ProtocolParameters" label="Protocol parameters" type="text" nillable="true"/>
+        <field name="TimeCreated" label="Time created" readonly="true" type="datetime"/>
+		
+		<field name="ResultsetHotlinks" label="Dataset hotlinks" hidden="true" default="0" type="mref" xref_field="Hotlink.HotlinkID" xref_label="HotlinkLabel" mref_name="ResultsetHotlink" mref_localid="ResultsetID" mref_remoteid="HotlinkID" />
+		<unique fields="Name,ExperimentID"/>
+    </entity>
+	
+	<entity name="ResultsetHotlink">
+		<field name="ResultsetHotlinkID" type="autoid" />
+		<field name="ResultsetID" type="xref" default="0" xref_field="Resultset.ResultsetID" />
+		<field name="HotlinkID" type="xref" default="0" xref_field="Hotlink.HotlinkID" />
+		<unique fields="ResultsetID,HotlinkID"/>
+	</entity>
+    
+    <entity name="Samplepanel" xref_label="Identifier" decorator="decorators.SamplepanelDecorator">
+        <field name="SamplepanelID" label="Sample panel ID" type="autoid" hidden="true" default="0" />
+        <field name="Identifier" length="15" label="Sample panel identifier" readonly="true" unique="true"/>
+        <field name="SubmittedInStudyIdentifier" length="15" label="Submitted in study identifier" readonly="true" nillable="true"  />
+		<field name="ParentSamplepanelID" label="Parent sample panel ID" type="int" nillable="true"/>
+        <field name="Name" length="100" nillable="true"/>
+        <field name="Label" hidden="true" length="10" nillable="true"/>
+        <field name="Accession" hidden="true" length="15" nillable="true"/>
+        <field name="AccessionVersion" hidden="true" length="10" label="Accession version" nillable="true"/>
+        <field name="Description" type="text" nillable="true"/>
+        <field name="Composition" type="text" nillable="true"/>
+        <field name="TotalNumberOfIndividuals" label="Total number of individuals" type="int" nillable="true" description="*...but required for association datasets"/>
+        <field name="NumberOfSexMale" label="Number of males" type="int" nillable="true"/>
+        <field name="NumberOfSexFemale" label="Number of females" type="int" nillable="true"/>
+        <field name="NumberOfSexUnknown" label="Number of unknown sex" type="int" nillable="true"/>
+        <field name="NumberOfProbands" label="Number of probands" type="int" nillable="true" description="field used only if Composition = 'Trios'"/>
+        <field name="NumberOfParents" label="Number of parents" type="int" nillable="true" description="field used only if Composition = 'Trios'"/>
+        <field name="ModeOfRecruitment" label="Mode of recruitment" nillable="true"/>
+        <field name="DiagnosisAgeRange" length="150" label="Diagnosis age range" nillable="true"/>
+        <field name="DiagnosisPeriod" length="150" label="Diagnosis period" nillable="true"/>
+        <field name="SamplingAgeRange" length="150" label="Sampling age range" nillable="true"/>
+        <field name="SamplingPeriod" length="150" label="Sampling period" nillable="true"/>
+        <field name="PopulationInfo" length="250" label="Population information" nillable="true"/>
+        <field name="GeographicRegionInfo" length="250" label="Geographic region information" nillable="true"/>
+        <field name="EthnicityInfo" length="250" label="Ethnicity information" nillable="true"/>
+        <field name="BirthPlaceInfo" length="250" label="Birth place information" nillable="true"/>
+        <field name="AdmixtureInfo" length="250" label="Admixture information" nillable="true"/>
+        <field name="EnvironmentInfo" label="Environment information" type="text" nillable="true"/>
+        <field name="SourceOfDNA" length="100" label="Source of DNA" nillable="true" description="In (SELECT [SourceOfDNA] FROM [Sampleset_SourceOfDNAList];)"/>
+        <field name="DNAsArePooled" label="Are DNAs pooled?" type="enum" enum_options="[Undefined,Pre-prep,Post-prep,No]" default="Undefined"/>
+        <field name="DNAsAreWGA" label="Are DNAs WGA?" type="enum" enum_options="[Undefined,None,All,Some]" default="Undefined"/>
+        
+        <field name="Studies" hidden="true" label="Studies" default="0" type="mref" xref_field="Study.StudyID" xref_label="Identifier" mref_name="StudySamplepanel" mref_localid="SamplepanelID" mref_remoteid="StudyID"/>
+        <field name="Hotlinks" hidden="true" label="Hotlinks" default="0" type="mref" xref_field="Hotlink.HotlinkID" xref_label="HotlinkLabel" mref_name="SamplepanelHotlink" mref_localid="SamplepanelID" mref_remoteid="HotlinkID" />
+		<unique fields="Name,SubmittedInStudyIdentifier"/>
+    </entity>
+	
+	<entity name="SamplepanelHotlink">
+		<field name="SamplepanelHotlinkID" type="autoid" />
+		<field name="SamplepanelID" type="xref" default="0" xref_field="Samplepanel.SamplepanelID" />
+		<field name="HotlinkID" type="xref" default="0" xref_field="Hotlink.HotlinkID" />
+		<unique fields="SamplepanelID,HotlinkID"/>
+	</entity>
+	
+    <entity name="SelectionCriteria" decorator="decorators.SelectionCriteriaDecorator" >
+        <field name="SelectionCriteriaID" label="Selection criteria ID" type="autoid" hidden="true" default="0" />
+        <field name="AssayedpanelID" label="Assayed panel identifier" type="xref" xref_field="Assayedpanel.AssayedpanelID" />
+        <field name="SamplepanelID" label="Sample panel identifier" type="xref" nillable="true" xref_field="Samplepanel.SamplepanelID" />
+	    <field name="SourceAssayedpanelID" label="Source assayed panel ID" nillable="true" description="Points to assayedpanel (usually more than one) that a given apanel is made up from" />
+		<field name="EnvironmentCriteria" length="500" label="Environment criteria" nillable="true" default="No selection"/>
+        <field name="NumberOfIndividuals" label="Number of individuals" type="int" nillable="true"/>
+        <unique fields="AssayedpanelID,SamplepanelID"/>
+        <unique fields="SourceAssayedpanelID,AssayedpanelID"/>
+    </entity>
+    
+    <entity name="Significance">
+        <field name="SignificanceID" label="Significance ID" type="autoid"/>
+        <field name="ResultsetID" label="Result set identifier" type="xref" nillable="true" xref_field="Resultset.ResultsetID"  />
+        <field name="UsedmarkersetID" label="Used marker set ID" type="xref" xref_field="Usedmarkerset.UsedmarkersetID"/>
+		<field name="NegLogPValue" label="Negative log p-value" type="decimal" nillable="true" />
+        <field name="UnadjustedPValue" label="Unadjusted p-value" type="text" nillable="true"/>
+        <!--field name="AdjustedPValue" label="Adjusted p-value" type="decimal" nillable="true"/-->
+        <field name="OddsRatioStatement" length="250" label="Odds ratio statement" nillable="true"/>
+        <field name="AttributableRiskStatement" length="250" label="Attributable risk statement" nillable="true"/>
+		<field name="isLimited" label="Include value in limited data set?" type="enum" enum_options="[yes,no]" default="no" nillable="true" />
+		<field name="SourceDetails" label="Source details" type="text" nillable="true" />
+    </entity>
+    
+    <entity name="Study" decorator="decorators.StudyDecorator" xref_label="Identifier">
+        <field name="StudyID" hidden="true" default="0" label="Study ID" type="autoid" description="Auto-generated ID"/>
+        <field name="Identifier" length="15" unique="true" readonly="true" description="Auto-generated on save, beginning HGVST"/>
+        <field name="Title" type="text" nillable="true" description="Study title, normally automatically populated with the publication title, found using the Pubmed lookup, but may also be entered manually" />
+		<field name="Name" length="500" nillable="true" description="Study name e.g. 'GWAS of hypertension'" />
+        <field name="StudyAbstract" label="Abstract" type="text" description="Study abstract, normally automatically populated through the Pubmed lookup, but may also be entered manually" />
+        <field name="Label" length="10" hidden="true" nillable="true"/>
+        <field name="Accession" length="15" nillable="true" />
+        <field name="AccessionVersion" length="10" label="Accession version" nillable="true"/>
+        <field name="Description" type="text" nillable="true" description="Description of the Study" />
+        <field name="Background" type="text" nillable="true" description="Study background" />
+        <field name="Objectives" type="text" nillable="true" description="Study objectives" />
+        <field name="KeyResults" label="Key results" type="text" nillable="true" description="Study key results"/>
+        <field name="Conclusions" type="text" nillable="true" description="Study conclusions" />
+        <field name="StudyDesign" label="Study design" type="text" nillable="true" description="Study design" />
+        <field name="StudySizeReason" label="Reason for study size" type="text" nillable="true" description="Reason for study size" />
+        <field name="StudyPower" label="Study power" type="text" nillable="true" description="Study power" />
+        <field name="SourcesOfBias" label="Sources of bias" type="text" nillable="true" description="Sources of bias" />
+        <field name="Limitations" type="text" nillable="true" description="Study limitations" />
+        <field name="Acknowledgements" type="text" nillable="true" description="Study acknowledgements - copy from the paper or refer to paper for very long acknowledgements e.g. 'For a full list of acknowledgements please see Smith et al'" />
+        <field name="TimeCreated" label="Time created" readonly="true" type="datetime" description="Auto-generated on save, current date and time" />
+        <field name="TimeUpdated" label="Time updated" type="datetime" nillable="true" description="This should only be updated if changes are made to an existing Study. For a new Study, leave blank" />
+		<field name="IsHidden" label="Should study be hidden?" type="enum" enum_options="[no,yes]" default="no" nillable="true" description="Default 'no' (Study metadata will be shown on the website)"/>
+		<field name="IsDisplayed" label="Should study data be displayed?" type="enum" enum_options="[no,yes]" default="yes" nillable="true" description="Default 'yes' (Study data will be shown on the website)"/>
+        <field name="WhoChecked" label="Last updated by" type="enum" enum_options="[sg303,rkh7,tb143,rr97]" nillable="true"/>
+		<field name="SignificanceLevel" label="Significance level" hidden="true" default="0" nillable="true" />
+		
+		<field name="Citations" label="Associated citations" type="mref" xref_field="Citation.CitationID" xref_label="PubmedID" mref_name="StudyCitation" mref_localid="StudyID" mref_remoteid="CitationID" description="The '+' box can be clicked, which expands a drop-down list of all the currently stored publications (Pubmed identifiers) - either manually select a Pubmed ID to associate an existing publication, or use the lookup box above. Multiple citations may be added by clicking the '+' icon as required."/>
+    	<field name="AnalysisMethods" label="Analysis methods" hidden="true" default="0" type="mref" xref_field="AnalysisMethod.AnalysisMethodID" xref_label="Identifier" mref_name="StudyAnalysisMethod" mref_localid="StudyID" mref_remoteid="AnalysisMethodID"/>
+        <field name="SamplePanels" label="Sample panels" hidden="true" default="0" type="mref" xref_field="Samplepanel.SamplepanelID"  xref_label="Identifier" mref_name="StudySamplepanel" mref_localid="StudyID" mref_remoteid="SamplepanelID"/>
+        <field name="Hotlinks" label="Study hotlinks" hidden="true" default="0" type="mref" xref_field="Hotlink.HotlinkID" xref_label="HotlinkLabel" mref_name="StudyHotlink" mref_localid="StudyID" mref_remoteid="HotlinkID" />
+	</entity>
+    
+    <entity name="StudyAnalysisMethod">
+        <field name="StudyAnalysisMethodID" label="Study analysis method ID" type="autoid"/>
+        <field name="StudyID" label="Study ID" type="xref" xref_field="Study.StudyID"/>
+        <field name="AnalysisMethodID" label="Analysis method ID" type="xref" xref_field="AnalysisMethod.AnalysisMethodID"/>
+        <unique fields="StudyID,AnalysisMethodID"/>
+    </entity>
+    
+    <entity name="StudyCitation">
+        <field name="StudyCitationID" type="autoid"/>
+        <field name="StudyID" type="xref" default="0" xref_field="Study.StudyID"/>
+        <field name="CitationID" type="xref" default="0" xref_field="Citation.CitationID"/>
+        <unique fields="StudyID,CitationID"/>
+        </entity>
+    
+	<entity name="StudyHotlink">
+		<field name="StudyHotlinkID" type="autoid" />
+		<field name="StudyID" type="xref" default="0" xref_field="Study.StudyID" />
+		<field name="HotlinkID" type="xref" default="0" xref_field="Hotlink.HotlinkID" />
+		<unique fields="StudyID,HotlinkID"/>
+	</entity>
+    
+	<entity name="StudySamplepanel">
+        <field name="StudySamplepanel" label="Study sample panel" type="autoid"/>
+        <field name="StudyID" label="Study ID" type="xref" xref_field="Study.StudyID"/>
+        <field name="SamplepanelID" label="Sample panel ID" type="xref" xref_field="Samplepanel.SamplepanelID"/>
+        <unique fields="StudyID,SamplepanelID"/>
+        </entity>
+    
+    <entity name="Submission" xref_label="Name" decorator="decorators.SubmissionDecorator">
+        <field name="SubmissionID" label="Submission ID" type="autoid" hidden="true" default="0" />
+        <field name="StudyID" label="Study identifier" type="xref" xref_field="Study.StudyID" xref_cascade="true" />
+        <field name="Name" length="100" />
+        <field name="Description" type="text" nillable="true"/>
+        <field name="TimeCreated" label="Time created" readonly="true" type="datetime" />
+        <unique fields="StudyID,Name"/>
+    </entity>
+	
+	<entity name="Usedmarkerset">
+        <field name="UsedmarkersetID" label="Used market set ID" type="autoid"/>
+        <field name="ExperimentID" label="Experiment ID" type="xref" nillable="true" xref_field="Experiment.ExperimentID"/>
+        <field name="MarkerIdentifier" length="15" label="Marker identifier" nillable="true"/>
+		<!-- field name="NewMarkerIdentifier" length="15" label="New marker identifier" nillable="true" -->
+        <unique fields="ExperimentID,MarkerIdentifier"/>
+    </entity>
+	
+	<!--entity name="Import">
+		<field name="ImportID" label="Import ID" type="autoid" />
+		<field name="ShortLabel" label="Short label" length="100" />
+		<field name="ImportConfig" label="Import config" type="text" />
+	</entity-->
+	
+</molgenis>

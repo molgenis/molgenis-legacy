@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis">
+	<module name="animaldb">
+		<entity name="AnimalDbFile" extends="MolgenisFile">
+			<description>Does not have special fields yet, but in the future this may be expanded with e.g. user that uploaded this file.</description>
+		</entity>
+		<entity name="CustomLabelFeature">
+			<description>Stores the features users use to custom-label their targets.</description>
+			<field name="id" type="autoid" description="automatically generated id" />
+			<field name="userId" type="xref" xref_entity="MolgenisUser" nillable="false" unique="true" />
+			<field name="featureId" type="xref" xref_entity="Measurement" nillable="false" />
+		</entity>
+		<entity name="NamePrefix">
+			<description>Stores the prefixes used when naming animals.</description>
+			<field name="id" type="autoid" description="automatically generated id" />
+			<field name="targetType" type="enum" enum_options="[animal,parentgroup,litter]" nillable="false" />
+			<field name="prefix" type="string" nillable="true" />
+			<field name="highestNumber" type="int" />
+		</entity>
+		<entity name="DeletedObservedValue" implements="Identifiable,Observation">
+			<description>Alternative for ObservedValue containing extra fields stating
+				when it was deleted and by whom.</description>
+			<field name="ontologyReference" type="xref" xref_entity="OntologyTerm"
+				nillable="true"
+				description="(Optional) Reference to the
+				ontology definition or 'code' for this value (recommended for non-numeric
+				values such as codes)" />
+			<field nillable="true" name="value" description="The value observed" />
+			<field nillable="true" name="relation" type="xref"
+				xref_entity="ObservationElement"
+				description="Reference to other end of the relationship, if any. For example to a 'brother' or from 'sample' to 'derivedSample'." />
+			<field nillable="true" auto="false" name="time" type="datetime"
+				description="(Optional) Time when the value was observed. For example in time series or if feature is time-dependent like 'age'" />
+			<field nillable="true" auto="false" name="endtime" type="datetime"
+				description="(Optional) Time when the value's validity ended" />
+			<!-- Deletion fields from here -->
+			<field name="deletionTime" type="datetime" nillable="false" />
+			<field name="deletedBy" type="xref" xref_entity="MolgenisRole" xref_field="id" 
+				xref_label="name" nillable="false" />
+			<field name="DeletedTarget" type="xref" xref_entity="DeletedObservationTarget"
+				xref_field="id" xref_label="name" nillable="true" 
+				description="References the deleted ObservationTarget that this feature was made on." />
+			<field nillable="true" name="DeletedRelation" type="xref"
+				xref_entity="DeletedObservationTarget"
+				description="Reference to other, deleted end of the relationship, if any." />
+		</entity>
+		<entity name="DeletedObservationTarget" extends="ObservationElement">
+			<description>Alternative for ObservationTarget containing extra fields stating
+				when it was deleted and by whom.</description>
+			<field name="deletionTime" type="datetime" nillable="true"/>
+			<field name="deletedBy" type="xref" xref_entity="MolgenisRole" xref_field="id" 
+				xref_label="name" nillable="true"  />
+		</entity>
+		<entity name="DeletedIndividual" extends="DeletedObservationTarget">
+			<description>Alternative for Individual containing extra fields stating
+				when it was deleted and by whom.</description>
+				<field name="Mother" type="xref" nillable="true" xref_entity="Individual"
+				xref_field="id" xref_label="name" description="Refers to the mother of the individual." />
+			<field name="Father" type="xref" nillable="true" xref_entity="Individual"
+				xref_field="id" xref_label="name" description="Refers to the father of the individual." />
+			<!-- Deletion fields from here -->
+			<field name="deletionTime" type="datetime" nillable="true"/>
+			<field name="deletedBy" type="xref" xref_entity="MolgenisRole" xref_field="id" 
+				xref_label="name" nillable="true"  />
+		</entity>
+	</module>
+</molgenis>

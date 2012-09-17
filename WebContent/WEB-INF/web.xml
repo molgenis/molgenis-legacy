@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<!-- FrontController mapping for Tomcat -->
+	 <servlet>
+        <servlet-name>FrontController</servlet-name>
+        <servlet-class>app.servlet.FrontController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FrontController</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+        
+	
+	<!-- Quartz scheduling -->
+<!--	<servlet> 
+		<servlet-name>QuartzInitializer</servlet-name> 
+		<servlet-class>org.quartz.ee.servlet.QuartzInitializerServlet</servlet-class> 
+		<init-param>
+			<param-name>shutdown-on-unload</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>wait-on-shutdown</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<init-param>
+			<param-name>start-scheduler-on-load</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>-->
+
+	<!-- ############### -->
+	<!-- DEPRECATED / UNKNOWN -->
+	<!-- ############### -->
+	
+	<!-- <display-name>molgenis</display-name>
+	<listener>
+		<listener-class>app.servlet.MolgenisContextListener</listener-class>
+	</listener>
+	<mime-mapping>
+		<extension>ico</extension>
+		<mime-type>image/x-icon</mime-type>
+	</mime-mapping>
+	<servlet>
+		<servlet-name>MolgenisServlet</servlet-name>
+		<servlet-class>app.servlet.MolgenisServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>RestServlet</servlet-name>
+		<servlet-class>org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet</servlet-class>
+		<init-param>
+			<param-name>jaxrs.serviceClasses</param-name>
+			<param-value>
+    			app.servlet.RestApi	      
+  			</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>jqGrid</servlet-name>
+		<servlet-class>org.molgenis.lifelines.jqGrid</servlet-class>
+	</servlet>	
+	
+	<servlet-mapping>
+		<servlet-name>MolgenisServlet</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>jqGrid</servlet-name>
+		<url-pattern>/jqGrid</url-pattern>
+	</servlet-mapping>	
+		
+	<servlet-mapping>
+		<servlet-name>MolgenisServlet</servlet-name>
+		<url-pattern>/download/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MolgenisServlet</servlet-name>
+		<url-pattern>/api/find/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>RestServlet</servlet-name>
+		<url-pattern>/api/rest/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MolgenisServlet</servlet-name>
+		<url-pattern>/api/add</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MolgenisServlet</servlet-name>
+		<url-pattern>/api/soap/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MolgenisServlet</servlet-name>
+		<url-pattern>/xref/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>RApiServlet</servlet-name>
+		<servlet-class>RApiServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RApiServlet</servlet-name>
+		<url-pattern>/api/R/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>TmpFileServlet</servlet-name>
+		<servlet-class>core.servlets.tmpfileservlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TmpFileServlet</servlet-name>
+		<url-pattern>/tmpfile/*</url-pattern>
+	</servlet-mapping> -->
+	
+</web-app>
