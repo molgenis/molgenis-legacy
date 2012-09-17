@@ -56,19 +56,17 @@ public class JQueryTreeView<E> extends HtmlWidget
 		if (node.hasChildren()) {
 			
 			if(!node.getChildren().get(0).hasChildren() && node.getCheckBox() == true){
-
-				returnString = "<li id = \"" + node.getName().replaceAll(" ", "_") + "\""
-//							+  "\" class=\"closed"
-							+  (node.isCollapsed() ? " class=\"closed\"" : " class = \"open expandable\"")
+				
+				returnString = "<li id = \"" + node.getName().replaceAll(" ", "_") 
+							+  "\" class=\"closed"
 							+  "\" style=\"display:none;\"><span class=\"folder\"><input type=\"checkbox\" id=\"" 
 							+  node.getEntityID() + "\" name=\"" + node.getEntityID().split("_identifier_")[0] + "\"" 
 							+  (selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "") 
 							+  " />" + node.getLabel() + "</span>\n"
 							+  "<ul>\n";
 			}else{
-				returnString = "<li id = \"" + node.getName().replaceAll(" ", "_")  + "\""
-//							+  "\" class=\"closed"
-							+  (node.isCollapsed() ? " class=\"closed\" " : " class = \"open expandable\" ")							
+				returnString = "<li id = \"" + node.getName().replaceAll(" ", "_") 
+							+  "\" class=\"closed"
 							+  "\" style=\"display:none;\"><span class=\"folder\">" + node.getLabel() + "</span>\n"
 							+  "<ul>\n";
 			}
@@ -100,7 +98,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 			+ "<script src=\"jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js\" language=\"javascript\"></script>\n"
 			+ "<ul id=\"browser\" class=\"pointtree\">\n"
 			+ renderTree(treeData.getRoot(), selected)
-			+ "</ul>\n";
+			+ "</ul>\n";	
 		
 	    return html;
 	}
