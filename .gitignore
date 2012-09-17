@@ -12,7 +12,6 @@ handwritten/
 generated/
 WebContent/WEB-INF/lib/
 
-<<<<<<< HEAD
 *.class
 *,so
 *,si
@@ -60,10 +59,4 @@ log*
 logger.out*
 /bin
 /dist
-/.settings/*
-!/.settings/template*
 .project
-/WebContent/WEB-INF/classes
-/generated/java
-!/.settings/template*
-/apps/catalogue/plugins/hl7parser/PropertiesPath.java
