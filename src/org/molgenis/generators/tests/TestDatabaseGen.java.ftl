@@ -26,10 +26,6 @@ import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.framework.db.jpa.JpaUtil;
 </#if>
 
-<#if db_mode = 'standalone'>
-import app.servlet.MolgenisServlet;
-</#if>
-
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;

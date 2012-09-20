@@ -21,6 +21,12 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	/** the File that is being read */
 	private final File sourceFile;
 
+	public CsvFileReader(File file, boolean hasHeader) throws IOException, DataFormatException
+	{
+		super(new BufferedReader(new FileReader(file)), hasHeader);
+		this.sourceFile = file;
+	}
+
 	public CsvFileReader(File file) throws IOException, DataFormatException
 	{
 		super(new BufferedReader(new FileReader(file)));
@@ -28,11 +34,11 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	}
 
 	public CsvFileReader(final File file, final String encoding) throws IOException, DataFormatException
-	{		
+	{
 		super(new BufferedReader(new InputStreamReader(new FileInputStream(file), encoding)));
 		this.sourceFile = file;
-	}		
-	
+	}
+
 	public CsvFileReader(InputStream csvStream) throws IOException, DataFormatException
 	{
 		super(new BufferedReader(new InputStreamReader(csvStream)));
@@ -45,7 +51,7 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	 * fileEndsWithNewlineChar() in combination with this function. See:
 	 * http://stackoverflow
 	 * .com/questions/453018/number-of-lines-in-a-file-in-java
-	 * @param inFile 
+	 * @param inFile
 	 * 
 	 * @return
 	 * @throws IOException
@@ -60,7 +66,7 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	/**
 	 * Find out if the source file ends with a newline character. Useful in
 	 * combination with getNumberOfLines().
-	 * @param inFile 
+	 * @param inFile
 	 * 
 	 * @return
 	 * @throws Exception
@@ -89,7 +95,7 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	 * combination \r\n is reduced to \n before counting. You will probably want
 	 * to use this in combination with the more lightweight check of
 	 * fileEndsWithNewlineChar().
-	 * @param inFile 
+	 * @param inFile
 	 * 
 	 * @return
 	 * @throws Exception
@@ -135,11 +141,11 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	@Override
 	public void reset() throws IOException, DataFormatException
 	{
-		if(this.reader != null)
-		{ 
+		if (this.reader != null)
+		{
 			this.reader.close();
 		}
-		//create a fresh InputStream to read from, the old one is closed
+		// create a fresh InputStream to read from, the old one is closed
 		this.reader = new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile)));
 		super.reset();
 	}
