@@ -2,14 +2,11 @@ package org.molgenis.framework.ui.html;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import org.apache.commons.lang.StringUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.server.AbstractMolgenisServlet;
 import org.molgenis.framework.server.QueryRuleUtil;
+import org.molgenis.framework.server.services.MolgenisGuiService;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -225,7 +222,7 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 
 		addButton
 				.setJavaScriptAction("if( window.name == '' ){ window.name = 'molgenis_"
-						+ AbstractMolgenisServlet.getNewWindowId()
+						+ MolgenisGuiService.getNewWindowId()
 						+ "';}document.getElementById('"
 						+ this.getId()
 						+ "').form.__action.value='"
