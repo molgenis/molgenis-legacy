@@ -2,7 +2,7 @@ package org.molgenis.framework.ui.html;
 
 import java.text.ParseException;
 
-import org.molgenis.framework.server.AbstractMolgenisServlet;
+import org.molgenis.framework.server.services.MolgenisGuiService;
 import org.molgenis.util.Tuple;
 
 /**
@@ -42,7 +42,7 @@ public class ActionInput extends HtmlInput<Object>
 			return tag;
 		}
 	}
-	
+
 	private int width = 0;
 
 	/** Path to an icon image */
@@ -55,7 +55,7 @@ public class ActionInput extends HtmlInput<Object>
 
 	/** JavaScript action */
 	private String JavaScriptAction;
-	
+
 	/** Text to display on button (normally "value") */
 	private String buttonValue;
 
@@ -81,7 +81,8 @@ public class ActionInput extends HtmlInput<Object>
 	{
 		this(name, Type.CUSTOM);
 		this.setLabel(label);
-		this.setButtonValue(label); // override default button value (name) with label
+		this.setButtonValue(label); // override default button value (name) with
+									// label
 	}
 
 	/**
@@ -95,7 +96,8 @@ public class ActionInput extends HtmlInput<Object>
 	{
 		this(name, label);
 		this.setTooltip(buttonValue);
-		this.setButtonValue(buttonValue); // override label as button value with explicit button value
+		this.setButtonValue(buttonValue); // override label as button value with
+											// explicit button value
 	}
 
 	/**
@@ -135,8 +137,10 @@ public class ActionInput extends HtmlInput<Object>
 	@Override
 	public String toHtml()
 	{
-		// Use plain HTML rendering if chosen by user OR if there is only an icon and no text to be shown
-		// on the button. Reason for this is that jQuery does not render image-only buttons well, messing up
+		// Use plain HTML rendering if chosen by user OR if there is only an
+		// icon and no text to be shown
+		// on the button. Reason for this is that jQuery does not render
+		// image-only buttons well, messing up
 		// the alignment.
 		if (this.uiToolkit == UiToolkit.ORIGINAL || (this.getIcon() != null && this.buttonValue.equals("")))
 		{
@@ -154,19 +158,15 @@ public class ActionInput extends HtmlInput<Object>
 		StringBuffer input = new StringBuffer("");
 		if (getIcon() != null)
 		{
-			input.append("<img class=\"edit_button\" src=\"" + getIcon()
-					+ "\" alt=\"" + getLabel() + "\" onclick=\""
+			input.append("<img class=\"edit_button\" src=\"" + getIcon() + "\" alt=\"" + getLabel() + "\" onclick=\""
 					+ getJavaScriptAction() + " $(this).closest('form').submit();\" title=\"" + this.getTooltip()
-					+ "\" id=\"" + this.getId() + "\" style=\""
-					+ this.getStyle() + "\" " + tabIndex + " />");
+					+ "\" id=\"" + this.getId() + "\" style=\"" + this.getStyle() + "\" " + tabIndex + " />");
 		}
 		else
 		{
-			input.append("<input type=\"submit\" onclick=\""
-					+ getJavaScriptAction() + "\" title=\"" + this.getTooltip()
-					+ "\" id=\"" + this.getId() + "\"" + "value=\""
-					+ this.getButtonValue() + "\" style=\"" + this.getStyle() + "\" "
-					+ tabIndex + " />");
+			input.append("<input type=\"submit\" onclick=\"" + getJavaScriptAction() + "\" title=\""
+					+ this.getTooltip() + "\" id=\"" + this.getId() + "\"" + "value=\"" + this.getButtonValue()
+					+ "\" style=\"" + this.getStyle() + "\" " + tabIndex + " />");
 		}
 
 		return input.toString();
@@ -204,18 +204,22 @@ public class ActionInput extends HtmlInput<Object>
 			if (this.type == Type.SAVE)
 			{
 				StringBuffer jScript = new StringBuffer();
-				if(this.uiToolkit == UiToolkit.ORIGINAL)
-					jScript.append("if( validateForm(document.forms[0],molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+new Date().getTime();} document.forms[0].target = window.opener.name; document.forms[0].submit(); window.close();} else return false;");
+				if (this.uiToolkit == UiToolkit.ORIGINAL) jScript
+						.append("if( validateForm(document.forms[0],molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+new Date().getTime();} document.forms[0].target = window.opener.name; document.forms[0].submit(); window.close();} else return false;");
 				else
-					jScript.append("if( $(this.form).valid() && validateForm(document.forms[0],molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+new Date().getTime();} document.forms[0].__show.value = ''; document.forms[0].__action.value ='"+this.getValue()+"'; document.forms[0].target = window.opener.name; document.forms[0].submit(); window.close();} return false;");
-				//jScript.append("alert('click');");
-				
+					jScript.append("if( $(this.form).valid() && validateForm(document.forms[0],molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+new Date().getTime();} document.forms[0].__show.value = ''; document.forms[0].__action.value ='"
+							+ this.getValue()
+							+ "'; document.forms[0].target = window.opener.name; document.forms[0].submit(); window.close();} return false;");
+				// jScript.append("alert('click');");
+
 				return jScript.toString();
 			}
 			else if (this.type == Type.NEXT)
 			{
 				StringBuffer jScript = new StringBuffer();
-				jScript.append("if( validateForm(document.forms[0],molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis_"+AbstractMolgenisServlet.getNewWindowId()+"';} document.forms[0].__show.value='popup'; document.forms[0].submit();} else return false;");
+				jScript.append("if( validateForm(document.forms[0],molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis_"
+						+ MolgenisGuiService.getNewWindowId()
+						+ "';} document.forms[0].__show.value='popup'; document.forms[0].submit();} else return false;");
 				return jScript.toString();
 			}
 			else if (this.type == Type.CLOSE)
@@ -262,19 +266,19 @@ public class ActionInput extends HtmlInput<Object>
 	{
 		return "&nbsp;";
 	}
-	
+
 	public String getButtonValue()
 	{
-		if(buttonValue == null) return this.getLabel();
+		if (buttonValue == null) return this.getLabel();
 		return buttonValue;
 	}
-	
+
 	public void setButtonValue(String buttonValue)
 	{
 		this.buttonValue = buttonValue;
 	}
-	
-	/** Helper method to produce the html for the icon (&lt;img&gt;)*/
+
+	/** Helper method to produce the html for the icon (&lt;img&gt;) */
 	public String getIconHtml()
 	{
 		// TODO Auto-generated method stub
@@ -284,9 +288,8 @@ public class ActionInput extends HtmlInput<Object>
 	/** Helper method to produce html for the clickable image */
 	public String toIconHtml()
 	{
-		return "<img class=\"edit_button\" src=\"" + getIcon() + "\" title=\""
-				+ getLabel() + "\" onclick=\"" + this.getJavaScriptAction()
-				+ "\">";
+		return "<img class=\"edit_button\" src=\"" + getIcon() + "\" title=\"" + getLabel() + "\" onclick=\""
+				+ this.getJavaScriptAction() + "\">";
 		// <img class="edit_button" src="generated-res/img/recordview.png"
 		// title="view record" alt="edit${offset}"
 		// onClick="setInput('${screen.name}_form','_self','','${screen.name}','recordview','iframe'); document.forms.${screen.name}_form.__offset.value='${offset}'; document.forms.${screen.name}_form.submit();">${readonly}</label>
@@ -295,13 +298,12 @@ public class ActionInput extends HtmlInput<Object>
 	/** Helper method to render this button as clickable link */
 	public String toLinkHtml()
 	{
-		return "<a title=\"" + this.getDescription() + "\" onclick=\""
-				+ this.getJavaScriptAction() + "\">" + getLabel() + "</a>";
+		return "<a title=\"" + this.getDescription() + "\" onclick=\"" + this.getJavaScriptAction() + "\">"
+				+ getLabel() + "</a>";
 	}
 
 	@Override
-	public String toHtml(Tuple params) throws ParseException,
-			HtmlInputException
+	public String toHtml(Tuple params) throws ParseException, HtmlInputException
 	{
 		return new ActionInput(params).render();
 	}
@@ -323,17 +325,19 @@ public class ActionInput extends HtmlInput<Object>
 			// Make the actual CSS for the icon button
 			iconClassCss = "<style type=\"text/css\">";
 			iconClassCss += "." + iconClass + " { background-image: url(" + getIcon() + ") !important; ";// +
-				//"width: " + this.getIconWidth() + "px; height: " + this.getIconHeight() + "px; }";
+			// "width: " + this.getIconWidth() + "px; height: " +
+			// this.getIconHeight() + "px; }";
 			iconClassCss += "</style>";
-			// Make the jQuery code to be appended to make the button an image button
+			// Make the jQuery code to be appended to make the button an image
+			// button
 			icons += "{ icons: {primary:'" + iconClass + "', secondary: null}"
 					+ (isShowLabel() ? "}" : ", text: false }");
 		}
 		String result = iconClassCss + "<input type=\"submit\" id=\"" + this.getId() + "\" onclick=\""
-				+ this.getJavaScriptAction() + "\" value=\"" + this.getButtonValue() + "\" />"
-				+ "<script>$(\"#" + this.getId() + "\")"
-				+ (width > 0 ? ".width(" + width + ")" : "")
-				//+ (getIcon() != null ? ".height(" + (this.getIconHeight() + 10) + ").width(" + (this.getIconWidth() + 10) + ")" : "")
+				+ this.getJavaScriptAction() + "\" value=\"" + this.getButtonValue() + "\" />" + "<script>$(\"#"
+				+ this.getId() + "\")" + (width > 0 ? ".width(" + width + ")" : "")
+				// + (getIcon() != null ? ".height(" + (this.getIconHeight() +
+				// 10) + ").width(" + (this.getIconWidth() + 10) + ")" : "")
 				+ ".button(" + icons + ");</script>\n";
 
 		return result;
@@ -353,20 +357,24 @@ public class ActionInput extends HtmlInput<Object>
 	{
 		this.showLabel = showLabel;
 	}
-	
-	public void setIconHeight(int iconHeight) {
+
+	public void setIconHeight(int iconHeight)
+	{
 		this.iconHeight = iconHeight;
 	}
-	
-	public int getIconHeight() {
+
+	public int getIconHeight()
+	{
 		return iconHeight;
 	}
-	
-	public void setIconWidth(int iconWidth) {
+
+	public void setIconWidth(int iconWidth)
+	{
 		this.iconWidth = iconWidth;
 	}
-	
-	public int getIconWidth() {
+
+	public int getIconWidth()
+	{
 		return iconWidth;
 	}
 
