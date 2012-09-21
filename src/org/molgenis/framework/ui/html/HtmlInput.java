@@ -1,5 +1,6 @@
 package org.molgenis.framework.ui.html;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.UUID;
 
@@ -13,8 +14,11 @@ import org.molgenis.util.Tuple;
  * 
  * 
  */
-public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<E>, HtmlElement
+public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<E>, HtmlElement, Serializable
 {
+	/* The serial version UID of this class. Needed for serialization. */
+	protected static final long serialVersionUID = 1259666187714987354L;
+
 	// STRING CONSTANTS
 	/** String constants for property name 'name' */
 	public static final String NAME = "name";
