@@ -126,7 +126,7 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 		raf.close();
 
 		// replace \r\n combinations with \n
-		terminatorSequence.replaceAll("rn", "n");
+		terminatorSequence = terminatorSequence.replaceAll("rn", "n");
 
 		return terminatorSequence.length();
 
