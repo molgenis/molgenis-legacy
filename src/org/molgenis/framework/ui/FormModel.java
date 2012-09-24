@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.CsvToDatabase;
 import org.molgenis.framework.db.Database;
@@ -434,7 +435,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 			if (this.offset > 0) rules.add(new QueryRule(
 					QueryRule.Operator.OFFSET, this.offset));
 		}
-		if (this.sortby != "") rules.add(new QueryRule(this.sortMode,
+		if (!StringUtils.equals(this.sortby, "")) rules.add(new QueryRule(this.sortMode,
 				this.sortby));
 		logger.debug("rules.size: " + rules.size() + "="
 				+ this.getSystemRules().size() + "+"
