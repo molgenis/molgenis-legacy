@@ -235,7 +235,7 @@ public class ResultSetTuple extends SimpleTuple
 		{
 			if (resultset.getObject(columnIndex + 1) == null)
 			{
-				return false;
+				return null;
 			}
 			else
 			{
@@ -244,7 +244,7 @@ public class ResultSetTuple extends SimpleTuple
 		}
 		catch (SQLException e)
 		{
-			return false;
+			return null;
 		}
 	}
 
@@ -254,7 +254,7 @@ public class ResultSetTuple extends SimpleTuple
 		{
 			if (resultset.getObject(columnName) == null)
 			{
-				return false;
+				return null;
 			}
 			else
 			{
@@ -263,7 +263,7 @@ public class ResultSetTuple extends SimpleTuple
 		}
 		catch (SQLException e)
 		{
-			return false;
+			return null;
 		}
 	}
 

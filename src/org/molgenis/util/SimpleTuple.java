@@ -309,13 +309,13 @@ public class SimpleTuple implements Tuple
 
 	public Boolean getBoolean(int column)
 	{
-		if (getObject(column) == null || getString(column).equals("")) return false;
+		if (getObject(column) == null || getString(column).equals("")) return null;
 		return Boolean.valueOf(getString(column).toLowerCase().equals("true") || getString(column).trim().equals("1"));
 	}
 
 	public Boolean getBoolean(String column)
 	{
-		if (getObject(column) == null || getString(column).equals("")) return false;
+		if (getObject(column) == null || getString(column).equals("")) return null;
 		return Boolean.valueOf(getString(column).toLowerCase().equals("true") || getString(column).trim().equals("1"));
 	}
 
@@ -446,13 +446,13 @@ public class SimpleTuple implements Tuple
 
 	public Boolean getBool(int column)
 	{
-		if (getObject(column) == null || getString(column).equals("")) return false;
+		if (getObject(column) == null || getString(column).equals("")) return null;
 		return getBoolean(column);
 	}
 
 	public Boolean getBool(String column)
 	{
-		if (getObject(column) == null || getString(column).equals("")) return false;
+		if (getObject(column) == null || getString(column).equals("")) return null;
 		return getBoolean(column);
 	}
 
