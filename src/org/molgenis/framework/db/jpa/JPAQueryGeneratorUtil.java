@@ -206,9 +206,6 @@ public class JPAQueryGeneratorUtil
 										}
 										else
 										{ // normal attribute
-//											predicate = cb.equal(
-//													root.get(attributeName),
-//													rule.getValue());
 											predicate = cb.equal(lhs,  rhs);
 										}
 									}
@@ -217,9 +214,6 @@ public class JPAQueryGeneratorUtil
 										// this is a hack, newInstance can not
 										// be called on inmutable object
 										// like Integer
-//										predicate = cb.equal(
-//												root.get(attributeName),
-//												rule.getValue());
 										predicate = cb.equal(lhs,  rhs);
 									}
 									catch (IllegalAccessException ex)
@@ -232,45 +226,33 @@ public class JPAQueryGeneratorUtil
 								}
 								break;
 							case NOT:
-//								predicate = cb.notEqual(
-//										root.get(attributeName),
-//										rule.getValue());
 								predicate = cb.notEqual(lhs,  rhs);
 								break;
 							case LIKE:
-//								predicate = cb.like(
-//										root.get(attributeName)
-//												.as(String.class),
-//										(String) rule.getValue());
-								predicate = cb.like(lhs.as(String.class), (String) rhs);
+								if (lhs.getJavaType().getSimpleName().equals("String"))
+								{
+									predicate = cb.like(lhs.as(String.class), (String) rhs);
+								}
+								else
+								{
+									//TODO: What to do here?
+								}
 								break;
 							case LESS:
-//								predicate = cb.lessThan(
-//										(Expression) root.get(attributeName),
-//										(Comparable) rule.getValue());
 								predicate = cb.lessThan((Expression) lhs, (Comparable<Object>) rhs);
 								break;
 							case GREATER:
-//								predicate = cb.greaterThan(
-//										(Expression) root.get(attributeName),
-//										(Comparable) rule.getValue());
 								predicate = cb.greaterThan((Expression) lhs, (Comparable<Object>) rhs);
 								break;
 							case LESS_EQUAL:
-//								predicate = cb.lessThanOrEqualTo(
-//										(Expression) root.get(attributeName),
-//										(Comparable) rule.getValue());
 								predicate = cb.lessThanOrEqualTo((Expression) lhs, (Comparable<Object>) rhs);
 								break;
 							case GREATER_EQUAL:
-//								predicate = cb.greaterThanOrEqualTo(
-//										(Expression) root.get(attributeName),
-//										(Comparable) rule.getValue());
 								predicate = cb.greaterThanOrEqualTo((Expression) lhs, (Comparable<Object>) rhs);
 								break;
 							case NESTED:
 								QueryRule[] nestedrules = rule.getNestedRules();
-								_createWhere(db, mapper, em, root, cq, cb,
+								predicate = _createWhere(db, mapper, em, root, cq, cb,
 										new int[2], joinHash, nestedrules);
 								break;
 							case SUBQUERY:
@@ -324,8 +306,6 @@ public class JPAQueryGeneratorUtil
 								{
 									values = (Object[]) rule.getValue();
 								}
-//								Class attrClass = root.get(attributeName)
-//										.getJavaType();
 								Class<?> attrClass = null;
 								if (attributeName.contains("."))
 								{
@@ -339,15 +319,10 @@ public class JPAQueryGeneratorUtil
 								// AbstractEntity)
 								if (AbstractEntity.class.isAssignableFrom(attrClass))
 								{
-//									Field idField = getIdField(attrClass);
-//									predicate = root.get(attributeName)
-//											.get(idField.getName()).in(values);
 									predicate = root.get(attributeName).in(values);
 								}
 								else
 								{
-//									predicate = root.get(attributeName).in(
-//											values);
 									predicate = lhs.in(values);
 								}
 
@@ -438,14 +413,6 @@ public class JPAQueryGeneratorUtil
 				}
 	
 				Join<?, ?> join = null;
-	//			Set<Join<E, ?>> joins = root.getJoins();
-	//			for (Join tmp : joins.toArray(new Join[0]))
-	//			{
-	//				if (tmp.getAttribute().getName().equals(attributeName))
-	//				{
-	//					join = tmp;
-	//				}
-	//			}
 				if(joinHash.containsKey(attributeName)) {
 					join = joinHash.get(attributeName);
 				} else {
