@@ -1,9 +1,12 @@
 package org.molgenis.util.plink.drivers;
 
-import static org.molgenis.util.TextFileUtils.*;
+import static org.molgenis.util.TextFileUtils.fileEndsWithNewlineChar;
+import static org.molgenis.util.TextFileUtils.getAmountOfNewlinesAtFileEnd;
+import static org.molgenis.util.TextFileUtils.getNumberOfLines;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.zip.DataFormatException;
 
 import org.molgenis.util.CsvFileReader;
 
@@ -14,14 +17,13 @@ public class AbstractFileDriver
 	protected CsvFileReader reader;
 	protected long nrOfElements;
 
-	public AbstractFileDriver(File inFile) throws Exception {
-		reader = new CsvFileReader(inFile);
-		reader.disableHeader(false);
+	public AbstractFileDriver(File inFile) throws Exception
+	{
+		reader = new CsvFileReader(inFile, false);
 
 		if (fileEndsWithNewlineChar(inFile))
 		{
-			this.nrOfElements = getNumberOfLines(inFile)
-					- getAmountOfNewlinesAtFileEnd(inFile);
+			this.nrOfElements = getNumberOfLines(inFile) - getAmountOfNewlinesAtFileEnd(inFile);
 		}
 		else
 		{
@@ -48,5 +50,15 @@ public class AbstractFileDriver
 	{
 		this.reader.close();
 	}
-	
+
+	/**
+	 * Reset
+	 * 
+	 * @throws DataFormatException
+	 * @throws IOException
+	 */
+	public void reset() throws IOException, DataFormatException
+	{
+		this.reader.reset();
+	}
 }

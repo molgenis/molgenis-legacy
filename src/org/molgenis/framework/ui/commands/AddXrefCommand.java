@@ -42,7 +42,10 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 		super(name, getParentController(parent));
 		this.xrefEntity = xrefEntity;
 		this.xrefForm   = xrefForm;
-		this.setLabel("Add " + xrefEntity.getClass().getSimpleName());
+		if (xrefEntity != null)
+		{
+			this.setLabel("Add " + xrefEntity.getClass().getSimpleName());
+		}
 		this.setIcon("generated-res/img/new.png");
 		this.setDialog(true);
 		this.setMenu("Edit");

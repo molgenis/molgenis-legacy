@@ -35,6 +35,7 @@ public class FamFileDriver extends AbstractFileDriver
 	 */
 	public List<FamEntry> getAllEntries() throws Exception
 	{
+		reader.reset();
 		final ArrayList<FamEntry> result = new ArrayList<FamEntry>();
 		int line_number = 0;
 		for (Tuple tuple : reader)
@@ -42,12 +43,10 @@ public class FamFileDriver extends AbstractFileDriver
 			line_number++;
 			for (int objIndex = 0; objIndex < 6; objIndex++)
 			{
-				if (tuple.getObject(objIndex) == null) throw new Exception(
-						Helper.errorMsg(line_number, objIndex));
+				if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number, objIndex));
 			}
-			FamEntry fe = new FamEntry(tuple.getString(0), tuple.getString(1),
-					tuple.getString(2), tuple.getString(3), tuple.getInt(4)
-							.byteValue(), tuple.getDouble(5));
+			FamEntry fe = new FamEntry(tuple.getString(0), tuple.getString(1), tuple.getString(2), tuple.getString(3),
+					tuple.getInt(4).byteValue(), tuple.getDouble(5));
 			result.add(fe);
 		}
 		return result;
@@ -63,10 +62,9 @@ public class FamFileDriver extends AbstractFileDriver
 	 * @return
 	 * @throws Exception
 	 */
-	public List<FamEntry> getEntries(final long from, final long to)
-			throws Exception
+	public List<FamEntry> getEntries(final long from, final long to) throws Exception
 	{
-
+		reader.reset();
 		final ArrayList<FamEntry> result = new ArrayList<FamEntry>();
 		int line_number = 0;
 		for (Tuple tuple : reader)
@@ -77,13 +75,10 @@ public class FamFileDriver extends AbstractFileDriver
 			{
 				for (int objIndex = 0; objIndex < 6; objIndex++)
 				{
-					if (tuple.getObject(objIndex) == null) throw new Exception(
-							Helper.errorMsg(line_number, objIndex));
+					if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number, objIndex));
 				}
-				FamEntry fe = new FamEntry(tuple.getString(0),
-						tuple.getString(1), tuple.getString(2),
-						tuple.getString(3), tuple.getInt(4).byteValue(),
-						tuple.getDouble(5));
+				FamEntry fe = new FamEntry(tuple.getString(0), tuple.getString(1), tuple.getString(2),
+						tuple.getString(3), tuple.getInt(4).byteValue(), tuple.getDouble(5));
 				result.add(fe);
 			}
 		}

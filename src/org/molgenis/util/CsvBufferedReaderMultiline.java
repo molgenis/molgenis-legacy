@@ -65,7 +65,23 @@ public class CsvBufferedReaderMultiline extends AbstractTupleReader implements C
 	public CsvBufferedReaderMultiline(BufferedReader reader) throws IOException, DataFormatException
 	{
 		this.reader = reader;
-		if (hasHeader) headers = colnames();
+		// if (hasHeader) headers = colnames(); always true!
+		headers = colnames();
+	}
+
+	/**
+	 * Constructor with option to have no headers
+	 * 
+	 * @param reader
+	 * @param hasHeader
+	 * @throws IOException
+	 * @throws DataFormatException
+	 */
+	public CsvBufferedReaderMultiline(BufferedReader reader, boolean hasHeader) throws IOException, DataFormatException
+	{
+		this.reader = reader;
+		this.hasHeader = hasHeader;
+		if (this.hasHeader) headers = colnames();
 	}
 
 	@Override
