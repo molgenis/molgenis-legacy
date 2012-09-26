@@ -2,14 +2,11 @@ package org.molgenis.framework.ui.html;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import org.apache.commons.lang.StringUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.server.AbstractMolgenisServlet;
 import org.molgenis.framework.server.QueryRuleUtil;
+import org.molgenis.framework.server.services.MolgenisGuiService;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -18,6 +15,7 @@ import com.google.gson.Gson;
 public abstract class AbstractRefInput<E> extends HtmlInput<E>
 {
 	private static String DEFAULT_URL = "xref/find";
+
 	protected abstract String renderOptions();
 
 	// determines how ajax-chosen renders the select (multiple, search)
@@ -73,7 +71,7 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 		}
 		catch (Exception e)
 		{
-			new HtmlInputException(e);
+			throw new HtmlInputException(e);
 		}
 		xrefEntity = klass;
 
@@ -133,7 +131,7 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 		}
 		catch (ClassNotFoundException e)
 		{
-			new HtmlInputException(xrefClassname);
+			throw new HtmlInputException(xrefClassname);
 		}
 	}
 
@@ -224,7 +222,7 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 
 		addButton
 				.setJavaScriptAction("if( window.name == '' ){ window.name = 'molgenis_"
-						+ AbstractMolgenisServlet.getNewWindowId()
+						+ MolgenisGuiService.getNewWindowId()
 						+ "';}document.getElementById('"
 						+ this.getId()
 						+ "').form.__action.value='"
@@ -263,12 +261,16 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 		{
 			data.filters = new Gson().toJson(getXrefFilters());
 		}
-		
-//		String preloadScript = "$("+getId()+").click(function() {if($(this).find('a.chzn-single-with-drop,.chzn-drop').length > 1 ) " +
-//				"{$(this).find('input[type=text]:first').keyup();}});";
-		
-		//simulate keyup to load data; then blur by removing class=chzn-single-with-drop
-		String preloadScript = "$('#"+getId()+"_chzn').find('input[type=text]:first').focus(function(){$(this).keyup()});";
+
+		// String preloadScript =
+		// "$("+getId()+").click(function() {if($(this).find('a.chzn-single-with-drop,.chzn-drop').length > 1 ) "
+		// +
+		// "{$(this).find('input[type=text]:first').keyup();}});";
+
+		// simulate keyup to load data; then blur by removing
+		// class=chzn-single-with-drop
+		String preloadScript = "$('#" + getId()
+				+ "_chzn').find('input[type=text]:first').focus(function(){$(this).keyup()});";
 
 		// #arg1 = id
 		// #arg2 = title
@@ -293,10 +295,10 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 		config.data = data;
 		config.jsonTermKey = SEARCH_TERM;
 		Gson gson = new Gson();
-		
+
 		String handleScript = "function (data) {var terms = {}; $.each(data, function (i, val) {terms[i] = val;});return terms;}";
-		final String ajaxChosenScript = "<script>$('#" + getId() + "').ajaxChosen(" + gson.toJson(config) + ", "+handleScript+");"
-				+preloadScript+"</script>";
+		final String ajaxChosenScript = "<script>$('#" + getId() + "').ajaxChosen(" + gson.toJson(config) + ", "
+				+ handleScript + ");" + preloadScript + "</script>";
 
 		final String includeButton = includeAddButton && !this.isReadonly() ? this.createAddButton().toString() : "";
 		return select + ajaxChosenScript + includeButton;
@@ -307,7 +309,7 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 	{
 		if (this.error != null) return "ERROR: " + error;
 
-		if ("".equals(getXrefEntity()) || "".equals(getXrefField()) || getXrefLabels() == null
+		if (getXrefEntity() == null || "".equals(getXrefField()) || getXrefLabels() == null
 				|| getXrefLabels().size() == 0)
 		{
 			throw new RuntimeException("XrefInput(" + this.getName()

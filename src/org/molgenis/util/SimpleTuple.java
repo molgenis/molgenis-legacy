@@ -17,6 +17,7 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.molgenis.model.elements.Field;
 
 /**
@@ -457,7 +458,7 @@ public class SimpleTuple implements Tuple
 
 	public java.sql.Date getDate(int column) throws ParseException
 	{
-		if (this.getObject(column) == null || this.getString(column) == "") return null;
+		if (this.getObject(column) == null || this.getString(column).equals("")) return null;
 		if (this.getObject(column) instanceof java.sql.Date) return (java.sql.Date) this.getObject(column);
 		if (this.getObject(column) instanceof java.sql.Timestamp) return (java.sql.Date) this.getObject(column);
 		if (this.getObject(column) instanceof java.util.Date) return new java.sql.Date(
@@ -494,7 +495,7 @@ public class SimpleTuple implements Tuple
 
 	public java.sql.Date getDate(String column) throws ParseException
 	{
-		if (this.getObject(column) == null || this.getString(column) == "") return null;
+		if (this.getObject(column) == null || this.getString(column).equals("")) return null;
 		if (this.getObject(column) instanceof java.sql.Date) return (java.sql.Date) this.getObject(column);
 		if (this.getObject(column) instanceof java.sql.Timestamp) return (java.sql.Date) this.getObject(column);
 		if (this.getObject(column) instanceof java.util.Date) return new java.sql.Date(
@@ -578,7 +579,7 @@ public class SimpleTuple implements Tuple
 
 	public Timestamp getTimestamp(String column) throws ParseException
 	{
-		if (this.getObject(column) == null || this.getString(column) == "") return null;
+		if (this.getObject(column) == null || this.getString(column).equals("")) return null;
 		if (this.getObject(column) instanceof java.sql.Timestamp) return (java.sql.Timestamp) this.getObject(column);
 		try
 		{
@@ -622,7 +623,7 @@ public class SimpleTuple implements Tuple
 
 	public Timestamp getTimestamp(int column) throws ParseException
 	{
-		if (this.getObject(column) == null || this.getString(column) == "") return null;
+		if (this.getObject(column) == null || this.getString(column).equals("")) return null;
 		if (this.getObject(column) instanceof java.sql.Timestamp) return (java.sql.Timestamp) this.getObject(column);
 		try
 		{
