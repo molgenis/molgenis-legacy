@@ -17,10 +17,10 @@
 <#macro render_field field>
 	<#if field.type == "xref" || field.type =="mref">
 	<tr>
-		<td width="150"><#list field.xrefLabelNames as label>${field.name?lower_case}_${label}<br></#list></td>
-		<td width="50">${field.type}</td>
-		<td width="20"><#if field.isAuto()>&nbsp;<#elseif !field.isNillable() && (!field.defaultValue?exists || field.defaultValue == "")>YES<#else>&nbsp;</#if></td>
-		<td width="50">&nbsp;</td>
+		<td style="width:150px"><#list field.xrefLabelNames as label>${field.name?lower_case}_${label}<br></#list></td>
+		<td style="width:50px">${field.type}</td>
+		<td style="width:20px"><#if field.isAuto()>&nbsp;<#elseif !field.isNillable() && (!field.defaultValue?exists || field.defaultValue == "")>YES<#else>&nbsp;</#if></td>
+		<td style="width:50px">&nbsp;</td>
 		<td><#if field.description != "">${field.description}.</#if><#if field.xrefLabelNames?size &gt; 1>This ${field.type} 
 		uses the combination of {<#list field.xrefLabelNames as label><#if label_index &gt; 0>,</#if>${field.name?lower_case}_${label}</#list>} to find related elements in <a href="#${name(field.xrefEntity)}_entity">${name(field.xrefEntity)}.txt</a> based on unique columns {${csv(field.xrefLabelNames)?lower_case}}.<#else>
 		This ${field.type} uses {${field.name?lower_case}_${csv(field.xrefLabelNames)?lower_case}} to find related elements in file <a href="#${name(field.xrefEntity)}_entity">${name(field.xrefEntity)}.txt</a> based on unique column {${csv(field.xrefLabelNames)?lower_case}}.
@@ -29,10 +29,10 @@
 	</tr>	
 	<#else>
 	<tr>
-		<td width="150">${field.name?lower_case}</td>
-		<td width="50">${field.type}</td>
-		<td width="20"><#if field.isAuto()>&nbsp;<#elseif !field.isNillable() && ( !field.defaultValue?exists || field.defaultValue == "" )>YES<#else>&nbsp;</#if></td>
-		<td width="50"><#if field.isAuto()><#if field.type="int">n+1<#else>today</#if><#elseif field.defaultValue?exists && field.defaultValue != "">${field.defaultValue}<#else>&nbsp;</#if></td>
+		<td style="width:150px">${field.name?lower_case}</td>
+		<td style="width:50px">${field.type}</td>
+		<td style="width:20px"><#if field.isAuto()>&nbsp;<#elseif !field.isNillable() && ( !field.defaultValue?exists || field.defaultValue == "" )>YES<#else>&nbsp;</#if></td>
+		<td style="width:50px"><#if field.isAuto()><#if field.type="int">n+1<#else>today</#if><#elseif field.defaultValue?exists && field.defaultValue != "">${field.defaultValue}<#else>&nbsp;</#if></td>
 		<td><#if field.description != "">${field.description}<#if !field.description?trim?ends_with('.')>.</#if><br></#if></td>
 	</tr>
 	</#if>
@@ -43,7 +43,7 @@
 <h3 id="${name(entity)}_entity">File: ${entity.name?lower_case}.txt</h3> 
 <#if entity.description != "" ><p>Contents:<br> ${entity.description}<#if !entity.description?trim?ends_with('.')>.</#if></p></#if>
 <p>Structure:<br>
-<table width="100%" cellspacing="0" border="1" bordercolor="#000000">
+<table style="width:100%; cellspacing:0px; border:1px #000000;">
 	<!-- table header -->
 	<tr>
 		<th>column name</th>

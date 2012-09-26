@@ -76,7 +76,7 @@
 <h2>Table: <a name="${entity.name}">${entity.name}</a><#if entity.isAbstract()> (interface).</#if> 
 </h2>
 <p>${entity.description}</p>
-<table width="100%" cellspacing="0" border="1" bordercolor="#000000">
+<table style="width:100%; cellspacing:0px; border:1px #000000">
 	<!-- table header -->
 	<tr><th class="tablehead" colspan="6">${entity.name}<#if entity.hasAncestor()> extends ${entity.getAncestor().getName()}</#if>
 <#if entity.hasImplements()> implements ${csv(entity.getImplements())}</#if></th></tr>	
@@ -93,10 +93,10 @@
 	<!-- all the fields -->
 <#list entity.fields as field>
 	<tr>
-		<td width="150">${field.name}</td>
-		<td width="50">${field.type}</td>
-		<td width="20"><#if field.isNillable()>Y<#else>&nbsp;</#if></td>
-		<td width="20"><#if field.isAuto()>Y<#else>&nbsp;</#if></td>
+		<td style="width:150px">${field.name}</td>
+		<td style="width:50px">${field.type}</td>
+		<td style="width:20px"><#if field.isNillable()>Y<#else>&nbsp;</#if></td>
+		<td style="width:20px"><#if field.isAuto()>Y<#else>&nbsp;</#if></td>
 		<td width="">
 <#if field.type == "enum">
 		ENUM options: ${csv( field.getEnumOptions() )}

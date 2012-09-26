@@ -17,7 +17,7 @@
 <h3><a name="${entity.name}">${entity.name}</a><#if entity.isAbstract()> (interface).</#if> 
 </h3>
 <p>${entity.description}</p>
-<table width="100%" cellspacing="0" border="1" bordercolor="#000000">
+<table style="width:100%; cellspacing:0px; border:1px #000000">
 	<!-- table header -->
 	<tr><th class="tablehead" colspan="7">${entity.name}<#if entity.hasAncestor()><br><i> extends ${entity.getAncestor().getName()}</i></#if>
 <#if entity.hasImplements()><br><i> implements ${csv(entity.getImplements())}</i></#if></th></tr>	
@@ -130,7 +130,7 @@ references-many(${field.xrefEntityName}.${field.xrefFieldName}),</#if>
 
 
 <body>
-<h1><a name="_top_of_page">${model.label}</a> documentation.</h1>
+<h1><a href="_top_of_page">${model.label}</a> documentation.</h1>
 <#if model.getDBDescription()?exists>${model.getDBDescription()}</#if>
 <h2>Table of contents</h2>
 <table><tr>
@@ -170,7 +170,7 @@ references-many(${field.xrefEntityName}.${field.xrefFieldName}),</#if>
 </#if></#list>
 
 <h1>Supplementary figure: complete data model</h1>
-<a name="__figure_of_complete_schema"></a><br>
+<a href="__figure_of_complete_schema"></a><br>
 <img src="entity-uml-diagram.dot.png" style="border: solid double black;">
 <br>
 <a href="#_top_of_page">go to top</a>
