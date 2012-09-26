@@ -14,7 +14,7 @@
 	<#return result>
 </#function>
 <#macro render_entity entity>
-<h3><a name="${entity.name}">${entity.name}</a><#if entity.isAbstract()> (interface).</#if></h3>
+<h3><a href="${entity.name}">${entity.name}</a><#if entity.isAbstract()> (interface).</#if></h3>
 <p style="margin-top: 0px; margin-bottom: 0px;">
 <#if entity.hasAncestor()><i> extends ${entity.getAncestor().getName()}</i><br></#if>
 <#if entity.hasImplements()><i> implements ${csv(entity.getImplements())}</i><br></#if>
@@ -210,7 +210,7 @@ ${field.xrefEntity.name} (<#if field.nillable>0<#else>1</#if>..n)</#if>
 </#list>
 
 <#if model.entities?size &gt; 0>
-<h1><a name="${model.name}_package">${model.name} package</a></h1>
+<h1><a href="${model.name}_package">${model.name} package</a></h1>
 <#list model.entities as entity><#if !entity.association>
 <@render_entity entity/>
 </#if></#list>
@@ -219,7 +219,7 @@ ${field.xrefEntity.name} (<#if field.nillable>0<#else>1</#if>..n)</#if>
 </#if>
 
 <h1>Supplementary figure: complete data model</h1>
-<a name="__figure_of_complete_schema"></a><br>
+<a href="__figure_of_complete_schema"></a><br>
 <img src="objectmodel-uml-diagram.dot.png" style="border: solid double black;">
 <br>
 <a href="#_top_of_page">go to top</a>
