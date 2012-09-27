@@ -16,8 +16,8 @@
 <#macro render_entity entity>
 <h3><a href="${entity.name}">${entity.name}</a><#if entity.isAbstract()> (interface).</#if></h3>
 <p style="margin-top: 0px; margin-bottom: 0px;">
-<#if entity.hasAncestor()><i> extends ${entity.getAncestor().getName()}</i><br></#if>
-<#if entity.hasImplements()><i> implements ${csv(entity.getImplements())}</i><br></#if>
+<#if entity.hasAncestor()><span style="font-style:italic"> extends ${entity.getAncestor().getName()}</span><br></#if>
+<#if entity.hasImplements()><span style="font-style:italic"> implements ${csv(entity.getImplements())}</span><br></#if>
 </p>
 <p>	
 ${entity.description}
@@ -42,24 +42,26 @@ ${entity.description}
 <#assign unique_constraints= true>
 </#list>
 <#if inherited_attributes>
-<p>
-<u>Inherited atttributes:</u><br>
+<p style="text-decoration:underline">
+Inherited attributes:
+</p>
+<br>
 <#list entity.inheritedFields as field><#if !field.system> 
 ${field.name}, 
 </#if></#list>
-</p>
 </#if>
 <#if attributes == true>
-<p>
-<u>Attributes:</u>
+<p style="text-decoration:underline">
+Attributes:
+</p>
 <table>	
 <#list entity.fields as field>
 <#if !field.system && field.type != "xref" && field.type != "mref">
 <#assign color = "1"/>
 <#if field.entity.name != entity.name><#assign color = "style=\"color:#333333;\""/></#if>
 <tr>
-<td ${color}>
-<b>${field.name}</b>: ${field.type} 
+<td ${color} >
+<span style="font-weight:bold">${field.name}</span>: ${field.type} 
 (<#if field.nillable == false>required<#else>optional</#if>)
 </td>
 </tr>
@@ -72,14 +74,14 @@ ${field.name},
 </table>
 </#if>
 <#if associations==true>
-<p>
-<u>Associations:</u>
+<p style="text-decoration:underline">
+Associations:
 <table>	
 <#list entity.fields as field><#if !field.system && (field.type == "xref" || field.type == "mref")>
 <#if field.entity.name != entity.name><#assign color = "style=\"color:#333333;\""/></#if>
 <tr>
 <td ${color}>
-<b>${field.name}</b>: <#if field.type=="xref">
+<p style="text-decoration:underline">${field.name}: <#if field.type=="xref">
 ${field.xrefEntity.name} (<#if field.nillable>0<#else>1</#if>..1)
 <#elseif field.type=="mref">
 ${field.xrefEntity.name} (<#if field.nillable>0<#else>1</#if>..n)</#if>
@@ -91,13 +93,14 @@ ${field.xrefEntity.name} (<#if field.nillable>0<#else>1</#if>..n)</#if>
 </table>
 </#if>
 <#if unique_constraints>
-<p>
-<u>Constraints:</u>
+<p style="text-decoration:underline">
+Constraints:
+</p>
 <table>	
 <#list entity.keys as key>
 <tr>
-<td ${color}>
-<b>unique(${csv(key.fields)})</b>: 
+<td ${color} style="font-weight:bold">
+unique(${csv(key.fields)}): 
 </td>
 </tr>
 <tr><td style="padding-left: 50px;">
@@ -165,16 +168,16 @@ ${field.xrefEntity.name} (<#if field.nillable>0<#else>1</#if>..n)</#if>
 
 
 <body>
-<h1><a name="_top_of_page">${model.label}</a> documentation.</h1>
+<h1><a href="#_top_of_page">${model.label}</a> documentation.</h1>
 <#if model.version?exists><p>${model.version}</p></#if>
 <#if model.getDBDescription()?exists>${model.getDBDescription()}</#if>
 
 
 <h2>Table of contents</h2>
-<table width="100%"><tr>
+<table style="width:100%"><tr>
 <#list modules as module>
 <td>
-<b><a href="#${module.name}_package">${module.name}</a></b> package:
+<a href="#${module.name}_package">${module.name}</a> <span style="font-weight:bold">package:
 <ul>
 <#list module.entities as entity><#if !entity.association>
 <li><a href="#${entity.name}">${entity.name}</a></li>
@@ -184,7 +187,7 @@ ${field.xrefEntity.name} (<#if field.nillable>0<#else>1</#if>..n)</#if>
 </#list>
 <#if model.entities?size &gt; 0>
 <td>
-<b><a href="#${model.name}_package">All entities in ${model.name}</a></b>:
+<a href="#${model.name}_package"><span style="font-weight:bold">All entities in ${model.name}</span></a>:
 <ul>
 <#list model.entities as entity><#if !entity.association>
 <li><a href="#${entity.name}">${entity.name}</a></li>
@@ -198,7 +201,7 @@ ${field.xrefEntity.name} (<#if field.nillable>0<#else>1</#if>..n)</#if>
 
 
 <#list modules as module>
-<h1><a name="${module.name}_package">${module.name} package</a></h1>
+<h1><a href="#${module.name}_package">${module.name} package</a></h1>
 <#if module.description?exists><p>${module.description}</p></#if>
 <img src="objectmodel-uml-diagram-${name(module)}.dot.png" style="border: solid thin black;">
 <a href="objectmodel-uml-diagram-${name(module)}.dot.png" target="_blank">show fullscreen</a>

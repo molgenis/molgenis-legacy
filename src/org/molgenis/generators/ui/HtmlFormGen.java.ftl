@@ -20,14 +20,13 @@ package ${package};
 import java.util.Vector;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 
 // molgenis
 import org.molgenis.framework.ui.html.*;
 
 
 ${imports(model, entity, "")}
-${imports(model, entity, "csv", "CsvReader")}
 
 /**
  * A HtmlForm that is preloaded with all inputs for entity ${JavaName(entity)}
@@ -35,7 +34,6 @@ ${imports(model, entity, "csv", "CsvReader")}
  */
 public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 {
-	private static final long serialVersionUID = 1L;
 	
 	public ${JavaName(entity)}Form()
 	{
@@ -75,7 +73,7 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 		    <#if field.type == "xref">
 		    <#assign xref_entity = field.xrefEntity>
 		    //TODO: when we have JPA this should become:
-			//XrefInput input = new XrefInput("${entity.name}_${field.name}", getEntity().get${JavaName(field)}());
+			//XrefInput<${JavaName(entity)}> input = new XrefInput<${JavaName(entity)}>("${entity.name}_${field.name}", getEntity().get${JavaName(field)}());
 			//create xref dummy object
 			${JavaName(xref_entity)} dummy = null;
 			if(getEntity().get${JavaName(field)}_${JavaName(field.xrefFieldName)}() != null)
@@ -88,7 +86,7 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 					</#list>
 				</#if>
 			}
-			${inputtype}Input input = new ${inputtype}Input("${entity.name}_${field.name}", ${xref_entity.getNamespace()}.${JavaName(field.xrefEntity)}.class, dummy);
+			${inputtype}Input<${JavaName(xref_entity)}> input = new ${inputtype}Input<${JavaName(xref_entity)}>("${entity.name}_${field.name}", ${xref_entity.getNamespace()}.${JavaName(field.xrefEntity)}.class, dummy);
 			<#elseif field.type == "mref">
 			<#assign xref_entity = field.xrefEntity>
 			//TODO: when we have JPA this should become:
@@ -106,7 +104,7 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 				</#if>
 				dummyList.add(dummy);
 			}   
-			${inputtype}Input input = new ${inputtype}Input("${entity.name}_${field.name}", ${xref_entity.getNamespace()}.${JavaName(field.xrefEntity)}.class, dummyList);
+			${inputtype}Input<${JavaName(xref_entity)}> input = new ${inputtype}Input<${JavaName(xref_entity)}> ("${entity.name}_${field.name}", ${xref_entity.getNamespace()}.${JavaName(field.xrefEntity)}.class, dummyList);
 			<#else>
 			${inputtype}Input input = new ${inputtype}Input("${entity.name}_${field.name}",getEntity().get${JavaName(field)}());
 			</#if>
