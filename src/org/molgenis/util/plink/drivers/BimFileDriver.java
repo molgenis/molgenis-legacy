@@ -38,12 +38,11 @@ public class BimFileDriver extends AbstractFileDriver
 	 * @return
 	 * @throws Exception
 	 */
-	public List<BimEntry> getEntries(final long from, final long to)
-			throws Exception
+	public List<BimEntry> getEntries(final long from, final long to) throws Exception
 	{
+		reader.reset();
 		final ArrayList<BimEntry> result = new ArrayList<BimEntry>();
 		int line_number = 0;
-
 		for (Tuple tuple : reader)
 		{
 			line_number++;
@@ -52,13 +51,10 @@ public class BimFileDriver extends AbstractFileDriver
 			{
 				for (int objIndex = 0; objIndex < 6; objIndex++)
 				{
-					if (tuple.getObject(objIndex) == null) throw new Exception(
-							Helper.errorMsg(line_number, objIndex));
+					if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number, objIndex));
 				}
-				BimEntry be = new BimEntry(tuple.getString(0),
-						tuple.getString(1), tuple.getDouble(2),
-						tuple.getLong(3), new Biallele(tuple.getString(4),
-								tuple.getString(5)));
+				BimEntry be = new BimEntry(tuple.getString(0), tuple.getString(1), tuple.getDouble(2),
+						tuple.getLong(3), new Biallele(tuple.getString(4), tuple.getString(5)));
 				result.add(be);
 			}
 		}
@@ -73,6 +69,7 @@ public class BimFileDriver extends AbstractFileDriver
 	 */
 	public List<BimEntry> getAllEntries() throws Exception
 	{
+		reader.reset();
 		final ArrayList<BimEntry> result = new ArrayList<BimEntry>();
 		int line_number = 0;
 		for (Tuple tuple : reader)
@@ -80,12 +77,10 @@ public class BimFileDriver extends AbstractFileDriver
 			line_number++;
 			for (int objIndex = 0; objIndex < 6; objIndex++)
 			{
-				if (tuple.getObject(objIndex) == null) throw new Exception(
-						Helper.errorMsg(line_number, objIndex));
+				if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number, objIndex));
 			}
-			BimEntry be = new BimEntry(tuple.getString(0), tuple.getString(1),
-					tuple.getDouble(2), tuple.getLong(3), new Biallele(
-							tuple.getString(4), tuple.getString(5)));
+			BimEntry be = new BimEntry(tuple.getString(0), tuple.getString(1), tuple.getDouble(2), tuple.getLong(3),
+					new Biallele(tuple.getString(4), tuple.getString(5)));
 			result.add(be);
 		}
 

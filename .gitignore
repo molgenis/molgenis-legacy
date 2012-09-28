@@ -1,9 +1,18 @@
+
 ## Build folders
+
 bin/
 build/
 target/
 tmp/
-target/
+
+<<<<<<< HEAD
+*.class
+*,so
+*,si
+*,dll
+*.o
+*.tmp
 
 ## Always ignore these
 *~
@@ -26,7 +35,6 @@ nbproject/private/
 *.tmp
 tmp*
 log*
-.classpath
 /.externalToolBuilders
 /.settings
 /test-output

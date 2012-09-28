@@ -36,6 +36,16 @@ public abstract class MolgenisGuiService
 		this.mc = mc;
 	}
 
+	/** keep track of window ids */
+	// FIXME: still needed?
+	private static long newWindowId;
+
+	public static long getNewWindowId()
+	{
+		newWindowId++;
+		return newWindowId;
+	}
+
 	public abstract ApplicationController createUserInterface();
 
 	/**

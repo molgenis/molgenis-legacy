@@ -19,6 +19,8 @@ package ${package};
 
 public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.AbstractJpaMapper<${entity.namespace}.${JavaName(entity)}>
 {
+	private final static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(${JavaName(entity)}JpaMapper.class);
+
 	public ${JavaName(entity)}JpaMapper(org.molgenis.framework.db.Database db) 
 	{
 		super(db);
@@ -361,7 +363,16 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 				create(${name(entity)});
 				++count;
 			}
-		} 
+		}
+		catch (org.hibernate.exception.SQLGrammarException sge)
+		{
+			log.error("Message: " + sge.getMessage());
+			log.error("SQL: " + sge.getSQL());
+			log.error("SQLState: " + sge.getSQLState());
+			log.error("SQLException: " + sge.getSQLException());
+			sge.printStackTrace();
+			throw new org.molgenis.framework.db.DatabaseException(sge);
+		}
 		catch (Exception ex) 
 		{
             throw new org.molgenis.framework.db.DatabaseException(ex);

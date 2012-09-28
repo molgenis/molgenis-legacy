@@ -75,6 +75,9 @@ public class TestDataSet
 			<#list entity.allFields as f><#if !f.auto>
 			//assign field ${f.name}
 			<#if f.type == "xref">
+			<#if name(entity) == name(f.xrefEntity)>
+			//ignoring cyclic relationship which would break the tests
+			<#else>
 			if( this.${name(f.xrefEntity)}.size() > 0  && i < this.${name(f.xrefEntity)}.size())
 			{ 
 				${JavaName(f.xrefEntity)} ref = this.${name(f.xrefEntity)}.get(i);
@@ -82,7 +85,11 @@ public class TestDataSet
 				e.set${JavaName(f)}_${JavaName(label)}(ref.get${JavaName(label)}() );
 				</#list>
 			}
+			</#if>
 			<#elseif f.type == "mref">
+			<#if name(entity) == name(f.xrefEntity)>
+			//ignoring cyclic relationship which would break the tests
+			<#else>
 			if( this.${name(f.xrefEntity)}.size() > 0)
 			{
 				//get a set of unique entity indexes
@@ -104,6 +111,7 @@ public class TestDataSet
 				e.set${JavaName(f)}_${JavaName(label)}( ${label}List );
 				</#if></#list>
 			}
+			</#if>
 			<#elseif f.type=="bool">
 			e.set${JavaName(f)}(randomBool(i));
 			<#elseif f.type=="date">
