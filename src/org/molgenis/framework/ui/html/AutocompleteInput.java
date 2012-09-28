@@ -1,6 +1,6 @@
 package org.molgenis.framework.ui.html;
 
-public class AutocompleteInput<E> extends HtmlInput<E>
+public class AutocompleteInput extends HtmlInput<String>
 {
 	private String entityClass;
 	private String entityField;
