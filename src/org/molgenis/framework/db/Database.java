@@ -18,7 +18,6 @@ package org.molgenis.framework.db;
 
 import java.io.File;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.text.ParseException;
 import java.util.List;
 
