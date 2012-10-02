@@ -154,60 +154,25 @@ public class JQueryTreeViewElement extends SimpleTree<JQueryTreeViewElement>
 		}
 	}
 
-	public String[] renderParent()
-	{
-		JQueryTreeViewElement parentNode = this.getParent();
-
-		JQueryTreeViewElement oldParentNode = null;
-
-		boolean oldStatus = isCollapsed;
-
-		this.isCollapsed = false;
-
-		String parentsNodes = this.toHtml(null);
-
-		this.isCollapsed = oldStatus;
-
-		while (parentNode.getParent() != null)
-		{
-			oldStatus = parentNode.isCollapsed();
-
-			parentNode.isCollapsed = false;
-
-			parentsNodes = parentNode.toHtml(parentsNodes);
-
-			parentNode.isCollapsed = oldStatus;
-
-			oldParentNode = parentNode;
-
-			parentNode = parentNode.getParent();
-		}
-
-		String[] results =
-		{ oldParentNode.getName(), parentsNodes };
-
-		return results;
-	}
-
 	public String toHtml()
 	{
 
 		String node = null;
 
-		String childrenNode = "";
-
-		if (this.hasChildren())
-		{
-
-			for (JQueryTreeViewElement childNode : getChildren())
-			{
-				childrenNode += childNode.toHtml();
-			}
-
-		}
-
 		if (!this.isIsbottom())
 		{
+			String childrenNode = "";
+
+			if (!this.isCollapsed() && this.hasChildren())
+			{
+
+				for (JQueryTreeViewElement childNode : getChildren())
+				{
+					childrenNode += childNode.toHtml();
+				}
+
+			}
+
 			node = "<li id = \"" + getName().replaceAll(" ", "_") + "\" class=\"" + (isCollapsed ? "closed" : "open")
 					+ "\"><span class=\"folder\">" + (getLabel() == null ? getName() : getLabel())
 					+ "</span><ul style=\"display:" + (isCollapsed ? "none" : "block") + "\">" + childrenNode
