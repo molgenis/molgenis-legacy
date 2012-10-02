@@ -1,4 +1,4 @@
-package org.molgenis.util.test;
+package org.molgenis.util;
 
 import static org.junit.Assert.assertEquals;
 
@@ -6,19 +6,17 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.util.ExcelReader;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.test.AbstractResourceTest;
 import org.testng.annotations.Test;
 
-public class ExcelReaderTest
+public class ExcelReaderTest extends AbstractResourceTest
 {
 	@Test
 	public void testIterator() throws Exception
 	{
-		//put this in file
-		File csvFile = new File("/Users/mswertz/test2.xls");
+		File csvFile = getTestResource("/test.xls");
 
-		ExcelReader reader = new ExcelReader(csvFile,"test");
+		ExcelReader reader = new ExcelReader(csvFile, "test");
 
 		List<Tuple> result = new ArrayList<Tuple>();
 		for (Tuple t : reader)
