@@ -138,7 +138,7 @@
 	  
 	<target name="findbugs">
 	   	<findbugs home="${findbugs.home}"
-	       	output="html" outputFile="${dir.build}/findbugs.html"
+	       	output="xml:withMessages" outputFile="${dir.build}/findbugs.xml"
 	       	jvmargs="-Xms1024M -Xmx1024M ">
 	      	<sourcePath path="${dir.src}" />
 	       	<class location="${dir.classes}" />
