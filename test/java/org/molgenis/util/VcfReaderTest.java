@@ -1,4 +1,4 @@
-package org.molgenis.util.test;
+package org.molgenis.util;
 
 
 /**
