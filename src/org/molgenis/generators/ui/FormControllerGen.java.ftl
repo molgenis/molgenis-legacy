@@ -32,7 +32,8 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FormController;
 
 import org.molgenis.framework.ui.html.*;
-
+import org.molgenis.framework.db.QueryRule.Operator;  
+import org.molgenis.framework.db.DatabaseException;
 
 ${imports(model, model.getEntity(entity), "")}
 ${imports(model, model.getEntity(entity), "csv", "CsvReader")}
