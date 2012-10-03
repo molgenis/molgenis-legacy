@@ -15,22 +15,35 @@ public class TextFileUtils
 	 * fileEndsWithNewlineChar() in combination with this function. See:
 	 * http://stackoverflow
 	 * .com/questions/453018/number-of-lines-in-a-file-in-java
-	 * @param inFile 
+	 * 
+	 * @param inFile
 	 * 
 	 * @return
 	 * @throws IOException
 	 */
 	public static int getNumberOfLines(File inFile) throws IOException
 	{
-		LineNumberReader lnr = new LineNumberReader(new FileReader(inFile));
-		lnr.skip(Long.MAX_VALUE);
-		return lnr.getLineNumber() + 1;
+		LineNumberReader lnr = null;
+		try
+		{
+			lnr = new LineNumberReader(new FileReader(inFile));
+			lnr.skip(Long.MAX_VALUE);
+			return lnr.getLineNumber() + 1;
+		}
+		finally
+		{
+			if (lnr != null)
+			{
+				lnr.close();
+			}
+		}
 	}
 
 	/**
 	 * Find out if the source file ends with a newline character. Useful in
 	 * combination with getNumberOfLines().
-	 * @param inFile 
+	 * 
+	 * @param inFile
 	 * 
 	 * @return
 	 * @throws Exception
@@ -59,7 +72,8 @@ public class TextFileUtils
 	 * combination \r\n is reduced to \n before counting. You will probably want
 	 * to use this in combination with the more lightweight check of
 	 * fileEndsWithNewlineChar().
-	 * @param inFile 
+	 * 
+	 * @param inFile
 	 * 
 	 * @return
 	 * @throws Exception
