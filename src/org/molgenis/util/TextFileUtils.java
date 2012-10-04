@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.RandomAccessFile;
 
+import org.apache.commons.io.IOUtils;
+
 public class TextFileUtils
 {
 
@@ -32,10 +34,7 @@ public class TextFileUtils
 		}
 		finally
 		{
-			if (lnr != null)
-			{
-				lnr.close();
-			}
+			IOUtils.closeQuietly(lnr);
 		}
 	}
 
