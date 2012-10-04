@@ -152,7 +152,6 @@ public class JDBCDatabase extends AbstractDatabase
 		catch (IOException e)
 		{
 			InputStream is2 = ClassLoader.getSystemResourceAsStream(propertiesFilePath);
-			;
 			try
 			{
 				p.load(is2);
