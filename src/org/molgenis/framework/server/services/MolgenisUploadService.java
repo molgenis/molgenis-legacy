@@ -34,17 +34,17 @@ public class MolgenisUploadService implements MolgenisService
 	Logger logger = Logger.getLogger(MolgenisDownloadService.class);
 
 	/** the name of the datatype input */
-	public static String INPUT_DATATYPE = "data_type_input";
+	public static final String INPUT_DATATYPE = "data_type_input";
 	/** the name of the data input */
-	public static String INPUT_DATA = "data_input";
+	public static final String INPUT_DATA = "data_input";
 	/** boolean indicating file upload */
-	public static String INPUT_FILE = "data_file";
+	public static final String INPUT_FILE = "data_file";
 	/** the name of the submit button */
-	public static String INPUT_SUBMIT = "submit_input";
+	public static final String INPUT_SUBMIT = "submit_input";
 	/** the action input */
-	public static String INPUT_ACTION = "data_action";
+	public static final String INPUT_ACTION = "data_action";
 	/** indicating wether uploads should return added data */
-	public static String INPUT_SILENT = "data_silent";
+	public static final String INPUT_SILENT = "data_silent";
 
 	// private MolgenisContext mc;
 
