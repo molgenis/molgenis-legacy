@@ -11,6 +11,7 @@ package org.molgenis.model;
 // jdk
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +21,9 @@ import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
@@ -890,20 +893,34 @@ public class MolgenisModelParser
 			try
 			{
 				builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			}
+			catch (ParserConfigurationException e1)
+			{
+				logger.error(e1.getMessage());
+				throw new RuntimeException(e1);
+			}
+			try
+			{
 				document = builder.parse(filename.trim());
 			}
 			catch (Exception e)
 			{
+				InputStream is = null;
 				try
 				{
 					// try to load from classpath
-					document = builder.parse(ClassLoader.getSystemResourceAsStream(filename.trim()));
+					is = ClassLoader.getSystemResourceAsStream(filename.trim());
+					document = builder.parse(is);
 				}
 				catch (Exception e2)
 				{
 					logger.error("parsing of file '" + filename + "' failed.");
 					e.printStackTrace();
 					throw new MolgenisModelException("Parsing of DSL (schema) failed: " + e.getMessage());
+				}
+				finally
+				{
+					IOUtils.closeQuietly(is);
 				}
 			}
 
@@ -1379,22 +1396,35 @@ public class MolgenisModelParser
 		DocumentBuilder builder = null;
 		try
 		{
-			// initialize the document
 			builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			document = builder.parse(filename);
+		}
+		catch (ParserConfigurationException e1)
+		{
+			logger.error(e1.getMessage());
+			throw new RuntimeException(e1);
+		}
+		try
+		{
+			document = builder.parse(filename.trim());
 		}
 		catch (Exception e)
 		{
+			InputStream is = null;
 			try
 			{
 				// try to load from classpath
-				document = builder.parse(ClassLoader.getSystemResourceAsStream(filename.trim()));
+				is = ClassLoader.getSystemResourceAsStream(filename.trim());
+				document = builder.parse(is);
 			}
 			catch (Exception e2)
 			{
 				logger.error("parsing of file '" + filename + "' failed.");
 				e.printStackTrace();
 				throw new MolgenisModelException("Parsing of DSL (ui) failed: " + e.getMessage());
+			}
+			finally
+			{
+				IOUtils.closeQuietly(is);
 			}
 		}
 		return document;
