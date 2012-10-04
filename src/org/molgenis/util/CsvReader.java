@@ -1,7 +1,5 @@
 package org.molgenis.util;
 
-
- 
 /**
  * Read comma, tab, semi-colon or space separated values (csv/tab).
  * 
@@ -15,6 +13,7 @@ package org.molgenis.util;
  * 
  * 
  * Example:
+ * 
  * <pre>
  * CsvFileReader(aFile).parse(new CsvReaderListener()
  * {
@@ -35,12 +34,12 @@ public interface CsvReader extends TupleReader
 	 * 
 	 * @param string
 	 */
-	public abstract void setSeparator(char string);
+	public void setSeparator(char string);
 
 	/**
 	 * Disable the check of the header number.
 	 * 
 	 * @param b
 	 */
-	public abstract void disableHeader(boolean b);
+	public void disableHeader(boolean b);
 }
