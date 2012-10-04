@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.zip.DataFormatException;
 
+import org.apache.commons.io.IOUtils;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.SimpleTuple;
@@ -18,9 +19,8 @@ public class VcfReader
 {
 	private CsvReader reader;
 	private List<String> fileHeaders = new ArrayList<String>();
-	private static List<String> normalHeaders = Arrays.asList(new String[]{"#CHROM", "POS","ID", "REF", "ALT", 
-			"QUAL","FILTER","INFO","FORMAT", ""});
-	
+	private static List<String> normalHeaders = Arrays.asList(new String[]
+	{ "#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", "" });
 
 	public VcfReader(File f) throws IOException, DataFormatException
 	{
@@ -29,23 +29,30 @@ public class VcfReader
 		// iterate through file to find the last line with ##, that is the
 		// blockstart
 		String blockStart = null;
-		BufferedReader br = new BufferedReader(new FileReader(f));
-		String strLine;
-		// Read File Line By Line
-		while ((strLine = br.readLine()) != null)
+		BufferedReader br = null;
+		try
 		{
-			if (strLine.startsWith("##"))
+			br = new BufferedReader(new FileReader(f));
+			String strLine;
+			// Read File Line By Line
+			while ((strLine = br.readLine()) != null)
 			{
-				fileHeaders.add(strLine);
-				blockStart = strLine;
+				if (strLine.startsWith("##"))
+				{
+					fileHeaders.add(strLine);
+					blockStart = strLine;
+				}
+				else
+					break;
 			}
-			else
-				break;
 		}
-
+		finally
+		{
+			IOUtils.closeQuietly(br);
+		}
 		reader.setBlockStart(blockStart);
 	}
-	
+
 	public List<VcfFilter> getFilters()
 	{
 		List<VcfFilter> result = new ArrayList<VcfFilter>();
@@ -73,7 +80,7 @@ public class VcfReader
 		}
 		return result;
 	}
-	
+
 	public List<VcfInfo> getInfos()
 	{
 		List<VcfInfo> result = new ArrayList<VcfInfo>();
@@ -101,16 +108,16 @@ public class VcfReader
 	public int parse(final VcfReaderListener listener) throws Exception
 	{
 		final VcfReader vcf = this;
-		
+
 		int lineNumber = 0;
-		for(Tuple tuple: reader)
+		for (Tuple tuple : reader)
 		{
 			VcfRecord record = new VcfRecord(vcf, tuple);
 			listener.handleLine(lineNumber++, record);
 		}
 		return lineNumber;
 	}
-	
+
 	private Tuple parseHeader(String settings)
 	{
 		Tuple result = new SimpleTuple();
@@ -179,12 +186,12 @@ public class VcfReader
 	public List<String> getSampleList()
 	{
 		List<String> result = new ArrayList<String>();
-		
+
 		try
 		{
-			for(String header: this.getColumnHeaders())
+			for (String header : this.getColumnHeaders())
 			{
-				if(!normalHeaders.contains(header) ) result.add(header);
+				if (!normalHeaders.contains(header)) result.add(header);
 			}
 		}
 		catch (Exception e)

@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.AbstractDatabase;
@@ -116,8 +117,15 @@ public class JDBCDatabase extends AbstractDatabase
 	{
 		super();
 		Properties p = new Properties();
-		p.load(new FileInputStream(propertiesFilePath));
-
+		InputStream is = new FileInputStream(propertiesFilePath);
+		try
+		{
+			p.load(is);
+		}
+		finally
+		{
+			IOUtils.closeQuietly(is);
+		}
 		BasicDataSource dSource = new BasicDataSource();
 		dSource.setDriverClassName(p.getProperty("db_driver"));
 		dSource.setUsername(p.getProperty("db_user"));
@@ -135,13 +143,27 @@ public class JDBCDatabase extends AbstractDatabase
 	{
 		super();
 		Properties p = new Properties();
+		InputStream is = null;
 		try
 		{
-			p.load(new FileInputStream(propertiesFilePath));
+			is = new FileInputStream(propertiesFilePath);
+			p.load(is);
 		}
-		catch (Exception e)
+		catch (IOException e)
 		{
-			p.load(ClassLoader.getSystemResourceAsStream(propertiesFilePath));
+			InputStream is2 = ClassLoader.getSystemResourceAsStream(propertiesFilePath);
+			try
+			{
+				p.load(is2);
+			}
+			finally
+			{
+				IOUtils.closeQuietly(is2);
+			}
+		}
+		finally
+		{
+			IOUtils.closeQuietly(is);
 		}
 
 		BasicDataSource dSource = new BasicDataSource();

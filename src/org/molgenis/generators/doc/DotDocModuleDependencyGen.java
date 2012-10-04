@@ -22,11 +22,10 @@ import freemarker.template.TemplateException;
 
 public class DotDocModuleDependencyGen extends Generator
 {
-	public static final transient Logger logger = Logger
-			.getLogger(DotDocModuleDependencyGen.class);
+	public static final transient Logger logger = Logger.getLogger(DotDocModuleDependencyGen.class);
 
 	// need to add input and output file
-	public static String GRAPHVIZ_COMMAND_WINDOWS = "dot";
+	public static final String GRAPHVIZ_COMMAND_WINDOWS = "dot";
 
 	@Override
 	public String getDescription()
@@ -40,15 +39,12 @@ public class DotDocModuleDependencyGen extends Generator
 		this.generate(model, options, false);
 	}
 
-	public void generate(Model model, MolgenisOptions options, boolean wait)
-			throws Exception
+	public void generate(Model model, MolgenisOptions options, boolean wait) throws Exception
 	{
-		Template template = createTemplate("/" + getClass().getSimpleName()
-				+ ".java.ftl");
+		Template template = createTemplate("/" + getClass().getSimpleName() + ".java.ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 
-		File target = new File(this.getDocumentationPath(options)
-				+ "/module-dependency-diagram.dot");
+		File target = new File(this.getDocumentationPath(options) + "/module-dependency-diagram.dot");
 		target.getParentFile().mkdirs();
 
 		// count the relationships
@@ -76,8 +72,7 @@ public class DotDocModuleDependencyGen extends Generator
 				// xrefs/mrefs
 				for (Field f : e.getFields())
 				{
-					if (f.getType().equals(XrefField.class)
-							|| f.getType().equals(MrefField.class))
+					if (f.getType().equals(XrefField.class) || f.getType().equals(MrefField.class))
 					{
 						addRule(mapOfRelations, e, f.getXrefEntity());
 					}
@@ -96,10 +91,9 @@ public class DotDocModuleDependencyGen extends Generator
 
 	private void addRule(Map<String, Integer> mapOfRelations, Entity e, Entity i)
 	{
-		if (e.getModule() != null && i.getModule() != null && e.getModule()!= i.getModule())
+		if (e.getModule() != null && i.getModule() != null && e.getModule() != i.getModule())
 		{
-			String rule = "\""+e.getModule().getName() + "\"->\""
-					+ i.getModule().getName()+"\"";
+			String rule = "\"" + e.getModule().getName() + "\"->\"" + i.getModule().getName() + "\"";
 			if (!mapOfRelations.containsKey(rule)) mapOfRelations.put(rule, 0);
 			mapOfRelations.put(rule, mapOfRelations.get(rule) + 1);
 			logger.info(rule);
@@ -107,8 +101,8 @@ public class DotDocModuleDependencyGen extends Generator
 
 	}
 
-	private void apply(Map<String, Object> templateArgs, Template template,
-			File target) throws IOException, TemplateException
+	private void apply(Map<String, Object> templateArgs, Template template, File target) throws IOException,
+			TemplateException
 	{
 
 		OutputStream targetOut = new FileOutputStream(target);
@@ -141,8 +135,7 @@ public class DotDocModuleDependencyGen extends Generator
 			// else
 			// windows
 			// command flags infile outfile
-			command += "" + GRAPHVIZ_COMMAND_WINDOWS + " -T" + type + " -O \""
-					+ dotFile.getAbsolutePath() + "\"";
+			command += "" + GRAPHVIZ_COMMAND_WINDOWS + " -T" + type + " -O \"" + dotFile.getAbsolutePath() + "\"";
 
 			Process p;
 			String os = System.getProperty("os.name").toLowerCase();
@@ -165,14 +158,11 @@ public class DotDocModuleDependencyGen extends Generator
 
 			logger.debug("Executing: " + command);
 			if (wait) p.waitFor();
-			logger
-					.debug("Data model image was generated succesfully.\nOutput:\n"
-							+ result);
+			logger.debug("Data model image was generated succesfully.\nOutput:\n" + result);
 
 			{
 				// command flags infile outfile
-				command = "" + GRAPHVIZ_COMMAND_WINDOWS + " -Tsvg" + " -O \""
-						+ dotFile.getAbsolutePath() + "\"";
+				command = "" + GRAPHVIZ_COMMAND_WINDOWS + " -Tsvg" + " -O \"" + dotFile.getAbsolutePath() + "\"";
 			}
 			logger.debug("Executing: " + command);
 
@@ -192,18 +182,14 @@ public class DotDocModuleDependencyGen extends Generator
 				{ "/bin/sh", "-c", command });
 			}
 			if (wait) p.waitFor();
-			logger
-					.debug("Data model image was generated succesfully.\nOutput:\n"
-							+ result);
+			logger.debug("Data model image was generated succesfully.\nOutput:\n" + result);
 
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			logger
-					.error("Generation of graphical documentation failed: return code "
-							+ e.getMessage()
-							+ ". Install GraphViz and put dot.exe on your path.");
+			logger.error("Generation of graphical documentation failed: return code " + e.getMessage()
+					+ ". Install GraphViz and put dot.exe on your path.");
 		}
 		finally
 		{

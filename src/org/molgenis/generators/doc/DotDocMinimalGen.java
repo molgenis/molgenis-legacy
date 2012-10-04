@@ -22,9 +22,8 @@ public class DotDocMinimalGen extends Generator
 {
 	public static final transient Logger logger = Logger.getLogger(DotDocMinimalGen.class);
 
-	
 	// need to add input and output file
-	public static String GRAPHVIZ_COMMAND_WINDOWS = "dot";
+	public static final String GRAPHVIZ_COMMAND_WINDOWS = "dot";
 
 	@Override
 	public String getDescription()
@@ -42,7 +41,7 @@ public class DotDocMinimalGen extends Generator
 		target.getParentFile().mkdirs();
 
 		List<Entity> entityList = model.getEntities();
-		// MolgenisLanguage.sortEntitiesByDependency(entityList, model); 
+		// MolgenisLanguage.sortEntitiesByDependency(entityList, model);
 		templateArgs.put("model", model);
 		templateArgs.put("module", model);
 		templateArgs.put("entities", entityList);
@@ -57,7 +56,8 @@ public class DotDocMinimalGen extends Generator
 			templateArgs.put("model", model);
 			templateArgs.put("module", module);
 			templateArgs.put("entities", entityList);
-			target = new File(this.getDocumentationPath(options) + "/objectmodel-uml-diagram-summary-" + module.getName() + ".dot");
+			target = new File(this.getDocumentationPath(options) + "/objectmodel-uml-diagram-summary-"
+					+ module.getName() + ".dot");
 			apply(templateArgs, template, target);
 
 			executeDot(target, "png");
@@ -65,7 +65,8 @@ public class DotDocMinimalGen extends Generator
 		}
 	}
 
-	private void apply(Map<String, Object> templateArgs, Template template, File target) throws IOException, TemplateException
+	private void apply(Map<String, Object> templateArgs, Template template, File target) throws IOException,
+			TemplateException
 	{
 
 		OutputStream targetOut = new FileOutputStream(target);
@@ -77,27 +78,29 @@ public class DotDocMinimalGen extends Generator
 	{
 		// write script to disc
 		String command = "";
-//		String error = "";
+		// String error = "";
 		String result = "";
-//		String output = "";
-//		File inputfile = null;
-//		File outputfile = null;
+		// String output = "";
+		// File inputfile = null;
+		// File outputfile = null;
 		try
 		{
 
 			// execute the scripts
-//			if (System.getProperty("os.name").toLowerCase().indexOf("windows") == -1)
-//			{
-//				// make tempfiles executable
-//				// command = "chmod 777 "+inputfile.getCanonicalPath()+"\n";
-//				// logger.debug("added chmod 777 on input file");
-//				command += GRAPHVIZ_COMMAND_WINDOWS;
-//			}
-//			else
+			// if
+			// (System.getProperty("os.name").toLowerCase().indexOf("windows")
+			// == -1)
+			// {
+			// // make tempfiles executable
+			// // command = "chmod 777 "+inputfile.getCanonicalPath()+"\n";
+			// // logger.debug("added chmod 777 on input file");
+			// command += GRAPHVIZ_COMMAND_WINDOWS;
+			// }
+			// else
 			// windows
 			{
 				// command flags infile outfile
-				command += "" + GRAPHVIZ_COMMAND_WINDOWS + " -T" + type + " -O \"" + dotFile.getAbsolutePath()+"\"";
+				command += "" + GRAPHVIZ_COMMAND_WINDOWS + " -T" + type + " -O \"" + dotFile.getAbsolutePath() + "\"";
 			}
 			logger.debug("Executing: " + command);
 			Runtime.getRuntime().exec(command);
@@ -105,7 +108,8 @@ public class DotDocMinimalGen extends Generator
 		}
 		catch (Exception e)
 		{
-			logger.error("Generation of graphical documentation failed: return code " + e.getMessage() + ". Install GraphViz and put dot.exe on your path.");
+			logger.error("Generation of graphical documentation failed: return code " + e.getMessage()
+					+ ". Install GraphViz and put dot.exe on your path.");
 		}
 		finally
 		{
@@ -115,18 +119,19 @@ public class DotDocMinimalGen extends Generator
 	}
 
 	/** Helper function to translate streams to strings */
-//	private String streamToString(InputStream inputStream) throws IOException
-//	{
-//		StringBuffer fileContents = new StringBuffer();
-//		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-//		String line;
-//		while ((line = reader.readLine()) != null)
-//		{
-//			fileContents.append(line + "\n");
-//		}
-//		reader.close();
-//		inputStream.close();
-//		return fileContents.toString();
-//	}
+	// private String streamToString(InputStream inputStream) throws IOException
+	// {
+	// StringBuffer fileContents = new StringBuffer();
+	// BufferedReader reader = new BufferedReader(new
+	// InputStreamReader(inputStream));
+	// String line;
+	// while ((line = reader.readLine()) != null)
+	// {
+	// fileContents.append(line + "\n");
+	// }
+	// reader.close();
+	// inputStream.close();
+	// return fileContents.toString();
+	// }
 
 }

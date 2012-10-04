@@ -12,6 +12,7 @@ import java.text.ParseException;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.util.IOUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.server.AuthStatus;
@@ -31,44 +32,45 @@ import org.molgenis.util.TupleWriter;
 public class MolgenisUploadService implements MolgenisService
 {
 	Logger logger = Logger.getLogger(MolgenisDownloadService.class);
-	
+
 	/** the name of the datatype input */
-	public static String INPUT_DATATYPE = "data_type_input";
+	public static final String INPUT_DATATYPE = "data_type_input";
 	/** the name of the data input */
-	public static String INPUT_DATA = "data_input";
+	public static final String INPUT_DATA = "data_input";
 	/** boolean indicating file upload */
-	public static String INPUT_FILE = "data_file";
+	public static final String INPUT_FILE = "data_file";
 	/** the name of the submit button */
-	public static String INPUT_SUBMIT = "submit_input";
+	public static final String INPUT_SUBMIT = "submit_input";
 	/** the action input */
-	public static String INPUT_ACTION = "data_action";
+	public static final String INPUT_ACTION = "data_action";
 	/** indicating wether uploads should return added data */
-	public static String INPUT_SILENT = "data_silent";
-	
-//	private MolgenisContext mc;
-	
+	public static final String INPUT_SILENT = "data_silent";
+
+	// private MolgenisContext mc;
+
 	public MolgenisUploadService(MolgenisContext mc)
 	{
-//		this.mc = mc;
+		// this.mc = mc;
 	}
+
 	@Override
-	public void handleRequest(MolgenisRequest req, MolgenisResponse res)
-			throws ParseException, DatabaseException, IOException
+	public void handleRequest(MolgenisRequest req, MolgenisResponse res) throws ParseException, DatabaseException,
+			IOException
 	{
 		logger.info("starting upload " + req.getRequest().getPathInfo());
 		long start_time = System.currentTimeMillis();
-	
+
 		res.getResponse().setBufferSize(10000);
 		res.getResponse().setContentType("text/html; charset=UTF-8");
-		
+
 		PrintWriter out = res.getResponse().getWriter();
 		Database db = req.getDatabase();
 
 		try
 		{
-			
+
 			AuthStatus authStatus = MolgenisServiceAuthenticationHelper.handleAuthentication(req, out);
-			
+
 			if (!authStatus.isShowApi())
 			{
 				out.println("<html><body>");
@@ -82,7 +84,7 @@ public class MolgenisUploadService implements MolgenisService
 				{
 					out.println("<html><body>");
 					authStatus.getPrintMe();
-					if(req.getDatabase().getLogin().isAuthenticated())
+					if (req.getDatabase().getLogin().isAuthenticated())
 					{
 						out.println(MolgenisServiceAuthenticationHelper.displayLogoutForm());
 					}
@@ -90,12 +92,11 @@ public class MolgenisUploadService implements MolgenisService
 					out.println("</body></html>");
 				}
 				// if no data provided, show csv input form
-				else if (req.getObject(INPUT_DATA) == null
-						&& req.getObject(INPUT_FILE) == null)
+				else if (req.getObject(INPUT_DATA) == null && req.getObject(INPUT_FILE) == null)
 				{
 					out.println("<html><body>");
 					authStatus.getPrintMe();
-					if(req.getDatabase().getLogin().isAuthenticated())
+					if (req.getDatabase().getLogin().isAuthenticated())
 					{
 						out.println(MolgenisServiceAuthenticationHelper.displayLogoutForm());
 					}
@@ -121,92 +122,88 @@ public class MolgenisUploadService implements MolgenisService
 			out.close();
 			db.close();
 		}
-		
-		logger.info("servlet took: "
-				+ (System.currentTimeMillis() - start_time) + " ms");
+
+		logger.info("servlet took: " + (System.currentTimeMillis() - start_time) + " ms");
 		logger.info("------------");
-			
+
 	}
-	
+
 	private void showDataTypeChoice(PrintWriter out, MolgenisRequest req)
 	{
 		out.println("<form method=\"post\" enctype=\"multipart/form-data\">");
 		out.println("<h1>Data upload (step 1)</h1>");
 		out.println("Choose your data type.");
-		out.println("<table><tr><td><label>Data type:</label></td><td><select name=\""
-				+ INPUT_DATATYPE + "\">");
+		out.println("<table><tr><td><label>Data type:</label></td><td><select name=\"" + INPUT_DATATYPE + "\">");
 
-		for (Class<? extends Entity> c : req.getDatabase()
-				.getEntityClasses())
+		for (Class<? extends Entity> c : req.getDatabase().getEntityClasses())
 		{
 			// write to screen
-			out.println("<option value=\"" + c.getName() + "\">"
-					+ c.getName() + "</option>");
+			out.println("<option value=\"" + c.getName() + "\">" + c.getName() + "</option>");
 		}
 		out.println("</select></td></tr>");
-		out.println("<tr><td>&nbsp;</td><td><input type=\"submit\" name=\""
-				+ INPUT_SUBMIT + "\" value=\"Submit\"></td></tr>");
+		out.println("<tr><td>&nbsp;</td><td><input type=\"submit\" name=\"" + INPUT_SUBMIT
+				+ "\" value=\"Submit\"></td></tr>");
 		out.println("</table></form>");
 	}
-	
-	private void showCsvInputForm(PrintWriter out, MolgenisRequest req) throws InstantiationException, IllegalAccessException
+
+	private void showCsvInputForm(PrintWriter out, MolgenisRequest req) throws InstantiationException,
+			IllegalAccessException
 	{
-		 //String clazzName =
-				 req.getString(INPUT_DATATYPE);
-				 
-				 //String simpleEntityName = clazzName.substring(clazzName.lastIndexOf('.')+1);
-				 
-				 //Class<? extends Entity> entityClass = req.getDatabase().getClassForName(simpleEntityName);
-				 //Entity template = entityClass.newInstance();
-				
-				 out.println("<html><body><form method=\"post\" enctype=\"multipart/form-data\">");
-				 out.println("<h1>Data upload (step 2)</h1>");
-				 out.println("Enter your data as CSV.");
-				 
-				 //FIXME: where is the CSV input form?
-				 
-//				 out
-//				 .println("<table><tr><td><label>Data type:</label></td><td><select name=\""
-//				 + INPUT_DATATYPE + "\">");
-//				
-//				 for (Class<? extends Entity> c : req.getDatabase().getEntityClasses())
-//				 {
-//				 // write to screen
-//				 out.println("<option value=\"" + c.getName() + "\">"
-//				 + c.getName() + "</option>");
-//				 }
-//				 out.println("</select></td></tr>");
-//				 out
-//				 .println("<tr><td></td><td><input type=\"submit\" name=\""
-//				 + INPUT_SUBMIT
-//				 + "\" value=\"Submit\"></td></tr>");
-//				 out.println("</table></form></body></html>");
-				 
+		// String clazzName =
+		req.getString(INPUT_DATATYPE);
+
+		// String simpleEntityName =
+		// clazzName.substring(clazzName.lastIndexOf('.')+1);
+
+		// Class<? extends Entity> entityClass =
+		// req.getDatabase().getClassForName(simpleEntityName);
+		// Entity template = entityClass.newInstance();
+
+		out.println("<html><body><form method=\"post\" enctype=\"multipart/form-data\">");
+		out.println("<h1>Data upload (step 2)</h1>");
+		out.println("Enter your data as CSV.");
+
+		// FIXME: where is the CSV input form?
+
+		// out
+		// .println("<table><tr><td><label>Data type:</label></td><td><select name=\""
+		// + INPUT_DATATYPE + "\">");
+		//
+		// for (Class<? extends Entity> c :
+		// req.getDatabase().getEntityClasses())
+		// {
+		// // write to screen
+		// out.println("<option value=\"" + c.getName() + "\">"
+		// + c.getName() + "</option>");
+		// }
+		// out.println("</select></td></tr>");
+		// out
+		// .println("<tr><td></td><td><input type=\"submit\" name=\""
+		// + INPUT_SUBMIT
+		// + "\" value=\"Submit\"></td></tr>");
+		// out.println("</table></form></body></html>");
+
 	}
-	
+
 	private void processRequest(MolgenisRequest req, PrintWriter out) throws Exception
 	{
 		NumberFormat formatter = NumberFormat.getInstance(Locale.US);
 		logger.info("processing add/update/delete");
 		String action = null; // ADD, UPDATE, REMOVE
 		Class<? extends Entity> entityClass = null;
-		
+
 		String clazzName = req.getString(INPUT_DATATYPE);
-		String simpleEntityName = clazzName.substring(clazzName.lastIndexOf('.')+1);						
+		String simpleEntityName = clazzName.substring(clazzName.lastIndexOf('.') + 1);
 		entityClass = req.getDatabase().getClassForName(simpleEntityName);
 
 		// get the constants
 		Tuple constants = new SimpleTuple();
 		for (String column : req.getFields())
 		{
-			if (!column.equals(INPUT_DATATYPE)
-					&& !column.equals(INPUT_DATA)
-					&& !column.equals(INPUT_ACTION)
-					&& !column.equals(INPUT_SUBMIT)
-					&& !req.getString(column).equals(""))
+			if (!column.equals(INPUT_DATATYPE) && !column.equals(INPUT_DATA) && !column.equals(INPUT_ACTION)
+					&& !column.equals(INPUT_SUBMIT) && !req.getString(column).equals(""))
 			{
-				constants.set(column,
-						req.getObject(column));
+				constants.set(column, req.getObject(column));
 			}
 		}
 		action = req.getString(INPUT_ACTION);
@@ -223,10 +220,8 @@ public class MolgenisUploadService implements MolgenisService
 		if (action.equals("ADD"))
 		{
 			File temp = File.createTempFile("molgenis", "tab");
-			TupleWriter writer = new CsvWriter(new PrintWriter(
-					new BufferedWriter(new FileWriter(temp))));
-			if (req.getObject(INPUT_SILENT) != null
-					&& req.getBool(INPUT_SILENT) == true)
+			TupleWriter writer = new CsvWriter(new PrintWriter(new BufferedWriter(new FileWriter(temp))));
+			if (req.getObject(INPUT_SILENT) != null && req.getBool(INPUT_SILENT) == true)
 			{
 				writer.close();
 				writer = null;
@@ -242,78 +237,61 @@ public class MolgenisUploadService implements MolgenisService
 			else if (req.getObject(INPUT_FILE) != null)
 			{
 				logger.info("processing file upload...");
-				nRowsChanged = db.add(
-						entityClass,
-						new CsvFileReader(req
-								.getFile(INPUT_FILE)), writer);
+				nRowsChanged = db.add(entityClass, new CsvFileReader(req.getFile(INPUT_FILE)), writer);
 			}
 			else
 			{
 				logger.error("no input data or input file provided.");
 				out.print("ERROR: no input data or input file provided.");
 			}
-			out.print("Uploaded " + formatter.format(nRowsChanged)
-					+ " rows of " + entityClass.getCanonicalName()
+			out.print("Uploaded " + formatter.format(nRowsChanged) + " rows of " + entityClass.getCanonicalName()
 					+ "\n");
 
 			if (writer != null) writer.close();
-			BufferedReader reader = new BufferedReader(
-					new FileReader(temp));
-			String line = null;
-			while ((line = reader.readLine()) != null)
+			BufferedReader reader = null;
+			try
 			{
-				out.println(line);
+				reader = new BufferedReader(new FileReader(temp));
+				String line = null;
+				while ((line = reader.readLine()) != null)
+				{
+					out.println(line);
+				}
 			}
-			temp.delete();
+			finally
+			{
+				IOUtils.closeQuietly(reader);
+				temp.delete();
+			}
 		}
 		else if (action.equals("UPDATE"))
 		{
 			if (req.getObject(INPUT_DATA) != null)
 			{
-				nRowsChanged = db.update(
-						entityClass,
-						new CsvStringReader(req
-								.getString(INPUT_DATA)));
-				out.print("Updated "
-						+ formatter.format(nRowsChanged)
-						+ " rows of "
-						+ entityClass.getCanonicalName() + "\n");
+				nRowsChanged = db.update(entityClass, new CsvStringReader(req.getString(INPUT_DATA)));
+				out.print("Updated " + formatter.format(nRowsChanged) + " rows of " + entityClass.getCanonicalName()
+						+ "\n");
 			}
 			else if (req.getObject(INPUT_FILE) != null)
 			{
-				nRowsChanged = db.update(
-						entityClass,
-						new CsvFileReader(req
-								.getFile(INPUT_FILE)));
-				out.print("Updated "
-						+ formatter.format(nRowsChanged)
-						+ " rows of "
-						+ entityClass.getCanonicalName() + "\n");
+				nRowsChanged = db.update(entityClass, new CsvFileReader(req.getFile(INPUT_FILE)));
+				out.print("Updated " + formatter.format(nRowsChanged) + " rows of " + entityClass.getCanonicalName()
+						+ "\n");
 			}
 		}
 		else if (action.equals("REMOVE"))
 		{
 			if (req.getObject(INPUT_DATA) != null)
 			{
-				nRowsChanged = db.remove(
-						entityClass,
-						new CsvStringReader(req
-								.getString(INPUT_DATA)));
-				out.print("Removed "
-						+ formatter.format(nRowsChanged)
-						+ " rows of "
-						+ entityClass.getCanonicalName() + "\n");
+				nRowsChanged = db.remove(entityClass, new CsvStringReader(req.getString(INPUT_DATA)));
+				out.print("Removed " + formatter.format(nRowsChanged) + " rows of " + entityClass.getCanonicalName()
+						+ "\n");
 			}
 			else if (req.getObject(INPUT_FILE) != null)
 			{
-				nRowsChanged = db.remove(
-						entityClass,
-						new CsvFileReader(req
-								.getFile(INPUT_FILE)));
-				out.print("Removed "
-						+ formatter.format(nRowsChanged)
-						+ " rows of "
-						+ entityClass.getCanonicalName() + "\n");
+				nRowsChanged = db.remove(entityClass, new CsvFileReader(req.getFile(INPUT_FILE)));
+				out.print("Removed " + formatter.format(nRowsChanged) + " rows of " + entityClass.getCanonicalName()
+						+ "\n");
 			}
 		}
 		else
