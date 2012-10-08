@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.ui.MolgenisOriginalStyle;
 
@@ -30,22 +31,25 @@ public class ResourceServlet extends HttpServlet
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		String resourcePath = request.getRequestURI().substring(request.getContextPath().length() + 1);
-		//logger.debug("retrieving file " + resourcePath);
+		// logger.debug("retrieving file " + resourcePath);
+		InputStream in = null;
 		try
 		{
-			InputStream in = null;
 			if (resourcePath.startsWith("generated-res"))
 			{
-				//strip the 'generated-
-				URLConnection conn = MolgenisOriginalStyle.class.getResource(resourcePath.substring(10)).openConnection();
-				//File file = conn.
-				//logger.debug("serving file " + conn);
+				// strip the 'generated-
+				URLConnection conn = MolgenisOriginalStyle.class.getResource(resourcePath.substring(10))
+						.openConnection();
+				// File file = conn.
+				// logger.debug("serving file " + conn);
 				// URLConnection conn = file.openConnection();
 				in = new BufferedInputStream(conn.getInputStream());
 
-				//String mimetype = new MimetypesFileTypeMap().getContentType(resourcePath);
-				//logger.debug("mimetype for " + resourcePath + ": " + mimetype);
-				//response.setContentType(mimetype);
+				// String mimetype = new
+				// MimetypesFileTypeMap().getContentType(resourcePath);
+				// logger.debug("mimetype for " + resourcePath + ": " +
+				// mimetype);
+				// response.setContentType(mimetype);
 				response.setHeader("Cache-Control", "max-age=0"); // allow some
 																	// client
 																	// side
@@ -53,15 +57,21 @@ public class ResourceServlet extends HttpServlet
 				// strict
 
 				OutputStream out = response.getOutputStream();
-				byte[] buffer = new byte[2048];
-				for (;;)
+				try
 				{
-					int nBytes = in.read(buffer);
-					if (nBytes <= 0) break;
-					out.write(buffer, 0, nBytes);
+					byte[] buffer = new byte[2048];
+					for (;;)
+					{
+						int nBytes = in.read(buffer);
+						if (nBytes <= 0) break;
+						out.write(buffer, 0, nBytes);
+					}
+					out.flush();
 				}
-				out.flush();
-				out.close();
+				finally
+				{
+					IOUtils.closeQuietly(out);
+				}
 			}
 		}
 		catch (Exception e)
@@ -69,6 +79,9 @@ public class ResourceServlet extends HttpServlet
 			e.printStackTrace();
 			logger.error("loading of failed: " + e);
 		}
-
+		finally
+		{
+			IOUtils.closeQuietly(in);
+		}
 	}
 }
