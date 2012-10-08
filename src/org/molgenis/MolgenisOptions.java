@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.ui.html.render.LinkoutRenderDecorator;
@@ -145,7 +147,6 @@ public class MolgenisOptions implements Serializable
 
 	/**
 	 * Advanced option: JNDI name that puts the database into the server context
-	 * 
 	 */
 	@Option(name = "db_jndiname", param = Option.Param.STRING, type = Option.Type.REQUIRED_ARGUMENT, usage = "Used to create a JDBC database resource for the application. Default: 'molgenis_jndi'")
 	public String db_jndiname = "molgenis_jndi";
@@ -375,23 +376,33 @@ public class MolgenisOptions implements Serializable
 	{
 		this.molgenis_properties = propertiesFile;
 		Properties props = new Properties();
+		InputStream is = null;
 		try
 		{
 			// try to load from local files
-			props.load(new FileInputStream(propertiesFile.trim()));
+			is = new FileInputStream(propertiesFile.trim());
+			props.load(is);
 		}
 		catch (FileNotFoundException e)
 		{
+			InputStream is2 = ClassLoader.getSystemResourceAsStream(propertiesFile.trim());
 			try
 			{
 				// try to load from classpath
-				props.load(ClassLoader.getSystemResourceAsStream(propertiesFile.trim()));
+				props.load(is2);
 			}
 			catch (Exception e2)
 			{
 				throw new IOException("couldn't find file " + new File(propertiesFile).getAbsolutePath());
 			}
-
+			finally
+			{
+				IOUtils.closeQuietly(is2);
+			}
+		}
+		finally
+		{
+			IOUtils.closeQuietly(is);
 		}
 
 		CmdLineParser parser = new CmdLineParser(this);
@@ -402,23 +413,33 @@ public class MolgenisOptions implements Serializable
 		String passwordFile = propertiesFile.replace(".properties", ".passwd");
 		this.molgenis_passwd = passwordFile;
 		props = new Properties();
+		is = null;
 		try
 		{
 			// try to load from local files
-			props.load(new FileInputStream(passwordFile.trim()));
+			is = new FileInputStream(passwordFile.trim());
+			props.load(is);
 		}
 		catch (FileNotFoundException e)
 		{
+			InputStream is2 = ClassLoader.getSystemResourceAsStream(passwordFile.trim());
 			try
 			{
 				// try to load from classpath
-				props.load(ClassLoader.getSystemResourceAsStream(passwordFile.trim()));
+				props.load(is2);
 			}
 			catch (Exception e2)
 			{
 				// no biggie
 			}
-
+			finally
+			{
+				IOUtils.closeQuietly(is2);
+			}
+		}
+		finally
+		{
+			IOUtils.closeQuietly(is);
 		}
 		parser = new CmdLineParser(this);
 		parser.parse(props);
