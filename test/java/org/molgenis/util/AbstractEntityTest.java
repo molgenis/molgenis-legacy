@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 public class AbstractEntityTest
 {
@@ -48,7 +48,7 @@ public class AbstractEntityTest
 		assertFalse(AbstractEntity.isObjectRepresentation("obj"));
 	}
 
-	@Test(expected = ParseException.class)
+	@Test(expectedExceptions = ParseException.class)
 	public void testString2date_exc() throws ParseException
 	{
 		AbstractEntity.string2date("this is not a date");
