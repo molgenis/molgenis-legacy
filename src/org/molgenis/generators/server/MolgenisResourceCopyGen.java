@@ -11,6 +11,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.ui.MolgenisOriginalStyle;
@@ -34,62 +35,77 @@ public class MolgenisResourceCopyGen extends Generator
 		String jarPath = getClass().getResource("").getFile();
 
 		logger.info("MolgenisResourceCopyGen: 'jarPath' = " + jarPath);
-		
+
 		if (jarPath.contains("!"))
 		{
 			logger.info("MolgenisResourceCopyGen: jarPath.contains('!'), we are inside a JAR file!");
 			jarPath = jarPath.split("!")[0].split("file:")[1];
-			
+
 			File target = new File(this.getWebserverPath(options) + File.separator + "generated-res");
 
 			// check if the target exists otherwise it's created
 			if (!target.exists())
 			{
 				boolean succes = target.mkdirs();
-				if (!succes){
+				if (!succes)
+				{
 					throw new Exception("MolgenisResourceCopyGen: can't create /generated-res directory!");
-				}else{
+				}
+				else
+				{
 					logger.info("MolgenisResourceCopyGen: /generated-res directory created");
 				}
-			}else{
+			}
+			else
+			{
 				logger.info("MolgenisResourceCopyGen: " + target.getAbsolutePath() + " already exists");
 			}
 
 			JarFile jar = new JarFile(jarPath);
-			Enumeration<JarEntry> entries = jar.entries();
-			
 			boolean found = false;
-			while (entries.hasMoreElements())
+			try
 			{
-				JarEntry file = entries.nextElement();
-				if (file.getName().contains(RESOURCE_FOLDER))
-				{
-					found = true;
-					logger.info("MolgenisResourceCopyGen: file.getName().contains("+RESOURCE_FOLDER+"");
-					if (!file.isDirectory())
-					{
-						ZipEntry zipEntry = jar.getEntry(file.getName());
-						InputStream is = jar.getInputStream(zipEntry);
-						String outFilePath = file.getName().replace(RESOURCE_FOLDER, target.getPath() + File.separator);
-						logger.info(outFilePath);
+				Enumeration<JarEntry> entries = jar.entries();
 
-						File dst = new File(outFilePath);
-						dst.mkdirs();
-						if (dst.exists())
+				while (entries.hasMoreElements())
+				{
+					JarEntry file = entries.nextElement();
+					if (file.getName().contains(RESOURCE_FOLDER))
+					{
+						found = true;
+						logger.info("MolgenisResourceCopyGen: file.getName().contains(" + RESOURCE_FOLDER + "");
+						if (!file.isDirectory())
 						{
-							dst.delete();
+							ZipEntry zipEntry = jar.getEntry(file.getName());
+							InputStream is = jar.getInputStream(zipEntry);
+							String outFilePath = file.getName().replace(RESOURCE_FOLDER,
+									target.getPath() + File.separator);
+							logger.info(outFilePath);
+
+							File dst = new File(outFilePath);
+							dst.mkdirs();
+							if (dst.exists())
+							{
+								dst.delete();
+							}
+							dst.createNewFile();
+							copyFile(outFilePath, is, dst);
+							logger.info("MolgenisResourceCopyGen: copied " + outFilePath + " to "
+									+ dst.getAbsolutePath());
 						}
-						dst.createNewFile();
-						copyFile(outFilePath, is, dst);
-						logger.info("MolgenisResourceCopyGen: copied "+outFilePath + " to " + dst.getAbsolutePath());
 					}
 				}
 			}
+			finally
+			{
+				IOUtils.closeQuietly(jar);
+			}
 
-			if(found == false){
+			if (found == false)
+			{
 				throw new Exception("MolgenisResourceCopyGen: could not find " + RESOURCE_FOLDER + " inside JAR");
 			}
-			
+
 			logger.info("MolgenisResourceCopyGen JAR: generated " + target);
 		}
 		else
@@ -155,10 +171,10 @@ public class MolgenisResourceCopyGen extends Generator
 			else
 			{
 				// This method is implemented in e1071 Copying a File
-				
-				//remove file first
+
+				// remove file first
 				dstDir.delete();
-				//then copy
+				// then copy
 				copyFile(srcDir, dstDir);
 			}
 		}
