@@ -145,6 +145,7 @@ public class MolgenisOptions implements Serializable
 
 	/**
 	 * Advanced option: JNDI name that puts the database into the server context
+	 * 
 	 */
 	@Option(name = "db_jndiname", param = Option.Param.STRING, type = Option.Type.REQUIRED_ARGUMENT, usage = "Used to create a JDBC database resource for the application. Default: 'molgenis_jndi'")
 	public String db_jndiname = "molgenis_jndi";
@@ -177,8 +178,6 @@ public class MolgenisOptions implements Serializable
 	@Option(name = "auth_loginclass", param = Option.Param.CLASS, type = Option.Type.REQUIRED_ARGUMENT, usage = "Expert option. Set the class used for login. Default: org.molgenis.framework.security.SimpleLogin")
 	public String auth_loginclass = "org.molgenis.framework.security.SimpleLogin";
 
-	
-	
 	/** Name of form/plugin to redirect to after login */
 	@Option(name = "auth_redirect", param = Option.Param.STRING, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Get name of form/plugin to redirect to after login. Default: ''")
 	public String auth_redirect = "";
