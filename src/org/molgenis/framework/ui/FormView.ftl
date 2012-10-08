@@ -395,7 +395,7 @@ var molgenis_required = new Array(${required});
 					<#elseif input.getClass().getSimpleName() == "HyperlinkInput" || input.getClass().getSimpleName() == "EmbeddedInput"  || input.getHtmlValue()?length &lt; 100>
 	<td title="${input.getDescription()}">${input.getHtmlValue()}</td>
 					<#else>
-	<td title="${input.getDescription()}">${input.getHtmlValue(100)}<b class="link" onClick="JavaScript:showPopup(event, 'popup_${screen.getName()}', '${input.getJavaScriptValue()}');">...</b></td>
+	<td title="${input.getDescription()}">${input.getHtmlValue(100)}<b class="link" onClick="alert('${input.getJavaScriptValue()}');">...</b></td>
 					</#if>
 				</#if>
 		</#list>
