@@ -541,5 +541,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/mindterm.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/org.semanticweb.HermiT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ontocat-0.9.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mockito-all-1.9.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

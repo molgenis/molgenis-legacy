@@ -10,41 +10,41 @@ import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 
-public class XrefField extends FieldType 
-{	
+public class XrefField extends FieldType
+{
 	@Override
 	public String getJavaAssignment(String value)
 	{
 		return "NOT IMPLEMENTED";
 	}
-	
+
 	@Override
 	public String getJavaPropertyType() throws MolgenisModelException
 	{
 		Field f_ref = f.getXrefField();
 		return getFieldType(f_ref).getJavaPropertyType();
 	}
-	
+
 	@Override
 	public String getJavaPropertyDefault()
 	{
-		if(f.getDefaultValue() == null || f.getDefaultValue() == "") return "null";
+		if (f.getDefaultValue() == null || f.getDefaultValue().isEmpty()) return "null";
 		return f.getDefaultValue();
 	}
-	
+
 	@Override
 	public String getJavaSetterType() throws MolgenisModelException
 	{
-		
+
 		return getFieldType(f.getXrefField()).getJavaSetterType();
 	}
-	
+
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
 		return getFieldType(f.getXrefField()).getMysqlType();
 	}
-	
+
 	@Override
 	public String getOracleType() throws MolgenisModelException
 	{
@@ -56,7 +56,7 @@ public class XrefField extends FieldType
 	{
 		return getFieldType(f.getXrefField()).getHsqlType();
 	}
-	
+
 	public String getXsdType() throws MolgenisModelException
 	{
 		return getFieldType(f.getXrefField()).getXsdType();
@@ -87,7 +87,7 @@ public class XrefField extends FieldType
 		Field f_ref = f.getXrefField();
 		return getFieldType(f_ref).getCppPropertyType();
 	}
-	
+
 	@Override
 	public String getCppJavaPropertyType() throws MolgenisModelException
 	{
@@ -106,7 +106,7 @@ public class XrefField extends FieldType
 	{
 		throw new UnsupportedOperationException("Xref conversion not supported.");
 	}
-	
+
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.XREF;
