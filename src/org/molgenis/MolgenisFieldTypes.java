@@ -44,7 +44,7 @@ public class MolgenisFieldTypes
 
 	public enum FieldTypeEnum
 	{
-		BOOL, CHAR, DATE, DATE_TIME, DECIMAL, ENUM, EMAIL, FILE, FREEMARKER, HEXA, HYPERLINK, IMAGE, INT, LIST, LONG, MREF, NSEQUENCE, ON_OFF, RICHTEXT, STRING, TEXT, XREF, CATEGORICAL, UNKNOWN,
+		BOOL, CHAR, DATE, DATE_TIME, DECIMAL, ENUM, EMAIL, FILE, FREEMARKER, HEXA, HYPERLINK, IMAGE, INT, LIST, LONG, MREF, NSEQUENCE, ON_OFF, STRING, TEXT, LONGTEXT, XREF, CATEGORICAL, UNKNOWN,
 	}
 
 	/** Initialize default field types */
@@ -70,6 +70,7 @@ public class MolgenisFieldTypes
 			addType(new XrefField());
 			addType(new IntField());
 			addType(new RichtextField());
+			// addType(new LongTextField());
 			addType(new FreemarkerField());
 
 			init = true;
