@@ -174,6 +174,9 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	/** Optional custom header for the selected form screen */
 	private String header;
 	
+	/** Optional description for the selected form screen */
+	private String description;
+	
 	/** entity csv reader */
 	private CsvToDatabase<E> csvReader;
 
@@ -727,6 +730,17 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	public void setHeader(String header)
 	{
 		this.header = header;
+	}
+	
+	/** Getter/setter for optional description for the selected form screen */
+	public String getDescription()
+	{
+		return this.description;
+	}
+	
+	public void setDescription(String description)
+	{
+		this.description = description;
 	}
 
 	/**
