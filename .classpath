@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="src" path="test/resources"/>
+	<classpathentry kind="src" path="test/java"/>
 	<classpathentry excluding="org/molgenis/framework/ui/res/lib/" kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
@@ -539,5 +541,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/mindterm.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/org.semanticweb.HermiT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ontocat-0.9.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mockito-all-1.9.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
