@@ -51,6 +51,7 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	 * fileEndsWithNewlineChar() in combination with this function. See:
 	 * http://stackoverflow
 	 * .com/questions/453018/number-of-lines-in-a-file-in-java
+	 * 
 	 * @param inFile
 	 * 
 	 * @return
@@ -59,13 +60,21 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	public static int getNumberOfLines(File inFile) throws IOException
 	{
 		LineNumberReader lnr = new LineNumberReader(new FileReader(inFile));
-		lnr.skip(Long.MAX_VALUE);
-		return lnr.getLineNumber() + 1;
+		try
+		{
+			lnr.skip(Long.MAX_VALUE);
+			return lnr.getLineNumber() + 1;
+		}
+		finally
+		{
+			lnr.close();
+		}
 	}
 
 	/**
 	 * Find out if the source file ends with a newline character. Useful in
 	 * combination with getNumberOfLines().
+	 * 
 	 * @param inFile
 	 * 
 	 * @return
@@ -95,6 +104,7 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	 * combination \r\n is reduced to \n before counting. You will probably want
 	 * to use this in combination with the more lightweight check of
 	 * fileEndsWithNewlineChar().
+	 * 
 	 * @param inFile
 	 * 
 	 * @return
