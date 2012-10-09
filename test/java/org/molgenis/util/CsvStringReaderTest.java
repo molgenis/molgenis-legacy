@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.testng.annotations.Test;
 
-public class CsvReaderTest
+public class CsvStringReaderTest
 {
 	@Test
 	public void testSimple() throws Exception
