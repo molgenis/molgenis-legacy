@@ -22,6 +22,7 @@
 		<dependency org="commons-io" name="commons-io" rev="2.4" />
 		<dependency org="commons-fileupload" name="commons-fileupload"
 			rev="1.2.2" />
+		<dependency org="org.apache.commons" name="commons-email" rev="1.2"/>
 		<dependency org="org.freemarker" name="freemarker" rev="2.3.19" />
 		<dependency org="org.opensymphony.quartz" name="quartz"
 			rev="1.6.1" />
