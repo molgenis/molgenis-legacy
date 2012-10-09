@@ -320,7 +320,7 @@ var molgenis_required = new Array(${required});
 </#macro>
 
 <#macro listview screen>
-<#if screen.description??><b>${screen.description}</b><br><br></#if>
+<#if screen.description??>${screen.description}<br><br></#if>
 <table class="listtable">
 	<#assign offset = screen.offset />
 	<#assign count = 0 />
