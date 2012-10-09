@@ -80,6 +80,17 @@ public class Form extends UISchema
 	{
 		this.header = header;
 	}
+	
+	/** Getter/setter for optional description for the selected form screen */
+	public String getDescription()
+	{
+		return this.description;
+	}
+	
+	public void setDescription(String description)
+	{
+		this.description = description;
+	}
 
 	/**
 	 * 
@@ -196,6 +207,9 @@ public class Form extends UISchema
 
 	/** Optional custom header for the selected form screen */
 	private String header;
+	
+	/** Optional description of this form, explaining it in the context of your application */
+	private String description;
 	
 	private boolean filter;
 	private String filterfield;
