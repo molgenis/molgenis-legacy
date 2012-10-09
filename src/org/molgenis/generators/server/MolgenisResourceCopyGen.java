@@ -11,7 +11,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.ui.MolgenisOriginalStyle;
@@ -62,43 +61,34 @@ public class MolgenisResourceCopyGen extends Generator
 			}
 
 			JarFile jar = new JarFile(jarPath);
+			Enumeration<JarEntry> entries = jar.entries();
+
 			boolean found = false;
-			try
+			while (entries.hasMoreElements())
 			{
-				Enumeration<JarEntry> entries = jar.entries();
-
-				while (entries.hasMoreElements())
+				JarEntry file = entries.nextElement();
+				if (file.getName().contains(RESOURCE_FOLDER))
 				{
-					JarEntry file = entries.nextElement();
-					if (file.getName().contains(RESOURCE_FOLDER))
+					found = true;
+					logger.info("MolgenisResourceCopyGen: file.getName().contains(" + RESOURCE_FOLDER + "");
+					if (!file.isDirectory())
 					{
-						found = true;
-						logger.info("MolgenisResourceCopyGen: file.getName().contains(" + RESOURCE_FOLDER + "");
-						if (!file.isDirectory())
-						{
-							ZipEntry zipEntry = jar.getEntry(file.getName());
-							InputStream is = jar.getInputStream(zipEntry);
-							String outFilePath = file.getName().replace(RESOURCE_FOLDER,
-									target.getPath() + File.separator);
-							logger.info(outFilePath);
+						ZipEntry zipEntry = jar.getEntry(file.getName());
+						InputStream is = jar.getInputStream(zipEntry);
+						String outFilePath = file.getName().replace(RESOURCE_FOLDER, target.getPath() + File.separator);
+						logger.info(outFilePath);
 
-							File dst = new File(outFilePath);
-							dst.mkdirs();
-							if (dst.exists())
-							{
-								dst.delete();
-							}
-							dst.createNewFile();
-							copyFile(outFilePath, is, dst);
-							logger.info("MolgenisResourceCopyGen: copied " + outFilePath + " to "
-									+ dst.getAbsolutePath());
+						File dst = new File(outFilePath);
+						dst.mkdirs();
+						if (dst.exists())
+						{
+							dst.delete();
 						}
+						dst.createNewFile();
+						copyFile(outFilePath, is, dst);
+						logger.info("MolgenisResourceCopyGen: copied " + outFilePath + " to " + dst.getAbsolutePath());
 					}
 				}
-			}
-			finally
-			{
-				IOUtils.closeQuietly(jar);
 			}
 
 			if (found == false)
