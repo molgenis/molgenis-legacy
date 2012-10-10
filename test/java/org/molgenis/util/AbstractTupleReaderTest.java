@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 public class AbstractTupleReaderTest
 {
@@ -33,6 +33,6 @@ public class AbstractTupleReaderTest
 
 		reader.renameField("c", "d");
 
-		verify(reader).setColnames(Arrays.asList("a", "c", "c"));
+		verify(reader).setColnames(Arrays.asList("a", "d", "d")); // column names may have duplicates
 	}
 }
