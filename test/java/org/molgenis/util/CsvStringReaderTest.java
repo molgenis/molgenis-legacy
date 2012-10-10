@@ -1,6 +1,6 @@
 package org.molgenis.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.testng.AssertJUnit.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.testng.annotations.Test;
 
-public class CsvReaderTest
+public class CsvStringReaderTest
 {
 	@Test
 	public void testSimple() throws Exception

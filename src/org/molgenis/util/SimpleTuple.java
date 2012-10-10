@@ -17,7 +17,6 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
 
-import org.apache.commons.lang.StringUtils;
 import org.molgenis.model.elements.Field;
 
 /**
@@ -310,13 +309,15 @@ public class SimpleTuple implements Tuple
 	public Boolean getBoolean(int column)
 	{
 		if (getObject(column) == null || getString(column).equals("")) return null;
-		return Boolean.valueOf(getString(column).toLowerCase().equals("true") || getString(column).trim().equals("1"));
+		return Boolean.valueOf(getString(column).toLowerCase().equals("true") || getString(column).trim().equals("1")
+				|| getString(column).trim().equalsIgnoreCase("on"));
 	}
 
 	public Boolean getBoolean(String column)
 	{
 		if (getObject(column) == null || getString(column).equals("")) return null;
-		return Boolean.valueOf(getString(column).toLowerCase().equals("true") || getString(column).trim().equals("1"));
+		return Boolean.valueOf(getString(column).toLowerCase().equals("true") || getString(column).trim().equals("1")
+				|| getString(column).trim().equalsIgnoreCase("on"));
 	}
 
 	public Double getDecimal(int column)

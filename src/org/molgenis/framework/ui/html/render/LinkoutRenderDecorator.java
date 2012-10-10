@@ -20,6 +20,7 @@ public class LinkoutRenderDecorator implements RenderDecorator
 		mypatterns.put("CS[0-9]{5}", "http://www.arabidopsis.org/servlets/Search?type=general&search_action=detail&method=1&show_obsolete=F&sub_type=germplasm&SEARCH_EXACT=4&SEARCH_CONTAINS=1&name=");	
 		mypatterns.put("WBGene[0-9]{8}", "http://www.wormbase.org/db/gene/gene?class=Gene&name=");
 		mypatterns.put("ENSRNOG[0-9]+", "http://www.ensembl.org/Rattus_norvegicus/Gene/Summary?g=");
+		mypatterns.put("(http|https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", "");
 	}
 	
 	public String render(String in){
