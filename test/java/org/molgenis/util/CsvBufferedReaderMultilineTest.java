@@ -2,20 +2,22 @@ package org.molgenis.util;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.testng.annotations.Test;
 
-public class CsvReaderTest
+public class CsvBufferedReaderMultilineTest
 {
 	@Test
 	public void testSimple() throws Exception
 	{
 		String csv = "col1,col2\nval1,val2\nval3,val4";
 
-		CsvReader reader = new CsvStringReader(csv);
+		CsvBufferedReaderMultiline reader = new CsvBufferedReaderMultiline(new BufferedReader(new StringReader(csv)));
 
 		assertEquals(reader.colnames(), Arrays.asList(new String[]
 		{ "col1", "col2" }));
@@ -39,7 +41,7 @@ public class CsvReaderTest
 	{
 		String csv = "col1,col2\nval1,val2\nval3,val4";
 
-		CsvReader reader = new CsvStringReader(csv);
+		CsvBufferedReaderMultiline reader = new CsvBufferedReaderMultiline(new BufferedReader(new StringReader(csv)));
 
 		List<Tuple> result = new ArrayList<Tuple>();
 		for (Tuple t : reader)
@@ -59,7 +61,7 @@ public class CsvReaderTest
 	{
 		String csv = "t2col1,t2col2\nval1,\"val2 quoted \"\"test\"\" this\"\nval3,val4";
 
-		CsvReader reader = new CsvStringReader(csv);
+		CsvBufferedReaderMultiline reader = new CsvBufferedReaderMultiline(new BufferedReader(new StringReader(csv)));
 
 		assertEquals(reader.colnames(), Arrays.asList(new String[]
 		{ "t2col1", "t2col2" }));
@@ -80,7 +82,7 @@ public class CsvReaderTest
 	{
 		String csv = "t2col1,t2col2\n" + "val1,\"val2 \n" + "newline and \"\"quotes\"\"\n\n work\"\n" + "val3,val4";
 
-		CsvReader reader = new CsvStringReader(csv);
+		CsvBufferedReaderMultiline reader = new CsvBufferedReaderMultiline(new BufferedReader(new StringReader(csv)));
 
 		// test rownames
 		List<String> rowNames = reader.rownames();
