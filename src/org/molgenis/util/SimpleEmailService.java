@@ -108,6 +108,16 @@ public class SimpleEmailService implements EmailService
 			// Create the email message
 			MultiPartEmail email = new MultiPartEmail();
 			email.setHostName(this.smtpHostname);
+			if ("smtps".equals(this.smtpProtocol))
+			{
+				email.setSSL(true);
+				email.setSslSmtpPort(this.smtpPort.toString());
+			}
+			else
+			{
+				email.setSSL(false);
+				email.setSmtpPort(this.smtpPort);
+			}
 			email.addTo(toEmail);
 			email.setFrom(this.smtpFromAddress);
 			email.setSubject(subject);
