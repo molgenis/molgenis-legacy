@@ -244,7 +244,7 @@ public class TestCsv
 			File f2 = new File(dir2.getAbsolutePath()+File.separator+f.getName());
 			boolean result = CompareCSV.compareCSVFilesByContent(f, f2);
 			if(!result) {
-				logger.error(f1 + " and " + f2 + " differ");
+				logger.error(f + " and " + f2 + " differ");
 				return false;
 			}
 		}

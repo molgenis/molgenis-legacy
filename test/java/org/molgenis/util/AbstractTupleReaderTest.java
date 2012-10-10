@@ -33,6 +33,6 @@ public class AbstractTupleReaderTest
 
 		reader.renameField("c", "d");
 
-		verify(reader).setColnames(Arrays.asList("a", "c", "c"));
+		verify(reader).setColnames(Arrays.asList("a", "d", "d")); // column names may have duplicates
 	}
 }
