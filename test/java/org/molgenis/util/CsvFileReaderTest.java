@@ -1,6 +1,6 @@
 package org.molgenis.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.testng.AssertJUnit.assertEquals;
 
 import java.io.File;
 import java.nio.charset.Charset;

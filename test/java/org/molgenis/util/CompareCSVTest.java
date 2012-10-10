@@ -1,11 +1,12 @@
 package org.molgenis.util;
 
+import static org.testng.AssertJUnit.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.FileUtils;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class CompareCSVTest
@@ -19,8 +20,8 @@ public class CompareCSVTest
 		{
 			FileUtils.write(file0, "col0,col1\nval0,val1\nval2,val3", Charset.forName("UTF-8"));
 			FileUtils.write(file1, "col0,col1\nval0,val1\nval2,val3", Charset.forName("UTF-8"));
-			Assert.assertEquals(true, CompareCSV.compareCSVFilesByContent(file0, file1));
-			Assert.assertEquals(true, CompareCSV.compareCSVFilesByContent(file1, file0));
+			assertEquals(true, CompareCSV.compareCSVFilesByContent(file0, file1));
+			assertEquals(true, CompareCSV.compareCSVFilesByContent(file1, file0));
 		}
 		finally
 		{
@@ -38,8 +39,8 @@ public class CompareCSVTest
 		{
 			FileUtils.write(file0, "col0,col1\nval0,val1\nval2,val3", Charset.forName("UTF-8"));
 			FileUtils.write(file1, "col0,col1\nval4,val5\nval6,val7", Charset.forName("UTF-8"));
-			Assert.assertEquals(false, CompareCSV.compareCSVFilesByContent(file0, file1));
-			Assert.assertEquals(false, CompareCSV.compareCSVFilesByContent(file1, file0));
+			assertEquals(false, CompareCSV.compareCSVFilesByContent(file0, file1));
+			assertEquals(false, CompareCSV.compareCSVFilesByContent(file1, file0));
 		}
 		finally
 		{
@@ -57,8 +58,8 @@ public class CompareCSVTest
 		{
 			FileUtils.write(file0, "col0,col1\nval0,val1\nval2,val3", Charset.forName("UTF-8"));
 			FileUtils.write(file1, "col0,col1\nval4,val5\nval6,val7\nval8,val9", Charset.forName("UTF-8"));
-			Assert.assertEquals(false, CompareCSV.compareCSVFilesByContent(file0, file1));
-			Assert.assertEquals(false, CompareCSV.compareCSVFilesByContent(file1, file0));
+			assertEquals(false, CompareCSV.compareCSVFilesByContent(file0, file1));
+			assertEquals(false, CompareCSV.compareCSVFilesByContent(file1, file0));
 		}
 		finally
 		{
@@ -76,8 +77,8 @@ public class CompareCSVTest
 		{
 			FileUtils.write(file0, "col0,col1\nval0,val1\nval2,val3", Charset.forName("UTF-8"));
 			FileUtils.write(file1, "col0\nval0\nval2", Charset.forName("UTF-8"));
-			Assert.assertEquals(false, CompareCSV.compareCSVFilesByContent(file0, file1));
-			Assert.assertEquals(false, CompareCSV.compareCSVFilesByContent(file1, file0));
+			assertEquals(false, CompareCSV.compareCSVFilesByContent(file0, file1));
+			assertEquals(false, CompareCSV.compareCSVFilesByContent(file1, file0));
 		}
 		finally
 		{
