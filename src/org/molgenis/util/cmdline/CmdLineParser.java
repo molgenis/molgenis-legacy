@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Level;
+import org.molgenis.util.cmdline.Option.Param;
 
 /**
  * This class defines the commandline options parser. Based on a class filled
@@ -136,8 +137,7 @@ public class CmdLineParser
 
 		// retrieve the description and application name
 		OptionsClass optionscls = options.getClass().getAnnotation(OptionsClass.class);
-		if (optionscls != null)
-			description = optionscls.description();
+		if (optionscls != null) description = optionscls.description();
 	}
 
 	// public methods
@@ -164,8 +164,7 @@ public class CmdLineParser
 			// get the option name
 			String name = args[i];
 			name.trim();
-			if (name.charAt(0) == '-')
-				name = name.substring(1);
+			if (name.charAt(0) == '-') name = name.substring(1);
 
 			// Retrieve the field and try to set it
 			Field field = field_map.get(name);
@@ -189,8 +188,7 @@ public class CmdLineParser
 					}
 					else if (opt.type() == Option.Type.OPTIONAL_ARGUMENT)
 					{
-						if (i + 1 >= args.length)
-							result = "true";
+						if (i + 1 >= args.length) result = "true";
 						else
 						{
 							String nxt_option = args[++i];
@@ -205,8 +203,7 @@ public class CmdLineParser
 					else
 					// if (opt.type() == Option.Type.REQUIRED_ARGUMENT)
 					{
-						if (i + 1 >= args.length)
-							throw new CmdLineException("Insufficient number of options.");
+						if (i + 1 >= args.length) throw new CmdLineException("Insufficient number of options.");
 
 						String nxt_option = args[++i];
 						// nxt_option.trim();
@@ -218,11 +215,11 @@ public class CmdLineParser
 						result = nxt_option;
 					}
 
-					//FieldAssign field_assign = new FieldAssign(field);
-					//field_assign.assign(options, result);
-					
-					assign(opt,result,field);
-					
+					// FieldAssign field_assign = new FieldAssign(field);
+					// field_assign.assign(options, result);
+
+					assign(opt, result, field);
+
 				}
 				catch (Exception e)
 				{
@@ -233,79 +230,118 @@ public class CmdLineParser
 			prevfield = field;
 		}
 	}
-	
+
 	/**
-	 * Helper function to assign value to field given an Option. Wraps assignToField() and does error/warning throws.
+	 * Helper function to assign value to field given an Option. Wraps
+	 * assignToField() and does error/warning throws.
+	 * 
 	 * @param opt
 	 * @param result
 	 * @param field
 	 * @throws CmdLineException
 	 */
-	private void assign(Option opt, String result, Field field) throws CmdLineException{
-		if(!assignToField(opt,result,field)){
-			if(opt.type() == Option.Type.REQUIRED_ARGUMENT)
+	private void assign(Option opt, String result, Field field) throws CmdLineException
+	{
+		if (!assignToField(opt, result, field))
+		{
+			if (opt.type() == Option.Type.REQUIRED_ARGUMENT)
 			{
 				throw new CmdLineException("Error in REQUIRED_ARGUMENT: " + opt.toString() + " for value: " + result);
-			}else
+			}
+			else
 			{
 				System.err.println("Error in OPTIONAL_ARGUMENT: " + opt.toString() + " for value: " + result);
 				System.err.println("Sleeping for 5 secs..");
-				try{Thread.sleep(5000);}catch (InterruptedException e){}
+				try
+				{
+					Thread.sleep(5000);
+				}
+				catch (InterruptedException e)
+				{
+				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Assigns the actual value to the field. Wrapped by assign()
+	 * 
 	 * @param opt
 	 * @param result
 	 * @param field
 	 * @return
 	 * @throws CmdLineException
 	 */
-	private boolean assignToField(Option opt, String result, Field field) throws CmdLineException{
-		try {
-			switch (opt.param()) {
-	            case BOOLEAN: field.set(options, Boolean.parseBoolean(result));
-	            break;
-	            case INTEGER: field.set(options, Integer.parseInt(result));
-	            break;
-	            case DOUBLE: field.set(options, Double.parseDouble(result));
-	            break;
-	            case STRING: field.set(options, result); //don't need to parse String
-	            break;
-	            case COLLECTION:
-	            	//NOTE: We are aware of the unchecked cast, but that what you get when you play with runtime objects
-	            	@SuppressWarnings("unchecked")
+	private boolean assignToField(Option opt, String result, Field field) throws CmdLineException
+	{
+		try
+		{
+			switch (opt.param())
+			{
+				case BOOLEAN:
+					field.set(options, Boolean.parseBoolean(result));
+					break;
+				case INTEGER:
+					field.set(options, Integer.parseInt(result));
+					break;
+				case DOUBLE:
+					field.set(options, Double.parseDouble(result));
+					break;
+				case STRING:
+					field.set(options, result); // don't need to parse String
+					break;
+				case COLLECTION:
+					// NOTE: We are aware of the unchecked cast, but that what
+					// you get when you play with runtime objects
+					@SuppressWarnings("unchecked")
 					ArrayList<String> collection = (ArrayList<String>) field.get(options);
-					for (String v : result.toString().split(",")){
+					for (String v : result.toString().split(","))
+					{
 						collection.add(v);
 					}
-	            break;
-	            case FILEPATH: field.set(options, result); //TODO: check if valid filepath? check if file exists?
-	            break;
-	            case DIRPATH: field.set(options, result.endsWith("/")?result:result+"/"); //TODO: check OK? other checks needed?
-	            break;
-	            case PASSWORD : field.set(options, result); // special behaviour wanted?
-	            break;
-	            case CLASS: field.set(options, result); //TODO check if valid class name (eg. just [a-z] and .) and/or or check if class exists?
-	            break; 
-	            
-	            case ENUM: 
-                        System.out.println(field);                        
-                        field.set(options, Enum.valueOf((Class<Enum>) field.getType(), result));
-	            break;
-	            
-	            case LOG4JLEVEL:
-	            	 field.set(options, Level.toLevel(result));
-	            break;
-	            
-	            //if unrecognized: apply default of setting value without parsing or checks
-	            default: field.set(options, result);
-	            break;
+					break;
+				case FILEPATH:
+					field.set(options, result); // TODO: check if valid
+												// filepath? check if file
+												// exists?
+					break;
+				case DIRPATH:
+					field.set(options, result.endsWith("/") ? result : result + "/"); // TODO:
+																						// check
+																						// OK?
+																						// other
+																						// checks
+																						// needed?
+					break;
+				case PASSWORD:
+					field.set(options, result); // special behaviour wanted?
+					break;
+				case CLASS:
+					field.set(options, result); // TODO check if valid class
+												// name (eg. just [a-z] and .)
+												// and/or or check if class
+												// exists?
+					break;
+
+				case ENUM:
+					System.out.println(field);
+					field.set(options, Enum.valueOf((Class<Enum>) field.getType(), result));
+					break;
+
+				case LOG4JLEVEL:
+					field.set(options, Level.toLevel(result));
+					break;
+
+				// if unrecognized: apply default of setting value without
+				// parsing or checks
+				default:
+					field.set(options, result);
+					break;
 			}
-		} catch (Exception ex) {
-            throw new CmdLineException("Bad cast when trying to read options:\n" + ex.toString());
+		}
+		catch (Exception ex)
+		{
+			throw new CmdLineException("Bad cast when trying to read options:\n" + ex.toString());
 		}
 		return true;
 	}
@@ -331,8 +367,7 @@ public class CmdLineParser
 			// get the option name
 			String name = property.getKey().toString();
 			// name.trim();
-			if (name.charAt(0) == '-')
-				name = name.substring(1);
+			if (name.charAt(0) == '-') name = name.substring(1);
 
 			// Retrieve the field and try to set it
 			Field field = field_map.get(name);
@@ -353,22 +388,23 @@ public class CmdLineParser
 				}
 				else if (opt.type() == Option.Type.REQUIRED_ARGUMENT)
 				{
-					if (property.getValue().toString().length() == 0)
-						throw new CmdLineException("Insufficient number of options.");
+					if (property.getValue().toString().length() == 0) throw new CmdLineException(
+							"Insufficient number of options.");
 
 					result = property.getValue().toString().trim();
 				}
 
-				//FieldAssign field_assign = new FieldAssign(field);
-				
-				assign(opt,result,field);
-				
-//				try {
-//                                    field_assign.assign(options, result);
-//				} catch (Exception ex) {
-//                                    ex.printStackTrace();
-////                                    throw new CmdLineException("Unhandled situation:\n" + ex.toString());
-//                                }
+				// FieldAssign field_assign = new FieldAssign(field);
+
+				assign(opt, result, field);
+
+				// try {
+				// field_assign.assign(options, result);
+				// } catch (Exception ex) {
+				// ex.printStackTrace();
+				// // throw new CmdLineException("Unhandled situation:\n" +
+				// ex.toString());
+				// }
 			}
 		}
 	}
@@ -437,10 +473,8 @@ public class CmdLineParser
 					String str = description.substring(index, index + width);
 
 					int endindex = str.lastIndexOf('\n');
-					if (endindex == -1)
-						endindex = str.lastIndexOf(' ');
-					if (endindex == -1 || endindex > width)
-						endindex = width;
+					if (endindex == -1) endindex = str.lastIndexOf(' ');
+					if (endindex == -1 || endindex > width) endindex = width;
 
 					stream.println(str.substring(0, endindex));
 					index += endindex + 1;
@@ -468,7 +502,7 @@ public class CmdLineParser
 		it_field = field_map.values().iterator();
 		while (it_field.hasNext())
 		{
-			// 
+			//
 			Field field = it_field.next();
 			Option option = field.getAnnotation(Option.class);
 
@@ -511,10 +545,8 @@ public class CmdLineParser
 						String str = usage.substring(index, index + width - taglength);
 
 						int endindex = str.lastIndexOf('\n');
-						if (endindex == -1)
-							endindex = str.lastIndexOf(' ');
-						if (endindex == -1 || endindex > width - taglength)
-							endindex = width - taglength;
+						if (endindex == -1) endindex = str.lastIndexOf(' ');
+						if (endindex == -1 || endindex > width - taglength) endindex = width - taglength;
 
 						stream.println(str.substring(0, endindex));
 						index += endindex + 1;
@@ -557,8 +589,7 @@ public class CmdLineParser
 				try
 				{
 					String value = fields[i].get(options).toString();
-					if (opt.param().equals("password"))
-						value = "xxxxxx";
+					if (opt.param().equals("password")) value = "xxxxxx";
 					value_padding = Math.max(value_padding, value.length());
 				}
 				catch (Exception e)
@@ -578,8 +609,7 @@ public class CmdLineParser
 				try
 				{
 					String value = fields[i].get(options).toString();
-					if (opt.param().equals("password"))
-						value = "xxxxxx";
+					if (opt.param().equals(Param.PASSWORD)) value = "xxxxxx";
 					// add padding
 					String n_spaces = "";
 					for (int j = opt.name().length(); j < name_padding; j++)
