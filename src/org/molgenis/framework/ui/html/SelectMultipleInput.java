@@ -27,39 +27,38 @@ import org.molgenis.util.ValueLabel;
 public class SelectMultipleInput extends OptionInput<List<String>>
 {
 	public static final String VALUES = "values";
-	
+
 	private boolean useJqueryMultiplePlugin = false;
-	
+
 	/**
 	 * 
-	 * @param name Name of the Input
-	 * @param objects list of selected values
+	 * @param name
+	 *            Name of the Input
+	 * @param objects
+	 *            list of selected values
 	 */
-	
+
 	public SelectMultipleInput(String name)
 	{
 		super(name, null);
 	}
-	
+
 	public SelectMultipleInput(String name, List<String> objects)
 	{
 		super(name, objects);
 	}
-	
-	public SelectMultipleInput(String name, String label, List<String> values,
-			Boolean nillable, Boolean readonly, String description,
-			List<String> options, List<String> option_labels)
-			throws HtmlInputException
+
+	public SelectMultipleInput(String name, String label, List<String> values, Boolean nillable, Boolean readonly,
+			String description, List<String> options, List<String> option_labels) throws HtmlInputException
 	{
-		super(name, label, values, nillable, readonly, description, options,
-				option_labels);
+		super(name, label, values, nillable, readonly, description, options, option_labels);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SelectMultipleInput(Tuple t) throws HtmlInputException
 	{
 		super(t);
-		this.setValue((List<String>)t.getList(VALUES));
+		this.setValue((List<String>) t.getList(VALUES));
 	}
 
 	@Override
@@ -93,36 +92,38 @@ public class SelectMultipleInput extends OptionInput<List<String>>
 		{
 			if (stringValues.contains(choice.getValue().toString()))
 			{
-				optionsHtml.append("\t<option selected value=\""
-						+ choice.getValue() + "\">" + choice.getLabel()
+				optionsHtml.append("\t<option selected value=\"" + choice.getValue() + "\">" + choice.getLabel()
 						+ "</option>\n");
 			}
 			else if (!this.isReadonly())
 			{
-				optionsHtml.append("\t<option value=\"" + choice.getValue()
-						+ "\">" + choice.getLabel() + "</option>\n");
+				optionsHtml
+						.append("\t<option value=\"" + choice.getValue() + "\">" + choice.getLabel() + "</option>\n");
 			}
 		}
-		
-		if(uiToolkit == UiToolkit.ORIGINAL)
+
+		if (uiToolkit == UiToolkit.ORIGINAL)
 		{
-			return "<select id=\"" + this.getId() + "\" multiple name=\""
-					+ this.getName() + "\" " + readonly + " style=\""
-					+ this.getStyle() + "\">\n" + optionsHtml.toString()
-					+ "</select>\n";
-		} else if(uiToolkit == UiToolkit.JQUERY) {
-			if (useJqueryMultiplePlugin) {
-				return "<select multiple=\"multiple\" class=\"multiselect\"" +
-						"\" id=\"" + this.getId() + "\" name=\"" + this.getName() + "\" " + readonly + 
-						">\n" + optionsHtml.toString() +
-						"</select><script>$(\"#" + this.getId() + "\").multiselect();</script>\n";
-						// don't forget to link res/jquery-plugins/multiselect/js/ui.multiselect.js in your plugin!
-			} else {
-				return "<select multiple=\"multiple\" class=\"ui-widget-content ui-corner-all\"" +
-						" id=\"" + this.getId() + "\" name=\"" + this.getName() + "\" " + readonly + 
-						" style=\"width:350px;\"" +
-						">\n" + optionsHtml.toString() +
-						"</select><script>$(\"#" + this.getId() + "\").chosen();</script>\n";
+			return "<select id=\"" + this.getId() + "\" multiple name=\"" + this.getName() + "\" " + readonly
+					+ " style=\"" + this.getStyle() + "\">\n" + optionsHtml.toString() + "</select>\n";
+		}
+		else if (uiToolkit == UiToolkit.JQUERY)
+		{
+			if (useJqueryMultiplePlugin)
+			{
+				return "<select multiple=\"multiple\" class=\"multiselect\"" + "\" id=\"" + this.getId() + "\" name=\""
+						+ this.getName() + "\" " + readonly + ">\n" + optionsHtml.toString() + "</select><script>$(\"#"
+						+ this.getId() + "\").multiselect();</script>\n";
+				// don't forget to link
+				// res/jquery-plugins/multiselect/js/ui.multiselect.js in your
+				// plugin!
+			}
+			else
+			{
+				return "<select multiple=\"multiple\" class=\"ui-widget-content ui-corner-all\"" + " id=\""
+						+ this.getId() + "\" name=\"" + this.getName() + "\" " + readonly + " style=\"width:350px;\""
+						+ ">\n" + optionsHtml.toString() + "</select><script>$(\"#" + this.getId()
+						+ "\").chosen();</script>\n";
 			}
 		}
 		else
@@ -156,20 +157,22 @@ public class SelectMultipleInput extends OptionInput<List<String>>
 		}
 
 		String optionstring = result.toString();
-		if (result != null && !"".equals(result)
-				&& optionstring.lastIndexOf(",") >= 0) return optionstring
-				.substring(0, optionstring.lastIndexOf(","));
+		if (result != null && result.length() > 0 && optionstring.lastIndexOf(",") >= 0) return optionstring.substring(
+				0, optionstring.lastIndexOf(","));
 		return optionstring;
 	}
-	
-	/** Set the options for the input
+
+	/**
+	 * Set the options for the input
 	 * 
-	 * @param entities list of entities to add as options (values)
-	 * @param valueField field used for identification
-	 * @param labelField field used for label (what shows on the screen)
+	 * @param entities
+	 *            list of entities to add as options (values)
+	 * @param valueField
+	 *            field used for identification
+	 * @param labelField
+	 *            field used for label (what shows on the screen)
 	 */
-	public void setOptions(List<Object> entities, String valueField,
-			String labelField)
+	public void setOptions(List<Object> entities, String valueField, String labelField)
 	{
 		// clear list
 		this.getOptions().clear();
@@ -180,11 +183,10 @@ public class SelectMultipleInput extends OptionInput<List<String>>
 			this.addOption(((Entity) e).get(valueField), ((Entity) e).get(labelField));
 		}
 	}
-	
+
 	public void addOption(Object value, Object label)
 	{
-		this.getOptions().add(
-				new ValueLabel(value.toString(), label.toString()));
+		this.getOptions().add(new ValueLabel(value.toString(), label.toString()));
 	}
 
 	public void setOptions(String... choices)
@@ -198,8 +200,7 @@ public class SelectMultipleInput extends OptionInput<List<String>>
 	}
 
 	@Override
-	public String toHtml(Tuple params) throws ParseException,
-			HtmlInputException
+	public String toHtml(Tuple params) throws ParseException, HtmlInputException
 	{
 		return new SelectMultipleInput(params).render();
 	}
