@@ -20,6 +20,7 @@ import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
 import org.apache.xml.serialize.OutputFormat;
@@ -853,7 +854,7 @@ public class MolgenisModelParser
 				.getAttribute("parameter")));
 	}
 
-	/** Simple parse an xml string*/
+	/** Simple parse an xml string */
 	public static Model parseDbSchema(String xml) throws MolgenisModelException
 	{
 		Model model = new Model("molgenis");
@@ -861,9 +862,9 @@ public class MolgenisModelParser
 		try
 		{
 			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			
+
 			ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes("UTF-8"));
-			
+
 			Document document = builder.parse(is);
 
 			parseXmlDocument(model, document);
@@ -891,6 +892,10 @@ public class MolgenisModelParser
 			{
 				builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 				document = builder.parse(filename.trim());
+			}
+			catch (ParserConfigurationException e)
+			{
+				throw new RuntimeException(e);
 			}
 			catch (Exception e)
 			{
@@ -1128,7 +1133,7 @@ public class MolgenisModelParser
 				/** Optional custom header for the selected form screen */
 				String header = element.getAttribute("header");
 				if (!header.isEmpty()) form.setHeader(header);
-				
+
 				/** Optional description for the selected form screen */
 				String description = element.getAttribute("description");
 				if (!description.isEmpty()) form.setDescription(description);
@@ -1386,6 +1391,10 @@ public class MolgenisModelParser
 			// initialize the document
 			builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			document = builder.parse(filename);
+		}
+		catch (ParserConfigurationException e)
+		{
+			throw new RuntimeException(e);
 		}
 		catch (Exception e)
 		{
