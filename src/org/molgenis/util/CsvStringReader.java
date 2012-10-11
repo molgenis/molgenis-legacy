@@ -11,24 +11,17 @@ import java.util.zip.DataFormatException;
  * @see org.molgenis.util.CsvReader#parse
  */
 public class CsvStringReader extends CsvBufferedReaderMultiline
-{	
-	private String string;
-	
+{
+
 	/**
 	 * Construct the CsvReader for a String.
-	 * @param csvString 
-	 * @throws DataFormatException 
-	 * @throws IOException 
+	 * 
+	 * @param csvString
+	 * @throws DataFormatException
+	 * @throws IOException
 	 */
 	public CsvStringReader(String csvString) throws IOException, DataFormatException
 	{
 		super(new BufferedReader(new StringReader(csvString)));
-		this.string = csvString;
-	}
-	
-	public void reset() throws IOException, DataFormatException
-	{
-		this.reader = new BufferedReader(new StringReader(string));
-		super.reset();
 	}
 }

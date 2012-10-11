@@ -1,11 +1,12 @@
 package org.molgenis.util;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.zip.DataFormatException;
 
-public interface TupleReader extends TupleIterable
+public interface TupleReader extends TupleIterable, Closeable
 {
 	/** Iterate through available tuples */
 	public Iterator<Tuple> iterator();
@@ -19,14 +20,6 @@ public interface TupleReader extends TupleIterable
 	 * @throws Exception
 	 */
 	public List<String> colnames() throws Exception;
-
-	/**
-	 * Close the reader.
-	 * 
-	 * @throws IOException
-	 * 
-	 */
-	public void close() throws IOException;
 
 	/**
 	 * Sets the reader to parse from the line that starts with the string
