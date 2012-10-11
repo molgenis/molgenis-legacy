@@ -163,7 +163,7 @@ public class CmdLineParser
 		{
 			// get the option name
 			String name = args[i];
-			name.trim();
+			name = name.trim();
 			if (name.charAt(0) == '-') name = name.substring(1);
 
 			// Retrieve the field and try to set it
