@@ -23,10 +23,9 @@ import org.molgenis.util.Tuple;
  * loaded dynamically via an 'ajax' service.
  */
 public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
-{	
+{
 	/** Minimal constructor */
-	public MrefInput(String name, Class<? extends Entity> xrefEntityClass,
-			List<E> dummyList)
+	public MrefInput(String name, Class<? extends Entity> xrefEntityClass, List<E> dummyList)
 	{
 		super(name, xrefEntityClass, dummyList);
 		setXrefEntity(xrefEntityClass);
@@ -57,16 +56,16 @@ public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
 	 * @throws ClassNotFoundException
 	 * @throws ClassNotFoundException
 	 */
-//	@Deprecated
-//	public MrefInput(String name, String entityName) throws HtmlInputException
-//	{
-//		super(name, entityName);
-//	}
+	// @Deprecated
+	// public MrefInput(String name, String entityName) throws
+	// HtmlInputException
+	// {
+	// super(name, entityName);
+	// }
 
 	/** Complete constructor */
 	@Deprecated
-	public MrefInput(String name, String label, List<E> values,
-			Boolean nillable, Boolean readonly, String description,
+	public MrefInput(String name, String label, List<E> values, Boolean nillable, Boolean readonly, String description,
 			Class<? extends Entity> xrefEntityClass)
 	{
 		super(name, xrefEntityClass, label, values, nillable, readonly, description);
@@ -77,14 +76,14 @@ public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
 	 * Alternative complete constructor using String name of entityClass
 	 * 
 	 * @throws HtmlInputException
-	 * @throws ClassNotFoundException 
+	 * @throws ClassNotFoundException
 	 */
 	@Deprecated
-	public MrefInput(String name, String label, List<E> values,
-			Boolean nillable, Boolean readonly, String description,
+	public MrefInput(String name, String label, List<E> values, Boolean nillable, Boolean readonly, String description,
 			String xrefEntityClass) throws HtmlInputException, ClassNotFoundException
 	{
-		super(name, (Class<? extends Entity>) Class.forName(xrefEntityClass) ,label, values, nillable, readonly, description);
+		super(name, (Class<? extends Entity>) Class.forName(xrefEntityClass), label, values, nillable, readonly,
+				description);
 		setXrefEntity(xrefEntityClass);
 	}
 
@@ -94,7 +93,7 @@ public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
 	 * @throws HtmlInputException
 	 */
 	public MrefInput(Tuple t) throws HtmlInputException
-	{	
+	{
 		super(t);
 	}
 
@@ -119,7 +118,6 @@ public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
 		return result;
 	}
 
-
 	@Override
 	public String toHtml(Tuple params) throws HtmlInputException
 	{
@@ -130,22 +128,33 @@ public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
 	protected String renderOptions()
 	{
 		final String option = "\t<option selected value=\"%s\">%s</option>\n";
-		
+
 		final StringBuilder result = new StringBuilder();
 		for (Entity value : getObject())
 		{
-			result.append(
-					String.format(option, value.getIdValue(), value.getLabelValue())
-			);
+			result.append(String.format(option, value.getIdValue(), value.getLabelValue()));
 		}
-		
-		return result.toString(); 
+
+		return result.toString();
 	}
 
 	@Override
 	protected String getHtmlRefType()
 	{
 		return "multiple";
+	}
+
+	@Override
+	public String renderHidden()
+	{
+		String result = "";
+
+		for (E object : this.getObject())
+		{
+			result += "<input name=\"" + this.getName() + "\" type=\"hidden\" value=\"" + object.getIdValue() + "\"/>";
+		}
+
+		return result;
 	}
 
 }

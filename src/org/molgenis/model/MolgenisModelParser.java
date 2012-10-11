@@ -1128,6 +1128,10 @@ public class MolgenisModelParser
 				/** Optional custom header for the selected form screen */
 				String header = element.getAttribute("header");
 				if (!header.isEmpty()) form.setHeader(header);
+				
+				/** Optional description for the selected form screen */
+				String description = element.getAttribute("description");
+				if (!description.isEmpty()) form.setDescription(description);
 
 				form.setNamespace(namespace);
 				new_parent = form;

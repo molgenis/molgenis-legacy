@@ -71,13 +71,18 @@ public abstract class AbstractTupleReader implements TupleReader
 
 	public void renameField(String from, String to) throws Exception
 	{
-		List<String> colnames = this.colnames();
-		if (colnames.contains(from)) colnames.set(colnames.indexOf(from), to);
-		else
+		if ((from != null && from.equals(to)) || (from == null && to == null)) return;
+
+		List<String> colNames = this.colnames();
+		for (int i = 0; i < colNames.size(); ++i)
 		{
-			logger.warn("renameField(" + from + "," + to + ") failed. Known columns are: " + colnames);
+			String colName = colNames.get(i);
+			if ((colName != null && colName.equals(from)) || (colName == null && from == null))
+			{
+				colNames.set(i, to);
+			}
 		}
-		this.setColnames(colnames);
+		this.setColnames(colNames);
 
 	}
 

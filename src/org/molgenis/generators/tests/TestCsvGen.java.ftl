@@ -242,9 +242,9 @@ public class TestCsv
 		for(File f: dir1.listFiles())
 		{
 			File f2 = new File(dir2.getAbsolutePath()+File.separator+f.getName());
-			boolean result = CompareCSV.compareCSVFilesByContent(f, f2, errorMessage);
+			boolean result = CompareCSV.compareCSVFilesByContent(f, f2);
 			if(!result) {
-				logger.error("Difference between "+f+" and "+f2 + "\t" + errorMessage);
+				logger.error(f + " and " + f2 + " differ");
 				return false;
 			}
 		}

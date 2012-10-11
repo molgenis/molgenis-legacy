@@ -1,9 +1,10 @@
 package org.molgenis.util;
 
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
-
-import junit.framework.Assert;
 
 import org.molgenis.util.plink.drivers.BedFileDriver;
 import org.molgenis.util.plink.drivers.BimFileDriver;
@@ -70,32 +71,32 @@ public class PlinkTest extends AbstractResourceTest
 	@Test
 	public void BED_construct() throws Exception
 	{
-		Assert.assertEquals(1, bedfd.getMode());
-		Assert.assertEquals(16, bedfd.getNrOfElements());
+		assertEquals(1, bedfd.getMode());
+		assertEquals(16, bedfd.getNrOfElements());
 	}
 
 	@Test
 	public void BIM_construct() throws Exception
 	{
-		Assert.assertEquals(2, bimfd.getNrOfElements());
+		assertEquals(2, bimfd.getNrOfElements());
 	}
 
 	@Test
 	public void FAM_construct() throws Exception
 	{
-		Assert.assertEquals(6, famfd.getNrOfElements());
+		assertEquals(6, famfd.getNrOfElements());
 	}
 
 	@Test
 	public void PED_construct() throws Exception
 	{
-		Assert.assertEquals(6, pedfd.getNrOfElements());
+		assertEquals(6, pedfd.getNrOfElements());
 	}
 
 	@Test
 	public void MAP_construct() throws Exception
 	{
-		Assert.assertEquals(2, mapfd.getNrOfElements());
+		assertEquals(2, mapfd.getNrOfElements());
 	}
 
 	@Test
@@ -124,104 +125,100 @@ public class PlinkTest extends AbstractResourceTest
 
 		// single elements
 		/*
-		 * Assert.assertTrue(stringArrEqual(new String[] { all[0] },
-		 * bedfd.getElements(0, 1))); Assert.assertTrue(stringArrEqual(new
-		 * String[] { all[1] }, bedfd.getElements(1, 2)));
-		 * Assert.assertTrue(stringArrEqual(new String[] { all[2] },
-		 * bedfd.getElements(2, 3))); Assert.assertTrue(stringArrEqual(new
-		 * String[] { all[3] }, bedfd.getElements(3, 4)));
-		 * Assert.assertTrue(stringArrEqual(new String[] { all[4] },
-		 * bedfd.getElements(4, 5))); Assert.assertTrue(stringArrEqual(new
+		 * assertTrue(stringArrEqual(new String[] { all[0] },
+		 * bedfd.getElements(0, 1))); assertTrue(stringArrEqual(new String[] {
+		 * all[1] }, bedfd.getElements(1, 2))); assertTrue(stringArrEqual(new
+		 * String[] { all[2] }, bedfd.getElements(2, 3)));
+		 * assertTrue(stringArrEqual(new String[] { all[3] },
+		 * bedfd.getElements(3, 4))); assertTrue(stringArrEqual(new String[] {
+		 * all[4] }, bedfd.getElements(4, 5))); assertTrue(stringArrEqual(new
 		 * String[] { all[5] }, bedfd.getElements(5, 6)));
-		 * Assert.assertTrue(stringArrEqual(new String[] { all[6] },
-		 * bedfd.getElements(6, 7))); Assert.assertTrue(stringArrEqual(new
-		 * String[] { all[7] }, bedfd.getElements(7, 8)));
-		 * Assert.assertTrue(stringArrEqual(new String[] { all[8] },
-		 * bedfd.getElements(8, 9))); Assert.assertTrue(stringArrEqual(new
-		 * String[] { all[9] }, bedfd.getElements(9, 10)));
-		 * Assert.assertTrue(stringArrEqual(new String[] { all[10] },
-		 * bedfd.getElements(10, 11))); Assert.assertTrue(stringArrEqual(new
+		 * assertTrue(stringArrEqual(new String[] { all[6] },
+		 * bedfd.getElements(6, 7))); assertTrue(stringArrEqual(new String[] {
+		 * all[7] }, bedfd.getElements(7, 8))); assertTrue(stringArrEqual(new
+		 * String[] { all[8] }, bedfd.getElements(8, 9)));
+		 * assertTrue(stringArrEqual(new String[] { all[9] },
+		 * bedfd.getElements(9, 10))); assertTrue(stringArrEqual(new String[] {
+		 * all[10] }, bedfd.getElements(10, 11))); assertTrue(stringArrEqual(new
 		 * String[] { all[11] }, bedfd.getElements(11, 12)));
-		 * Assert.assertTrue(stringArrEqual(new String[] { all[12] },
-		 * bedfd.getElements(12, 13))); Assert.assertTrue(stringArrEqual(new
-		 * String[] { all[13] }, bedfd.getElements(13, 14)));
-		 * Assert.assertTrue(stringArrEqual(new String[] { all[14] },
-		 * bedfd.getElements(14, 15))); Assert.assertTrue(stringArrEqual(new
-		 * String[] { all[15] }, bedfd.getElements(15, 16)));
+		 * assertTrue(stringArrEqual(new String[] { all[12] },
+		 * bedfd.getElements(12, 13))); assertTrue(stringArrEqual(new String[] {
+		 * all[13] }, bedfd.getElements(13, 14))); assertTrue(stringArrEqual(new
+		 * String[] { all[14] }, bedfd.getElements(14, 15)));
+		 * assertTrue(stringArrEqual(new String[] { all[15] },
+		 * bedfd.getElements(15, 16)));
 		 * 
-		 * // subsets Assert.assertTrue(stringArrEqual(subset1,
-		 * bedfd.getElements(0, 4))); Assert.assertTrue(stringArrEqual(subset2,
-		 * bedfd.getElements(1, 5))); Assert.assertTrue(stringArrEqual(subset3,
-		 * bedfd.getElements(2, 6))); Assert.assertTrue(stringArrEqual(subset4,
-		 * bedfd.getElements(3, 7))); Assert.assertTrue(stringArrEqual(subset5,
-		 * bedfd.getElements(13, 15)));
-		 * Assert.assertTrue(stringArrEqual(subset6, bedfd.getElements(14,
-		 * 16))); Assert.assertTrue(stringArrEqual(subset7,
-		 * bedfd.getElements(10, 15)));
-		 * Assert.assertTrue(stringArrEqual(subset8, bedfd.getElements(5, 10)));
+		 * // subsets assertTrue(stringArrEqual(subset1, bedfd.getElements(0,
+		 * 4))); assertTrue(stringArrEqual(subset2, bedfd.getElements(1, 5)));
+		 * assertTrue(stringArrEqual(subset3, bedfd.getElements(2, 6)));
+		 * assertTrue(stringArrEqual(subset4, bedfd.getElements(3, 7)));
+		 * assertTrue(stringArrEqual(subset5, bedfd.getElements(13, 15)));
+		 * assertTrue(stringArrEqual(subset6, bedfd.getElements(14, 16)));
+		 * assertTrue(stringArrEqual(subset7, bedfd.getElements(10, 15)));
+		 * assertTrue(stringArrEqual(subset8, bedfd.getElements(5, 10)));
 		 */
 
 		// everything
-		// Assert.assertTrue(stringArrEqual(all, bedfd.getElements(0, 16)));
+		// assertTrue(stringArrEqual(all, bedfd.getElements(0, 16)));
 	}
 
 	@Test
 	public void BED_getElement() throws Exception
 	{
-		Assert.assertEquals("00", bedfd.getElement(0));
-		Assert.assertEquals("01", bedfd.getElement(1));
-		Assert.assertEquals("11", bedfd.getElement(2));
-		Assert.assertEquals("01", bedfd.getElement(3));
-		Assert.assertEquals("11", bedfd.getElement(4));
-		Assert.assertEquals("11", bedfd.getElement(5));
-		Assert.assertEquals("00", bedfd.getElement(6));
-		Assert.assertEquals("00", bedfd.getElement(7));
-		Assert.assertEquals("01", bedfd.getElement(8));
-		Assert.assertEquals("01", bedfd.getElement(9));
-		Assert.assertEquals("00", bedfd.getElement(10));
-		Assert.assertEquals("11", bedfd.getElement(11));
-		Assert.assertEquals("01", bedfd.getElement(12));
-		Assert.assertEquals("11", bedfd.getElement(13));
-		Assert.assertEquals("00", bedfd.getElement(14));
-		Assert.assertEquals("00", bedfd.getElement(15));
+		assertEquals("00", bedfd.getElement(0));
+		assertEquals("01", bedfd.getElement(1));
+		assertEquals("11", bedfd.getElement(2));
+		assertEquals("01", bedfd.getElement(3));
+		assertEquals("11", bedfd.getElement(4));
+		assertEquals("11", bedfd.getElement(5));
+		assertEquals("00", bedfd.getElement(6));
+		assertEquals("00", bedfd.getElement(7));
+		assertEquals("01", bedfd.getElement(8));
+		assertEquals("01", bedfd.getElement(9));
+		assertEquals("00", bedfd.getElement(10));
+		assertEquals("11", bedfd.getElement(11));
+		assertEquals("01", bedfd.getElement(12));
+		assertEquals("11", bedfd.getElement(13));
+		assertEquals("00", bedfd.getElement(14));
+		assertEquals("00", bedfd.getElement(15));
 	}
 
 	@Test
 	public void BIM_getEntries() throws Exception
 	{
-		Assert.assertEquals(1, bimfd.getEntries(0, 1).size());
-		Assert.assertEquals(1, bimfd.getEntries(1, 2).size());
-		Assert.assertEquals(2, bimfd.getEntries(0, 2).size());
-		Assert.assertEquals(2, bimfd.getAllEntries().size());
+		assertEquals(1, bimfd.getEntries(0, 1).size());
+		assertEquals(1, bimfd.getEntries(1, 2).size());
+		assertEquals(2, bimfd.getEntries(0, 2).size());
+		assertEquals(2, bimfd.getAllEntries().size());
 
-		Assert.assertEquals("snp1", bimfd.getEntries(0, 1).get(0).getSNP());
-		Assert.assertEquals('A', bimfd.getEntries(0, 1).get(0).getBiallele().getAllele1());
-		Assert.assertEquals(0.0, bimfd.getEntries(1, 2).get(0).getcM());
-		Assert.assertEquals("1", bimfd.getEntries(1, 2).get(0).getChromosome());
+		assertEquals("snp1", bimfd.getEntries(0, 1).get(0).getSNP());
+		assertEquals('A', bimfd.getEntries(0, 1).get(0).getBiallele().getAllele1());
+		assertEquals(0.0, bimfd.getEntries(1, 2).get(0).getcM());
+		assertEquals("1", bimfd.getEntries(1, 2).get(0).getChromosome());
 
-		Assert.assertEquals('C', bimfd.getAllEntries().get(0).getBiallele().getAllele2());
-		Assert.assertEquals('T', bimfd.getAllEntries().get(1).getBiallele().getAllele2());
-		Assert.assertEquals(1, bimfd.getAllEntries().get(0).getBpPos());
-		Assert.assertEquals(2, bimfd.getAllEntries().get(1).getBpPos());
-		Assert.assertEquals("snp2", bimfd.getAllEntries().get(1).getSNP());
+		assertEquals('C', bimfd.getAllEntries().get(0).getBiallele().getAllele2());
+		assertEquals('T', bimfd.getAllEntries().get(1).getBiallele().getAllele2());
+		assertEquals(1, bimfd.getAllEntries().get(0).getBpPos());
+		assertEquals(2, bimfd.getAllEntries().get(1).getBpPos());
+		assertEquals("snp2", bimfd.getAllEntries().get(1).getSNP());
 	}
 
 	@Test
 	public void FAM_getEntries() throws Exception
 	{
-		Assert.assertEquals(1, famfd.getEntries(0, 1).size());
-		Assert.assertEquals(1, famfd.getEntries(1, 2).size());
-		Assert.assertEquals(2, famfd.getEntries(0, 2).size());
-		Assert.assertEquals(6, famfd.getEntries(0, 6).size());
+		assertEquals(1, famfd.getEntries(0, 1).size());
+		assertEquals(1, famfd.getEntries(1, 2).size());
+		assertEquals(2, famfd.getEntries(0, 2).size());
+		assertEquals(6, famfd.getEntries(0, 6).size());
 
-		Assert.assertEquals("1", famfd.getEntries(0, 1).get(0).getFamily());
-		Assert.assertEquals("2", famfd.getEntries(0, 2).get(1).getFamily());
+		assertEquals("1", famfd.getEntries(0, 1).get(0).getFamily());
+		assertEquals("2", famfd.getEntries(0, 2).get(1).getFamily());
 
-		Assert.assertEquals("5", famfd.getEntries(3, 5).get(1).getFamily());
-		Assert.assertEquals("6", famfd.getEntries(0, 6).get(5).getFamily());
+		assertEquals("5", famfd.getEntries(3, 5).get(1).getFamily());
+		assertEquals("6", famfd.getEntries(0, 6).get(5).getFamily());
 
-		Assert.assertEquals(1.0, famfd.getAllEntries().get(2).getPhenotype());
-		Assert.assertEquals(2.0, famfd.getAllEntries().get(3).getPhenotype());
+		assertEquals(1.0, famfd.getAllEntries().get(2).getPhenotype());
+		assertEquals(2.0, famfd.getAllEntries().get(3).getPhenotype());
 	}
 
 	// TODO
@@ -229,55 +226,55 @@ public class PlinkTest extends AbstractResourceTest
 	public void PED_getEntries() throws Exception
 	{
 		// 1 1 0 0 1 1 A A G T
-		Assert.assertEquals('A', pedfd.getAllEntries().get(0).getBialleles().get(0).getAllele1());
-		Assert.assertEquals('A', pedfd.getAllEntries().get(0).getBialleles().get(0).getAllele2());
-		Assert.assertEquals('G', pedfd.getAllEntries().get(0).getBialleles().get(1).getAllele1());
-		Assert.assertEquals('T', pedfd.getAllEntries().get(0).getBialleles().get(1).getAllele2());
+		assertEquals('A', pedfd.getAllEntries().get(0).getBialleles().get(0).getAllele1());
+		assertEquals('A', pedfd.getAllEntries().get(0).getBialleles().get(0).getAllele2());
+		assertEquals('G', pedfd.getAllEntries().get(0).getBialleles().get(1).getAllele1());
+		assertEquals('T', pedfd.getAllEntries().get(0).getBialleles().get(1).getAllele2());
 
-		Assert.assertEquals('A', pedfd.getAllEntries().get(1).getBialleles().get(0).getAllele1());
-		Assert.assertEquals('C', pedfd.getAllEntries().get(1).getBialleles().get(0).getAllele2());
-		Assert.assertEquals('T', pedfd.getAllEntries().get(1).getBialleles().get(1).getAllele1());
-		Assert.assertEquals('G', pedfd.getAllEntries().get(1).getBialleles().get(1).getAllele2());
+		assertEquals('A', pedfd.getAllEntries().get(1).getBialleles().get(0).getAllele1());
+		assertEquals('C', pedfd.getAllEntries().get(1).getBialleles().get(0).getAllele2());
+		assertEquals('T', pedfd.getAllEntries().get(1).getBialleles().get(1).getAllele1());
+		assertEquals('G', pedfd.getAllEntries().get(1).getBialleles().get(1).getAllele2());
 
-		Assert.assertEquals('C', pedfd.getAllEntries().get(5).getBialleles().get(0).getAllele1());
-		Assert.assertEquals('C', pedfd.getAllEntries().get(5).getBialleles().get(0).getAllele2());
-		Assert.assertEquals('T', pedfd.getAllEntries().get(5).getBialleles().get(1).getAllele1());
-		Assert.assertEquals('T', pedfd.getAllEntries().get(5).getBialleles().get(1).getAllele2());
+		assertEquals('C', pedfd.getAllEntries().get(5).getBialleles().get(0).getAllele1());
+		assertEquals('C', pedfd.getAllEntries().get(5).getBialleles().get(0).getAllele2());
+		assertEquals('T', pedfd.getAllEntries().get(5).getBialleles().get(1).getAllele1());
+		assertEquals('T', pedfd.getAllEntries().get(5).getBialleles().get(1).getAllele2());
 
-		Assert.assertEquals("3", pedfd.getAllEntries().get(2).getFamily());
-		Assert.assertEquals("0", pedfd.getAllEntries().get(2).getFather());
-		Assert.assertEquals("0", pedfd.getAllEntries().get(2).getMother());
-		Assert.assertEquals(1.0, pedfd.getAllEntries().get(2).getPhenotype());
-		Assert.assertEquals("1", pedfd.getAllEntries().get(2).getIndividual());
-		Assert.assertEquals(1, pedfd.getAllEntries().get(2).getSex());
+		assertEquals("3", pedfd.getAllEntries().get(2).getFamily());
+		assertEquals("0", pedfd.getAllEntries().get(2).getFather());
+		assertEquals("0", pedfd.getAllEntries().get(2).getMother());
+		assertEquals(1.0, pedfd.getAllEntries().get(2).getPhenotype());
+		assertEquals("1", pedfd.getAllEntries().get(2).getIndividual());
+		assertEquals(1, pedfd.getAllEntries().get(2).getSex());
 
-		Assert.assertEquals("3", pedfd.getEntries(2, 3).get(0).getFamily());
-		Assert.assertEquals('G', pedfd.getEntries(2, 3).get(0).getBialleles().get(1).getAllele2());
-		Assert.assertEquals("3", pedfd.getEntries(0, 3).get(2).getFamily());
-		Assert.assertEquals('G', pedfd.getEntries(0, 3).get(2).getBialleles().get(1).getAllele1());
-		Assert.assertEquals("4", pedfd.getEntries(2, 4).get(1).getFamily());
-		Assert.assertEquals(2.0, pedfd.getEntries(2, 4).get(1).getPhenotype());
+		assertEquals("3", pedfd.getEntries(2, 3).get(0).getFamily());
+		assertEquals('G', pedfd.getEntries(2, 3).get(0).getBialleles().get(1).getAllele2());
+		assertEquals("3", pedfd.getEntries(0, 3).get(2).getFamily());
+		assertEquals('G', pedfd.getEntries(0, 3).get(2).getBialleles().get(1).getAllele1());
+		assertEquals("4", pedfd.getEntries(2, 4).get(1).getFamily());
+		assertEquals(2.0, pedfd.getEntries(2, 4).get(1).getPhenotype());
 
-		Assert.assertEquals('C', pedfd.getEntries(0, 6).get(4).getBialleles().get(0).getAllele1());
-		Assert.assertEquals('C', pedfd.getEntries(1, 6).get(3).getBialleles().get(0).getAllele2());
-		Assert.assertEquals('G', pedfd.getEntries(2, 6).get(2).getBialleles().get(1).getAllele1());
-		Assert.assertEquals('T', pedfd.getEntries(3, 6).get(1).getBialleles().get(1).getAllele2());
+		assertEquals('C', pedfd.getEntries(0, 6).get(4).getBialleles().get(0).getAllele1());
+		assertEquals('C', pedfd.getEntries(1, 6).get(3).getBialleles().get(0).getAllele2());
+		assertEquals('G', pedfd.getEntries(2, 6).get(2).getBialleles().get(1).getAllele1());
+		assertEquals('T', pedfd.getEntries(3, 6).get(1).getBialleles().get(1).getAllele2());
 
 	}
 
 	@Test
 	public void MAP_getEntries() throws Exception
 	{
-		Assert.assertEquals(1, mapfd.getEntries(0, 1).size());
-		Assert.assertEquals(1, mapfd.getEntries(1, 2).size());
-		Assert.assertEquals(2, mapfd.getEntries(0, 2).size());
-		Assert.assertEquals(2, mapfd.getAllEntries().size());
-		Assert.assertEquals("snp1", mapfd.getEntries(0, 1).get(0).getSNP());
-		Assert.assertEquals(0.0, mapfd.getEntries(1, 2).get(0).getcM());
-		Assert.assertEquals("1", mapfd.getEntries(1, 2).get(0).getChromosome());
-		Assert.assertEquals(1, mapfd.getAllEntries().get(0).getBpPos());
-		Assert.assertEquals(2, mapfd.getAllEntries().get(1).getBpPos());
-		Assert.assertEquals("snp2", mapfd.getAllEntries().get(1).getSNP());
+		assertEquals(1, mapfd.getEntries(0, 1).size());
+		assertEquals(1, mapfd.getEntries(1, 2).size());
+		assertEquals(2, mapfd.getEntries(0, 2).size());
+		assertEquals(2, mapfd.getAllEntries().size());
+		assertEquals("snp1", mapfd.getEntries(0, 1).get(0).getSNP());
+		assertEquals(0.0, mapfd.getEntries(1, 2).get(0).getcM());
+		assertEquals("1", mapfd.getEntries(1, 2).get(0).getChromosome());
+		assertEquals(1, mapfd.getAllEntries().get(0).getBpPos());
+		assertEquals(2, mapfd.getAllEntries().get(1).getBpPos());
+		assertEquals("snp2", mapfd.getAllEntries().get(1).getSNP());
 	}
 
 	@Test
@@ -287,7 +284,7 @@ public class PlinkTest extends AbstractResourceTest
 		BimFileWriter w = new BimFileWriter(newBim);
 		w.writeAll(bimfd.getAllEntries());
 		boolean filesAreEqual = DirectoryCompare.compareFileContent(testBim, newBim);
-		Assert.assertTrue(filesAreEqual);
+		assertTrue(filesAreEqual);
 	}
 
 	@Test
@@ -297,7 +294,7 @@ public class PlinkTest extends AbstractResourceTest
 		MapFileWriter w = new MapFileWriter(newMap);
 		w.writeAll(mapfd.getAllEntries());
 		boolean filesAreEqual = DirectoryCompare.compareFileContent(testMap, newMap);
-		Assert.assertTrue(filesAreEqual);
+		assertTrue(filesAreEqual);
 	}
 
 	@Test
@@ -307,7 +304,7 @@ public class PlinkTest extends AbstractResourceTest
 		PedFileWriter w = new PedFileWriter(newPed);
 		w.writeAll(pedfd.getAllEntries());
 		boolean filesAreEqual = DirectoryCompare.compareFileContent(testPed, newPed);
-		Assert.assertTrue(filesAreEqual);
+		assertTrue(filesAreEqual);
 	}
 
 	@Test
@@ -317,7 +314,7 @@ public class PlinkTest extends AbstractResourceTest
 		FamFileWriter w = new FamFileWriter(newFam);
 		w.writeAll(famfd.getAllEntries());
 		boolean filesAreEqual = DirectoryCompare.compareFileContent(testFam, newFam);
-		Assert.assertTrue(filesAreEqual);
+		assertTrue(filesAreEqual);
 	}
 
 	@Test
@@ -327,7 +324,7 @@ public class PlinkTest extends AbstractResourceTest
 		TpedFileWriter w = new TpedFileWriter(newTped);
 		w.writeAll(tpedfd.getAllEntries());
 		boolean filesAreEqual = DirectoryCompare.compareFileContent(testTped, newTped);
-		Assert.assertTrue(filesAreEqual);
+		assertTrue(filesAreEqual);
 	}
 
 	@AfterClass

@@ -782,6 +782,7 @@ public class Molgenis
 
 		// start loading
 		BasicDataSource data_src = new BasicDataSource();
+		Statement stmt = null;
 		Connection conn = null;
 		try
 		{
@@ -836,7 +837,7 @@ public class Molgenis
 				}
 			}
 
-			Statement stmt = conn.createStatement();
+			stmt = conn.createStatement();
 			boolean error = false;
 			logger.info("Updating database....");
 			int i = 0;
@@ -882,10 +883,21 @@ public class Molgenis
 		}
 		finally
 		{
-			if (conn != null)
+			if (stmt != null)
 			{
-				conn.close();
+				try
+				{
+					stmt.close();
+				}
+				catch (SQLException e)
+				{
+					if (conn != null)
+					{
+						conn.close();
+					}
+				}
 			}
+
 		}
 
 	}

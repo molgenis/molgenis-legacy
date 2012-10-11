@@ -243,7 +243,7 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 	{
 		if (this.isHidden())
 		{
-			return "<input type=\"hidden\" value=\"+getValue()+\"/>";
+			return this.renderHidden();
 		}
 
 		final String cssClasses = String.format("%s %s", this.isReadonly() ? "readonly " : "", this.isNillable() ? ""
@@ -303,6 +303,8 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 		final String includeButton = includeAddButton && !this.isReadonly() ? this.createAddButton().toString() : "";
 		return select + ajaxChosenScript + includeButton;
 	}
+
+	public abstract String renderHidden();
 
 	@Override
 	public String toHtml()
