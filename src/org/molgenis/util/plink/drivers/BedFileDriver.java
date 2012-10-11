@@ -71,7 +71,7 @@ public class BedFileDriver
 		}
 		else
 		{
-			throw new Exception("Mode not recognized: " + mode);
+			throw new Exception("Mode not recognized: " + bmode);
 		}
 
 		this.mode = bmode;
