@@ -95,6 +95,11 @@
             <artifactId>commons-email</artifactId>
             <version>1.2</version>
         </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>      
  
 <!--
         <dependency>
@@ -143,7 +148,13 @@
             <version>4.10</version>
 			<scope>test</scope>
         </dependency>
-        
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.8.4</version>
+			<scope>test</scope>
+        </dependency>
+
         <!-- Hibernate Search -->
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -152,12 +163,17 @@
         </dependency>
             
         <!-- Excel -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.8</version>
+		</dependency>
         <dependency>
             <groupId>net.sourceforge.jexcelapi</groupId>
             <artifactId>jxl</artifactId>
             <version>2.6.12</version>
         </dependency>
-        
+
         <!-- Tar -->
         <dependency>
             <groupId>javatar</groupId>
@@ -222,8 +238,7 @@
 
     <build>
         <sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>src</testSourceDirectory>
-        
+		<testSourceDirectory>test/java</testSourceDirectory>
         <resources>
             <!-- copies freemarker template -->
 			<resource>
@@ -248,6 +263,7 @@
                     <compilerArguments>
                         <endorseddirs>${endorsed.dir}</endorseddirs>
                     </compilerArguments>
+<!--
 					<excludes>
 						<exclude>**/*Test.java</exclude>
 						<exclude>**/Test*.java</exclude>
@@ -256,6 +272,7 @@
 						<testInclude>**/*Test.java</testInclude>
 						<testInclude>**/Test*.java</testInclude>
 					</testIncludes>
+-->
                 </configuration>
             </plugin>
 			<plugin>
