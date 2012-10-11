@@ -109,8 +109,10 @@ public class TextFileUtils
 
 		raf.close();
 
-		// replace \r\n combinations with \n
-		terminatorSequence = terminatorSequence.replaceAll("rn", "n");
+		// replace \r\n combinations with \n (note: separators are added in
+		// reverse
+		// order)
+		terminatorSequence = terminatorSequence.replaceAll("nr", "n");
 
 		return terminatorSequence.length();
 
