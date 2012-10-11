@@ -444,7 +444,7 @@ public class MolgenisModelParser
 		{
 			description = label;
 		}
-		if (xref_label.equals("") || xref_label == null)
+		if (xref_label == null || xref_label.isEmpty())
 		{
 			xref_label = null;
 		}
