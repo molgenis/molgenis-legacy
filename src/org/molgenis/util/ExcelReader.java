@@ -10,7 +10,6 @@ import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
 
-
 public class ExcelReader extends AbstractTupleReader implements TupleReader, TupleIterable
 {
 	private Sheet sheet;
@@ -30,8 +29,7 @@ public class ExcelReader extends AbstractTupleReader implements TupleReader, Tup
 		}
 
 		sheet = workbook.getSheet(sheetName);
-		if (sheet == null) throw new IOException("cannot find sheet: "
-				+ sheetName);
+		if (sheet == null) throw new IOException("cannot find sheet: " + sheetName);
 	}
 
 	@Override
@@ -42,7 +40,7 @@ public class ExcelReader extends AbstractTupleReader implements TupleReader, Tup
 			result.add(cell.getContents());
 		return result;
 	}
-	
+
 	@Override
 	public Tuple next()
 	{
@@ -76,7 +74,7 @@ public class ExcelReader extends AbstractTupleReader implements TupleReader, Tup
 					allNull = false;
 				}
 
-				if (value.equals(this.getMissingValues()))
+				if (value != null && value.equals(this.getMissingValues()))
 				{
 					value = null;
 				}
@@ -92,7 +90,7 @@ public class ExcelReader extends AbstractTupleReader implements TupleReader, Tup
 				rowIndex++;
 
 				t.set(values);
-				
+
 				return t;
 			}
 		}
@@ -110,17 +108,17 @@ public class ExcelReader extends AbstractTupleReader implements TupleReader, Tup
 	public void close() throws IOException
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void reset()
 	{
-		//nothing needed
+		// nothing needed
 	}
 
 	@Override
-	//excel reader is never 'closed'?
+	// excel reader is never 'closed'?
 	public boolean isClosed()
 	{
 		return false;

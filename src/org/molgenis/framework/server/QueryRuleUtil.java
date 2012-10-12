@@ -23,7 +23,7 @@ public class QueryRuleUtil
 		{
 			if (rules.indexOf(r) > 0)
 			{
-				if (QueryRule.Operator.OR.equals(previousRule))
+				if (QueryRule.Operator.OR.equals(previousRule.getOperator()))
 				{
 					filters.append("\\|");
 				}
@@ -39,7 +39,7 @@ public class QueryRuleUtil
 			if (r.getValue() instanceof String) filters.append("'" + r.getValue() + "'");
 			else
 				filters.append(r.getValue());
-			
+
 			previousRule = r;
 		}
 
