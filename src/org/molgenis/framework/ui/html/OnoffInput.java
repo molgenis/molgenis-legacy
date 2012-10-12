@@ -23,17 +23,15 @@ public class OnoffInput extends HtmlInput<Boolean>
 		super(name, value);
 		this.setReadonly(false);
 	}
-	
+
 	public OnoffInput(String name, String label, Boolean value)
 	{
 		super(name, value);
 		this.setLabel(label);
 		this.setReadonly(false);
 	}
-	
 
-	public OnoffInput(String name, String label, Boolean value,
-			boolean nillable, boolean readonly)
+	public OnoffInput(String name, String label, Boolean value, boolean nillable, boolean readonly)
 	{
 		super(name, value);
 		this.setLabel(label);
@@ -43,7 +41,7 @@ public class OnoffInput extends HtmlInput<Boolean>
 
 	public OnoffInput(Tuple t)
 	{
-		this(t.getString(NAME), t.getString (LABEL), t.getBool(VALUE), t.getBool(NILLABLE), t.getBool(READONLY));
+		this(t.getString(NAME), t.getString(LABEL), t.getBool(VALUE), t.getBool(NILLABLE), t.getBool(READONLY));
 	}
 
 	// HtmlInput overloads
@@ -59,20 +57,17 @@ public class OnoffInput extends HtmlInput<Boolean>
 			return input.toHtml();
 		}
 		String readonly = (isReadonly() ? "readonly " : "");
-		String checked = (getObject() != null && Boolean.valueOf(getObject()
-				.toString())) ? "checked" : "";
+		String checked = (getObject() != null && Boolean.valueOf(getObject().toString())) ? "checked" : "";
 
-		String html = "<input id=\"" + this.getId() + "\" type=\"checkbox\" "
-				+ readonly + checked + " name=\"" + this.getName()
-				+ " \" value=\"" + this.onValue + "\"/>";
+		String html = "<input id=\"" + this.getId() + "\" type=\"checkbox\" " + readonly + checked + " name=\""
+				+ this.getName() + " \" value=\"" + this.onValue + "\"/>";
 
 		return html;
 	}
 
 	public String getHtmlValue()
 	{
-		String value = (getObject() != null && getObject().equals(1)) ? "yes"
-				: "no";
+		String value = (getObject() != null && getObject().equals(true)) ? "yes" : "no";
 		return value;
 	}
 

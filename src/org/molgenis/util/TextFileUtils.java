@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.RandomAccessFile;
 
+import org.apache.commons.io.IOUtils;
+
 public class TextFileUtils
 {
 
@@ -23,19 +25,15 @@ public class TextFileUtils
 	 */
 	public static int getNumberOfLines(File inFile) throws IOException
 	{
-		LineNumberReader lnr = null;
+		LineNumberReader lnr = new LineNumberReader(new FileReader(inFile));
 		try
 		{
-			lnr = new LineNumberReader(new FileReader(inFile));
 			lnr.skip(Long.MAX_VALUE);
 			return lnr.getLineNumber() + 1;
 		}
 		finally
 		{
-			if (lnr != null)
-			{
-				lnr.close();
-			}
+			IOUtils.closeQuietly(lnr);
 		}
 	}
 
@@ -109,8 +107,10 @@ public class TextFileUtils
 
 		raf.close();
 
-		// replace \r\n combinations with \n
-		terminatorSequence = terminatorSequence.replaceAll("rn", "n");
+		// replace \r\n combinations with \n (note: separators are added in
+		// reverse
+		// order)
+		terminatorSequence = terminatorSequence.replaceAll("nr", "n");
 
 		return terminatorSequence.length();
 

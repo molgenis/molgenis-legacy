@@ -64,9 +64,7 @@ public class CsvBufferedReaderMultiline extends AbstractTupleReader implements C
 	 */
 	public CsvBufferedReaderMultiline(BufferedReader reader) throws IOException, DataFormatException
 	{
-		this.reader = reader;
-		// if (hasHeader) headers = colnames(); always true!
-		headers = colnames();
+		this(reader, true);
 	}
 
 	/**
@@ -82,6 +80,8 @@ public class CsvBufferedReaderMultiline extends AbstractTupleReader implements C
 		this.reader = reader;
 		this.hasHeader = hasHeader;
 		if (this.hasHeader) headers = colnames();
+		else
+			reader.mark(10000); // because colnames() also places mark
 	}
 
 	@Override
@@ -248,7 +248,6 @@ public class CsvBufferedReaderMultiline extends AbstractTupleReader implements C
 			}
 
 			// next is null
-			if (reader != null) reader.close();
 			return null;
 		}
 		catch (Exception e)
@@ -277,6 +276,7 @@ public class CsvBufferedReaderMultiline extends AbstractTupleReader implements C
 		return result.toString();
 	}
 
+	@Override
 	public void close() throws IOException
 	{
 		this.reader.close();
@@ -427,7 +427,6 @@ public class CsvBufferedReaderMultiline extends AbstractTupleReader implements C
 				currentRecord += "\n";
 			}
 		}
-
 		return null;
 	}
 
@@ -515,8 +514,7 @@ public class CsvBufferedReaderMultiline extends AbstractTupleReader implements C
 	@Override
 	public void reset() throws IOException, DataFormatException
 	{
-		this.columnnames = null;
-		if (hasHeader) headers = colnames();
+		reader.reset();
 	}
 
 	@Override

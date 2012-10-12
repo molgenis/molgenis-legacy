@@ -38,29 +38,13 @@ public abstract class AbstractEntity implements Entity, Serializable
 
 	public static <T extends Entity> T setValuesFromString(String objStr, Class<T> klass) throws Exception
 	{
-		T result;
-		try
-		{
-			result = klass.newInstance();
-		}
-		catch (Exception e)
-		{
-			throw e;
-		}
+		T result = klass.newInstance();
 
 		int left = objStr.indexOf("(");
 		int right = objStr.lastIndexOf(")");
 
-		// String entityName = objStr.substring(0, left);
-		String content = null;
-		try
-		{
-			content = objStr.substring(left + 1, right);
-		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
-		}
+		String content = objStr.substring(left + 1, right);
+
 		String[] attrValues = content.split(" ");
 		for (String attrValue : attrValues)
 		{
