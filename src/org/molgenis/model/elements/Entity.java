@@ -34,8 +34,7 @@ public class Entity extends DBSchema implements Record
 	/** Convenience variable for retrieving the primary key from the keys */
 	public static final int PRIMARY_KEY = 0;
 
-	private static final transient Logger logger = Logger
-			.getLogger(Entity.class.getSimpleName());
+	private static final transient Logger logger = Logger.getLogger(Entity.class.getSimpleName());
 	// member variables
 	/** namespace, e.g. used for package name */
 	private String namespace;
@@ -180,12 +179,12 @@ public class Entity extends DBSchema implements Record
 	}
 
 	/**
-	 * Returns whether this entry has NO parent AND whether it has children' removed.
+	 * Returns whether this entry has NO parent AND whether it has children'
+	 * removed.
 	 */
 	public boolean isRootAncestor()
 	{
-		return this.getParents().size() == 0
-				&& this.getDescendants().size() > 0;
+		return this.getParents().size() == 0 && this.getDescendants().size() > 0;
 	}
 
 	/**
@@ -248,8 +247,7 @@ public class Entity extends DBSchema implements Record
 	{
 		for (Field f : fields)
 		{
-			if (f.getType() instanceof MrefField
-					|| f.getType() instanceof XrefField) return true;
+			if (f.getType() instanceof MrefField || f.getType() instanceof XrefField) return true;
 		}
 
 		return false;
@@ -360,8 +358,7 @@ public class Entity extends DBSchema implements Record
 			if (element.getClass().equals(Entity.class))
 			{
 				if (((Entity) element).hasAncestor()
-						&& ((Entity) element).getAncestor().getName().equals(
-								this.getName()))
+						&& ((Entity) element).getAncestor().getName().equals(this.getName()))
 				{
 					descendants.add((Entity) element);
 				}
@@ -392,8 +389,9 @@ public class Entity extends DBSchema implements Record
 	{
 		return implements_parents.size() > 0;
 	}
-	
-	public Vector<String> getImplementsNames(){
+
+	public Vector<String> getImplementsNames()
+	{
 		return implements_parents;
 	}
 
@@ -404,9 +402,8 @@ public class Entity extends DBSchema implements Record
 		for (String iface : this.implements_parents)
 		{
 			Entity iface_entity = (Entity) getParent().get(iface);
-			if (iface_entity == null) throw new MolgenisModelException(
-					"interface '" + iface + "' is undefined for entity "
-							+ this.getName());
+			if (iface_entity == null) throw new MolgenisModelException("interface '" + iface
+					+ "' is undefined for entity " + this.getName());
 			implements_entities.add(iface_entity);
 		}
 		return implements_entities;
@@ -419,9 +416,8 @@ public class Entity extends DBSchema implements Record
 		for (String iface : this.implements_parents)
 		{
 			Entity iface_entity = (Entity) getParent().get(iface);
-			if (iface_entity == null) throw new MolgenisModelException(
-					"interface " + iface + " is undefined in entity "
-							+ this.getName());
+			if (iface_entity == null) throw new MolgenisModelException("interface " + iface
+					+ " is undefined in entity " + this.getName());
 
 			implements_entities.addAll(iface_entity.getAllImplements());
 			implements_entities.add(iface_entity);
@@ -431,9 +427,7 @@ public class Entity extends DBSchema implements Record
 
 	public void setImplements(String... implements_parents)
 	{
-		this
-				.setImplements(new Vector<String>(Arrays
-						.asList(implements_parents)));
+		this.setImplements(new Vector<String>(Arrays.asList(implements_parents)));
 	}
 
 	public void setImplements(Vector<String> implements_parents)
@@ -480,13 +474,12 @@ public class Entity extends DBSchema implements Record
 	 * @throws Exception
 	 *             When a field with the same name is already present.
 	 */
-	public void addField(Integer pos, Field field)
-			throws MolgenisModelException
+	public void addField(Integer pos, Field field) throws MolgenisModelException
 	{
 		if (fields.contains(field))
 		{
-			throw new MolgenisModelException("Duplicate Field with name "
-					+ field.getName() + "  in entity " + this.getName());
+			throw new MolgenisModelException("Duplicate Field with name " + field.getName() + "  in entity "
+					+ this.getName());
 		}
 		if (pos != null) fields.add(pos, field);
 		else
@@ -516,74 +509,79 @@ public class Entity extends DBSchema implements Record
 	 *            if required == true than returns only fields that are required
 	 *            (not nillable/null) else returns all fields
 	 * @param recursive
-	 * 			  get also field from super classes
-	 * @param systemField 
-	 * 			  system field, like __type and id
+	 *            get also field from super classes
+	 * @param systemField
+	 *            system field, like __type and id
 	 * @param implementing
-	 * 			  field that this object implements (also done recusively if recusive = true)
+	 *            field that this object implements (also done recusively if
+	 *            recusive = true)
 	 * @return All the fields associated with this entity.
 	 * @throws MolgenisModelException
 	 */
-	public List<Field> getFields(boolean required, boolean recursive,
-			boolean systemField, boolean implementing) throws MolgenisModelException
+	public List<Field> getFields(boolean required, boolean recursive, boolean systemField, boolean implementing)
+			throws MolgenisModelException
 	{
-		//use map to ensure we can override fields in subclasses
-		Map<String,Field> result = new LinkedHashMap<String,Field>();
-		
-		//List<Field> result = new ArrayList<Field>();
+		// use map to ensure we can override fields in subclasses
+		Map<String, Field> result = new LinkedHashMap<String, Field>();
+
+		// List<Field> result = new ArrayList<Field>();
 		for (Field f : fields)
 		{
 			if (f.isSystem())
 			{
 				if (systemField)
 				{
-					result.put(f.getName(),f);
+					result.put(f.getName(), f);
 				}
-				//else ignore
+				// else ignore
 			}
 			else if (f.isNillable())
 			{
-				if(!required)
+				if (!required)
 				{
-					result.put(f.getName(),f);
+					result.put(f.getName(), f);
 				}
 			}
 			else
 			{
-				result.put(f.getName(),f);
+				result.put(f.getName(), f);
 			}
 		}
-		
-		if(implementing) {
-			for(Entity implEntity : this.getImplements()) {
-				for(Field f: implEntity.getFields(required, recursive, systemField, implementing)) {
-					if(!result.containsKey(f.getName()))
+
+		if (implementing)
+		{
+			for (Entity implEntity : this.getImplements())
+			{
+				for (Field f : implEntity.getFields(required, recursive, systemField, implementing))
+				{
+					if (!result.containsKey(f.getName()))
 					{
-						result.put(f.getName(),f);
-					}					
+						result.put(f.getName(), f);
+					}
 				}
-			}		 
+			}
 		}
-		
+
 		if (recursive && hasAncestor())
 		{
-			for(Field f: getAncestor().getFields(required, recursive, systemField, implementing))
+			for (Field f : getAncestor().getFields(required, recursive, systemField, implementing))
 			{
-				if(!result.containsKey(f.getName()))
+				if (!result.containsKey(f.getName()))
 				{
-					result.put(f.getName(),f);
+					result.put(f.getName(), f);
 				}
 			}
 		}
-		
+
 		return new ArrayList<Field>(result.values());
 	}
 
-	public List<Field> getFields(boolean required, boolean recursive,
-			boolean systemField) throws MolgenisModelException	{
+	public List<Field> getFields(boolean required, boolean recursive, boolean systemField)
+			throws MolgenisModelException
+	{
 		return getFields(required, recursive, systemField, true);
 	}
-	
+
 	/**
 	 * Get fields for this entity as well as from the interfaces it implements.
 	 * 
@@ -592,7 +590,7 @@ public class Entity extends DBSchema implements Record
 	 */
 	public Vector<Field> getImplementedFields() throws MolgenisModelException
 	{
-		//use map so we can override fields in subclasses
+		// use map so we can override fields in subclasses
 		Map<String, Field> all_fields = new LinkedHashMap<String, Field>();
 
 		// first fields of the interfaces
@@ -614,8 +612,7 @@ public class Entity extends DBSchema implements Record
 		}
 
 		// clean all abstract entities
-		if (!this.isAbstract()) for (Entry<String, Field> entry : all_fields
-				.entrySet())
+		if (!this.isAbstract()) for (Entry<String, Field> entry : all_fields.entrySet())
 		{
 			if (entry.getValue().getEntity().isAbstract())
 			{
@@ -629,8 +626,7 @@ public class Entity extends DBSchema implements Record
 		return new Vector<Field>(all_fields.values());
 	}
 
-	public boolean hasSuperclassField(String fieldname)
-			throws MolgenisModelException
+	public boolean hasSuperclassField(String fieldname) throws MolgenisModelException
 	{
 		Vector<Field> fields = getAncestor().getAllFields();
 		for (Field f : fields)
@@ -669,8 +665,7 @@ public class Entity extends DBSchema implements Record
 		}
 
 		// clean all abstract entities
-		if (!this.isAbstract()) for (Entry<String, Field> entry : all_fields
-				.entrySet())
+		if (!this.isAbstract()) for (Entry<String, Field> entry : all_fields.entrySet())
 		{
 			if (entry.getValue().getEntity().isAbstract())
 			{
@@ -701,7 +696,7 @@ public class Entity extends DBSchema implements Record
 				all_fields.put(f.getName().toLowerCase(), f);
 			}
 		}
-		
+
 		// first fields of the interfaces
 		for (Entity iface : this.getImplements())
 		{
@@ -716,16 +711,16 @@ public class Entity extends DBSchema implements Record
 		for (Field f : getFields())
 		{
 			// TODO:
-			// Find out why the if-statement below is commented out (Joris doens't remember)
-			// We found out that it does NOT cause the lock-wait-timeouts on Hudson, as suspected by Joeri and Danny
-			//if (!all_fields.containsKey(f.getName().toLowerCase())) 
-				all_fields
-					.put(f.getName().toLowerCase(), f);
+			// Find out why the if-statement below is commented out (Joris
+			// doens't remember)
+			// We found out that it does NOT cause the lock-wait-timeouts on
+			// Hudson, as suspected by Joeri and Danny
+			// if (!all_fields.containsKey(f.getName().toLowerCase()))
+			all_fields.put(f.getName().toLowerCase(), f);
 		}
 
 		// replace all abstract entity references, unless self abstract
-		if (!this.isAbstract()) for (Entry<String, Field> entry : all_fields
-				.entrySet())
+		if (!this.isAbstract()) for (Entry<String, Field> entry : all_fields.entrySet())
 		{
 			if (entry.getValue().getEntity().isAbstract())
 			{
@@ -767,7 +762,7 @@ public class Entity extends DBSchema implements Record
 
 		for (Field f : getFields())
 		{
-			if ( !(f.getType() instanceof MrefField) )
+			if (!(f.getType() instanceof MrefField))
 			{
 				local_fields.add(f);
 			}
@@ -789,7 +784,7 @@ public class Entity extends DBSchema implements Record
 
 		for (Field f : getAllFields())
 		{
-			if ( !(f.getType() instanceof MrefField) )
+			if (!(f.getType() instanceof MrefField))
 			{
 				local_fields.add(f);
 			}
@@ -823,8 +818,7 @@ public class Entity extends DBSchema implements Record
 	/**
 	 * @throws MolgenisModelException
 	 */
-	public List<Field> getSystemFields(boolean all)
-			throws MolgenisModelException
+	public List<Field> getSystemFields(boolean all) throws MolgenisModelException
 	{
 		List<Field> the_fields;
 		List<Field> system_fields = new ArrayList<Field>();
@@ -851,8 +845,7 @@ public class Entity extends DBSchema implements Record
 	 * @return All the non-system fields for the entity.
 	 * @throws MolgenisModelException
 	 */
-	public List<Field> getNonSystemFields(boolean all)
-			throws MolgenisModelException
+	public List<Field> getNonSystemFields(boolean all) throws MolgenisModelException
 	{
 		List<Field> the_fields;
 		List<Field> nonsystem_fields = new ArrayList<Field>();
@@ -878,9 +871,8 @@ public class Entity extends DBSchema implements Record
 
 		for (Field f : getAllFields())
 		{
-			if ( !(f.getType() instanceof XrefField)
-					&& !(f.getType() instanceof IntField && f.isAuto() && f
-							.getEntity() == this))
+			if (!(f.getType() instanceof XrefField)
+					&& !(f.getType() instanceof IntField && f.isAuto() && f.getEntity() == this))
 			// TODO: fix automatic fields
 			// MAJOR error, arghhhh!!! &&
 			// !getKeyFields(PRIMARY_KEY).contains(f))
@@ -900,8 +892,7 @@ public class Entity extends DBSchema implements Record
 
 		for (Field f : getFields())
 		{
-			if ( !(f.getType() instanceof MrefField)
-					&& !(f.getType() instanceof IntField && f.isAuto()))
+			if (!(f.getType() instanceof MrefField) && !(f.getType() instanceof IntField && f.isAuto()))
 			// TODO: fix automatic fields
 			// MAJOR error, arghhhh!!! &&
 			// !getKeyFields(PRIMARY_KEY).contains(f))
@@ -920,8 +911,7 @@ public class Entity extends DBSchema implements Record
 	 * @return All the fields associated with this entity with the given type.
 	 * @throws MolgenisModelException
 	 */
-	public Vector<Field> getFieldsOf(FieldType type)
-			throws MolgenisModelException
+	public Vector<Field> getFieldsOf(FieldType type) throws MolgenisModelException
 	{
 		Vector<Field> results = new Vector<Field>();
 
@@ -935,7 +925,7 @@ public class Entity extends DBSchema implements Record
 
 		return results;
 	}
-	
+
 	public Vector<Field> getAllFieldsOf(FieldType type) throws MolgenisModelException
 	{
 		Vector<Field> results = new Vector<Field>();
@@ -949,16 +939,16 @@ public class Entity extends DBSchema implements Record
 		}
 
 		return results;
-		
+
 	}
+
 	public Vector<Field> getAllFieldsOf(String typeName) throws MolgenisModelException
 	{
 		return this.getAllFieldsOf(MolgenisFieldTypes.getType(typeName));
 
 	}
 
-	public Vector<Field> getImplementedFieldsOf(FieldType type)
-			throws MolgenisModelException
+	public Vector<Field> getImplementedFieldsOf(FieldType type) throws MolgenisModelException
 	{
 		Vector<Field> results = new Vector<Field>();
 
@@ -972,11 +962,8 @@ public class Entity extends DBSchema implements Record
 
 		return results;
 	}
-	
-	
-	
-	public Vector<Field> getImplementedFieldsOf(String typeName)
-			throws MolgenisModelException
+
+	public Vector<Field> getImplementedFieldsOf(String typeName) throws MolgenisModelException
 	{
 		return this.getImplementedFieldsOf(MolgenisFieldTypes.getType(typeName));
 	}
@@ -991,9 +978,7 @@ public class Entity extends DBSchema implements Record
 		for (Field field : getImplementedFields())
 		{
 			if (field.isSystem()) continue;
-			if (field.getType() instanceof XrefField
-					|| field.getType() instanceof MrefField) xref_fields
-					.add(field);
+			if (field.getType() instanceof XrefField || field.getType() instanceof MrefField) xref_fields.add(field);
 		}
 
 		return xref_fields;
@@ -1024,8 +1009,8 @@ public class Entity extends DBSchema implements Record
 	 * @throws MolgenisModelException
 	 */
 
-	public Field getField(String name, boolean required, boolean recursive,
-			boolean systemFields) throws MolgenisModelException
+	public Field getField(String name, boolean required, boolean recursive, boolean systemFields)
+			throws MolgenisModelException
 	{
 		for (Field field : getFields(required, recursive, systemFields))
 		{
@@ -1038,10 +1023,11 @@ public class Entity extends DBSchema implements Record
 		return null;
 	}
 
-	public Field getFieldRecusive(String name) throws MolgenisModelException{
+	public Field getFieldRecusive(String name) throws MolgenisModelException
+	{
 		return getField(name, false, true, true);
 	}
-	
+
 	public Field getField(String name) throws MolgenisModelException
 	{
 		return getField(name, false, false, true);
@@ -1186,8 +1172,7 @@ public class Entity extends DBSchema implements Record
 	 *            The fields that combined form the key.
 	 * @throws MolgenisModelException
 	 */
-	public void addKey(List<String> keys, boolean subclass, String description)
-			throws MolgenisModelException
+	public void addKey(List<String> keys, boolean subclass, String description) throws MolgenisModelException
 	{
 		// for (String key : keys)
 		// {
@@ -1235,14 +1220,11 @@ public class Entity extends DBSchema implements Record
 		// get primary key from parent
 		if (hasAncestor())
 		{
-			Entity parent_entity = (Entity) getParent().get(
-					this.parents.lastElement());
-			if (parent_entity == null) throw new MolgenisModelException(
-					"Superclass " + this.parents.lastElement()
-							+ " unknown for entity " + this.getName());
-			if (parent_entity.getKeys().size() == 0) throw new MolgenisModelException(
-					this.parents.lastElement()
-							+ " or the interface it implements doesn't define primary key (unique,int,not null)");
+			Entity parent_entity = (Entity) getParent().get(this.parents.lastElement());
+			if (parent_entity == null) throw new MolgenisModelException("Superclass " + this.parents.lastElement()
+					+ " unknown for entity " + this.getName());
+			if (parent_entity.getKeys().size() == 0) throw new MolgenisModelException(this.parents.lastElement()
+					+ " or the interface it implements doesn't define primary key (unique,int,not null)");
 			result.add(parent_entity.getKeys().firstElement());
 
 		}
@@ -1283,13 +1265,12 @@ public class Entity extends DBSchema implements Record
 	 * @return The key at the given index.
 	 * @throws MolgenisModelException
 	 */
-	public Unique getKey(int index) throws IndexOutOfBoundsException,
-			MolgenisModelException
+	public Unique getKey(int index) throws IndexOutOfBoundsException, MolgenisModelException
 	{
 		if (index < 0 || index >= unique_fields.size())
 		{
-			throw new IndexOutOfBoundsException("No key was found for entity "
-					+ this.getName() + " at the given index " + index + ".");
+			throw new IndexOutOfBoundsException("No key was found for entity " + this.getName()
+					+ " at the given index " + index + ".");
 		}
 
 		return getKeys().get(index);
@@ -1310,26 +1291,27 @@ public class Entity extends DBSchema implements Record
 		}
 		else
 		{
-			logger.warn("[WARNING]: missing key " + index + " for entity "
-					+ this.getName());
+			logger.warn("[WARNING]: missing key " + index + " for entity " + this.getName());
 		}
 
 		return fields;
 	}
-	
-    public List<Unique> getUniqueKeysWithoutPk() throws MolgenisModelException {
-        List<Unique> result = new ArrayList<Unique>();
-        
-        if (hasImplements())
+
+	public List<Unique> getUniqueKeysWithoutPk() throws MolgenisModelException
+	{
+		List<Unique> result = new ArrayList<Unique>();
+
+		if (hasImplements())
 		{
 			for (Entity e : getImplements())
 			{
 				// we need to rewrite the uniques to point to the right entity
 				for (Unique u : e.getKeys())
 				{
-					if(u.getFields().get(0).isAuto()) {
-		                continue;
-		            }
+					if (u.getFields().get(0).isAuto())
+					{
+						continue;
+					}
 					Unique copy = new Unique(u);
 					u.setEntity(this);
 					if (!result.contains(copy))
@@ -1339,15 +1321,17 @@ public class Entity extends DBSchema implements Record
 				}
 			}
 		}
-        
-        for(Unique u : unique_fields) {
-            if(u.getFields().get(0).isAuto()) {
-                continue;
-            }
-            result.add(u);
-        }
-        return result;
-    }
+
+		for (Unique u : unique_fields)
+		{
+			if (u.getFields().get(0).isAuto())
+			{
+				continue;
+			}
+			result.add(u);
+		}
+		return result;
+	}
 
 	// Object overloads
 	/**
@@ -1357,17 +1341,17 @@ public class Entity extends DBSchema implements Record
 	 */
 	public String toString()
 	{
-		String str = "Entity(" + getNamespace() + "." + getName() + ")\n(\n";
+		StringBuilder strBuilder = new StringBuilder("Entity(");
+		strBuilder.append(getNamespace()).append('.').append(getName()).append(")\n(\n");
 		for (Field field : fields)
-			// if (!field.getName().equals(Field.TYPE_FIELD) )
-			str += "  " + field.toString() + "\n";
+			strBuilder.append(' ').append(field.toString()).append('\n');
 		for (Unique unique : unique_fields)
-			str += "  " + unique.toString() + "\n";
+			strBuilder.append(' ').append(unique.toString()).append('\n');
 		for (Index index : indices)
-			str += "  " + index.toString() + "\n";
-		str += ");";
+			strBuilder.append(' ').append(index.toString()).append('\n');
+		strBuilder.append(");");
 
-		return str;
+		return strBuilder.toString();
 	}
 
 	/**
@@ -1463,7 +1447,7 @@ public class Entity extends DBSchema implements Record
 		}
 		return count;
 	}
-	
+
 	public int getNumberOfReferencesTo(Entity e, Field f) throws MolgenisModelException
 	{
 		int count = 0;
@@ -1508,9 +1492,8 @@ public class Entity extends DBSchema implements Record
 		// get from super class or interfaces
 		if (xrefLabels == null)
 		{
-			if (this.hasAncestor()
-					&& this.getAncestor().getXrefLabels() != null) return this
-					.getAncestor().getXrefLabels();
+			if (this.hasAncestor() && this.getAncestor().getXrefLabels() != null) return this.getAncestor()
+					.getXrefLabels();
 
 			List<Entity> ifaces = new ArrayList<Entity>(this.getImplements());
 			Collections.reverse(ifaces);
@@ -1522,14 +1505,17 @@ public class Entity extends DBSchema implements Record
 			List<String> result = new ArrayList<String>();
 			if (this.getKeys().size() > 0)
 			{
-				//use secondary keys, otherwise primary keys
+				// use secondary keys, otherwise primary keys
 				List<Field> keyFields = null;
-				if (this.getKeys().size() > 1) {
+				if (this.getKeys().size() > 1)
+				{
 					keyFields = this.getKeyFields(1);
-				} else {
+				}
+				else
+				{
 					keyFields = this.getKeyFields(0);
 				}
-				
+
 				for (Field f : keyFields)
 				{
 					result.add(f.getName());
@@ -1558,21 +1544,21 @@ public class Entity extends DBSchema implements Record
 		{
 			if (f.getType() instanceof XrefField)
 			{
-				if (!f.getXrefEntityName().equals(getName())) result.add(f
-						.getXrefEntity());
+				if (!f.getXrefEntityName().equals(getName())) result.add(f.getXrefEntity());
 			}
 		}
 		return result;
 	}
 
 	private Integer allocationSize = null;
-	
+
 	public void setAllocationSize(Integer allocationSize)
 	{
-		this.allocationSize  = allocationSize;
+		this.allocationSize = allocationSize;
 	}
-	
-	public Integer getAllocationSize() {
+
+	public Integer getAllocationSize()
+	{
 		return this.allocationSize;
 	}
 }
