@@ -11,9 +11,10 @@ import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 
 /**
- * DataTable for listing entity via an AJAX list view, incl search. 
- *
- * To get this to work you also need to install the related molgenisservice. In your properties say:<br/>
+ * DataTable for listing entity via an AJAX list view, incl search.
+ * 
+ * To get this to work you also need to install the related molgenisservice. In
+ * your properties say:<br/>
  * org.molgenis.framework.server.services.MolgenisDataTableService@/datatable
  */
 public class EntityDataTable extends HtmlWidget
@@ -64,35 +65,36 @@ public class EntityDataTable extends HtmlWidget
 
 		}
 
-		String result = "<table id=\"" + getName() + "\"><thead>";
+		StringBuilder strBuilder = new StringBuilder();
+		strBuilder.append("<table id=\"").append(getName()).append("\"><thead>");
 		for (String label : labels)
-			result += "<td>" + label + "</td>";
-		result += "</thead></table>";
-		result += "\n<script>";
-		result += "var oTable = $('#" + getName() + "').dataTable({";
-		result += "\n	'bJQueryUI' : true,";
-		result += "\n	'bServerSide' : true,";
-		result += "\n	'sAjaxSource' : 'datatable',";
-		result += "\n	'bPagination' : true,";
-		result += "\n	'sScrollX': '100%',";
-		result += "\n	'bScrollCollapse': true,";
-		result += "\n	'bProcessing' : true,";
-		result += "\n	'aoColumns' : [";
+			strBuilder.append("<td>").append(label).append("</td>");
+		strBuilder.append("</thead></table>");
+		strBuilder.append("\n<script>");
+		strBuilder.append("var oTable = $('#").append(getName()).append("').dataTable({");
+		strBuilder.append("\n	'bJQueryUI' : true,");
+		strBuilder.append("\n	'bServerSide' : true,");
+		strBuilder.append("\n	'sAjaxSource' : 'datatable',");
+		strBuilder.append("\n	'bPagination' : true,");
+		strBuilder.append("\n	'sScrollX': '100%',");
+		strBuilder.append("\n	'bScrollCollapse': true,");
+		strBuilder.append("\n	'bProcessing' : true,");
+		strBuilder.append("\n	'aoColumns' : [");
 		for (String label : labels)
 		{
-			if(label != labels.get(0)) result +=",";
-			result += "{ 'mDataProp' : '" + label + "'}";
+			if (label != labels.get(0)) strBuilder.append(',');
+			strBuilder.append("{ 'mDataProp' : '").append(label).append("'}");
 		}
-		result += "	],";
-		result += "	'fnServerParams' : function(aoData) {";
-		result += "\n	aoData.push({";
-		result += "\n		'name' : 'entity',";
-		result += "\n		'value' : '" + klazzName + "'";
-		result += "\n	});";
-		result += "\n}";
-		result += "});";
-		result += "\nnew FixedColumns(oTable, {'iLeftWidth' : 200});";
-		result += "</script>";
-		return result;
+		strBuilder.append("	],");
+		strBuilder.append("	'fnServerParams' : function(aoData) {");
+		strBuilder.append("\n	aoData.push({");
+		strBuilder.append("\n		'name' : 'entity',");
+		strBuilder.append("\n		'value' : '").append(klazzName).append("'");
+		strBuilder.append("\n	});");
+		strBuilder.append("\n}");
+		strBuilder.append("});");
+		strBuilder.append("\nnew FixedColumns(oTable, {'iLeftWidth' : 200});");
+		strBuilder.append("</script>");
+		return strBuilder.toString();
 	}
 }
