@@ -1,4 +1,4 @@
-package org.molgenis.ui.theme.bootstrap.test;
+package org.molgenis.ui.theme.bootstrap;
 
 import org.molgenis.ui.Button;
 import org.molgenis.ui.Form;
