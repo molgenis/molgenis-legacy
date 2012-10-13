@@ -122,12 +122,13 @@ public class BedBimFamReader
 			String hom2 = a2 + a2;
 			String hetr = a1 + a2;
 
-			String lineOfGenotypes = snpName;
+			StringBuilder lineOfGenotypesBuilder = new StringBuilder(snpName);
 			for (String s : allIndividualsForThisSNP)
 			{
-				lineOfGenotypes += "\t" + bedfd.convertGenoCoding(s, hom1, hom2, hetr, "");
+				lineOfGenotypesBuilder.append('\t').append(bedfd.convertGenoCoding(s, hom1, hom2, hetr, ""));
 			}
-			genotypesOut.write(lineOfGenotypes + "\n");
+			lineOfGenotypesBuilder.append('\n');
+			genotypesOut.write(lineOfGenotypesBuilder.toString());
 
 			snpCounter++;
 		}
