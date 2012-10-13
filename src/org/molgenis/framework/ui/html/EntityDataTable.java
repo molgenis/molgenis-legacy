@@ -89,7 +89,7 @@ public class EntityDataTable extends HtmlWidget
 		strBuilder.append("	'fnServerParams' : function(aoData) {");
 		strBuilder.append("\n	aoData.push({");
 		strBuilder.append("\n		'name' : 'entity',");
-		strBuilder.append("\n		'value' : '").append(klazzName).append("'");
+		strBuilder.append("\n		'value' : '").append(klazzName).append('\'');
 		strBuilder.append("\n	});");
 		strBuilder.append("\n}");
 		strBuilder.append("});");
