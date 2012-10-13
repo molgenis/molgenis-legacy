@@ -36,7 +36,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 
 	/** String constants for property name 'hidden' */
 	public static final String HIDDEN = "hidden";
-	
+
 	public static final String JQUERYPROPERTIES = "Jqueryproperties";
 
 	// PROPERTIES
@@ -81,13 +81,13 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 
 	/** to pass jquery script properties. */
 	private String Jqueryproperties;
-	
+
 	/** Tab index of this input (optionl) */
 	protected String tabIndex = "";
 
 	/** Style to render in */
 	protected UiToolkit uiToolkit = HtmlSettings.uiToolkit;
-	
+
 	protected RenderDecorator renderDecorator = HtmlSettings.defaultRenderDecorator;
 
 	/**
@@ -100,15 +100,15 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	 */
 	public HtmlInput(String name, E value)
 	{
-		if(name == null) name = UUID.randomUUID().toString().replace("-","");
+		if (name == null) name = UUID.randomUUID().toString().replace("-", "");
 		this.setId(name.replace(" ", ""));
 		this.setName(name.replace(" ", ""));
 		this.setLabel(name);
-		//this.setDescription(name);
+		// this.setDescription(name);
 		this.setId(name);
 		this.setValue(value);
 	}
-	
+
 	public HtmlInput(String name, String label, E value)
 	{
 		assert (name != null);
@@ -116,14 +116,14 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 		this.setId(name.replace(" ", ""));
 		this.setName(name.replace(" ", ""));
 		this.setLabel(label);
-		//this.setDescription(name);
+		// this.setDescription(name);
 		this.setId(name);
-		this.setValue(value);		
+		this.setValue(value);
 	}
 
 	/**
-	 * Complete constructor 
-	 *
+	 * Complete constructor
+	 * 
 	 * @param name
 	 * @param label
 	 * @param value
@@ -131,8 +131,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	 * @param readonly
 	 * @param description
 	 */
-	public HtmlInput(String name, String label, E value, boolean nillable,
-			boolean readonly, String description)
+	public HtmlInput(String name, String label, E value, boolean nillable, boolean readonly, String description)
 	{
 		this(name, value);
 		this.setLabel(label);
@@ -142,7 +141,8 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	}
 
 	/**
-	 * Constructor using a tuple. Valid keys for the tuple are listed as constant, e.g. HtmlInput.NAME
+	 * Constructor using a tuple. Valid keys for the tuple are listed as
+	 * constant, e.g. HtmlInput.NAME
 	 * 
 	 * @param properties
 	 * @throws HtmlInputException
@@ -191,14 +191,15 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 
 	public HtmlInput<E> setLabel(String label)
 	{
-		//assert (label != null); fails web tests due to label -> null constructors, so allow it
+		// assert (label != null); fails web tests due to label -> null
+		// constructors, so allow it
 		this.label = label;
 		return this;
 	}
 
 	public String getName()
 	{
-		if(name == null) return this.getId();
+		if (name == null) return this.getId();
 		return name;
 	}
 
@@ -213,11 +214,12 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	{
 		return value;
 	}
-	
+
 	public String getObjectString()
 	{
-		if(this.value == null) return "";
-		else return value.toString();
+		if (this.value == null) return "";
+		else
+			return value.toString();
 	}
 
 	// TODO: This *needs* to be renamed to getValueToString() or removed!!!
@@ -241,63 +243,64 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 		}
 
 		// todo: why different from getHtmlValue()??
-//		if (replaceSpechialChars)
-//		{
-//			return  this.renderDecorator.render(getObject().toString().replace("\n", "<br>")
-//					.replace("\r", "").replace(">", "&gt;")
-//					.replace("<", "&lt;"));
-//		}
-//		else
-//		{
+		// if (replaceSpechialChars)
+		// {
+		// return
+		// this.renderDecorator.render(getObject().toString().replace("\n",
+		// "<br>")
+		// .replace("\r", "").replace(">", "&gt;")
+		// .replace("<", "&lt;"));
+		// }
+		// else
+		// {
 		return getObject().toString();
-//		}
+		// }
 	}
-	
+
 	public String getHtmlValue(int maxLength)
 	{
-		//we render all tags, but we stop rendering text outside tags after maxLength
-		String result = "";
+		// we render all tags, but we stop rendering text outside tags after
+		// maxLength
+		StringBuilder strBuilder = new StringBuilder();
 		boolean inTag = false;
 		int count = 0;
-		for(char c: this.getHtmlValue().toCharArray())
+		for (char c : this.getHtmlValue().toCharArray())
 		{
-			//check if we go into tag
-			if('<' == c)
+			// check if we go into tag
+			if ('<' == c)
 			{
-				inTag = true; 
+				inTag = true;
 
 			}
-				
-			if(inTag || count < maxLength)
+
+			if (inTag || count < maxLength)
 			{
-				result += c;
+				strBuilder.append(c);
 			}
-			
-			if('>' == c)
+
+			if ('>' == c)
 			{
 				inTag = false;
 			}
-			
-			if(!inTag) count++;
+
+			if (!inTag) count++;
 		}
 
-		
-		return result;
+		return strBuilder.toString();
 	}
 
 	public String getHtmlValue()
 	{
 		String value = null;
 		value = this.getValue();
-				//.replace("\n", "<br>").replace("\r", "")
-				//.replace(">", "&gt;").replace("<", "&lt;");
+		// .replace("\n", "<br>").replace("\r", "")
+		// .replace(">", "&gt;").replace("<", "&lt;");
 		return this.renderDecorator.render(value);
 	}
 
 	public String getJavaScriptValue()
 	{
-		String value = StringEscapeUtils.escapeXml(StringEscapeUtils
-				.escapeJavaScript(this.getValue()));
+		String value = StringEscapeUtils.escapeXml(StringEscapeUtils.escapeJavaScript(this.getValue()));
 		return value;
 	}
 
@@ -310,20 +313,18 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	 * @throws HtmlInputException
 	 */
 	@Deprecated
-	public String toHtml(Tuple params) throws ParseException,
-			HtmlInputException
+	public String toHtml(Tuple params) throws ParseException, HtmlInputException
 	{
 		throw new UnsupportedOperationException();
 	}
 
 	/** Synonym to toHtml */
 	@SuppressWarnings("deprecation")
-	public String render(Tuple params) throws ParseException,
-			HtmlInputException
+	public String render(Tuple params) throws ParseException, HtmlInputException
 	{
 		return this.toHtml(params);
 	}
-	
+
 	@Override
 	public String render()
 	{
@@ -336,8 +337,8 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	//BORING PROPERTIES
+
+	// BORING PROPERTIES
 	public HtmlInput<E> setValue(E value)
 	{
 		this.value = value;
@@ -479,12 +480,10 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 		tabIndex = " tabindex=" + Integer.toString(tabidx);
 		return this;
 	}
-	
+
 	public UiToolkit getUiToolkit()
 	{
 		return this.uiToolkit;
 	}
-	
-
 
 }

@@ -696,7 +696,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 	public String createSortSql(boolean reverseSorting, QueryRule rules[])
 	{
 		// copy parameter into local temp so we can change it
-		String sort_clause = "";
+		StringBuilder sort_clauseBuilder = new StringBuilder();
 		if (rules != null)
 		{
 			Boolean revSort = reverseSorting;
@@ -719,18 +719,19 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 						|| (revSort && rule.getOperator() == Operator.SORTDESC))
 				{
 					rule.setValue(getTableFieldName(rule.getValue().toString()));
-					sort_clause += rule.getValue().toString() + " ASC,";
+					sort_clauseBuilder.append(rule.getValue().toString()).append(" ASC,");
 				}
 				else if ((rule.getOperator() == QueryRule.Operator.SORTDESC && !revSort)
 						|| (revSort && rule.getOperator() == Operator.SORTASC))
 				{
 					rule.setValue(getTableFieldName(rule.getValue().toString()));
-					sort_clause += rule.getValue().toString() + " DESC,";
+					sort_clauseBuilder.append(rule.getValue().toString()).append(" DESC,");
 				}
 			}
 		}
-		if (sort_clause.length() > 0) return " ORDER BY " + sort_clause.substring(0, sort_clause.lastIndexOf(","));
-		return sort_clause;
+		if (sort_clauseBuilder.length() > 0) return " ORDER BY "
+				+ sort_clauseBuilder.substring(0, sort_clauseBuilder.lastIndexOf(","));
+		return sort_clauseBuilder.toString();
 	}
 
 	private static boolean omitQuotes(FieldType t)

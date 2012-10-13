@@ -210,12 +210,12 @@ public class BedFileDriver
 	 */
 	private String bits(byte b)
 	{
-		String bits = "";
+		StringBuilder bitsBuilder = new StringBuilder();
 		for (int bit = 7; bit >= 0; --bit)
 		{
-			bits = bits + ((b >>> bit) & 1);
+			bitsBuilder.append(((b >>> bit) & 1));
 		}
-		return bits;
+		return bitsBuilder.toString();
 	}
 
 	/**
