@@ -64,7 +64,7 @@ public abstract class FieldType
 	 * @throws MolgenisModelException
 	 */
 	abstract public String getJavaPropertyType() throws MolgenisModelException;
-	
+
 	/**
 	 * Product the Java type of this field type. Default: "String".
 	 * 
@@ -80,8 +80,7 @@ public abstract class FieldType
 	 * @return default in java code
 	 * @throws MolgenisModelException
 	 */
-	abstract public String getJavaPropertyDefault()
-			throws MolgenisModelException;
+	abstract public String getJavaPropertyDefault() throws MolgenisModelException;
 
 	/**
 	 * Produce a valid Java snippet to set a value for field.
@@ -89,16 +88,16 @@ public abstract class FieldType
 	 * @return default in java code
 	 * @throws MolgenisModelException
 	 */
-	public abstract String getJavaAssignment(String value)
-			throws MolgenisModelException;
+	public abstract String getJavaAssignment(String value) throws MolgenisModelException;
 
 	/**
 	 * Produce the Java class corresponding to the value
+	 * 
 	 * @return Java class
 	 * @throws MolgenisModelException
 	 */
 	public abstract Class<?> getJavaType() throws MolgenisModelException;
-	
+
 	/**
 	 * Produce a valid mysql snippet indicating the mysql type. E.g. "BOOL".
 	 * 
@@ -145,6 +144,7 @@ public abstract class FieldType
 
 	/**
 	 * Get the format string, e.g. '%s'
+	 * 
 	 * @return
 	 */
 	public abstract String getFormatString();
@@ -154,27 +154,29 @@ public abstract class FieldType
 	 */
 	public String toString()
 	{
-		return this.getClass().getSimpleName().replace("Field", "")
-				.toLowerCase();
+		return this.getClass().getSimpleName().replace("Field", "").toLowerCase();
 	}
-	
+
 	public HtmlInput<?> createInput(String name) throws HtmlInputException
 	{
 		return this.createInput(name, null);
 	}
-  
+
 	public abstract HtmlInput<?> createInput(String name, String xrefEntityClassNames) throws HtmlInputException;
-	//public abstract HtmlInput<?> createInput(String name, Class<? extends Entity> xrefClass ) throws HtmlInputException;
-	
+
+	// public abstract HtmlInput<?> createInput(String name, Class<? extends
+	// Entity> xrefClass ) throws HtmlInputException;
+
 	public abstract String getCppJavaPropertyType() throws MolgenisModelException;
 
 	public abstract String getOracleType() throws MolgenisModelException;
-	
+
 	public abstract Object getTypedValue(String value) throws ParseException;
-	
+
 	public abstract MolgenisFieldTypes.FieldTypeEnum getEnumType();
 
-	public List<String> getAllowedOperators() {
+	public List<String> getAllowedOperators()
+	{
 		return Arrays.asList("EQUALS", "NOT EQUALS");
 	}
 }

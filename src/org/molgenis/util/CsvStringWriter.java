@@ -11,22 +11,23 @@ import java.util.List;
 public class CsvStringWriter extends CsvWriter
 {
 	private StringWriter writer;
-	
+
 	public CsvStringWriter(StringWriter writer) throws IOException
 	{
 		super(new PrintWriter(writer));
 		this.writer = writer;
 	}
-	
+
 	/**
-	 * @param f the file to be written to
+	 * @param f
+	 *            the file to be written to
 	 * @throws IOException
 	 */
 	public CsvStringWriter(StringWriter writer, List<String> fields) throws IOException
 	{
 		super(new PrintWriter(writer), fields);
 		this.writer = writer;
-		
+
 	}
 
 	public String toString()

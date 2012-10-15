@@ -40,7 +40,6 @@ public class CsvWriter implements TupleWriter
 	/** headers to be written out */
 	private List<String> headers = new ArrayList<String>();
 
-	
 	public CsvWriter(PrintWriter writer, List<String> headers)
 	{
 		this(writer);
@@ -51,7 +50,7 @@ public class CsvWriter implements TupleWriter
 	{
 		this.writer = writer;
 	}
-	
+
 	public CsvWriter(OutputStream outputStream, List<String> headers)
 	{
 		this(outputStream);
@@ -63,15 +62,16 @@ public class CsvWriter implements TupleWriter
 		this.writer = new PrintWriter(outputStream);
 	}
 
-	/** CsvWriter that write to a molgenis response
-	 * @throws IOException */
+	/**
+	 * CsvWriter that write to a molgenis response
+	 * 
+	 * @throws IOException
+	 */
 	public CsvWriter(String name, MolgenisResponse response) throws IOException
 	{
 		HttpServletResponse r = response.getResponse();
 		r.setContentType("application/x-download");
-		r.setHeader(
-				"Content-Disposition",
-				"attachment; filename="+name);
+		r.setHeader("Content-Disposition", "attachment; filename=" + name);
 		this.writer = r.getWriter();
 	}
 
@@ -85,14 +85,14 @@ public class CsvWriter implements TupleWriter
 	 */
 	public void writeMatrix(List<String> rowNames, List<String> colNames, Object[][] elements)
 	{
-		//logger.info("writeMatrix called");
+		// logger.info("writeMatrix called");
 		String cols = "";
 		for (String col : colNames)
 		{
 			cols += "\t" + col;
 		}
 		writer.println(cols);
-		//logger.info("printing: " + cols);
+		// logger.info("printing: " + cols);
 		for (int rowIndex = 0; rowIndex < rowNames.size(); rowIndex++)
 		{
 			String row = rowNames.get(rowIndex);
@@ -108,11 +108,13 @@ public class CsvWriter implements TupleWriter
 				}
 			}
 			writer.println(row);
-			//logger.info("printing: " + row);
+			// logger.info("printing: " + row);
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.molgenis.util.CsvWriter#writeHeader()
 	 */
 	@Override
@@ -132,7 +134,9 @@ public class CsvWriter implements TupleWriter
 		writer.println();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.molgenis.util.CsvWriter#writeRow(org.molgenis.util.Entity)
 	 */
 	@Override
@@ -141,7 +145,7 @@ public class CsvWriter implements TupleWriter
 		boolean first = true;
 		for (String col : headers)
 		{
-			//print separator unless first element
+			// print separator unless first element
 			if (first)
 			{
 				first = false;
@@ -150,17 +154,19 @@ public class CsvWriter implements TupleWriter
 			{
 				writer.print(separator);
 			}
-			//print value
+			// print value
 			writeValue(e.get(col));
 
 		}
-		//newline
+		// newline
 		writer.println();
 		// writer.println(e.getValues(separator));
 		if (++count % 10000 == 0) logger.debug("wrote line " + count + ": " + e);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.molgenis.util.CsvWriter#writeRow(org.molgenis.util.Tuple)
 	 */
 	@Override
@@ -169,7 +175,7 @@ public class CsvWriter implements TupleWriter
 		boolean first = true;
 		for (String col : headers)
 		{
-			//print separator unless first element
+			// print separator unless first element
 			if (first)
 			{
 				first = false;
@@ -178,14 +184,16 @@ public class CsvWriter implements TupleWriter
 			{
 				writer.print(separator);
 			}
-			//print value
+			// print value
 			writeValue(t.getObject(col));
 		}
 		writer.println();
 		if (count++ % 10000 == 0) logger.debug("wrote tuple to line " + count + ": " + t);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.molgenis.util.CsvWriter#writeValue(java.lang.Object)
 	 */
 	// public void writeRow(Object[] values)
@@ -231,7 +239,8 @@ public class CsvWriter implements TupleWriter
 			}
 			else
 			{
-				//writer.print(StringEscapeUtils.escapeCsv(object.toString().trim().replace("\n", "")));
+				// writer.print(StringEscapeUtils.escapeCsv(object.toString().trim().replace("\n",
+				// "")));
 				writer.print(StringEscapeUtils.escapeCsv(object.toString()));
 			}
 		}
@@ -294,7 +303,9 @@ public class CsvWriter implements TupleWriter
 		this.listSeparator = listSeparator;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.molgenis.util.CsvWriter#setHeaders(java.util.List)
 	 */
 	@Override
@@ -313,7 +324,9 @@ public class CsvWriter implements TupleWriter
 		this.writer.print(this.getSeparator());
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.molgenis.util.CsvWriter#writeEndOfLine()
 	 */
 	@Override
@@ -322,9 +335,9 @@ public class CsvWriter implements TupleWriter
 		this.writer.println();
 	}
 
-	public void setHeaders(String ... fields)
+	public void setHeaders(String... fields)
 	{
 		this.setHeaders(Arrays.asList(fields));
-		
+
 	}
 }

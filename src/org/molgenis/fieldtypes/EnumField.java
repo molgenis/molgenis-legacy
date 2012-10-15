@@ -15,14 +15,14 @@ public class EnumField extends FieldType
 	{
 		return "String";
 	}
-	
+
 	@Override
 	public String getJavaAssignment(String value)
 	{
-		if(value == null || value.equals("") ) return "null";
-		return "\""+value+"\"";
+		if (value == null || value.equals("")) return "null";
+		return "\"" + value + "\"";
 	}
-	
+
 	@Override
 	public String getJavaPropertyDefault()
 	{
@@ -32,21 +32,21 @@ public class EnumField extends FieldType
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
-		return "ENUM("+this.toCsv(f.getEnumOptions())+")";
+		return "ENUM(" + this.toCsv(f.getEnumOptions()) + ")";
 	}
-	
+
 	@Override
 	public String getOracleType() throws MolgenisModelException
 	{
 		return "VARCHAR2(255)";
 	}
 
-
 	@Override
 	public String getHsqlType()
 	{
 		return "VARCHAR(1024)";
 	}
+
 	@Override
 	public String getXsdType()
 	{
@@ -70,7 +70,7 @@ public class EnumField extends FieldType
 	{
 		return "string";
 	}
-	
+
 	@Override
 	public String getCppJavaPropertyType()
 	{
@@ -88,7 +88,7 @@ public class EnumField extends FieldType
 	{
 		throw new UnsupportedOperationException("Unable to cast enum type");
 	}
-	
+
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.ENUM;

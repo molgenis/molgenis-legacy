@@ -16,52 +16,55 @@ import org.apache.commons.logging.Log;
  * @author Joris Lops
  */
 public class HandleException
-{	
-	public static void handle(Throwable t, Log l) {
+{
+	public static void handle(Throwable t, Log l)
+	{
 		printSimpleStackTrace(t, l);
 		l.error("Detailed stack trace:");
 		ExceptionUtils.printRootCauseStackTrace(t);
-		//System.exit(1);		
+		// System.exit(1);
 	}
-	
-	public static void handle(Throwable t) {
+
+	public static void handle(Throwable t)
+	{
 		handle(t, System.err);
 	}
-	
-	public static void handle(Throwable t, PrintStream out) {
+
+	public static void handle(Throwable t, PrintStream out)
+	{
 		printSimpleStackTrace(t, out);
 		out.println("Detailed stack trace:");
 		ExceptionUtils.printRootCauseStackTrace(t);
-		//System.exit(1);		
+		// System.exit(1);
 	}
-	
-	private static void printSimpleStackTrace(Throwable t, PrintStream o) {
+
+	private static void printSimpleStackTrace(Throwable t, PrintStream o)
+	{
 		Throwable cause = t.getCause();
 		Throwable prevCause = null;
 		String tabs = "";
 		while (cause != null && prevCause != cause)
 		{
-			o.println((String.format("%sCause: %s", tabs,
-					cause.getMessage())));
+			o.println((String.format("%sCause: %s", tabs, cause.getMessage())));
 			tabs += "\t";
 
 			prevCause = cause;
 			cause = cause.getCause();
-		}			
+		}
 	}
-	
-	private static void printSimpleStackTrace(Throwable t, Log l) {
+
+	private static void printSimpleStackTrace(Throwable t, Log l)
+	{
 		Throwable cause = t.getCause();
 		Throwable prevCause = null;
 		String tabs = "";
 		while (cause != null && prevCause != cause)
 		{
-			l.error(String.format("%sCause: %s", tabs,
-					cause.getMessage()));
+			l.error(String.format("%sCause: %s", tabs, cause.getMessage()));
 			tabs += "\t";
 
 			prevCause = cause;
 			cause = cause.getCause();
-		}			
+		}
 	}
 }

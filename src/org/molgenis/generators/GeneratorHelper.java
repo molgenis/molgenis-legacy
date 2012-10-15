@@ -29,8 +29,7 @@ import org.molgenis.util.Tuple;
 
 public class GeneratorHelper
 {
-	private static final transient Logger logger = Logger
-			.getLogger(GeneratorHelper.class.getSimpleName());
+	private static final transient Logger logger = Logger.getLogger(GeneratorHelper.class.getSimpleName());
 	MolgenisOptions options;
 	MolgenisFieldTypes typeRegistry;
 
@@ -50,8 +49,7 @@ public class GeneratorHelper
 	public static String firstToUpper(String string)
 	{
 		if (string == null) return " NULL ";
-		if (string.length() > 0) return string.substring(0, 1).toUpperCase()
-				+ string.substring(1);
+		if (string.length() > 0) return string.substring(0, 1).toUpperCase() + string.substring(1);
 		else
 			return " ERROR[STRING EMPTY] ";
 	}
@@ -65,8 +63,7 @@ public class GeneratorHelper
 	public static String firstToLower(String string)
 	{
 		if (string == null) return " NULL ";
-		if (string.length() > 1) return string.substring(0, 1).toLowerCase()
-				+ string.substring(1);
+		if (string.length() > 1) return string.substring(0, 1).toLowerCase() + string.substring(1);
 		return string;
 	}
 
@@ -182,8 +179,7 @@ public class GeneratorHelper
 		return typeRegistry.get(field).getJavaPropertyDefault();
 	}
 
-	public String getJavaAssignment(Field field, String value)
-			throws MolgenisModelException
+	public String getJavaAssignment(Field field, String value) throws MolgenisModelException
 	{
 		return typeRegistry.get(field).getJavaAssignment(value);
 	}
@@ -249,13 +245,11 @@ public class GeneratorHelper
 	 * @return vector of fields that are not automatic values
 	 * @throws Exception
 	 */
-	public Vector<Field> getAddFields(Entity e, boolean includeKey)
-			throws Exception
+	public Vector<Field> getAddFields(Entity e, boolean includeKey) throws Exception
 	{
 		Vector<Field> add_fields = new Vector<Field>();
 
-		if (options.object_relational_mapping
-				.equals(MolgenisOptions.CLASS_PER_TABLE))
+		if (options.object_relational_mapping.equals(MolgenisOptions.CLASS_PER_TABLE))
 		{
 			for (Field f : getAllFields(e))
 			{
@@ -271,18 +265,16 @@ public class GeneratorHelper
 				}
 			}
 		}
-		else if (options.object_relational_mapping
-				.equals(MolgenisOptions.SUBCLASS_PER_TABLE))
+		else if (options.object_relational_mapping.equals(MolgenisOptions.SUBCLASS_PER_TABLE))
 		{
 			for (Field f : e.getImplementedFields())
 			{
 				// get rid of mref,
 				// get rid of automatic id
 				// get rid of "type" enum field when not root ancestor
-				boolean inheritedField = (f.getEntity().getAncestor() != null && f
-						.getEntity().getAncestor().getAllFields().contains(f));
-				if (!isMref(f)
-						&& (!isAutoId(f, e) || includeKey || inheritedField))
+				boolean inheritedField = (f.getEntity().getAncestor() != null && f.getEntity().getAncestor()
+						.getAllFields().contains(f));
+				if (!isMref(f) && (!isAutoId(f, e) || includeKey || inheritedField))
 				// TODO: fix automatic fields
 				// MAJOR error, arghhhh!!! &&
 				// !getKeyFields(PRIMARY_KEY).contains(f))
@@ -319,8 +311,7 @@ public class GeneratorHelper
 	 */
 	private boolean isTypeField(Field f, Entity e)
 	{
-		return !e.isRootAncestor() && f.getType() instanceof EnumField
-				&& f.getName() == Field.TYPE_FIELD;
+		return !e.isRootAncestor() && f.getType() instanceof EnumField && f.getName() == Field.TYPE_FIELD;
 	}
 
 	private boolean isAutoId(Field f, Entity e)
@@ -340,8 +331,7 @@ public class GeneratorHelper
 
 		for (Field f : e.getAllFields())
 		{
-			if (!all_fields.contains(f)
-					&& (type.equals("") || f.getType().toString().equals(type)))
+			if (!all_fields.contains(f) && (type.equals("") || f.getType().toString().equals(type)))
 			{
 				all_fields.add(f);
 			}
@@ -356,8 +346,7 @@ public class GeneratorHelper
 	public Vector<Field> getDbFields(Entity e, String type) throws Exception
 	{
 		Vector<Field> db_fields = new Vector<Field>();
-		if (options.object_relational_mapping
-				.equals(MolgenisOptions.CLASS_PER_TABLE))
+		if (options.object_relational_mapping.equals(MolgenisOptions.CLASS_PER_TABLE))
 		{
 			Vector<Field> all_fields = getAllFields(e, type);
 
@@ -366,15 +355,13 @@ public class GeneratorHelper
 				if (!(f.getType() instanceof MrefField) // && (f.getName() !=
 														// "type" ||
 														// e.isRootAncestor())
-						&& (type.equals("") || f.getType().toString()
-								.equals(type)))
+						&& (type.equals("") || f.getType().toString().equals(type)))
 				{
 					db_fields.add(f);
 				}
 			}
 		}
-		else if (options.object_relational_mapping
-				.equals(MolgenisOptions.SUBCLASS_PER_TABLE))
+		else if (options.object_relational_mapping.equals(MolgenisOptions.SUBCLASS_PER_TABLE))
 		{
 			Vector<Field> local_fields = e.getImplementedFields();
 
@@ -383,8 +370,7 @@ public class GeneratorHelper
 				if (!(f.getType() instanceof MrefField) // && (f.getName() !=
 														// "type" ||
 														// e.isRootAncestor())
-						&& (type.equals("") || f.getType().toString()
-								.equals(type)))
+						&& (type.equals("") || f.getType().toString().equals(type)))
 				{
 					db_fields.add(f);
 				}
@@ -416,8 +402,7 @@ public class GeneratorHelper
 
 		for (Field f : all_fields)
 		{
-			if (!(f.getType() instanceof MrefField)
-					&& (type.equals("") || f.getType().toString().equals(type)))
+			if (!(f.getType() instanceof MrefField) && (type.equals("") || f.getType().toString().equals(type)))
 			{
 				view_fields.add(f);
 			}
@@ -445,8 +430,7 @@ public class GeneratorHelper
 			// exclude readonly, unless it is the id or a file filed
 			if (!isMref(f)
 					&& !isTypeField(f, e)
-					&& (!f.isReadOnly() || isPrimaryKey(f, e)
-							|| f.getType() instanceof FileField || f.getType() instanceof ImageField))
+					&& (!f.isReadOnly() || isPrimaryKey(f, e) || f.getType() instanceof FileField || f.getType() instanceof ImageField))
 			{
 				all_update_fields.add(f);
 			}
@@ -455,8 +439,7 @@ public class GeneratorHelper
 		return all_update_fields;
 	}
 
-	public boolean isPrimaryKey(Field f, Entity e)
-			throws MolgenisModelException
+	public boolean isPrimaryKey(Field f, Entity e) throws MolgenisModelException
 	{
 		return e.getKeyFields(0).contains(f);
 	}
@@ -493,8 +476,7 @@ public class GeneratorHelper
 	 * @return list of unique
 	 * @throws MolgenisModelException
 	 */
-	public Vector<Unique> getSecondaryKeys(Entity e)
-			throws MolgenisModelException
+	public Vector<Unique> getSecondaryKeys(Entity e) throws MolgenisModelException
 	{
 		Vector<Unique> allkeys = getAllKeys(e);
 		Vector<Unique> skeys = new Vector<Unique>();
@@ -514,8 +496,7 @@ public class GeneratorHelper
 	 * @return vector of fields that are part of a unique constraint
 	 * @throws MolgenisModelException
 	 */
-	public Vector<Field> getKeyFields(List<Unique> keys)
-			throws MolgenisModelException
+	public Vector<Field> getKeyFields(List<Unique> keys) throws MolgenisModelException
 	{
 		Map<String, Field> result = new LinkedHashMap<String, Field>();
 		for (Unique u : keys)
@@ -531,8 +512,7 @@ public class GeneratorHelper
 		return new Vector<Field>(result.values());
 	}
 
-	public Vector<Field> getSecondaryKeyFields(Entity e)
-			throws MolgenisModelException
+	public Vector<Field> getSecondaryKeyFields(Entity e) throws MolgenisModelException
 	{
 		List<Unique> keys = this.getSecondaryKeys(e);
 		Map<String, Field> result = new LinkedHashMap<String, Field>();
@@ -570,8 +550,7 @@ public class GeneratorHelper
 		Vector<Unique> all_keys = getAllKeys(e);
 		Vector<Unique> table_keys = new Vector<Unique>();
 
-		if (options.object_relational_mapping
-				.equals(MolgenisOptions.SUBCLASS_PER_TABLE))
+		if (options.object_relational_mapping.equals(MolgenisOptions.SUBCLASS_PER_TABLE))
 		{
 
 			for (Unique aKey : all_keys)
@@ -588,9 +567,7 @@ public class GeneratorHelper
 				}
 				if (inTable) table_keys.add(aKey);
 				else
-					logger.warn("key " + aKey
-							+ " cannot be enforced on entity " + e.getName()
-							+ ": column '" + field
+					logger.warn("key " + aKey + " cannot be enforced on entity " + e.getName() + ": column '" + field
 							+ "' is not in the subclass table.");
 			}
 		}
@@ -744,8 +721,7 @@ public class GeneratorHelper
 		return StringEscapeUtils.escapeXml(nonXml);
 	}
 
-	public String getImports(Model m, Entity e, String subpackage, String suffix)
-			throws MolgenisModelException
+	public String getImports(Model m, Entity e, String subpackage, String suffix) throws MolgenisModelException
 	{
 		String sfx = suffix;
 		String subPkg = subpackage;
@@ -773,12 +749,11 @@ public class GeneratorHelper
 		List<String> imports = new ArrayList<String>();
 		for (Field f : e.getAllFields())
 		{
-			if (f.getType() instanceof XrefField
-					|| f.getType() instanceof MrefField)
+			if (f.getType() instanceof XrefField || f.getType() instanceof MrefField)
 			{
 
-				String fullClassName = f.getXrefEntity().getNamespace()
-						+ subPkg + getJavaName(f.getXrefEntityName()) + sfx;
+				String fullClassName = f.getXrefEntity().getNamespace() + subPkg + getJavaName(f.getXrefEntityName())
+						+ sfx;
 				if (!imports.contains(fullClassName))
 				{
 					imports.add(fullClassName);
@@ -803,8 +778,7 @@ public class GeneratorHelper
 		}
 
 		// import self
-		String fullClassName = e.getNamespace() + subPkg
-				+ getJavaName(e.getName()) + sfx;
+		String fullClassName = e.getNamespace() + subPkg + getJavaName(e.getName()) + sfx;
 		if (!imports.contains(fullClassName))
 		{
 			imports.add(fullClassName);
