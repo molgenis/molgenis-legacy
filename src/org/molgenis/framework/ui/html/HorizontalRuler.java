@@ -2,8 +2,9 @@ package org.molgenis.framework.ui.html;
 
 public class HorizontalRuler extends HtmlInput<String>
 {
-	
-	public HorizontalRuler() {
+
+	public HorizontalRuler()
+	{
 		this.setLabel("");
 	}
 

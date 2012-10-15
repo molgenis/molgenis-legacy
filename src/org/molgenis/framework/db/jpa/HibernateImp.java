@@ -18,52 +18,54 @@ import org.molgenis.util.Entity;
 /**
  * @author joris lops
  */
-class HibernateImp implements JpaFramework {
+class HibernateImp implements JpaFramework
+{
 
-    @Override
-    public <E extends Entity> List<E> findByExample(EntityManager em, E example) {
-        Session session = (Session) em.getDelegate();
-        Example customerExample = Example.create(example).excludeZeroes();
-        Criteria criteria = session.createCriteria(example.getClass()).add(
-                customerExample);
-        @SuppressWarnings("unchecked")
-        List<E> list = criteria.list();
-        return list;
-    }
-
-    @Override
-    public void createTables(final String persistenceUnitName, final Map<String, Object> configOverwrites) {
-        final Ejb3Configuration cfg = new Ejb3Configuration();
-        cfg.configure(persistenceUnitName, configOverwrites);
-        final SchemaExport schemaExport = new SchemaExport(
-                cfg.getHibernateConfiguration());
-        schemaExport.setOutputFile("schema.sql");
-        schemaExport.create(true, true);
-    }
-
-    @Override
-    public void updateTables(String persistenceUnitName, final Map<String, Object> configOverwrites) {
-        final Ejb3Configuration cfg = new Ejb3Configuration();
-        cfg.configure(persistenceUnitName, configOverwrites);
-        final SchemaUpdate schemaUpdate = new SchemaUpdate(
-                cfg.getHibernateConfiguration());
-        schemaUpdate.setOutputFile("schema.sql");
-        schemaUpdate.execute(true, true);
-    }
-
-    @Override
-    public void dropTables(String persistenceUnitName, final Map<String, Object> configOverwrites) {
-        final Ejb3Configuration cfg = new Ejb3Configuration();
-        cfg.configure(persistenceUnitName, configOverwrites);
-        final SchemaExport schemaExport = new SchemaExport(
-                cfg.getHibernateConfiguration());
-        schemaExport.setOutputFile("schema.sql");
-        schemaExport.drop(true, true);
-    }
-
-    @SuppressWarnings("deprecation")
 	@Override
-    public Connection getConnection(EntityManager em) {
-        return ((HibernateEntityManager) em).getSession().connection();
-    }
+	public <E extends Entity> List<E> findByExample(EntityManager em, E example)
+	{
+		Session session = (Session) em.getDelegate();
+		Example customerExample = Example.create(example).excludeZeroes();
+		Criteria criteria = session.createCriteria(example.getClass()).add(customerExample);
+		@SuppressWarnings("unchecked")
+		List<E> list = criteria.list();
+		return list;
+	}
+
+	@Override
+	public void createTables(final String persistenceUnitName, final Map<String, Object> configOverwrites)
+	{
+		final Ejb3Configuration cfg = new Ejb3Configuration();
+		cfg.configure(persistenceUnitName, configOverwrites);
+		final SchemaExport schemaExport = new SchemaExport(cfg.getHibernateConfiguration());
+		schemaExport.setOutputFile("schema.sql");
+		schemaExport.create(true, true);
+	}
+
+	@Override
+	public void updateTables(String persistenceUnitName, final Map<String, Object> configOverwrites)
+	{
+		final Ejb3Configuration cfg = new Ejb3Configuration();
+		cfg.configure(persistenceUnitName, configOverwrites);
+		final SchemaUpdate schemaUpdate = new SchemaUpdate(cfg.getHibernateConfiguration());
+		schemaUpdate.setOutputFile("schema.sql");
+		schemaUpdate.execute(true, true);
+	}
+
+	@Override
+	public void dropTables(String persistenceUnitName, final Map<String, Object> configOverwrites)
+	{
+		final Ejb3Configuration cfg = new Ejb3Configuration();
+		cfg.configure(persistenceUnitName, configOverwrites);
+		final SchemaExport schemaExport = new SchemaExport(cfg.getHibernateConfiguration());
+		schemaExport.setOutputFile("schema.sql");
+		schemaExport.drop(true, true);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public Connection getConnection(EntityManager em)
+	{
+		return ((HibernateEntityManager) em).getSession().connection();
+	}
 }

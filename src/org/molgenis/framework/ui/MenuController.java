@@ -13,7 +13,6 @@
 
 package org.molgenis.framework.ui;
 
-
 import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
@@ -23,7 +22,7 @@ import org.molgenis.util.Tuple;
 
 public class MenuController extends SimpleScreenController<MenuModel>
 {
-	private static final transient Logger logger = Logger.getLogger(MenuController.class.getSimpleName());	
+	private static final transient Logger logger = Logger.getLogger(MenuController.class.getSimpleName());
 	private static final long serialVersionUID = -7579424157884595183L;
 
 	public MenuController(String name, ScreenController<?> parent)
@@ -32,24 +31,24 @@ public class MenuController extends SimpleScreenController<MenuModel>
 		this.setModel(new MenuModel(this));
 		this.getModel().setLabel(name);
 	}
-	
+
 	public ScreenView getView()
 	{
 		return new FreemarkerView("MenuView.ftl", this.getModel());
 	}
 
 	@Override
-    public Show handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		this.doSelect(request);
-		
+
 		return Show.SHOW_MAIN;
 	}
 
 	@Override
 	public void reload(Database db)
 	{
-		logger.debug("reloading Menu("+getModel().getName()+")");
+		logger.debug("reloading Menu(" + getModel().getName() + ")");
 		ScreenModel selected = getModel().getSelected();
 		if (selected == null)
 		{
@@ -71,7 +70,8 @@ public class MenuController extends SimpleScreenController<MenuModel>
 	/**
 	 * Request to choose which subscreen is whosed.
 	 * 
-	 * @param request containing all the data from the http-request.
+	 * @param request
+	 *            containing all the data from the http-request.
 	 */
 	public boolean doSelect(Tuple request)
 	{
@@ -85,12 +85,12 @@ public class MenuController extends SimpleScreenController<MenuModel>
 			return false;
 		}
 	}
-	
+
 	public MenuModel getModel()
 	{
 		return super.getModel();
 	}
-	
+
 	@Override
 	public ScreenModel getSelected()
 	{
@@ -100,20 +100,18 @@ public class MenuController extends SimpleScreenController<MenuModel>
 		}
 		if (getChildren().size() > 0)
 		{
-			if (getChildren().firstElement() instanceof ScreenModel) return getChildren()
-					.firstElement().getModel();
+			if (getChildren().firstElement() instanceof ScreenModel) return getChildren().firstElement().getModel();
 		}
 		return null;
 	}
-	
+
 	public String getCustomHtmlHeaders()
 	{
 		String result = "<!--custom html headers: " + this.getName() + "-->";
 
 		if (this.getModel() != null && this.getModel().getSelected() != null)
 		{
-			result += this.getModel().getSelected().getController()
-					.getCustomHtmlHeaders();
+			result += this.getModel().getSelected().getController().getCustomHtmlHeaders();
 		}
 		else
 		{

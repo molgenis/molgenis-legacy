@@ -13,10 +13,10 @@ public class StringField extends FieldType
 	@Override
 	public String getJavaAssignment(String value) throws MolgenisModelException
 	{
-		if(value == null || value.equals("") ) return "null";
-		return "\""+value+"\"";
+		if (value == null || value.equals("")) return "null";
+		return "\"" + value + "\"";
 	}
-	
+
 	@Override
 	public String getJavaPropertyDefault() throws MolgenisModelException
 	{
@@ -32,20 +32,21 @@ public class StringField extends FieldType
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
-		return "VARCHAR("+f.getVarCharLength()+")";
+		return "VARCHAR(" + f.getVarCharLength() + ")";
 	}
-	
+
 	@Override
 	public String getOracleType() throws MolgenisModelException
 	{
-		return "VARCHAR2("+f.getVarCharLength()+")";
+		return "VARCHAR2(" + f.getVarCharLength() + ")";
 	}
 
 	@Override
 	public String getHsqlType() throws MolgenisModelException
 	{
-		return "VARCHAR("+f.getVarCharLength()+")";
+		return "VARCHAR(" + f.getVarCharLength() + ")";
 	}
+
 	@Override
 	public String getXsdType() throws MolgenisModelException
 	{
@@ -69,7 +70,7 @@ public class StringField extends FieldType
 	{
 		return "string";
 	}
-	
+
 	@Override
 	public String getCppJavaPropertyType()
 	{
@@ -86,7 +87,6 @@ public class StringField extends FieldType
 	{
 		return value;
 	}
-
 
 	public FieldTypeEnum getEnumType()
 	{

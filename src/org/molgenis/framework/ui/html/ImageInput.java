@@ -20,10 +20,8 @@ public class ImageInput extends FileInput
 	@Override
 	public String getValue()
 	{
-		if (super.getValue() != "") return getObject() + "<img src=\""
-				+ super.getObject()
-				+ "\" onclick=\"this.form.__filename.value = '"
-				+ super.getValue() + "';this.form.__action.value='"
+		if (super.getValue() != "") return getObject() + "<img src=\"" + super.getObject()
+				+ "\" onclick=\"this.form.__filename.value = '" + super.getValue() + "';this.form.__action.value='"
 				+ ACTION_DOWNLOAD + "'; return true;\"/>";
 		return super.getValue();
 	}

@@ -1,10 +1,9 @@
 package org.molgenis.ui;
 
-
 /**
  * Input for string data. Renders as a <code>textarea</code>.
  */
-public class StringInput extends HtmlInput<StringInput,String>
+public class StringInput extends HtmlInput<StringInput, String>
 {
 	public StringInput(String name, String value)
 	{

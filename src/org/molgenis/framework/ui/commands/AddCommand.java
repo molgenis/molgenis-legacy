@@ -22,7 +22,7 @@ public class AddCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = 1512493344265778285L;
 
-	public AddCommand(String name, ScreenController<?>  parent)
+	public AddCommand(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 		this.setLabel("Add new record");
@@ -44,9 +44,9 @@ public class AddCommand<E extends Entity> extends SimpleCommand
 	{
 		List<ActionInput> inputs = new ArrayList<ActionInput>();
 
-//		HiddenInput inDialog = new HiddenInput("__indialog","add");
-//		inputs.add(inDialog);
-		
+		// HiddenInput inDialog = new HiddenInput("__indialog","add");
+		// inputs.add(inDialog);
+
 		ActionInput submit = new ActionInput("Add", ActionInput.Type.SAVE);
 		submit.setValue("edit_new");
 		submit.setIcon("generated-res/img/save.png");
@@ -58,17 +58,17 @@ public class AddCommand<E extends Entity> extends SimpleCommand
 
 		return inputs;
 	}
-	
+
 	@Override
 	public boolean isVisible()
 	{
-		//hide add button if the screen is readonly
-		return !this.getFormScreen().isReadonly(); 
+		// hide add button if the screen is readonly
+		return !this.getFormScreen().isReadonly();
 	}
 
 	@Override
 	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
-	{		
+	{
 		if (request.getString(FormModel.INPUT_SHOW) == null)
 		{
 			// delegate to the form controller

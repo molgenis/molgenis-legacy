@@ -22,7 +22,6 @@ public class DotDocGen extends Generator
 {
 	public static final transient Logger logger = Logger.getLogger(DotDocGen.class);
 
-	
 	// need to add input and output file
 	public static String GRAPHVIZ_COMMAND_WINDOWS = "dot";
 
@@ -51,8 +50,8 @@ public class DotDocGen extends Generator
 		templateArgs.put("model", model);
 		templateArgs.put("module", model);
 		templateArgs.put("entities", entityList);
-		templateArgs.put("skipinterfaces",true);
-		templateArgs.put("rendersystem",false);
+		templateArgs.put("skipinterfaces", true);
+		templateArgs.put("rendersystem", false);
 		apply(templateArgs, template, target);
 		logger.info("generated " + target);
 		executeDot(target, "png", wait);
@@ -64,9 +63,10 @@ public class DotDocGen extends Generator
 			templateArgs.put("model", model);
 			templateArgs.put("module", module);
 			templateArgs.put("entities", entityList);
-			templateArgs.put("skipinterfaces",false);
-			templateArgs.put("rendersystem",false);
-			target = new File(this.getDocumentationPath(options) + "/objectmodel-uml-diagram-" + module.getName() + ".dot");
+			templateArgs.put("skipinterfaces", false);
+			templateArgs.put("rendersystem", false);
+			target = new File(this.getDocumentationPath(options) + "/objectmodel-uml-diagram-" + module.getName()
+					+ ".dot");
 			apply(templateArgs, template, target);
 
 			executeDot(target, "png", wait);
@@ -87,11 +87,11 @@ public class DotDocGen extends Generator
 	{
 		// write script to disc
 		String command = "";
-//		String error = "";
+		// String error = "";
 		String result = "";
-//		String output = "";
-//		File inputfile = null;
-//		File outputfile = null;
+		// String output = "";
+		// File inputfile = null;
+		// File outputfile = null;
 		try
 		{
 
@@ -107,41 +107,56 @@ public class DotDocGen extends Generator
 			// }
 			// else
 			// windows
-				// command flags infile outfile
-				command += "" + GRAPHVIZ_COMMAND_WINDOWS + " -T" + type + " -O \"" + dotFile.getAbsolutePath() + "\"";
-			
+			// command flags infile outfile
+			command += "" + GRAPHVIZ_COMMAND_WINDOWS + " -T" + type + " -O \"" + dotFile.getAbsolutePath() + "\"";
+
 			Process p;
 			String os = System.getProperty("os.name").toLowerCase();
-			
-			if (os.indexOf("windows 9") > -1){
-				p = Runtime.getRuntime().exec(new String[] { "command.com", "/c", command });
-			}else if (os.indexOf("windows") > -1){
-				p = Runtime.getRuntime().exec(new String[] { "cmd.exe", "/c", command });
-			}else{
-				p = Runtime.getRuntime().exec(new String[] { "/bin/sh", "-c", command });
+
+			if (os.indexOf("windows 9") > -1)
+			{
+				p = Runtime.getRuntime().exec(new String[]
+				{ "command.com", "/c", command });
 			}
-			
+			else if (os.indexOf("windows") > -1)
+			{
+				p = Runtime.getRuntime().exec(new String[]
+				{ "cmd.exe", "/c", command });
+			}
+			else
+			{
+				p = Runtime.getRuntime().exec(new String[]
+				{ "/bin/sh", "-c", command });
+			}
+
 			logger.debug("Executing: " + command);
-			if(wait)p.waitFor();
+			if (wait) p.waitFor();
 			logger.debug("Data model image was generated succesfully.\nOutput:\n" + result);
-			
+
 			{
 				// command flags infile outfile
 				command = "" + GRAPHVIZ_COMMAND_WINDOWS + " -Tsvg" + " -O \"" + dotFile.getAbsolutePath() + "\"";
 			}
 			logger.debug("Executing: " + command);
-			
-			if (os.indexOf("windows 9") > -1){
-				p = Runtime.getRuntime().exec(new String[] { "command.com", "/c", command });
-			}else if (os.indexOf("windows") > -1){
-				p = Runtime.getRuntime().exec(new String[] { "cmd.exe", "/c", command });
-			}else{
-				p = Runtime.getRuntime().exec(new String[] { "/bin/sh", "-c", command });
+
+			if (os.indexOf("windows 9") > -1)
+			{
+				p = Runtime.getRuntime().exec(new String[]
+				{ "command.com", "/c", command });
 			}
-			if(wait)p.waitFor();
+			else if (os.indexOf("windows") > -1)
+			{
+				p = Runtime.getRuntime().exec(new String[]
+				{ "cmd.exe", "/c", command });
+			}
+			else
+			{
+				p = Runtime.getRuntime().exec(new String[]
+				{ "/bin/sh", "-c", command });
+			}
+			if (wait) p.waitFor();
 			logger.debug("Data model image was generated succesfully.\nOutput:\n" + result);
-			
-			
+
 		}
 		catch (Exception e)
 		{
@@ -157,18 +172,19 @@ public class DotDocGen extends Generator
 	}
 
 	/** Helper function to translate streams to strings */
-//	private String streamToString(InputStream inputStream) throws IOException
-//	{
-//		StringBuffer fileContents = new StringBuffer();
-//		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-//		String line;
-//		while ((line = reader.readLine()) != null)
-//		{
-//			fileContents.append(line + "\n");
-//		}
-//		reader.close();
-//		inputStream.close();
-//		return fileContents.toString();
-//	}
+	// private String streamToString(InputStream inputStream) throws IOException
+	// {
+	// StringBuffer fileContents = new StringBuffer();
+	// BufferedReader reader = new BufferedReader(new
+	// InputStreamReader(inputStream));
+	// String line;
+	// while ((line = reader.readLine()) != null)
+	// {
+	// fileContents.append(line + "\n");
+	// }
+	// reader.close();
+	// inputStream.close();
+	// return fileContents.toString();
+	// }
 
 }

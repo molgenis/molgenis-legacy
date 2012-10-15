@@ -3,23 +3,23 @@ package org.molgenis.framework.server.async;
 import java.util.HashMap;
 import java.util.UUID;
 
-
-
 public class LoadingScreenFactory
 {
 
-	public class LoadingScreen{
+	public class LoadingScreen
+	{
 		public LoadingScreen(String a, String b)
 		{
-			service=a;
-			output=b;
+			service = a;
+			output = b;
 		}
+
 		public String service;
 		public String output;
-	//	public Response 
+		// public Response
 	}
-	
-	public HashMap<UUID,LoadingScreen> ids = new HashMap<UUID,LoadingScreen>();
+
+	public HashMap<UUID, LoadingScreen> ids = new HashMap<UUID, LoadingScreen>();
 
 	public boolean isActiveLoadingScreenId(UUID id)
 	{
@@ -32,11 +32,12 @@ public class LoadingScreenFactory
 
 	public void addLoadingId(UUID id, String service)
 	{
-		ids.put(id, new LoadingScreen(service,""));
+		ids.put(id, new LoadingScreen(service, ""));
 	}
-	
-	public LoadingScreen getLoadinScreen(UUID id){
-		return  ids.get(id);
+
+	public LoadingScreen getLoadinScreen(UUID id)
+	{
+		return ids.get(id);
 	}
 
 	public LoadingScreen doneLoadingId(UUID id)
@@ -45,7 +46,5 @@ public class LoadingScreenFactory
 		ids.remove(id);
 		return s;
 	}
-	
-	
 
 }

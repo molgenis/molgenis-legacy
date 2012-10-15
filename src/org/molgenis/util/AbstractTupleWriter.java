@@ -55,8 +55,7 @@ public abstract class AbstractTupleWriter implements TupleWriter
 	}
 
 	@Override
-	public void writeMatrix(List<String> rowNames, List<String> colNames,
-			Object[][] elements)
+	public void writeMatrix(List<String> rowNames, List<String> colNames, Object[][] elements)
 	{
 		// TODO Auto-generated method stub
 

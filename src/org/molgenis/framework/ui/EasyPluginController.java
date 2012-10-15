@@ -38,7 +38,7 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 	public EasyPluginController(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
-		this.setModel((M)this);
+		this.setModel((M) this);
 	}
 
 	/**
@@ -54,8 +54,8 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 	}
 
 	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
-	{	
-		final HttpServletRequest realRequest = ((MolgenisRequest)request).getRequest();
+	{
+		final HttpServletRequest realRequest = ((MolgenisRequest) request).getRequest();
 		// automatically calls functions with same name as action
 		delegate(request.getAction(), db, request, out);
 
@@ -88,10 +88,12 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 			}
 			catch (NoSuchMethodException e1)
 			{
-//				this.getModel().setMessages(new ScreenMessage("Unknown action: " + action, false));
-//				logger.error("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
-//						+ "(db,tuple) failed: " + e1.getMessage());
-//				db.rollbackTx();
+				// this.getModel().setMessages(new
+				// ScreenMessage("Unknown action: " + action, false));
+				// logger.error("call of " + this.getClass().getName() +
+				// "(name=" + this.getName() + ")." + action
+				// + "(db,tuple) failed: " + e1.getMessage());
+				// db.rollbackTx();
 				// useless - can't do this on every error! we cannot distinguish
 				// exceptions because they are all InvocationTargetException
 				// anyway
@@ -100,7 +102,7 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 
 				if (out != null) try
 				{
-					//db.beginTx();
+					// db.beginTx();
 					logger.debug("trying to use reflection to call " + this.getClass().getName() + "." + action);
 					Method m = this.getClass().getMethod(action, Database.class, Tuple.class, OutputStream.class);
 					m.invoke(this, db, request, out);
@@ -212,24 +214,29 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 	@Override
 	public boolean isVisible()
 	{
-		if (this.getApplicationController().getLogin().isAuthenticated()){
-		try {
-			if (this.getApplicationController().getLogin().canRead(this)) {
-				return true;
+		if (this.getApplicationController().getLogin().isAuthenticated())
+		{
+			try
+			{
+				if (this.getApplicationController().getLogin().canRead(this))
+				{
+					return true;
+				}
 			}
-		} catch (DatabaseException e) {
-			e.printStackTrace();
+			catch (DatabaseException e)
+			{
+				e.printStackTrace();
+			}
 		}
+		return false;
 	}
-	return false;
-	}
-	
+
 	@Override
 	public String getLabel()
 	{
 		return this.label;
 	}
-	
+
 	@Override
 	public abstract ScreenView getView();
 }

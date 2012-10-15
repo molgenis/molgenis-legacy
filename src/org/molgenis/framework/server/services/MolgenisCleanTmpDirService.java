@@ -56,8 +56,8 @@ class CleanTmpDirProcess implements Runnable
 	public void run()
 	{
 		boolean noExceptions = true;
-		
-		//10 sec delay after starting the server
+
+		// 10 sec delay after starting the server
 		try
 		{
 			Thread.sleep(10000);
@@ -68,8 +68,7 @@ class CleanTmpDirProcess implements Runnable
 			e.printStackTrace();
 			noExceptions = false;
 		}
-		
-		
+
 		while (noExceptions)
 		{
 			try
@@ -82,50 +81,54 @@ class CleanTmpDirProcess implements Runnable
 
 				long curDate = new Date().getTime();
 				long maxAge = 1000 * 60 * 60 * mfa;
-				
+
 				for (File f : tmpDir.listFiles())
 				{
 					// TODO: directory recursion..
-//					if (!f.isDirectory())
-//					{
-						long lastMod = f.lastModified();
-						long age = curDate - lastMod;
+					// if (!f.isDirectory())
+					// {
+					long lastMod = f.lastModified();
+					long age = curDate - lastMod;
 
-//						System.out.println("lastMod: " + lastMod);
-//						System.out.println("curDate: " + curDate);
-//						System.out.println("age: " + age);
-//						System.out.println("maxAge: " + maxAge);
-						
-						if (age > maxAge)
-						{
-							System.out.println("MolgenisCleanTmpDirService: tmp file " + f.getName() + " is older than " + mfa + " hours, deleting...");
-							FileUtils.deleteQuietly(f);
-						}
-						else
-						{
-//							System.out.println(f.getAbsolutePath() + " is younger than " + maxAge + " msec");
-						}
-//					}
+					// System.out.println("lastMod: " + lastMod);
+					// System.out.println("curDate: " + curDate);
+					// System.out.println("age: " + age);
+					// System.out.println("maxAge: " + maxAge);
+
+					if (age > maxAge)
+					{
+						System.out.println("MolgenisCleanTmpDirService: tmp file " + f.getName() + " is older than "
+								+ mfa + " hours, deleting...");
+						FileUtils.deleteQuietly(f);
+					}
+					else
+					{
+						// System.out.println(f.getAbsolutePath() +
+						// " is younger than " + maxAge + " msec");
+					}
+					// }
 				}
 
 			}
 			catch (Exception e)
 			{
-				System.out.println("SEVERE: Breaking execution of CleanTmpDirProcess! InterruptedException on file delete");
+				System.out
+						.println("SEVERE: Breaking execution of CleanTmpDirProcess! InterruptedException on file delete");
 				e.printStackTrace();
 				noExceptions = false;
 			}
-			
+
 			long sleepTime = 1000 * hox;
 			System.out.println("MolgenisCleanTmpDirService: going to sleep for " + hox + " seconds..");
-			
+
 			try
 			{
 				Thread.sleep(sleepTime);
 			}
 			catch (InterruptedException e)
 			{
-				System.out.println("SEVERE: Breaking execution of CleanTmpDirProcess! InterruptedException on thread sleep");
+				System.out
+						.println("SEVERE: Breaking execution of CleanTmpDirProcess! InterruptedException on thread sleep");
 				e.printStackTrace();
 				noExceptions = false;
 			}

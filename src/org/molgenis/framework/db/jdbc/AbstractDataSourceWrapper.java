@@ -12,12 +12,12 @@ import org.apache.log4j.Logger;
 public abstract class AbstractDataSourceWrapper implements DataSourceWrapper
 {
 	private static transient final Logger logger = Logger.getLogger(AbstractDataSourceWrapper.class.getSimpleName());
-	
+
 	public Connection getConnection() throws NamingException, SQLException
 	{
 		return this.getDataSource().getConnection();
 	}
-	
+
 	@Override
 	public String getDriverClassName()
 	{
@@ -25,9 +25,9 @@ public abstract class AbstractDataSourceWrapper implements DataSourceWrapper
 		try
 		{
 			ds = getDataSource();
-			if(ds instanceof BasicDataSource)
+			if (ds instanceof BasicDataSource)
 			{
-				return ((BasicDataSource)ds).getDriverClassName();
+				return ((BasicDataSource) ds).getDriverClassName();
 			}
 		}
 		catch (NamingException e)
@@ -38,28 +38,28 @@ public abstract class AbstractDataSourceWrapper implements DataSourceWrapper
 		logger.error("UNKNOWN DRIVER");
 		return "UNKNOWN";
 	}
-	
+
 	@Override
 	public int countOpenConnections() throws NamingException
 	{
-		if(this.getDataSource() instanceof org.apache.commons.dbcp.BasicDataSource)
+		if (this.getDataSource() instanceof org.apache.commons.dbcp.BasicDataSource)
 		{
-			return ((org.apache.commons.dbcp.BasicDataSource)this.getDataSource()).getNumActive();
+			return ((org.apache.commons.dbcp.BasicDataSource) this.getDataSource()).getNumActive();
 		}
 		logger.debug(getDataSource().getClass());
 		return 0;
 	}
-	
+
 	@Override
 	public int getMaxActive() throws NamingException
 	{
-		if(this.getDataSource() instanceof org.apache.commons.dbcp.BasicDataSource)
+		if (this.getDataSource() instanceof org.apache.commons.dbcp.BasicDataSource)
 		{
-			return ((org.apache.commons.dbcp.BasicDataSource)this.getDataSource()).getMaxActive();
+			return ((org.apache.commons.dbcp.BasicDataSource) this.getDataSource()).getMaxActive();
 		}
 		logger.debug(getDataSource().getClass());
 		return 0;
 	}
-	
+
 	protected abstract DataSource getDataSource() throws NamingException;
 }

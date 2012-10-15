@@ -1,4 +1,5 @@
 package org.molgenis.util.cmdline;
+
 import java.lang.annotation.*;
 
 /**
@@ -6,8 +7,11 @@ import java.lang.annotation.*;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface OptionsClass{
+public @interface OptionsClass
+{
 	String name() default "";
+
 	String version() default "0.0.0";
+
 	String description() default "";
 };

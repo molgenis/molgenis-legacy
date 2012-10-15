@@ -6,7 +6,7 @@ import java.util.List;
 public class Form extends MolgenisComponent
 {
 	List<MolgenisComponent> components = new ArrayList<MolgenisComponent>();
-	
+
 	String legend;
 
 	public static enum FormType
@@ -15,12 +15,12 @@ public class Form extends MolgenisComponent
 	};
 
 	private FormType type = FormType.VERTICAL;
-	
+
 	public Form()
 	{
 		super();
 	}
-	
+
 	public Form(FormType type)
 	{
 		assert type != null;

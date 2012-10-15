@@ -11,13 +11,13 @@ public class TupleTable extends HtmlWidget
 	public TupleTable(String name, List<Tuple> tuples)
 	{
 		super(name);
-		assert(tuples!=null);
+		assert (tuples != null);
 		this.tuples = tuples;
 	}
 
 	@Override
 	public String toHtml()
-	{		
+	{
 		String result = "<div><table id=\"" + getName() + "\"><thead><tr>";
 		// header
 		if (tuples.size() > 0) for (String name : tuples.get(0).getFields())
@@ -25,17 +25,20 @@ public class TupleTable extends HtmlWidget
 			result += "<th>" + name + "</th>";
 		}
 		result += "</tr></thead><tbody>";
-		//body
-		for(Tuple t: tuples)
+		// body
+		for (Tuple t : tuples)
 		{
-			result +="<tr>";
-			
-			for(String name: t.getFields()) result +="<td>"+(t.isNull(name) ? "" : t.getString(name))+"</td>";
-			
-			result +="</tr>";
+			result += "<tr>";
+
+			for (String name : t.getFields())
+				result += "<td>" + (t.isNull(name) ? "" : t.getString(name)) + "</td>";
+
+			result += "</tr>";
 		}
-		result += "</tbody></table><script>$('#"+getName()+"').dataTable({'bJQueryUI': true,'sPaginationType': 'full_numbers','sScrollX': '100%','bScrollCollapse': true});</script></div>";
-		
+		result += "</tbody></table><script>$('#"
+				+ getName()
+				+ "').dataTable({'bJQueryUI': true,'sPaginationType': 'full_numbers','sScrollX': '100%','bScrollCollapse': true});</script></div>";
+
 		return result;
 	}
 

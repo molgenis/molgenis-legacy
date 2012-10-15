@@ -1,7 +1,7 @@
 package org.molgenis.util;
 
-
-public class HandleRequestDelegationException extends Exception{
+public class HandleRequestDelegationException extends Exception
+{
 
 	public HandleRequestDelegationException(Exception e)
 	{

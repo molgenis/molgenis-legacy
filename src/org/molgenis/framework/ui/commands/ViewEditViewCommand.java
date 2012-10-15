@@ -20,7 +20,7 @@ public class ViewEditViewCommand extends SimpleCommand
 {
 	private static final long serialVersionUID = -4074166087593025109L;
 
-	public ViewEditViewCommand(String name, ScreenController<?>  parentScreen)
+	public ViewEditViewCommand(String name, ScreenController<?> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("View/Edit Record");
@@ -40,13 +40,12 @@ public class ViewEditViewCommand extends SimpleCommand
 
 	@Override
 	public boolean isVisible()
-	{		
-		//show add button when not in recordview
-		//show add button if the screen is not readonly
-		return !this.getFormScreen().getMode().equals(Mode.EDIT_VIEW) 
-		&& !this.getFormScreen().isReadonly() 
-		&& this.getFormScreen().getRecordInputs().size() != 0
-		&& !this.getFormScreen().getRecords().get(0).isReadonly();
+	{
+		// show add button when not in recordview
+		// show add button if the screen is not readonly
+		return !this.getFormScreen().getMode().equals(Mode.EDIT_VIEW) && !this.getFormScreen().isReadonly()
+				&& this.getFormScreen().getRecordInputs().size() != 0
+				&& !this.getFormScreen().getRecords().get(0).isReadonly();
 	}
 
 	@Override

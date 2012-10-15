@@ -23,8 +23,7 @@ public class RadioInput extends OptionInput<String>
 	 * @param value
 	 */
 	@Deprecated
-	public RadioInput(String name, String label, String description,
-			Vector<ValueLabel> options, String value)
+	public RadioInput(String name, String label, String description, Vector<ValueLabel> options, String value)
 	{
 		super(name, value);
 		super.setLabel(label);
@@ -33,13 +32,10 @@ public class RadioInput extends OptionInput<String>
 		this.setReadonly(false);
 	}
 
-	public RadioInput(String name, String label, String value,
-			Boolean nillable, Boolean readonly, String description,
-			List<String> options, List<String> option_labels)
-			throws HtmlInputException
+	public RadioInput(String name, String label, String value, Boolean nillable, Boolean readonly, String description,
+			List<String> options, List<String> option_labels) throws HtmlInputException
 	{
-		super(name, label, value, nillable, readonly, description, options,
-				option_labels);
+		super(name, label, value, nillable, readonly, description, options, option_labels);
 	}
 
 	public RadioInput(Tuple t) throws HtmlInputException
@@ -67,11 +63,8 @@ public class RadioInput extends OptionInput<String>
 			{
 				String optionLabel = option.getLabel();
 				checked = (selectedValueLabel.equals(optionLabel)) ? " checked " : "";
-				optionString += "<input id=\"" + this.getId()
-						+ "\" type=\"radio\" " + readonly + checked
-						+ " name=\"" + this.getName() + "\" value=\""
-						+ option.getValue() + "\">" + option.getLabel()
-						+ "<br />";
+				optionString += "<input id=\"" + this.getId() + "\" type=\"radio\" " + readonly + checked + " name=\""
+						+ this.getName() + "\" value=\"" + option.getValue() + "\">" + option.getLabel() + "<br />";
 			}
 			// remove trailing <br />
 			optionString = optionString.substring(0, optionString.length() - 6);
@@ -79,8 +72,7 @@ public class RadioInput extends OptionInput<String>
 		else
 		{
 			checked = this.getValue().equals(this.getName()) ? " checked " : "";
-			optionString += "<input id=\"" + this.getId()
-					+ "\" type=\"radio\" " + readonly + checked + " name=\""
+			optionString += "<input id=\"" + this.getId() + "\" type=\"radio\" " + readonly + checked + " name=\""
 					+ this.getName() + "\">" + this.getLabel();
 		}
 
@@ -88,8 +80,7 @@ public class RadioInput extends OptionInput<String>
 	}
 
 	@Override
-	public String toHtml(Tuple params) throws ParseException,
-			HtmlInputException
+	public String toHtml(Tuple params) throws ParseException, HtmlInputException
 	{
 		return new RadioInput(params).render();
 	}

@@ -12,7 +12,7 @@ public class HtmlFormGen extends ForEachEntityGenerator
 	{
 		return "Generates html forms for each entity.";
 	}
-	
+
 	@Override
 	public String getType()
 	{

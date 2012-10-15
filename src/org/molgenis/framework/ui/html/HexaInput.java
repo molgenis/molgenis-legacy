@@ -9,8 +9,8 @@ public class HexaInput extends StringInput
 	public HexaInput(String name)
 	{
 		this(name, null);
-	}	
-	
+	}
+
 	public HexaInput(String name, String value)
 	{
 		super(name, value);

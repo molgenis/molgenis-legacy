@@ -45,7 +45,7 @@ public interface ScreenModel extends Serializable
 
 	/** Bind parameter name for screen action (to be used by layout renderer) */
 	public static final String INPUT_ACTION = "__action";
-	
+
 	/**
 	 * Parameter to indicate how the results should be shown (as download, as
 	 * popup, inline with the rest of the GUI (Default)
@@ -56,43 +56,47 @@ public interface ScreenModel extends Serializable
 		 * Show the current screen as JSON
 		 */
 		SHOW_JSON("json"),
-		
+
 		/**
 		 * Show the jqGrid
 		 */
 		SHOW_JQGRID("jqGrid"),
 		/**
-		 * Show the current screen as part of its parent. This means the layout template is called on the root of the user interface.
+		 * Show the current screen as part of its parent. This means the layout
+		 * template is called on the root of the user interface.
 		 */
-		SHOW_MAIN("inline"), 
+		SHOW_MAIN("inline"),
 		/**
-		 * Show the current screen or command as popup. This means the layout template is applied on this element only.
+		 * Show the current screen or command as popup. This means the layout
+		 * template is applied on this element only.
 		 */
-		SHOW_DIALOG("popup"), 
+		SHOW_DIALOG("popup"),
 		/**
-		 * Don't layout the screen. Instead pass use the outputstream in handleRequest so it can be
-		 * downloaded. This result in a download file.
+		 * Don't layout the screen. Instead pass use the outputstream in
+		 * handleRequest so it can be downloaded. This result in a download
+		 * file.
 		 */
 		SHOW_DOWNLOAD("download"),
 		/**
 		 * Don't show anything
 		 */
 		SHOW_CLOSE("close");
-		
+
 		private String TAG;
+
 		Show(String name)
 		{
 			this.TAG = name;
 		}
-		
+
 		public String toString()
 		{
 			return this.TAG;
 		}
-		
+
 		public boolean equals(String str)
 		{
-			if(str != null && str.equals(this.TAG)) return true;
+			if (str != null && str.equals(this.TAG)) return true;
 			return false;
 		}
 	}
@@ -101,7 +105,7 @@ public interface ScreenModel extends Serializable
 	 * Reset the view to construction defaults, resetting all user set changes.
 	 */
 	public void reset();
-	
+
 	public String getName();
 
 	/**
@@ -157,30 +161,33 @@ public interface ScreenModel extends Serializable
 
 	/**
 	 * Get the screen messages
+	 * 
 	 * @return
 	 */
 	public Vector<ScreenMessage> getMessages();
 
 	/**
-	 * Get selected other models to be shown. 
-	 * This is a shorthand for getController().getSelected().getModel();
+	 * Get selected other models to be shown. This is a shorthand for
+	 * getController().getSelected().getModel();
+	 * 
 	 * @return
 	 */
 	public ScreenModel getSelected();
 
 	/**
 	 * Set the screen messages
+	 * 
 	 * @param messages
 	 */
 	public void setMessages(Vector<ScreenMessage> messages);
-	
-	public void setMessages(ScreenMessage ... messages);
-	
+
+	public void setMessages(ScreenMessage... messages);
+
 	/** Shorthand for setMessages(new ScreenMessage("success message",true)); */
 	public void setSuccess(String message);
-	
+
 	/** Shorthand for setMessages(new ScreenMessage("succes message",false)); */
 	public void setError(String message);
-	
+
 	public String render() throws HtmlInputException;
 }

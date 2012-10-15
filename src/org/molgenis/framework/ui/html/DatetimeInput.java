@@ -34,16 +34,15 @@ public class DatetimeInput extends HtmlInput<Date>
 	{
 		super(name, value);
 	}
-	
+
 	/** Construct DatetimeInput with name, label, value */
 	public DatetimeInput(String name, String label, Date value)
 	{
 		super(name, label, value);
 	}
 
-	/** Constructe Datetimeinput with name, label, value, nillable, and readonly*/
-	public DatetimeInput(String name, String label, Date value,
-			boolean nillable, boolean readonly)
+	/** Constructe Datetimeinput with name, label, value, nillable, and readonly */
+	public DatetimeInput(String name, String label, Date value, boolean nillable, boolean readonly)
 	{
 		super(name, value);
 		if (label != null && !label.equals("null")) this.setLabel(label);
@@ -62,12 +61,11 @@ public class DatetimeInput extends HtmlInput<Date>
 	{
 		if (this.isHidden())
 		{
-			StringInput input = new StringInput(this.getName(), this
-					.getValue());
+			StringInput input = new StringInput(this.getName(), this.getValue());
 			input.setHidden(true);
 			return input.toHtml();
 		}
-		
+
 		if (uiToolkit == UiToolkit.ORIGINAL)
 		{
 			return this.toDefault();
@@ -79,44 +77,42 @@ public class DatetimeInput extends HtmlInput<Date>
 
 		return "NOT IMPLEMENTED FOR LIBRARY " + uiToolkit;
 	}
-	
+
 	private String toDefault()
 	{
 		String readonly = isReadonly() ? " class=\"readonly\" readonly=\"readonly\" "
 				: "onclick=\"showDateInput(this,true) " + "";
 
-
-		return "<input type=\"text\" id=\"" + this.getId() + "\" name=\""
-				+ getName() + "\"  size=\"32\" value=\"" + getValue()
-				+ "\" " + readonly + "\" autocomplete=\"off\"/>";
+		return "<input type=\"text\" id=\"" + this.getId() + "\" name=\"" + getName() + "\"  size=\"32\" value=\""
+				+ getValue() + "\" " + readonly + "\" autocomplete=\"off\"/>";
 	}
 
 	public String toJquery()
-	{	
-		String description = getName().equals(getDescription()) ? "" : " title=\""+getDescription()+"\"";
+	{
+		String description = getName().equals(getDescription()) ? "" : " title=\"" + getDescription() + "\"";
 
 		String options = "dateFormat: 'dd-mm-yy', changeMonth: true, changeYear: true, showButtonPanel: true";
-		//add clear button if nillable
-		String createScript = "function( input ) {setTimeout(function() {var buttonPane = $( input ).datepicker( \"widget\" ).find( \".ui-datepicker-buttonpane\" );" +
-				"$( \"<button>\", {text: \"Clear\", click: function() { $(input).datetimepicker( 'setDate', null );}}).addClass(\"ui-datepicker-close ui-state-default ui-priority-secondary ui-corner-all\").appendTo( buttonPane );}, 1 );}";
-		
-		if(this.isNillable())
-		 options += ", beforeShow: "+createScript;
-		
+		// add clear button if nillable
+		String createScript = "function( input ) {setTimeout(function() {var buttonPane = $( input ).datepicker( \"widget\" ).find( \".ui-datepicker-buttonpane\" );"
+				+ "$( \"<button>\", {text: \"Clear\", click: function() { $(input).datetimepicker( 'setDate', null );}}).addClass(\"ui-datepicker-close ui-state-default ui-priority-secondary ui-corner-all\").appendTo( buttonPane );}, 1 );}";
+
+		if (this.isNillable()) options += ", beforeShow: " + createScript;
+
 		String validate = "";
-		
-		if(!this.isNillable()) validate = " required";
-		String result = "<input type=\"text\" readonly=\"readonly\" class=\""+(this.isReadonly() ? "readonly ": "")+"text ui-widget-content ui-corner-all"+validate+"\" id=\"" + this.getName()
-				+ "\" value=\""+this.getValue("dd-MM-yyyy HH:mm")+"\" name=\"" + this.getName()
-				+ "\" autocomplete=\"off\" "+description+"/>";
-		
-		//add the dialog unless readonly (input is always readonly, i.e., cannot be typed in).
-		if(!this.isReadonly())
-			result += "<script>" + "$(\"#" + this.getName()
-				+ "\").bt().datetimepicker({" + options + "}).click(function(){$(this).datetimepicker('show')});</script>";
+
+		if (!this.isNillable()) validate = " required";
+		String result = "<input type=\"text\" readonly=\"readonly\" class=\"" + (this.isReadonly() ? "readonly " : "")
+				+ "text ui-widget-content ui-corner-all" + validate + "\" id=\"" + this.getName() + "\" value=\""
+				+ this.getValue("dd-MM-yyyy HH:mm") + "\" name=\"" + this.getName() + "\" autocomplete=\"off\" "
+				+ description + "/>";
+
+		// add the dialog unless readonly (input is always readonly, i.e.,
+		// cannot be typed in).
+		if (!this.isReadonly()) result += "<script>" + "$(\"#" + this.getName() + "\").bt().datetimepicker({" + options
+				+ "}).click(function(){$(this).datetimepicker('show')});</script>";
 		return result;
 	}
-	
+
 	public String getValue(String format)
 	{
 		DateFormat formatter = new SimpleDateFormat(format, Locale.US);
@@ -151,7 +147,6 @@ public class DatetimeInput extends HtmlInput<Date>
 		return result;
 	}
 
-	
 	public String getValue()
 	{
 		return getValue("MMMM d, yyyy, HH:mm:ss");

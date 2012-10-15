@@ -30,7 +30,7 @@ public class HyperlinkInput extends HtmlInput<String>
 	{
 		this(name, null);
 	}
-	
+
 	/**
 	 * Construct HyperlinkInput with name and value
 	 * 
@@ -51,8 +51,7 @@ public class HyperlinkInput extends HtmlInput<String>
 	 * @param nillable
 	 * @param readonly
 	 */
-	public HyperlinkInput(String name, String label, String value,
-			boolean nillable, boolean readonly)
+	public HyperlinkInput(String name, String label, String value, boolean nillable, boolean readonly)
 	{
 		super(name, value);
 		this.setLabel(label);
@@ -74,8 +73,7 @@ public class HyperlinkInput extends HtmlInput<String>
 	@Override
 	public String getValue()
 	{
-		return "<a href=\"" + super.getValue() + "\">" + super.getValue()
-				+ "</a>";
+		return "<a href=\"" + super.getValue() + "\">" + super.getValue() + "</a>";
 	}
 
 	/**
@@ -89,21 +87,21 @@ public class HyperlinkInput extends HtmlInput<String>
 	@Override
 	public String toHtml()
 	{
-//		String readonly = (isReadonly() ? "readonly class=\"readonly\" " : "");
+		// String readonly = (isReadonly() ? "readonly class=\"readonly\" " :
+		// "");
 
-//		if (this.isHidden())
-//		{
-			StringInput input = new StringInput(this.getName(), super
-					.getValue());
-			input.setLabel(this.getLabel());
-			input.setDescription(this.getDescription());
-			input.setHidden(this.isHidden());
-			input.setReadonly(this.isReadonly());
-			return input.toHtml() + this.getValue();
-//		}
+		// if (this.isHidden())
+		// {
+		StringInput input = new StringInput(this.getName(), super.getValue());
+		input.setLabel(this.getLabel());
+		input.setDescription(this.getDescription());
+		input.setHidden(this.isHidden());
+		input.setReadonly(this.isReadonly());
+		return input.toHtml() + this.getValue();
+		// }
 
-//		return "<input id=\"" + getId() + "\" name=\"" + getName()
-//				+ "\" value=\"" + super.getValue() + "\" " + readonly + " />";
+		// return "<input id=\"" + getId() + "\" name=\"" + getName()
+		// + "\" value=\"" + super.getValue() + "\" " + readonly + " />";
 	}
 
 	@Override

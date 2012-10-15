@@ -20,7 +20,8 @@ import org.molgenis.model.elements.Field;
  * 
  * @author
  */
-public class JDBCQueryGernatorUtil {
+public class JDBCQueryGernatorUtil
+{
 	/**
 	 * Helper method for creating a where clause from QueryRule...rules.
 	 * 
@@ -44,263 +45,276 @@ public class JDBCQueryGernatorUtil {
 	{
 		StringBuilder where_clause = new StringBuilder("");
 		QueryRule previousRule = new QueryRule(Operator.AND);
-		if(rules != null){
-		for (QueryRule r : rules)
+		if (rules != null)
 		{
-			//logger.debug(r);
-			//skip OR and AND operators
-			if( r.getOperator().equals(Operator.OR)  || r.getOperator().equals(Operator.AND))
+			for (QueryRule r : rules)
 			{
-				previousRule = r;
-			}
-			else
-			{
-				QueryRule rule = new QueryRule(r); // copy because of side
-				// effects
-				// logger.debug(rule);
-
-				// String tablePrefix = "";
-				if (mapper != null) {
-                                    rule.setField(mapper.getTableFieldName(rule.getField()));
-                                } 
-
-				if (rule.getOperator() == Operator.LAST || rule.getOperator() == Operator.LIMIT
-						|| rule.getOperator() == Operator.OFFSET || rule.getOperator() == Operator.SORTASC
-						|| rule.getOperator() == Operator.SORTDESC)
+				// logger.debug(r);
+				// skip OR and AND operators
+				if (r.getOperator().equals(Operator.OR) || r.getOperator().equals(Operator.AND))
 				{
-
-				}
-				else if (rule.getOperator() == QueryRule.Operator.SEARCH)
-				{
-					// naive implementation, should use hibernate search when it comes
-					// available!
-					List<QueryRule> searchRules = new ArrayList<QueryRule>();
-
-					try
-					{
-						boolean addOr = false;
-						
-						// try create big OR filter for all fields and all search elements
-						// todo: enable string term concat using quotes
-						for (String term : rule.getValue().toString().split(" "))
-						{
-							List<QueryRule> termRules = new ArrayList<QueryRule>();
-
-							// create different query rule depending on type
-							List<Field> fields = mapper.getDatabase().getMetaData()
-									.getEntity(mapper.create().getClass().getSimpleName()).getAllFields();
-							for (Field f : fields)
-							{
-								if (f.getType() instanceof StringField
-										|| f.getType() instanceof TextField)
-								{
-									termRules.add(new QueryRule(f.getName(), Operator.LIKE,
-											term.trim()));
-									termRules.add(new QueryRule(Operator.OR));
-								}
-							}
-						
-							//add as big X or Y or Z subquery to our rules
-							searchRules.add(new QueryRule(termRules));
-							if(addOr) searchRules.add(new QueryRule(Operator.OR));
-							addOr = true;
-						}
-					}
-					catch (Exception e)
-					{
-						throw new DatabaseException(e);
-					}
-
-					//add to rules
-					where_clause.append("(");
-					where_clause.append(createWhereSql(mapper, true, false, searchRules.toArray(new QueryRule[searchRules.size()])));
-					where_clause.append(")");
-					
-				}
-				else if (rule.getOperator() == QueryRule.Operator.NESTED || 
-						(rule.getOperator() == QueryRule.Operator.NOT && rule.getNestedRules() != null && rule.getNestedRules().length > 0) )
-				{
-					QueryRule[] nestedrules = rule.getNestedRules();
-					if (nestedrules.length > 0)
-					{
-						if (where_clause.length() > 0)
-						{
-							if (previousRule != null && Operator.OR.equals(previousRule.getOperator()))
-							{
-								where_clause.append(" OR ");
-							}
-							else
-							{
-								where_clause.append(" AND ");
-							}
-						}
-						
-						if(rule.getOperator() == QueryRule.Operator.NOT) {
-							where_clause.append("NOT");	
-						}
-						where_clause.append("(");						
-						where_clause.append(createWhereSql(mapper, true, false, nestedrules));
-						where_clause.append(")");
-					}
-				}
-				//experimental: subqery
-				else if (rule.getOperator() == QueryRule.Operator.IN_SUBQUERY)
-				{
-					if (where_clause.length() > 0)
-					{
-						if (previousRule != null && Operator.OR.equals(previousRule.getOperator()))
-						{
-							where_clause.append(" OR ");
-						}
-						else
-						{
-							where_clause.append(" AND ");
-						}
-					}
-					where_clause.append(rule.getField() + " IN("+rule.getValue()+")");
-				}
-				else if (rule.getOperator() == QueryRule.Operator.IN)
-				{
-					// only add if nonempty condition???
-					if (rule.getValue() == null
-							|| (rule.getValue() instanceof List<?> && ((List<?>) rule.getValue()).size() == 0)
-							|| (rule.getValue() instanceof Object[] && ((Object[]) rule.getValue()).length == 0)) throw new DatabaseException(
-							"empty 'in' clause for rule " + rule);
-					{
-						if (where_clause.length() > 0)
-						{
-							if (previousRule != null && Operator.OR.equals(previousRule.getOperator()))
-							{
-								where_clause.append(" OR ");
-							}
-							else
-							{
-								where_clause.append(" AND ");
-							}
-						}
-
-						// where_clause.append(tablePrefix + rule.getField() +
-						// " IN(");
-						where_clause.append(rule.getField() + " IN(");
-
-						Object[] values = new Object[0];
-						if (rule.getValue() instanceof List<?>)
-						{
-							values = ((List<?>) rule.getValue()).toArray();
-						}
-						else
-						{
-							values = (Object[]) rule.getValue();
-						}
-
-						for (int i = 0; i < values.length; i++)
-						{
-							if (i > 0) where_clause.append(",");
-							if (mapper != null && omitQuotes(mapper.getFieldType(rule.getField())))
-							{
-								// where_clause.append(values[i]
-								// .toString());
-								where_clause.append("" + escapeSql(values[i]) + "");
-							}
-							else
-							{
-								where_clause.append("'" + escapeSql(values[i]) + "'");
-							}
-						}
-						where_clause.append(") ");
-					}
+					previousRule = r;
 				}
 				else
-				// where clause
 				{
-					// check validity of the rule
-					// if(rule.getField() == null ||
-					// columnInfoMap.get(rule.getField()) == null )
-					// {
-					// throw new DatabaseException("Invalid rule: field '"+
-					// rule.getField() + "' not known.");
-					// }
+					QueryRule rule = new QueryRule(r); // copy because of side
+					// effects
+					// logger.debug(rule);
 
-					String operator = "";
-					switch (rule.getOperator())
+					// String tablePrefix = "";
+					if (mapper != null)
 					{
-						case EQUALS:
-							operator = "=";
-							break;
-						case JOIN:
-							operator = "=";
-							break;
-						case NOT:
-							operator = "!=";
-							break;
-						case LIKE:
-							operator = "LIKE";
-							break;
-						case LESS:
-							operator = "<";
-							break;
-						case GREATER:
-							operator = ">";
-							break;
-						case LESS_EQUAL:
-							operator = "<=";
-							break;
-						case GREATER_EQUAL:
-							operator = ">=";
-							break;
+						rule.setField(mapper.getTableFieldName(rule.getField()));
 					}
-					// if (rule.getField() != "" && operator != "" &&
-					// rule.getValue() != "")
-					// {
-					if (where_clause.length() > 0)
+
+					if (rule.getOperator() == Operator.LAST || rule.getOperator() == Operator.LIMIT
+							|| rule.getOperator() == Operator.OFFSET || rule.getOperator() == Operator.SORTASC
+							|| rule.getOperator() == Operator.SORTDESC)
 					{
-						if (previousRule != null && Operator.OR.equals(previousRule.getOperator()))
+
+					}
+					else if (rule.getOperator() == QueryRule.Operator.SEARCH)
+					{
+						// naive implementation, should use hibernate search
+						// when it comes
+						// available!
+						List<QueryRule> searchRules = new ArrayList<QueryRule>();
+
+						try
 						{
-							where_clause.append(" OR ");
+							boolean addOr = false;
+
+							// try create big OR filter for all fields and all
+							// search elements
+							// todo: enable string term concat using quotes
+							for (String term : rule.getValue().toString().split(" "))
+							{
+								List<QueryRule> termRules = new ArrayList<QueryRule>();
+
+								// create different query rule depending on type
+								List<Field> fields = mapper.getDatabase().getMetaData()
+										.getEntity(mapper.create().getClass().getSimpleName()).getAllFields();
+								for (Field f : fields)
+								{
+									if (f.getType() instanceof StringField || f.getType() instanceof TextField)
+									{
+										termRules.add(new QueryRule(f.getName(), Operator.LIKE, term.trim()));
+										termRules.add(new QueryRule(Operator.OR));
+									}
+								}
+
+								// add as big X or Y or Z subquery to our rules
+								searchRules.add(new QueryRule(termRules));
+								if (addOr) searchRules.add(new QueryRule(Operator.OR));
+								addOr = true;
+							}
+						}
+						catch (Exception e)
+						{
+							throw new DatabaseException(e);
+						}
+
+						// add to rules
+						where_clause.append("(");
+						where_clause.append(createWhereSql(mapper, true, false,
+								searchRules.toArray(new QueryRule[searchRules.size()])));
+						where_clause.append(")");
+
+					}
+					else if (rule.getOperator() == QueryRule.Operator.NESTED
+							|| (rule.getOperator() == QueryRule.Operator.NOT && rule.getNestedRules() != null && rule
+									.getNestedRules().length > 0))
+					{
+						QueryRule[] nestedrules = rule.getNestedRules();
+						if (nestedrules.length > 0)
+						{
+							if (where_clause.length() > 0)
+							{
+								if (previousRule != null && Operator.OR.equals(previousRule.getOperator()))
+								{
+									where_clause.append(" OR ");
+								}
+								else
+								{
+									where_clause.append(" AND ");
+								}
+							}
+
+							if (rule.getOperator() == QueryRule.Operator.NOT)
+							{
+								where_clause.append("NOT");
+							}
+							where_clause.append("(");
+							where_clause.append(createWhereSql(mapper, true, false, nestedrules));
+							where_clause.append(")");
+						}
+					}
+					// experimental: subqery
+					else if (rule.getOperator() == QueryRule.Operator.IN_SUBQUERY)
+					{
+						if (where_clause.length() > 0)
+						{
+							if (previousRule != null && Operator.OR.equals(previousRule.getOperator()))
+							{
+								where_clause.append(" OR ");
+							}
+							else
+							{
+								where_clause.append(" AND ");
+							}
+						}
+						where_clause.append(rule.getField() + " IN(" + rule.getValue() + ")");
+					}
+					else if (rule.getOperator() == QueryRule.Operator.IN)
+					{
+						// only add if nonempty condition???
+						if (rule.getValue() == null
+								|| (rule.getValue() instanceof List<?> && ((List<?>) rule.getValue()).size() == 0)
+								|| (rule.getValue() instanceof Object[] && ((Object[]) rule.getValue()).length == 0)) throw new DatabaseException(
+								"empty 'in' clause for rule " + rule);
+						{
+							if (where_clause.length() > 0)
+							{
+								if (previousRule != null && Operator.OR.equals(previousRule.getOperator()))
+								{
+									where_clause.append(" OR ");
+								}
+								else
+								{
+									where_clause.append(" AND ");
+								}
+							}
+
+							// where_clause.append(tablePrefix + rule.getField()
+							// +
+							// " IN(");
+							where_clause.append(rule.getField() + " IN(");
+
+							Object[] values = new Object[0];
+							if (rule.getValue() instanceof List<?>)
+							{
+								values = ((List<?>) rule.getValue()).toArray();
+							}
+							else
+							{
+								values = (Object[]) rule.getValue();
+							}
+
+							for (int i = 0; i < values.length; i++)
+							{
+								if (i > 0) where_clause.append(",");
+								if (mapper != null && omitQuotes(mapper.getFieldType(rule.getField())))
+								{
+									// where_clause.append(values[i]
+									// .toString());
+									where_clause.append("" + escapeSql(values[i]) + "");
+								}
+								else
+								{
+									where_clause.append("'" + escapeSql(values[i]) + "'");
+								}
+							}
+							where_clause.append(") ");
+						}
+					}
+					else
+					// where clause
+					{
+						// check validity of the rule
+						// if(rule.getField() == null ||
+						// columnInfoMap.get(rule.getField()) == null )
+						// {
+						// throw new DatabaseException("Invalid rule: field '"+
+						// rule.getField() + "' not known.");
+						// }
+
+						String operator = "";
+						switch (rule.getOperator())
+						{
+							case EQUALS:
+								operator = "=";
+								break;
+							case JOIN:
+								operator = "=";
+								break;
+							case NOT:
+								operator = "!=";
+								break;
+							case LIKE:
+								operator = "LIKE";
+								break;
+							case LESS:
+								operator = "<";
+								break;
+							case GREATER:
+								operator = ">";
+								break;
+							case LESS_EQUAL:
+								operator = "<=";
+								break;
+							case GREATER_EQUAL:
+								operator = ">=";
+								break;
+						}
+						// if (rule.getField() != "" && operator != "" &&
+						// rule.getValue() != "")
+						// {
+						if (where_clause.length() > 0)
+						{
+							if (previousRule != null && Operator.OR.equals(previousRule.getOperator()))
+							{
+								where_clause.append(" OR ");
+							}
+							else
+							{
+								where_clause.append(" AND ");
+							}
+						}
+						if (Boolean.TRUE.equals(rule.getValue())) rule.setValue("1");
+						if (Boolean.FALSE.equals(rule.getValue())) rule.setValue("0");
+						Object value = rule.getValue() == null ? "NULL" : escapeSql(rule.getValue());
+
+						if (!value.equals("NULL") && rule.getOperator() == Operator.LIKE
+								&& (mapper == null || !omitQuotes(mapper.getFieldType(rule.getField()))))
+						{
+							if (!value.toString().trim().startsWith("%") && !value.toString().trim().endsWith("%"))
+							{
+								value = "%" + value + "%";
+							}
+						}
+
+						// if
+						// (omitQuotes(columnInfoMap.get(rule.getField()).getType()))
+						// where_clause.append(tablePrefix + rule.getField() +
+						// " " +
+						// operator + " " + value + "");
+						// else
+						// where_clause.append(tablePrefix + rule.getField() +
+						// " " +
+						// operator + " '" + value + "'");
+						if (rule.getOperator().equals(Operator.JOIN))
+						{
+							where_clause.append(rule.getField() + " " + operator + " " + value + "");
 						}
 						else
 						{
-							where_clause.append(" AND ");
+							if ("NULL".equals(value) && operator.equals("="))
+							{
+								where_clause.append(rule.getField() + " IS NULL");
+							}
+							else if ("NULL".equals(value) && operator.equals("!="))
+							{
+								where_clause.append(rule.getField() + " IS NOT NULL");
+							}
+							else
+							{
+								where_clause.append(rule.getField() + " " + operator + " '" + value + "'");
+							}
 						}
 					}
-					if (Boolean.TRUE.equals(rule.getValue())) rule.setValue("1");
-					if (Boolean.FALSE.equals(rule.getValue())) rule.setValue("0");
-					Object value = rule.getValue() == null ? "NULL" : escapeSql(rule.getValue());
-
-					if (!value.equals("NULL") && rule.getOperator() == Operator.LIKE
-							&& (mapper == null || !omitQuotes(mapper.getFieldType(rule.getField()))))
-					{
-						if (!value.toString().trim().startsWith("%") && !value.toString().trim().endsWith("%"))
-						{
-							value = "%" + value + "%";
-						}
-					}
-
-					// if
-					// (omitQuotes(columnInfoMap.get(rule.getField()).getType()))
-					// where_clause.append(tablePrefix + rule.getField() + " " +
-					// operator + " " + value + "");
-					// else
-					// where_clause.append(tablePrefix + rule.getField() + " " +
-					// operator + " '" + value + "'");
-					if (rule.getOperator().equals(Operator.JOIN)) {
-						where_clause.append(rule.getField() + " " + operator
-							+ " " + value + "");
-					}
-					else
-					{
-						if ("NULL".equals(value) && operator.equals("=")) {
-							where_clause.append(rule.getField() + " IS NULL");
-						} else if ("NULL".equals(value) && operator.equals("!=")) {
-							where_clause.append(rule.getField() + " IS NOT NULL");
-						} else {
-							where_clause.append(rule.getField() + " " + operator + " '" + value + "'");
-						}
-					}
+					previousRule = null;
 				}
-				previousRule = null;
 			}
-		}
 		}
 		String result = where_clause.toString();
 		if (!isNested && where_clause.length() > 0) result = " WHERE " + result;
@@ -316,9 +330,10 @@ public class JDBCQueryGernatorUtil {
 	private static boolean omitQuotes(FieldType t)
 	{
 		return t instanceof LongField || t instanceof IntField || t instanceof DecimalField;
-		
-		//t.equals(Type.LONG) || t.equals(Type.INT) || t.equals(Type.DECIMAL);
-//		return t instanceof LongField || t instanceof IntField|| t instanceof DecimalField;
+
+		// t.equals(Type.LONG) || t.equals(Type.INT) || t.equals(Type.DECIMAL);
+		// return t instanceof LongField || t instanceof IntField|| t instanceof
+		// DecimalField;
 
 	}
 
@@ -339,36 +354,37 @@ public class JDBCQueryGernatorUtil {
 	{
 		// copy parameter into local temp so we can change it
 		String sort_clause = "";
-		if(rules != null){
-		Boolean revSort = reverseSorting;
-		for (QueryRule rule : rules)
+		if (rules != null)
 		{
-			if (rule.getOperator() == Operator.LAST)
+			Boolean revSort = reverseSorting;
+			for (QueryRule rule : rules)
 			{
-				revSort = !revSort;
-				break;
+				if (rule.getOperator() == Operator.LAST)
+				{
+					revSort = !revSort;
+					break;
+				}
 			}
-		}
 
-		
-		for (QueryRule r : rules)
-		{
-			QueryRule rule = new QueryRule(r); // copy because of sideeffects
+			for (QueryRule r : rules)
+			{
+				QueryRule rule = new QueryRule(r); // copy because of
+													// sideeffects
 
-			// limit clause
-			if ((rule.getOperator() == Operator.SORTASC && !revSort)
-					|| (revSort && rule.getOperator() == Operator.SORTDESC))
-			{
-				if (mapper != null) rule.setValue(mapper.getTableFieldName(rule.getValue().toString()));
-				sort_clause += rule.getValue().toString() + " ASC,";
+				// limit clause
+				if ((rule.getOperator() == Operator.SORTASC && !revSort)
+						|| (revSort && rule.getOperator() == Operator.SORTDESC))
+				{
+					if (mapper != null) rule.setValue(mapper.getTableFieldName(rule.getValue().toString()));
+					sort_clause += rule.getValue().toString() + " ASC,";
+				}
+				else if ((rule.getOperator() == QueryRule.Operator.SORTDESC && !revSort)
+						|| (revSort && rule.getOperator() == Operator.SORTASC))
+				{
+					if (mapper != null) rule.setValue(mapper.getTableFieldName(rule.getValue().toString()));
+					sort_clause += rule.getValue().toString() + " DESC,";
+				}
 			}
-			else if ((rule.getOperator() == QueryRule.Operator.SORTDESC && !revSort)
-					|| (revSort && rule.getOperator() == Operator.SORTASC))
-			{
-				if (mapper != null) rule.setValue(mapper.getTableFieldName(rule.getValue().toString()));
-				sort_clause += rule.getValue().toString() + " DESC,";
-			}
-		}
 		}
 		if (sort_clause.length() > 0) return " ORDER BY " + sort_clause.substring(0, sort_clause.lastIndexOf(","));
 		return sort_clause;
@@ -388,19 +404,20 @@ public class JDBCQueryGernatorUtil {
 	{
 		String limit_clause = "";
 		String offset_clause = "";
-		if(rules != null){
-		for (QueryRule rule : rules)
+		if (rules != null)
 		{
-			// limit clause
-			if (rule.getOperator() == QueryRule.Operator.LIMIT)
+			for (QueryRule rule : rules)
 			{
-				limit_clause = " LIMIT " + rule.getValue();
+				// limit clause
+				if (rule.getOperator() == QueryRule.Operator.LIMIT)
+				{
+					limit_clause = " LIMIT " + rule.getValue();
+				}
+				else if (rule.getOperator() == QueryRule.Operator.OFFSET)
+				{
+					offset_clause = " OFFSET " + rule.getValue();
+				}
 			}
-			else if (rule.getOperator() == QueryRule.Operator.OFFSET)
-			{
-				offset_clause = " OFFSET " + rule.getValue();
-			}
-		}
 		}
 		if (withOffset || offset_clause.equals("")) return limit_clause + offset_clause;
 		return "";
@@ -417,12 +434,12 @@ public class JDBCQueryGernatorUtil {
 	 */
 	public static String escapeSql(Object value)
 	{
-		if(value != null && value.toString().contains("Specific diagnosis Mutation"))
+		if (value != null && value.toString().contains("Specific diagnosis Mutation"))
 		{
 			System.out.println("trouble");
 		}
 		if (value != null) return StringEscapeUtils.escapeSql(value.toString());
 		return null;
 		// return sql.toString().replace("'", "''");
-	}    
+	}
 }

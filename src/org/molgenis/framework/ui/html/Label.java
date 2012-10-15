@@ -17,7 +17,7 @@ public class Label extends AbstractHtmlElement
 		super(null);
 		this.value = value;
 	}
-	
+
 	public Label(String id, String value)
 	{
 		super(id);
@@ -36,8 +36,7 @@ public class Label extends AbstractHtmlElement
 	}
 
 	@Override
-	public String render(Tuple params) throws ParseException,
-			HtmlInputException
+	public String render(Tuple params) throws ParseException, HtmlInputException
 	{
 		return new Label(params).render();
 	}
