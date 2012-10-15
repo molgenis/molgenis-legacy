@@ -29,7 +29,8 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 	}
 
 	/** Logger */
-	//private Logger logger = Logger.getLogger(this.getClass().getSimpleName());
+	// private Logger logger =
+	// Logger.getLogger(this.getClass().getSimpleName());
 
 	/** Class of this pager */
 	private Class<E> entityClass;
@@ -57,14 +58,15 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 
 	/** rules */
 	private List<QueryRule> filters = new ArrayList<QueryRule>();
-	
+
 	/** Logger **/
 	private final static transient Logger logger = Logger.getLogger(AbstractPager.class.getSimpleName());
 
 	/**
-	 * @param entityClass definition of an entity
+	 * @param entityClass
+	 *            definition of an entity
 	 * @param defaultOrderByField
-	 *           name of field that will be used to order database entities by.
+	 *            name of field that will be used to order database entities by.
 	 * @throws DatabaseException
 	 */
 	public AbstractPager(Class<E> entityClass, String defaultOrderByField)
@@ -74,8 +76,8 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 		this.entityClass = entityClass;
 		this.orderByField = defaultOrderByField;
 		this.defaultOrderByField = defaultOrderByField;
-		
-		logger.debug("created for "+entityClass.getCanonicalName() +", ordered by "+defaultOrderByField );
+
+		logger.debug("created for " + entityClass.getCanonicalName() + ", ordered by " + defaultOrderByField);
 	}
 
 	/** cache of current page */
@@ -87,46 +89,45 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 		this.refresh(db);
 		return count;
 	}
-	
+
 	@Override
 	public int getCount()
 	{
 		return count;
 	}
-	
-	
+
 	@Override
 	public List<E> getPage(Database db) throws DatabaseException
 	{
 		this.refresh(db);
 		return page;
 	}
-	
+
 	@Override
 	public List<E> first(Database db) throws DatabaseException
 	{
 		pagingState = State.FIRST;
-		logger.debug("go to first "+this.getLimit());
+		logger.debug("go to first " + this.getLimit());
 		return this.getPage(db);
 	}
 
 	@Override
 	public List<E> prev(Database db) throws DatabaseException
 	{
-		//relative, so need to refresh first
+		// relative, so need to refresh first
 		this.refresh(db);
 		pagingState = State.PREV;
-		logger.debug("go to previous "+this.getLimit());
+		logger.debug("go to previous " + this.getLimit());
 		return this.getPage(db);
 	}
 
 	@Override
 	public List<E> next(Database db) throws DatabaseException
 	{
-		//relative, so need to refresh first
+		// relative, so need to refresh first
 		this.refresh(db);
 		pagingState = State.NEXT;
-		logger.debug("go to next "+this.getLimit());
+		logger.debug("go to next " + this.getLimit());
 		return this.getPage(db);
 	}
 
@@ -134,11 +135,11 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 	public List<E> last(Database db) throws DatabaseException
 	{
 		pagingState = State.LAST;
-		logger.debug("go to last "+this.getLimit());
+		logger.debug("go to last " + this.getLimit());
 		return this.getPage(db);
 	}
 
-	@Override	
+	@Override
 	public int getLimit()
 	{
 		return limit;
@@ -147,13 +148,12 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 	@Override
 	public void setLimit(int limit) throws DatabaseException
 	{
-		//FIXME: need safety break!
-		if (limit <= 0)
-			throw new IllegalArgumentException("limit must be a positive number");
-		if(this.limit != limit)
+		// FIXME: need safety break!
+		if (limit <= 0) throw new IllegalArgumentException("limit must be a positive number");
+		if (this.limit != limit)
 		{
 			this.limit = limit;
-			logger.debug("set limit to "+this.getLimit());
+			logger.debug("set limit to " + this.getLimit());
 			this.pagingState = State.REFRESH;
 		}
 	}
@@ -165,14 +165,13 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 	}
 
 	@Override
-	public void setOrderByField( String orderByField ) throws DatabaseException
+	public void setOrderByField(String orderByField) throws DatabaseException
 	{
-		if(orderByField == null || orderByField.equals(""))
-			throw new DatabaseException("orderByField cannot be null");
-		
-		//pagingState = State.FIRST;
+		if (orderByField == null || orderByField.equals("")) throw new DatabaseException("orderByField cannot be null");
+
+		// pagingState = State.FIRST;
 		this.orderByField = orderByField;
-		logger.debug("set order by field to '"+orderByField +"'");
+		logger.debug("set order by field to '" + orderByField + "'");
 	}
 
 	@Override
@@ -184,20 +183,20 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 	@Override
 	public void setOrderByOperator(Operator orderByOperator) throws DatabaseException
 	{
-		if (!orderByOperator.equals(Operator.SORTASC) && !orderByOperator.equals(Operator.SORTDESC))
-			throw new IllegalArgumentException("orderByOperator cannot be " + orderByOperator);
+		if (!orderByOperator.equals(Operator.SORTASC) && !orderByOperator.equals(Operator.SORTDESC)) throw new IllegalArgumentException(
+				"orderByOperator cannot be " + orderByOperator);
 
 		this.orderByOperator = orderByOperator;
-		logger.debug("set order by operator to '"+orderByOperator +"'");
+		logger.debug("set order by operator to '" + orderByOperator + "'");
 	}
-	
+
 	@Override
 	public void resetOrderBy() throws DatabaseException
 	{
 		this.setOrderByField(this.defaultOrderByField);
 		this.setOrderByOperator(Operator.SORTASC);
-		//pagingState = State.FIRST;
-		logger.debug("reset order by to default: field '"+orderByField +"', operator '"+orderByOperator +"'");
+		// pagingState = State.FIRST;
+		logger.debug("reset order by to default: field '" + orderByField + "', operator '" + orderByOperator + "'");
 	}
 
 	@Override
@@ -205,12 +204,11 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 	{
 		return offset;
 	}
-	
+
 	@Override
 	public void setDirty(boolean dirty)
 	{
-		if(dirty)
-			this.pagingState = State.REFRESH;
+		if (dirty) this.pagingState = State.REFRESH;
 	}
 
 	@Override
@@ -218,20 +216,19 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 	{
 		this.offset = offset;
 		this.pagingState = State.REFRESH;
-		logger.debug("changed offset to: "+offset);
+		logger.debug("changed offset to: " + offset);
 		// FIXME what are the consequences for keybased???
 	}
 
 	@Override
 	public void addFilter(QueryRule filter) throws DatabaseException
 	{
-		if (filter == null)
-			throw new DatabaseException("cannot add null filter");
+		if (filter == null) throw new DatabaseException("cannot add null filter");
 
 		filters.add(filter);
-		//pagingState = State.FIRST;
-		//FIXME: would be great if we kept the original object!!!
-		logger.debug("added filter '"+filter+"'.");
+		// pagingState = State.FIRST;
+		// FIXME: would be great if we kept the original object!!!
+		logger.debug("added filter '" + filter + "'.");
 	}
 
 	@Override
@@ -243,19 +240,19 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 	@Override
 	public void removeFilter(int index) throws DatabaseException
 	{
-		logger.debug("removed filter: "+filters.get(index));
+		logger.debug("removed filter: " + filters.get(index));
 		filters.remove(index);
-		//pagingState = State.FIRST;
+		// pagingState = State.FIRST;
 	}
 
 	@Override
 	public void resetFilters()
 	{
 		filters = new ArrayList<QueryRule>();
-		//pagingState = State.FIRST;
+		// pagingState = State.FIRST;
 	}
 
-//PROTECTED HELPERS
+	// PROTECTED HELPERS
 	protected void reloadCount(Database db, QueryRule... rules) throws DatabaseException
 	{
 		count = db.count(entityClass, rules);

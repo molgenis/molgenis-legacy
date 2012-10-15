@@ -11,7 +11,7 @@ public abstract class PluginCommand extends SimpleCommand
 	private static final long serialVersionUID = 1236057686333854770L;
 
 	/** Constructor */
-	public PluginCommand(String name, ScreenController<?>  parentScreen)
+	public PluginCommand(String name, ScreenController<?> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setMenu("Plugin");

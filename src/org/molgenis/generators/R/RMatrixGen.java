@@ -6,25 +6,25 @@ public class RMatrixGen extends ForEachMatrixGenerator
 {
 	public RMatrixGen()
 	{
-		//include abstract entities: no
+		// include abstract entities: no
 		super(false);
 	}
-	
+
 	@Override
 	public String getDescription()
 	{
 		return "Generates access methods in R for each matrix.";
 	}
-	
+
 	@Override
 	public String getType()
 	{
-		//will be the name of the matrix.
+		// will be the name of the matrix.
 		return "";
 	}
-	
+
 	@Override
-	//change default .java.ftl to .R.ftl
+	// change default .java.ftl to .R.ftl
 	public String getExtension()
 	{
 		return ".R";

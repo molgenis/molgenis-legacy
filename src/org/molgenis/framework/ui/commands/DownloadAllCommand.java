@@ -24,7 +24,7 @@ import org.molgenis.util.Tuple;
 
 /**
  * This command returns all records currently selected as CSV download.
- *
+ * 
  * @param <E>
  */
 public class DownloadAllCommand<E extends Entity> extends SimpleCommand
@@ -32,7 +32,7 @@ public class DownloadAllCommand<E extends Entity> extends SimpleCommand
 	private static final long serialVersionUID = -2682113764135477871L;
 	public static final transient Logger logger = Logger.getLogger(DownloadAllCommand.class);
 
-	public DownloadAllCommand(String name, ScreenController<?>  parentScreen)
+	public DownloadAllCommand(String name, ScreenController<?> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Download all (.txt)");
@@ -47,12 +47,13 @@ public class DownloadAllCommand<E extends Entity> extends SimpleCommand
 		logger.debug(this.getName());
 
 		FormModel<? extends Entity> model = this.getFormScreen();
-		FormController<?> controller = ((FormController<?>)this.getController());
-		
+		FormController<?> controller = ((FormController<?>) this.getController());
+
 		List<String> fieldsToExport = controller.getVisibleColumnNames();
-		
-		//TODO : remove entity name, capitals to small , and remove all _name fields
-		//we need to rewrite rules to accomodate the 'all'
+
+		// TODO : remove entity name, capitals to small , and remove all _name
+		// fields
+		// we need to rewrite rules to accomodate the 'all'
 		QueryRule[] rules;
 		try
 		{
@@ -64,7 +65,7 @@ public class DownloadAllCommand<E extends Entity> extends SimpleCommand
 			e.printStackTrace();
 			throw new DatabaseException(e);
 		}
-		
+
 		db.find(model.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport, rules);
 
 		return ScreenModel.Show.SHOW_MAIN;

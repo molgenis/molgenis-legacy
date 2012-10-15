@@ -26,11 +26,11 @@ public class MolgenisDataTableService implements MolgenisService
 {
 	Logger logger = Logger.getLogger(MolgenisDataTableService.class);
 
-	//private MolgenisContext mc;
+	// private MolgenisContext mc;
 
 	public MolgenisDataTableService(MolgenisContext mc)
 	{
-//		this.mc = mc;
+		// this.mc = mc;
 	}
 
 	/**
@@ -41,8 +41,8 @@ public class MolgenisDataTableService implements MolgenisService
 	 * @param response
 	 */
 	@Override
-	public void handleRequest(MolgenisRequest req, MolgenisResponse res)
-			throws ParseException, DatabaseException, IOException
+	public void handleRequest(MolgenisRequest req, MolgenisResponse res) throws ParseException, DatabaseException,
+			IOException
 	{
 		HttpServletResponse response = res.getResponse();
 
@@ -57,8 +57,7 @@ public class MolgenisDataTableService implements MolgenisService
 			}
 
 			// get parameters
-			Class<? extends Entity> entityClass = req.getDatabase().getClassForName(req
-					.getString("entity"));
+			Class<? extends Entity> entityClass = req.getDatabase().getClassForName(req.getString("entity"));
 
 			// iDisplayLenght = limit
 			int iDisplayLength = 10;
@@ -81,26 +80,24 @@ public class MolgenisDataTableService implements MolgenisService
 			// sorting
 			// iSortCol_0 = sort column number
 			// resolve using mDataProp_1='name'
-			String sortField = req.getString("mDataProp_"
-					+ req.getString("iSortCol_0"));
-			boolean asc = "asc".equals(req.getString("sSortDir_0")) ? true
-					: false;
+			String sortField = req.getString("mDataProp_" + req.getString("iSortCol_0"));
+			boolean asc = "asc".equals(req.getString("sSortDir_0")) ? true : false;
 			if (asc) q.sortASC(sortField);
 			else
 				q.sortDESC(sortField);
 
 			// iTotalRecords is unfiltered count!
 			int count = q.count();
-			
+
 			// sSearch = filtering string
-			if(!"".equals(req.getString("sSearch")))
+			if (!"".equals(req.getString("sSearch")))
 			{
 				q.search(req.getString("sSearch"));
 			}
-			
-			//filtered count
+
+			// filtered count
 			int filteredCount = q.count();
-			
+
 			// iTotalDisplayRecords is filtered count
 			// todo: implement filters
 			q.offset(iDisplayStart);
@@ -118,8 +115,7 @@ public class MolgenisDataTableService implements MolgenisService
 				Map<String, Object> values = new LinkedHashMap<String, Object>();
 				for (String field : e.getFields())
 				{
-					if (e.get(field) != null) values.put(field, e.get(field)
-							.toString());
+					if (e.get(field) != null) values.put(field, e.get(field).toString());
 					else
 						values.put(field, "");
 				}

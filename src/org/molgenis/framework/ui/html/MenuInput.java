@@ -14,7 +14,7 @@ public class MenuInput extends AbstractHtmlElement implements HtmlElement
 {
 	private List<HtmlElement> menusAndButtons = new ArrayList<HtmlElement>();
 	private String label;
-	
+
 	public MenuInput(String name, String label)
 	{
 		super(name);
@@ -50,55 +50,64 @@ public class MenuInput extends AbstractHtmlElement implements HtmlElement
 	protected String render(MenuInput root)
 	{
 		String items = "";
-		if(root == null) root = this;
+		if (root == null) root = this;
 
 		for (HtmlElement item : menusAndButtons)
 		{
 			if (item instanceof ActionInput)
 			{
 				ActionInput action = (ActionInput) item;
-				if(this.equals(root))
+				if (this.equals(root))
 				{
 					items += action.render() + "<br />";
 				}
 				else
 				{
-					items += "<li><a href=\"#\" onclick=\"" + action.getJavaScriptAction()+"\">" + 
-						action.getButtonValue() + "</a></li>";
+					items += "<li><a href=\"#\" onclick=\"" + action.getJavaScriptAction() + "\">"
+							+ action.getButtonValue() + "</a></li>";
 				}
 			}
 			else
 			{
 				MenuInput menu = (MenuInput) item;
-				if(this.equals(root))
+				if (this.equals(root))
 				{
-					items += "<button onclick=\"return false;\">"+menu.getLabel()+"</button>" + 
-						menu.render(root);
+					items += "<button onclick=\"return false;\">" + menu.getLabel() + "</button>" + menu.render(root);
 				}
 				else
 				{
-					items += "<li><a href=\"#\">" + menu.getLabel() + "</a>"
-						+ menu.render(root) + "</li>";
+					items += "<li><a href=\"#\">" + menu.getLabel() + "</a>" + menu.render(root) + "</li>";
 				}
 			}
 		}
 
-		if (this.equals(root)) {
-			String result = "<div style=\"vertical-align:middle\"><input id=\"downloadButton\" type=\"button\" value=\"Download\" " +
-					"onclick=\"if (document.getElementById('" + getId() + "').style.display=='none') {document.getElementById('" + getId() + "').style.display='block';} else {document.getElementById('" + getId() + "').style.display='none';} \" " +
-					"/>" +
-					"<script>$(\"#downloadButton\").button();</script>" +
-					"</div>" +
-					"<div id=\"" + getId() + "\" style=\"position:absolute; z-index:1; background-color:white; padding:2px; display:none\">" + items + "</div>";
+		if (this.equals(root))
+		{
+			String result = "<div style=\"vertical-align:middle\"><input id=\"downloadButton\" type=\"button\" value=\"Download\" "
+					+ "onclick=\"if (document.getElementById('"
+					+ getId()
+					+ "').style.display=='none') {document.getElementById('"
+					+ getId()
+					+ "').style.display='block';} else {document.getElementById('"
+					+ getId()
+					+ "').style.display='none';} \" "
+					+ "/>"
+					+ "<script>$(\"#downloadButton\").button();</script>"
+					+ "</div>"
+					+ "<div id=\""
+					+ getId()
+					+ "\" style=\"position:absolute; z-index:1; background-color:white; padding:2px; display:none\">"
+					+ items + "</div>";
 			return result;
-		} else {
+		}
+		else
+		{
 			return "<ul>" + items + "</ul>";
 		}
 	}
 
 	@Override
-	public String render(Tuple params) throws ParseException,
-			HtmlInputException
+	public String render(Tuple params) throws ParseException, HtmlInputException
 	{
 		MenuInput root = null;
 		return render(root);

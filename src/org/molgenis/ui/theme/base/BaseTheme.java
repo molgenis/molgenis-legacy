@@ -11,8 +11,8 @@ import org.molgenis.ui.theme.Theme;
 import org.molgenis.ui.theme.TwoStepView;
 
 /**
- * Base theme were default layouts go (that are not theme dependent).
- * It contains vanilla views for most components (should be: all).
+ * Base theme were default layouts go (that are not theme dependent). It
+ * contains vanilla views for most components (should be: all).
  */
 public class BaseTheme implements Theme
 {
@@ -24,9 +24,12 @@ public class BaseTheme implements Theme
 		renderers.put(Label.class.getName(), new LabelView());
 		renderers.put(SelectInput.class.getName(), new SelectInputView());
 	}
-	
-	/** Convert the model into the layout 
-	 * @throws RenderException */
+
+	/**
+	 * Convert the model into the layout
+	 * 
+	 * @throws RenderException
+	 */
 	@SuppressWarnings(
 	{ "unchecked", "rawtypes" })
 	public <E extends MolgenisComponent> String render(E e) throws RenderException
@@ -36,8 +39,7 @@ public class BaseTheme implements Theme
 			TwoStepView v = renderers.get(e.getClass().getName());
 			return v.render(e, this);
 		}
-		throw new RenderException("no view found for component "+e.getClass());
+		throw new RenderException("no view found for component " + e.getClass());
 	}
-
 
 }

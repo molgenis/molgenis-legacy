@@ -20,9 +20,9 @@ public class EntityTable extends HtmlWidget
 
 	public EntityTable(String name, Collection<? extends Entity> entities)
 	{
-		this(name,entities,false);
+		this(name, entities, false);
 	}
-	
+
 	public EntityTable(String name, Collection<? extends Entity> entities, boolean editButton, String... columns)
 	{
 		super(name);
@@ -86,7 +86,9 @@ public class EntityTable extends HtmlWidget
 				color = 0;
 			for (String column : this.columns)
 			{
-				htmlTable += "<td>" +( e.get(column) == null ? "" : e.get(column).toString().replace(">", "&gt;").replace("<", "&lt;").replace("\n","<br/>")) + "</td>";
+				htmlTable += "<td>"
+						+ (e.get(column) == null ? "" : e.get(column).toString().replace(">", "&gt;")
+								.replace("<", "&lt;").replace("\n", "<br/>")) + "</td>";
 			}
 			if (editButton == true)
 			{

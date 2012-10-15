@@ -11,9 +11,10 @@ import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 
 /**
- * DataTable for listing entity via an AJAX list view, incl search. 
- *
- * To get this to work you also need to install the related molgenisservice. In your properties say:<br/>
+ * DataTable for listing entity via an AJAX list view, incl search.
+ * 
+ * To get this to work you also need to install the related molgenisservice. In
+ * your properties say:<br/>
  * org.molgenis.framework.server.services.MolgenisDataTableService@/datatable
  */
 public class EntityDataTable extends HtmlWidget
@@ -80,7 +81,7 @@ public class EntityDataTable extends HtmlWidget
 		result += "\n	'aoColumns' : [";
 		for (String label : labels)
 		{
-			if(label != labels.get(0)) result +=",";
+			if (label != labels.get(0)) result += ",";
 			result += "{ 'mDataProp' : '" + label + "'}";
 		}
 		result += "	],";

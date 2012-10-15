@@ -10,13 +10,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 //<Initials>TJ</Initials>
 //</Author>
 
-@XmlAccessorType(XmlAccessType.FIELD) 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Author
 {
 	String LastName;
 	String ForeName;
 	String Initials;
-	
+
 	public String toInitials()
 	{
 		return String.format("%s, %s", LastName, Initials);
@@ -24,6 +24,6 @@ public class Author
 
 	public String toString()
 	{
-		return String.format("author: lastname=%s, forename=%s, initials=%s",LastName,ForeName,Initials);
+		return String.format("author: lastname=%s, forename=%s, initials=%s", LastName, ForeName, Initials);
 	}
 }

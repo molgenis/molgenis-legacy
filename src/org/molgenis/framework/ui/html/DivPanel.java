@@ -27,9 +27,9 @@ public class DivPanel extends HtmlWidget
 		super(name, label);
 		this.setLabel(label);
 	}
-	
+
 	public DivPanel(String name, String label, boolean makeNewDiv)
-	{	
+	{
 		super(name, label);
 		this.setLabel(label);
 		this.makeNewDiv = makeNewDiv;
@@ -75,14 +75,17 @@ public class DivPanel extends HtmlWidget
 	public String toHtml()
 	{
 		String result = "<div";
-		if (style != null) {
+		if (style != null)
+		{
 			result += " style=\"clear:both;" + style + "\"";
 		}
 		result += ">";
-		for (HtmlInput<?> i : this.inputs.values()){		
-			if(makeNewDiv){
+		for (HtmlInput<?> i : this.inputs.values())
+		{
+			if (makeNewDiv)
+			{
 				result += "<div style=\"clear:both;";
-				
+
 				if (i.isHidden())
 				{
 					result += "display:none\"";
@@ -95,16 +98,16 @@ public class DivPanel extends HtmlWidget
 				{
 					result += (" id=\"div" + i.getId() + "\">");
 				}
-				
+
 			}
-			result += "<label style=\"width:16em;float:left;\" for=\""
-					+ i.getName() + "\">" + i.getLabel() + "</label>"
-					+ i.toHtml() + (!i.isNillable() ? " *" : "");
-			
-			if(makeNewDiv){
-				result+= "</div>";
+			result += "<label style=\"width:16em;float:left;\" for=\"" + i.getName() + "\">" + i.getLabel()
+					+ "</label>" + i.toHtml() + (!i.isNillable() ? " *" : "");
+
+			if (makeNewDiv)
+			{
+				result += "</div>";
 			}
-			
+
 		}
 		result += "</div>";
 		return result;
@@ -125,12 +128,15 @@ public class DivPanel extends HtmlWidget
 		for (HtmlInput input : inputList)
 		{
 			object = request.getObject(input.getName());
-			if (input instanceof SelectMultipleInput && object instanceof String) { 
+			if (input instanceof SelectMultipleInput && object instanceof String)
+			{
 				// avoid messing up multiple select boxes
 				List<String> stringList = new ArrayList<String>();
 				stringList.add((String) object);
 				input.setValue(stringList);
-			} else {
+			}
+			else
+			{
 				if (object != null)
 				{
 					input.setValue(object);
@@ -163,10 +169,9 @@ public class DivPanel extends HtmlWidget
 	}
 
 	@Override
-	public String toHtml(Tuple params) throws ParseException,
-			HtmlInputException
+	public String toHtml(Tuple params) throws ParseException, HtmlInputException
 	{
-		//TODO this should work with also a 'nested' value.
+		// TODO this should work with also a 'nested' value.
 		throw new UnsupportedOperationException();
 	}
 

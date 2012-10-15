@@ -55,9 +55,9 @@ public class Form extends UISchema
 	 */
 	public Entity getEntity()
 	{
-		if(this.entity == null)
+		if (this.entity == null)
 		{
-			return (Entity)this.getRecord();
+			return (Entity) this.getRecord();
 		}
 		return this.entity;
 	}
@@ -69,24 +69,24 @@ public class Form extends UISchema
 	{
 		this.record = record;
 	}
-	
+
 	/** Getter/setter for optional custom header for the selected form screen */
 	public String getHeader()
 	{
 		return this.header;
 	}
-	
+
 	public void setHeader(String header)
 	{
 		this.header = header;
 	}
-	
+
 	/** Getter/setter for optional description for the selected form screen */
 	public String getDescription()
 	{
 		return this.description;
 	}
-	
+
 	public void setDescription(String description)
 	{
 		this.description = description;
@@ -207,10 +207,13 @@ public class Form extends UISchema
 
 	/** Optional custom header for the selected form screen */
 	private String header;
-	
-	/** Optional description of this form, explaining it in the context of your application */
+
+	/**
+	 * Optional description of this form, explaining it in the context of your
+	 * application
+	 */
 	private String description;
-	
+
 	private boolean filter;
 	private String filterfield;
 	private String filtertype;
@@ -228,14 +231,15 @@ public class Form extends UISchema
 
 	private String sortby;
 	private SortOrder sortorder = SortOrder.ASC;
+
 	public enum SortOrder
 	{
 		ASC, DESC;
 		public static SortOrder parse(String str) throws MolgenisModelException
 		{
 			if (str == null) throw new MolgenisModelException("SortOrder cannot be null");
-			if(str.equalsIgnoreCase(SortOrder.ASC.toString())) return SortOrder.ASC;
-			if(str.equalsIgnoreCase(SortOrder.DESC.toString())) return SortOrder.DESC;
+			if (str.equalsIgnoreCase(SortOrder.ASC.toString())) return SortOrder.ASC;
+			if (str.equalsIgnoreCase(SortOrder.DESC.toString())) return SortOrder.DESC;
 			throw new MolgenisModelException("SortOrder can only be 'asc' or 'desc'");
 		}
 	};
@@ -396,8 +400,8 @@ public class Form extends UISchema
 			commands += command + ",";
 		String sortby = "";
 		if (this.sortby != null) sortby = "sortby=" + this.sortby;
-		return String.format("Form(name=%s, entity=%s, group=%s, commands=%s,%s)", getName(), getRecord().getName(), getGroup(), commands,
-				sortby);
+		return String.format("Form(name=%s, entity=%s, group=%s, commands=%s,%s)", getName(), getRecord().getName(),
+				getGroup(), commands, sortby);
 	}
 
 	public String getSortby()
@@ -429,6 +433,5 @@ public class Form extends UISchema
 	{
 		this.hiddenFields = hiddenFields;
 	}
-	
-	
+
 }

@@ -14,8 +14,7 @@ import org.molgenis.util.Tuple;
  * elements within one plugin. All "pieces" of your UI puzzle should be located
  * within a Container.
  */
-public class Container extends LinkedHashMap<String, HtmlInput<?>> implements
-		HtmlElement,ScreenView
+public class Container extends LinkedHashMap<String, HtmlInput<?>> implements HtmlElement, ScreenView
 {
 	private static final long serialVersionUID = -8565170009471766957L;
 
@@ -40,8 +39,7 @@ public class Container extends LinkedHashMap<String, HtmlInput<?>> implements
 	@Override
 	public HtmlInput get(Object key)
 	{
-		if (key instanceof String) return super.get(((String) key)
-				.toLowerCase());
+		if (key instanceof String) return super.get(((String) key).toLowerCase());
 		return super.get(key);
 	}
 
@@ -115,7 +113,7 @@ public class Container extends LinkedHashMap<String, HtmlInput<?>> implements
 	public void setId(String id)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -129,13 +127,13 @@ public class Container extends LinkedHashMap<String, HtmlInput<?>> implements
 	public void setClazz(String clazz)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void set(Tuple properties) throws HtmlInputException
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 }

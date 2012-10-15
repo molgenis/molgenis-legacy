@@ -75,8 +75,8 @@ public class VcfRecord
 			for (String keyvalue : keyvalues)
 			{
 				String[] kv = keyvalue.split("=");
-				if(kv.length == 1)
-					this.infoMap.put(kv[0], Arrays.asList(new String[]{"TRUE"}));
+				if (kv.length == 1) this.infoMap.put(kv[0], Arrays.asList(new String[]
+				{ "TRUE" }));
 				else
 					this.infoMap.put(kv[0], Arrays.asList(kv[1].split(",")));
 			}
@@ -127,22 +127,19 @@ public class VcfRecord
 		String sampleInfo = "";
 		for (String sample : this.getSamples())
 		{
-			sampleInfo += ", "+sample + "=[";
+			sampleInfo += ", " + sample + "=[";
 			first = true;
 			for (String format : this.getFormat())
 			{
 				if (!first) sampleInfo += ",";
-				sampleInfo += format + "="
-						+ this.getSampleValue(sample, format);
+				sampleInfo += format + "=" + this.getSampleValue(sample, format);
 				first = false;
 			}
 			sampleInfo += "]";
 		}
 
-		return String
-				.format(
-						"VcfRecord(chrom=%s,pos=%s,id=%s,ref=%s,alt=%s,qual=%s,filter=%s,info=%s,format=%s%s )",
-						getChrom(), getPos(), getId(), getRef(), getAlt(),
-						getQual(), getFilter(), info, getFormat(), sampleInfo);
+		return String.format("VcfRecord(chrom=%s,pos=%s,id=%s,ref=%s,alt=%s,qual=%s,filter=%s,info=%s,format=%s%s )",
+				getChrom(), getPos(), getId(), getRef(), getAlt(), getQual(), getFilter(), info, getFormat(),
+				sampleInfo);
 	}
 }

@@ -19,33 +19,32 @@ import org.molgenis.framework.server.ServeConfig;
  * 
  * See http://cxf.apache.org/docs/jax-rs.html
  * http://cxf.apache.org/docs/jaxrs-services-configuration.html
- *
+ * 
  */
-public class MolgenisRestService extends CXFNonSpringJaxrsServlet implements MolgenisService 
+public class MolgenisRestService extends CXFNonSpringJaxrsServlet implements MolgenisService
 {
 	private static final long serialVersionUID = -6699220792069809444L;
 	Logger logger = Logger.getLogger(MolgenisRapiService.class);
-	Hashtable<String,Object> restParams;
-	
+	Hashtable<String, Object> restParams;
+
 	private MolgenisContext mc;
-	
+
 	public MolgenisRestService(MolgenisContext mc)
 	{
 		this.mc = mc;
 	}
-	
+
 	public MolgenisRestService() throws ServletException
 	{
-		restParams = new Hashtable<String,Object>();
+		restParams = new Hashtable<String, Object>();
 		restParams.put("jaxrs.serviceClasses", "app.servlet.RestApi");
 	}
-	
-	public void handleRequest(MolgenisRequest r,
-			MolgenisResponse response) throws IOException
+
+	public void handleRequest(MolgenisRequest r, MolgenisResponse response) throws IOException
 	{
 		try
 		{
-			super.init(new ServeConfig( mc.getServletContext(), restParams, "/"));
+			super.init(new ServeConfig(mc.getServletContext(), restParams, "/"));
 			super.service(r.getRequest(), response.getResponse());
 			throw new IOException();
 		}

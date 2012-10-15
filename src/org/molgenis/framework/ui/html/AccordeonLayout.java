@@ -1,6 +1,5 @@
 package org.molgenis.framework.ui.html;
 
-
 /**
  * Accordeon layout is a MultiPanel layout that shows multiple panels underneath
  * each other. A button can be used to show one of the panels.

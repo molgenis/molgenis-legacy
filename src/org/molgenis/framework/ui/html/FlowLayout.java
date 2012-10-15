@@ -41,8 +41,7 @@ public class FlowLayout extends AbstractHtmlElement implements Layout
 	@Override
 	public void add(HtmlElement input)
 	{
-		if (input == null) throw new UnsupportedOperationException(
-				"intput cannot be null");
+		if (input == null) throw new UnsupportedOperationException("intput cannot be null");
 		this.elements.add(input);
 
 	}
@@ -53,12 +52,16 @@ public class FlowLayout extends AbstractHtmlElement implements Layout
 		String returnString = "";
 		for (HtmlElement i : this.getElements())
 		{
-			// If the element is an HtmlInput, also include the label (render() does not do this for you) 
-			if (i instanceof HtmlInput && !(i instanceof ActionInput)) {
-//				if (!input.isHidden() && input.getLabel() != null && !input.getLabel().equals("")) {
-//					returnString += "<label style=\"width:16em;\" for=\"" + input.getName() + "\">" + 
-//						input.getLabel() + "</label>";
-//				}
+			// If the element is an HtmlInput, also include the label (render()
+			// does not do this for you)
+			if (i instanceof HtmlInput && !(i instanceof ActionInput))
+			{
+				// if (!input.isHidden() && input.getLabel() != null &&
+				// !input.getLabel().equals("")) {
+				// returnString += "<label style=\"width:16em;\" for=\"" +
+				// input.getName() + "\">" +
+				// input.getLabel() + "</label>";
+				// }
 			}
 			returnString += i.render();
 		}
@@ -72,8 +75,7 @@ public class FlowLayout extends AbstractHtmlElement implements Layout
 	}
 
 	@Override
-	public String render(Tuple params) throws ParseException,
-			HtmlInputException
+	public String render(Tuple params) throws ParseException, HtmlInputException
 	{
 		throw new UnsupportedOperationException("not implemented");
 	}

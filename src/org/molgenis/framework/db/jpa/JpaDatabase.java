@@ -40,17 +40,15 @@ public class JpaDatabase extends AbstractDatabase
 		{
 			addEntityManagerFactory(persistenceUnit, configOverrides);
 		}
-		
-		private static void addEntityManagerFactory(String persistenceUnitName,
-				Map<String, Object> configOverwrite)
+
+		private static void addEntityManagerFactory(String persistenceUnitName, Map<String, Object> configOverwrite)
 		{
 			if (!emfs.containsKey(persistenceUnitName))
 			{
 				EntityManagerFactory emFactory = null;
 				if (configOverwrite != null)
 				{
-					emFactory = Persistence.createEntityManagerFactory(
-							persistenceUnitName, configOverwrite);
+					emFactory = Persistence.createEntityManagerFactory(persistenceUnitName, configOverwrite);
 				}
 				else
 				{
@@ -70,8 +68,7 @@ public class JpaDatabase extends AbstractDatabase
 			{
 				addEntityManagerFactory(persistenceUnit, null);
 			}
-			EntityManager result = emfs.get(persistenceUnit)
-					.createEntityManager();
+			EntityManager result = emfs.get(persistenceUnit).createEntityManager();
 			return result;
 		}
 
@@ -85,14 +82,12 @@ public class JpaDatabase extends AbstractDatabase
 			return result;
 		}
 
-		public static EntityManagerFactory getEntityManagerFactoryByName(
-				String name)
+		public static EntityManagerFactory getEntityManagerFactoryByName(String name)
 		{
 			return emfs.get(name);
 		}
 
-		public static EntityManager createEntityManager(
-				String persistenceUnitName, Map<String, Object> configOverrides)
+		public static EntityManager createEntityManager(String persistenceUnitName, Map<String, Object> configOverrides)
 		{
 			if (instance == null)
 			{
@@ -102,14 +97,13 @@ public class JpaDatabase extends AbstractDatabase
 			{
 				addEntityManagerFactory(persistenceUnitName, configOverrides);
 			}
-			EntityManager result = emfs.get(persistenceUnitName)
-					.createEntityManager();
+			EntityManager result = emfs.get(persistenceUnitName).createEntityManager();
 			return result;
 		}
 	}
 
 	private final EntityManager em;
-	private String persistenceUnitName = "molgenis"; //default
+	private String persistenceUnitName = "molgenis"; // default
 
 	protected JpaDatabase(String persistenceUnitName)
 	{
@@ -238,13 +232,12 @@ public class JpaDatabase extends AbstractDatabase
 	{
 		return em.createNativeQuery(sqlQuery).getResultList();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public <T> List<T> executeSQLQuery(String sqlQuery, Class<T> resultClass)
 	{
 		return em.createNativeQuery(sqlQuery, resultClass).getResultList();
 	}
-	
 
 	public String getPersistenceUnitName()
 	{
@@ -266,12 +259,12 @@ public class JpaDatabase extends AbstractDatabase
 
 	public <E extends Entity> List<E> search(Class<E> entityClass, String fieldList, String searchString)
 	{
-		FullTextEntityManager ftem               = Search.getFullTextEntityManager(this.em);
-		QueryBuilder qb                          = ftem.getSearchFactory().buildQueryBuilder().forEntity(entityClass).get();
-		org.apache.lucene.search.Query query     = qb.keyword().onFields(fieldList).matching(searchString).createQuery();
+		FullTextEntityManager ftem = Search.getFullTextEntityManager(this.em);
+		QueryBuilder qb = ftem.getSearchFactory().buildQueryBuilder().forEntity(entityClass).get();
+		org.apache.lucene.search.Query query = qb.keyword().onFields(fieldList).matching(searchString).createQuery();
 		javax.persistence.Query persistenceQuery = ftem.createFullTextQuery(query, entityClass);
 		@SuppressWarnings("unchecked")
-		List<E> result                           = persistenceQuery.getResultList();
+		List<E> result = persistenceQuery.getResultList();
 		return result;
 	}
 }

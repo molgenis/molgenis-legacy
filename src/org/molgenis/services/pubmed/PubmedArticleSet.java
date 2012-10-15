@@ -8,10 +8,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name="PubmedArticleSet")
-@XmlAccessorType(XmlAccessType.FIELD) 
+@XmlRootElement(name = "PubmedArticleSet")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class PubmedArticleSet
 {
-	@XmlElement(name="PubmedArticle")
+	@XmlElement(name = "PubmedArticle")
 	public List<PubmedArticle> articles = new ArrayList<PubmedArticle>();
 }

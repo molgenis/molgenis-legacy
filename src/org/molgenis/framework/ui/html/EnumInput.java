@@ -11,7 +11,6 @@
 
 package org.molgenis.framework.ui.html;
 
-
 /**
  * Input for enumerated data.
  */
@@ -21,7 +20,7 @@ public class EnumInput extends SelectInput
 	{
 		super(name, value);
 	}
-	
+
 	public EnumInput(String name)
 	{
 		this(name, null);
