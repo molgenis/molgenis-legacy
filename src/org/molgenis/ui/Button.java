@@ -1,9 +1,10 @@
 package org.molgenis.ui;
 
-
-/** Buttons to fire a MOLGENIS action.
+/**
+ * Buttons to fire a MOLGENIS action.
  * 
- *  TODO: also support other events such as hyperlinks, free javascript?*/
+ * TODO: also support other events such as hyperlinks, free javascript?
+ */
 public class Button extends MolgenisComponent
 {
 	private Icon icon;
@@ -15,7 +16,7 @@ public class Button extends MolgenisComponent
 	{
 		super(id);
 	}
-	
+
 	public Button(String id, String label)
 	{
 		super(id);
@@ -32,7 +33,7 @@ public class Button extends MolgenisComponent
 	{
 		this.action = action;
 	}
-	 	
+
 	public Icon getIcon()
 	{
 		return icon;
@@ -46,7 +47,7 @@ public class Button extends MolgenisComponent
 
 	public String getLabel()
 	{
-		if(label == null) return this.getId();
+		if (label == null) return this.getId();
 		return label;
 	}
 

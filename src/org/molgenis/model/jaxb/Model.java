@@ -93,7 +93,7 @@ public class Model
 		}
 		return null;
 	}
-	
+
 	public String findModuleNameForEntity(String name)
 	{
 		for (Module module : modules)
@@ -140,9 +140,10 @@ public class Model
 	}
 
 	/**
-	 * Remove module, and return the index of the module that came
-	 * before this one in the list (for GUI select purposes).
-	 * If it is the last module, return null.
+	 * Remove module, and return the index of the module that came before this
+	 * one in the list (for GUI select purposes). If it is the last module,
+	 * return null.
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -150,13 +151,15 @@ public class Model
 	{
 		for (int i = 0; i < modules.size(); i++)
 		{
-			if (modules.get(i).getName().toLowerCase().equals(
-					name.toLowerCase()))
+			if (modules.get(i).getName().toLowerCase().equals(name.toLowerCase()))
 			{
 				modules.remove(i);
-				if(modules.size() > 0){
+				if (modules.size() > 0)
+				{
 					return (i == 0 ? 0 : i - 1);
-				}else{
+				}
+				else
+				{
 					return null;
 				}
 			}
@@ -185,9 +188,11 @@ public class Model
 	}
 
 	/**
-	 * Find and remove an entity from either root or a module. If there are entities in the
-	 * module or root left, jump to the previous one in the list. If there are no entities left in the root, return the name of the root.
-	 * If there are no entities left in the module, return the name of the module.
+	 * Find and remove an entity from either root or a module. If there are
+	 * entities in the module or root left, jump to the previous one in the
+	 * list. If there are no entities left in the root, return the name of the
+	 * root. If there are no entities left in the module, return the name of the
+	 * module.
 	 * 
 	 * @param string
 	 * @return
@@ -196,17 +201,22 @@ public class Model
 	{
 		for (int i = 0; i < entities.size(); i++)
 		{
-			if (entities.get(i).getName().toLowerCase().equals(
-					name.toLowerCase()))
+			if (entities.get(i).getName().toLowerCase().equals(name.toLowerCase()))
 			{
 				entities.remove(i);
-				if(entities.size() > 0){
-					if(i == 0){
+				if (entities.size() > 0)
+				{
+					if (i == 0)
+					{
 						return entities.get(0).getName();
-					}else{
-						return entities.get(i-1).getName();
 					}
-				}else{
+					else
+					{
+						return entities.get(i - 1).getName();
+					}
+				}
+				else
+				{
 					return null;
 				}
 			}
@@ -215,20 +225,25 @@ public class Model
 		{
 			for (int i = 0; i < module.getEntities().size(); i++)
 			{
-				if (module.getEntities().get(i).getName().toLowerCase().equals(
-						name.toLowerCase()))
+				if (module.getEntities().get(i).getName().toLowerCase().equals(name.toLowerCase()))
 				{
 					module.getEntities().remove(i);
-					
-					if(module.getEntities().size() > 0){
-						if(i == 0){
+
+					if (module.getEntities().size() > 0)
+					{
+						if (i == 0)
+						{
 							return module.getEntities().get(0).getName();
-						}else{
-							return module.getEntities().get(i-1).getName();
 						}
-					}else{
+						else
+						{
+							return module.getEntities().get(i - 1).getName();
+						}
+					}
+					else
+					{
 						return null;
-					}	
+					}
 				}
 			}
 		}

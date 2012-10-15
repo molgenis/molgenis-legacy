@@ -23,25 +23,25 @@ public class FillMetadataTablesGen extends Generator
 	{
 		return "Fills the metadata tables.";
 	}
-	
+
 	@Override
-	public void generate(Model model, MolgenisOptions options)
-			throws Exception
+	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
-		Template template = createTemplate( getClass().getSimpleName()+".sql.ftl" );
+		Template template = createTemplate(getClass().getSimpleName() + ".sql.ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 
-		String packageName = DataTypeGen.class.getPackage().toString().substring(Generator.class.getPackage().toString().length());
-		File target = new File( this.getSqlPath(options) + "/insert_metadata.sql" );
+		String packageName = DataTypeGen.class.getPackage().toString()
+				.substring(Generator.class.getPackage().toString().length());
+		File target = new File(this.getSqlPath(options) + "/insert_metadata.sql");
 		target.getParentFile().mkdirs();
-		
-		templateArgs.put( "model", model );
+
+		templateArgs.put("model", model);
 		templateArgs.put("package", model.getName().toLowerCase() + packageName);
 		templateArgs.put("db_driver", options.db_driver);
-		OutputStream targetOut = new FileOutputStream( target );
-		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
+		OutputStream targetOut = new FileOutputStream(target);
+		template.process(templateArgs, new OutputStreamWriter(targetOut));
 		targetOut.close();
-		
+
 		logger.info("generated " + target);
 	}
 

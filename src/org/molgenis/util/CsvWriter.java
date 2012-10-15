@@ -85,11 +85,14 @@ public class CsvWriter implements TupleWriter
 	 */
 	public void writeMatrix(List<String> rowNames, List<String> colNames, Object[][] elements)
 	{
+
 		StringBuilder colsBuilder = new StringBuilder();
+
 		for (String col : colNames)
 		{
 			colsBuilder.append('\t').append(col);
 		}
+
 		writer.println(colsBuilder.toString());
 
 		for (int rowIndex = 0; rowIndex < rowNames.size(); rowIndex++)
@@ -106,7 +109,9 @@ public class CsvWriter implements TupleWriter
 					rowBuilder.append('\t').append(elements[rowIndex][colIndex]);
 				}
 			}
+
 			writer.println(rowBuilder.toString());
+
 		}
 	}
 

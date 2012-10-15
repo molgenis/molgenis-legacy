@@ -33,6 +33,9 @@ public class AbstractTupleReaderTest
 
 		reader.renameField("c", "d");
 
-		verify(reader).setColnames(Arrays.asList("a", "d", "d")); // column names may have duplicates
+		verify(reader).setColnames(Arrays.asList("a", "d", "d")); // column
+																	// names may
+																	// have
+																	// duplicates
 	}
 }

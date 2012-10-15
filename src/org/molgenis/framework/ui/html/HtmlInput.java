@@ -261,6 +261,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	{
 		// we render all tags, but we stop rendering text outside tags after
 		// maxLength
+
 		StringBuilder strBuilder = new StringBuilder();
 		boolean inTag = false;
 		int count = 0;
@@ -287,6 +288,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 		}
 
 		return strBuilder.toString();
+
 	}
 
 	public String getHtmlValue()

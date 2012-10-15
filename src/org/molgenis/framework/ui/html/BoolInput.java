@@ -41,8 +41,7 @@ public class BoolInput extends HtmlInput<Boolean>
 	 * @param nillable
 	 * @param readonly
 	 */
-	public BoolInput(String name, String label, Boolean value,
-			boolean nillable, boolean readonly)
+	public BoolInput(String name, String label, Boolean value, boolean nillable, boolean readonly)
 	{
 		this(name, label, value);
 		this.setValue(value);
@@ -97,29 +96,26 @@ public class BoolInput extends HtmlInput<Boolean>
 
 	private String toDefault()
 	{
-		if (isReadonly()) return "<select class=\"readonly\" id=\""
-				+ this.getId() + "\" name=\"" + this.getName()
-				+ "\" readonly=\"readonly\">" + "<option value=\"" + getValue()
-				+ "\" selected>" + getValue() + "</option></select>\n";
+		if (isReadonly()) return "<select class=\"readonly\" id=\"" + this.getId() + "\" name=\"" + this.getName()
+				+ "\" readonly=\"readonly\">" + "<option value=\"" + getValue() + "\" selected>" + getValue()
+				+ "</option></select>\n";
 		else
-			return "<select id=\"" + this.getId() + "\" name=\""
-					+ this.getName() + "\">" + "<option value=\"true\""
-					+ (getValue().equals("yes") ? "selected" : "")
-					+ ">yes</option>" + "<option value=\"false\""
-					+ (getValue().equals("no") ? "selected" : "")
-					+ ">no</option>" + "<option value=\"\""
-					+ (getValue().equals("") ? "selected" : "") + "></option>"
-					+ "</select>\n";
+			return "<select id=\"" + this.getId() + "\" name=\"" + this.getName() + "\">" + "<option value=\"true\""
+					+ (getValue().equals("yes") ? "selected" : "") + ">yes</option>" + "<option value=\"false\""
+					+ (getValue().equals("no") ? "selected" : "") + ">no</option>" + "<option value=\"\""
+					+ (getValue().equals("") ? "selected" : "") + "></option>" + "</select>\n";
 	}
 
 	private String toJquery()
 	{
-		String description = " title=\"" + this.getDescription() + "\"";	
+		String description = " title=\"" + this.getDescription() + "\"";
 		if (isReadonly()) return "<select data-placeholder=\"?\" style=\"width: 100px;\" class=\"readonly chzn-no-search ui-widget-content ui-corner-all\" id=\""
 				+ this.getId()
 				+ "\" name=\""
 				+ this.getName()
-				+ "\" readonly=\"readonly\" "+description+">"
+				+ "\" readonly=\"readonly\" "
+				+ description
+				+ ">"
 				+ "<option value=\""
 				+ getValue()
 				+ "\" selected>"
@@ -132,16 +128,17 @@ public class BoolInput extends HtmlInput<Boolean>
 					+ this.getId()
 					+ "\" name=\""
 					+ this.getName()
-					+ "\" "+ description +">"
+					+ "\" "
+					+ description
+					+ ">"
 					+ "<option value=\"true\""
 					+ (getValue().equals("yes") ? "selected" : "")
 					+ ">yes</option>"
 					+ "<option value=\"false\""
 					+ (getValue().equals("no") ? "selected" : "")
 					+ ">no</option>"
-					+ (isNillable() ? "<option value=\"\""
-							+ (getValue().equals("") ? "selected" : "")
-							+ ">?</option>" : "")
+					+ (isNillable() ? "<option value=\"\"" + (getValue().equals("") ? "selected" : "") + ">?</option>"
+							: "")
 					+ "</select>\n</select><script>$(\"#"
 					+ this.getId()
 					+ "\").chosen({placeholder: ''});</script>\n";

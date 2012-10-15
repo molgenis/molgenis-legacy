@@ -15,12 +15,11 @@ import freemarker.template.Template;
 
 /**
  * This generator applies the template to each entity. It uses defaults for
- * template name, package name and classname:
- * <li> template name is this.getClass() + ".java.ftl"
- * <li> package is {model.name}.{own package name}. For example,
- * org.molgenis.generate.foo.bar will be generated to {model.name}.foo.bar.
- * <li> class name is own class name without traling "Gen". For example:
- * FooBarGen will generate {EntityName}FooBar.java files.
+ * template name, package name and classname: <li>template name is
+ * this.getClass() + ".java.ftl" <li>package is {model.name}.{own package name}.
+ * For example, org.molgenis.generate.foo.bar will be generated to
+ * {model.name}.foo.bar. <li>class name is own class name without traling "Gen".
+ * For example: FooBarGen will generate {EntityName}FooBar.java files.
  * 
  * @author Morris Swertz
  * @since 30-jul-2007
@@ -29,8 +28,8 @@ import freemarker.template.Template;
 public abstract class ForEachMatrixGenerator extends Generator
 {
 	public static final transient Logger logger = Logger.getLogger(ForEachMatrixGenerator.class);
-	
-	//private boolean includeAbstract = false;
+
+	// private boolean includeAbstract = false;
 
 	public ForEachMatrixGenerator()
 	{
@@ -39,25 +38,26 @@ public abstract class ForEachMatrixGenerator extends Generator
 
 	public ForEachMatrixGenerator(boolean includeAbstract)
 	{
-		//this.includeAbstract = includeAbstract;
+		// this.includeAbstract = includeAbstract;
 	}
 
 	@Override
-	public void generate( Model model, MolgenisOptions options ) throws Exception
+	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
 		Template template = this.createTemplate(this.getClass().getSimpleName() + getExtension() + ".ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 
 		// calculate package from its own package
-		String packageName = this.getClass().getPackage().toString().substring(
-				Generator.class.getPackage().toString().length());
-		File targetDir = new File(getSourcePath(options) + model.getName().replace(".","/") + packageName.replace(".", "/"));
+		String packageName = this.getClass().getPackage().toString()
+				.substring(Generator.class.getPackage().toString().length());
+		File targetDir = new File(getSourcePath(options) + model.getName().replace(".", "/")
+				+ packageName.replace(".", "/"));
 
 		// apply generator to each matrix
-		for( Matrix matrix : model.getMatrices() )
+		for (Matrix matrix : model.getMatrices())
 		{
 			targetDir.mkdirs();
-			
+
 			File targetFile = new File(targetDir + "/" + GeneratorHelper.firstToUpper(matrix.getName()) + getType()
 					+ getExtension());
 

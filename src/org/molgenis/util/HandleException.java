@@ -22,6 +22,7 @@ public class HandleException
 		printSimpleStackTrace(t, l);
 		l.error("Detailed stack trace:");
 		ExceptionUtils.printRootCauseStackTrace(t);
+
 	}
 
 	public static void handle(Throwable t)
@@ -34,6 +35,7 @@ public class HandleException
 		printSimpleStackTrace(t, out);
 		out.println("Detailed stack trace:");
 		ExceptionUtils.printRootCauseStackTrace(t);
+
 	}
 
 	private static void printSimpleStackTrace(Throwable t, PrintStream o)
@@ -43,6 +45,7 @@ public class HandleException
 		StringBuilder tabsBuilder = new StringBuilder();
 		while (cause != null && prevCause != cause)
 		{
+
 			o.println((String.format("%sCause: %s", tabsBuilder.toString(), cause.getMessage())));
 			tabsBuilder.append('\t');
 
@@ -58,6 +61,7 @@ public class HandleException
 		StringBuilder tabsBuilder = new StringBuilder();
 		while (cause != null && prevCause != cause)
 		{
+
 			l.error(String.format("%sCause: %s", tabsBuilder.toString(), cause.getMessage()));
 			tabsBuilder.append('\t');
 

@@ -31,14 +31,12 @@ import org.molgenis.framework.ui.html.HtmlInputException;
  * Base-class for a screen displaying information from the invengine system to
  * the user.
  */
-public abstract class SimpleScreenModel implements
-		ScreenModel, Serializable
+public abstract class SimpleScreenModel implements ScreenModel, Serializable
 {
 	// member variables
 	private static final long serialVersionUID = 3764151203967037515L;
 	/** Logger */
-	protected final transient Logger logger = Logger.getLogger(this.getClass()
-			.getSimpleName());
+	protected final transient Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 	/**
 	 * constant parameter name for screen target controller (to be used when
 	 * rendering actions)
@@ -71,8 +69,7 @@ public abstract class SimpleScreenModel implements
 	 * @param parent
 	 *            The parent of this screen.
 	 */
-	public SimpleScreenModel(
-			ScreenController<?> controller)
+	public SimpleScreenModel(ScreenController<?> controller)
 	{
 		// super(name, parent);
 		this.controller = controller;
@@ -86,12 +83,11 @@ public abstract class SimpleScreenModel implements
 	{
 
 	}
-	
+
 	public String render() throws HtmlInputException
 	{
 		String result = this.getController().render();
-		if(result == null)
-			System.out.println("error with render of "+this);
+		if (result == null) System.out.println("error with render of " + this);
 		return this.getController().render();
 	}
 
@@ -218,15 +214,14 @@ public abstract class SimpleScreenModel implements
 		// commands must have a unique id
 		if (getCommand(command.getName()) != null)
 		{
-			logger.warn("command with name '" + command.getName()
-					+ "' already exists; replaced");
+			logger.warn("command with name '" + command.getName() + "' already exists; replaced");
 		}
 
 		// create new menu if not exists
 		if (menubar.containsKey(command.getMenu()) == false)
 		{
-			menubar.put(command.getMenu(), new CommandMenu(
-					command.getMenu(), this.getController(), command.getMenu(), "", ""));
+			menubar.put(command.getMenu(), new CommandMenu(command.getMenu(), this.getController(), command.getMenu(),
+					"", ""));
 		}
 
 		// put the command in the menu
@@ -238,8 +233,7 @@ public abstract class SimpleScreenModel implements
 	{
 		for (CommandMenu menu : menubar.values())
 		{
-			if (menu.getCommand(commandID) != null) return menu
-					.getCommand(commandID);
+			if (menu.getCommand(commandID) != null) return menu.getCommand(commandID);
 		}
 		return null;
 	}
@@ -283,29 +277,30 @@ public abstract class SimpleScreenModel implements
 	{
 		return this.getController().getSelected();
 	}
-//
-//	@Override
-//	public void setSelected(String viewid)
-//	{
-//		// check if the path to this is also selected
-//		if (this.getController().getParent() != null)
-//		{
-//			logger.debug("call setselected on parent");
-//			this.getController().getParent().setSelected(this.getName());
-//		}
-//
-//		logger.debug("Screen " + this.getName() + " selected " + viewid);
-//		this.selectedId = viewid;
-//	}
-	
+
+	//
+	// @Override
+	// public void setSelected(String viewid)
+	// {
+	// // check if the path to this is also selected
+	// if (this.getController().getParent() != null)
+	// {
+	// logger.debug("call setselected on parent");
+	// this.getController().getParent().setSelected(this.getName());
+	// }
+	//
+	// logger.debug("Screen " + this.getName() + " selected " + viewid);
+	// this.selectedId = viewid;
+	// }
+
 	public List<ScreenModel> getChildren()
 	{
 		List<ScreenModel> result = new ArrayList<ScreenModel>();
-		for(ScreenController<? extends ScreenModel> childController: getController().getChildren())
+		for (ScreenController<? extends ScreenModel> childController : getController().getChildren())
 		{
 			result.add(childController.getModel());
 		}
-		
+
 		return result;
 	}
 
@@ -318,17 +313,17 @@ public abstract class SimpleScreenModel implements
 	{
 		this.visible = visible;
 	}
-	
+
 	/** Shorthand for setMessages(new ScreenMessage("success message",true)); */
 	public void setSuccess(String message)
 	{
-		this.setMessages(new ScreenMessage(message,true));
+		this.setMessages(new ScreenMessage(message, true));
 	}
-	
+
 	/** Shorthand for setMessages(new ScreenMessage("succes message",false)); */
 	public void setError(String message)
 	{
-		this.setMessages(new ScreenMessage(message,false));
+		this.setMessages(new ScreenMessage(message, false));
 	}
 
 	public String getCustomHtmlHeaders()

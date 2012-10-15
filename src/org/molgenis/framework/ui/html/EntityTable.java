@@ -87,6 +87,7 @@ public class EntityTable extends HtmlWidget
 				color = 0;
 			for (String column : this.columns)
 			{
+
 				htmlBuilder.append("<td>");
 				if (e.get(column) != null) htmlBuilder.append(e.get(column).toString().replace(">", "&gt;")
 						.replace("<", "&lt;").replace("\n", "<br/>"));

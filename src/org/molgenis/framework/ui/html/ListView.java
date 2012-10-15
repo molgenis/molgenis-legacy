@@ -8,16 +8,18 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.Tuple;
 
 /**
- * (in progress) The listview shows a list of InputForm (sets of inputs) in an excel like
- * view:
+ * (in progress) The listview shows a list of InputForm (sets of inputs) in an
+ * excel like view:
  * <ul>
  * <li>input labels as column headers
  * <li>each row rending the value of the input.
  * <li>each InputForm is assumed to have the same set of inputs.
- * <li>each InputForm may have getActions(); those are shown in first column rendered as icon
- * <li>if this list isSelectable (default), each row will have checkbox before each row.
- * <li>if this list isReadonly (default) then each row will show only values, otherwise inputs
- * TODO make easier to populate with entity instances.
+ * <li>each InputForm may have getActions(); those are shown in first column
+ * rendered as icon
+ * <li>if this list isSelectable (default), each row will have checkbox before
+ * each row.
+ * <li>if this list isReadonly (default) then each row will show only values,
+ * otherwise inputs TODO make easier to populate with entity instances.
  */
 public class ListView extends HtmlInput<List<HtmlForm>>
 {
@@ -26,7 +28,7 @@ public class ListView extends HtmlInput<List<HtmlForm>>
 	QueryRule.Operator sortOrder = QueryRule.Operator.SORTDESC;
 	boolean selectable = true;
 	int offset = 0;
-	
+
 	public ListView(String name, List<HtmlForm> rows)
 	{
 		super(name, null);
@@ -42,8 +44,7 @@ public class ListView extends HtmlInput<List<HtmlForm>>
 
 	public void setRows(List<HtmlForm> rows)
 	{
-		if (rows == null) throw new IllegalArgumentException(
-				"GridPanel.setRows cannot be null");
+		if (rows == null) throw new IllegalArgumentException("GridPanel.setRows cannot be null");
 		this.rows = rows;
 	}
 
@@ -96,8 +97,6 @@ public class ListView extends HtmlInput<List<HtmlForm>>
 		}
 
 	}
-	
-	
 
 	public boolean isSelectable()
 	{
@@ -108,8 +107,6 @@ public class ListView extends HtmlInput<List<HtmlForm>>
 	{
 		this.selectable = selectable;
 	}
-	
-	
 
 	public int getOffset()
 	{
@@ -148,24 +145,21 @@ public class ListView extends HtmlInput<List<HtmlForm>>
 					{
 						// each label has a sort action
 						ActionInput sortAction = new ActionInput(
-								QueryRule.Operator.SORTASC
-										.equals(getSortOrder()) ? "sortDesc"
-										: "sortAsc");
+								QueryRule.Operator.SORTASC.equals(getSortOrder()) ? "sortDesc" : "sortAsc");
 						sortAction.setLabel(input.getLabel());
 						sortAction.setDescription(input.getDescription());
 
 						// TODO: use central icon map so we can skin it
 						sortAction
-								.setIcon(QueryRule.Operator.SORTASC
-										.equals(getSortOrder()) ? "generated-res/img/sort_desc.gif"
+								.setIcon(QueryRule.Operator.SORTASC.equals(getSortOrder()) ? "generated-res/img/sort_desc.gif"
 										: "generated-res/img/sort_asc.gif");
 
 						// TODO: pass which input to sort on as additional
 						// parameter
 						// sortInput.setParameter("__sortattribute",input.getName());
 
-						result += "<th><label class=\"tableheader\">"
-								+ sortAction.toLinkHtml()+(input.getName().equals(this.getSortedBy()) ? sortAction.getIconHtml() : "")
+						result += "<th><label class=\"tableheader\">" + sortAction.toLinkHtml()
+								+ (input.getName().equals(this.getSortedBy()) ? sortAction.getIconHtml() : "")
 								+ "</label></th>";
 					}
 				}
@@ -175,23 +169,23 @@ public class ListView extends HtmlInput<List<HtmlForm>>
 			// render each row, using different class to allow for alternating
 			// colour
 			result += "<tr class=\"form_listrow" + rowNo % 2 + "\">";
-			
-			//offset
-			result += "<td>"+(getOffset() + rowNo)+".</td>";
-			
-			//checkbox
-			OnoffInput checkbox = new OnoffInput("massUpdate","TODO", false);
-			result += "<td>"+(isSelectable() ? checkbox.toHtml() : "")+"</td>";
-			
-			//render action buttons per row
+
+			// offset
+			result += "<td>" + (getOffset() + rowNo) + ".</td>";
+
+			// checkbox
+			OnoffInput checkbox = new OnoffInput("massUpdate", "TODO", false);
+			result += "<td>" + (isSelectable() ? checkbox.toHtml() : "") + "</td>";
+
+			// render action buttons per row
 			result += "<td>";
 			for (ActionInput action : form.getActions())
 			{
 				result += action.toIconHtml();
 			}
 			result += "</td>";
-			
-			//render other inputs
+
+			// render other inputs
 			for (HtmlInput<?> input : form.getInputs())
 			{
 				if (!input.isHidden())
@@ -208,18 +202,16 @@ public class ListView extends HtmlInput<List<HtmlForm>>
 
 		// render selectall
 		result += "<tr><td></td><td><input title=\"select all visible\" type=\"checkbox\" name=\"checkall\" id=\"checkall\" onclick=\"Javascript:checkAll('TODO','massUpdate')\"/></td></tr>";
-		
-		
+
 		result += "</table>";
 
 		return result;
 	}
 
 	@Override
-	public String toHtml(Tuple params) throws ParseException,
-			HtmlInputException
+	public String toHtml(Tuple params) throws ParseException, HtmlInputException
 	{
-		//TODO
+		// TODO
 		throw new UnsupportedOperationException();
 	}
 

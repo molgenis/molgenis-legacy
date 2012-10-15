@@ -16,7 +16,6 @@ import java.util.Vector;
 
 import org.molgenis.model.MolgenisModelException;
 
-
 /**
  * 
  */
@@ -154,11 +153,11 @@ public class Model
 		return views;
 	}
 
-	
-	public Vector<Entity> getEntities() {
+	public Vector<Entity> getEntities()
+	{
 		return getEntities(true);
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -170,18 +169,18 @@ public class Model
 		{
 			if (element.getClass().equals(Entity.class))
 			{
-				if(includeSystemTable || !((Entity) element).isSystem())
+				if (includeSystemTable || !((Entity) element).isSystem())
 				{
-					if(includeNonConcretes || !((Entity) element).isAbstract())
+					if (includeNonConcretes || !((Entity) element).isAbstract())
 					{
 						entities.add((Entity) element);
 					}
-				} 
+				}
 			}
 		}
 		return entities;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -277,7 +276,6 @@ public class Model
 		// System.exit(1);
 		return null;
 	}
-
 
 	/**
 	 * 
@@ -452,7 +450,7 @@ public class Model
 
 		for (UISchema u : getUserinterface().getAllChildren())
 		{
-			result.append(u.toString()+"\n");
+			result.append(u.toString() + "\n");
 		}
 
 		return result.toString();

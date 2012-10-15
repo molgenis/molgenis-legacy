@@ -11,7 +11,6 @@
 
 package org.molgenis.framework.ui.html;
 
-
 /**
  * Input for rich html text editing (bold, italic, etc).
  * 
@@ -50,26 +49,20 @@ public class RichtextInput extends StringInput
 				+ "\n		 skin_variant : \"silver\","
 				+ "\n		 theme_advanced_buttons1 : \"bold,italic,underline,strikethrough,|,formatselect,bullist,numlist,link,unlink,image,|,undo,redo,removeformat\","
 				+ "\n        theme_advanced_buttons2 : \"table,tablecontrols,|,sub,sup,charmap\","
-				+ "\n		 theme_advanced_buttons3 : \"\","
-				+ "\n		 theme_advanced_toolbar_location : \"top\","
+				+ "\n		 theme_advanced_buttons3 : \"\"," + "\n		 theme_advanced_toolbar_location : \"top\","
 				+ "\n		 theme_advanced_toolbar_align : \"left\","
-				+ "\n		 theme_advanced_statusbar_location : \"bottom\","
-				+"\n		 theme_advanced_resizing : true,"
-				+ "\n		 apply_source_formatting : true,"
-				+ "\n		 theme_advanced_path : false,"
-				+ "\n		 onchange_callback : function (editor){tinyMCE.triggerSave();}"
-				+ "});"
-				+ "</script>";
+				+ "\n		 theme_advanced_statusbar_location : \"bottom\"," + "\n		 theme_advanced_resizing : true,"
+				+ "\n		 apply_source_formatting : true," + "\n		 theme_advanced_path : false,"
+				+ "\n		 onchange_callback : function (editor){tinyMCE.triggerSave();}" + "});" + "</script>";
 	}
 
 	public String toHtml()
 	{
-		return String
-				.format(
-						"<textarea id=\"%s\" name=\"%s\" class=\"mceEditor %s\" cols=\"80\" rows=\"10\">%s</textarea>",
-						getId(), getName(), (this.isNillable() ? "" : " required"), getValue());
+		return String.format(
+				"<textarea id=\"%s\" name=\"%s\" class=\"mceEditor %s\" cols=\"80\" rows=\"10\">%s</textarea>",
+				getId(), getName(), (this.isNillable() ? "" : " required"), getValue());
 	}
-	
+
 	/**
 	 * Override because hyperlink must not be escaped
 	 */

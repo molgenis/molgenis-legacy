@@ -20,6 +20,7 @@ import freemarker.template.Template;
 public abstract class Generator
 {
 	protected final String APP_DIR = "app";
+
 	public abstract void generate(Model model, MolgenisOptions options) throws Exception;
 
 	/**
@@ -77,7 +78,7 @@ public abstract class Generator
 	{
 		return options.output_src;
 	}
-	
+
 	/**
 	 * Path for the web sites
 	 * 
@@ -98,17 +99,17 @@ public abstract class Generator
 	{
 		return options.output_src;
 	}
-	
+
 	public String getPythonSourcePath(MolgenisOptions options)
 	{
 		return options.output_python;
 	}
-	
+
 	public String getCPPSourcePath(MolgenisOptions options)
 	{
 		return options.output_cpp;
 	}
-	
+
 	public String getHandWrittenPath(MolgenisOptions options)
 	{
 		return options.output_hand;
@@ -124,7 +125,7 @@ public abstract class Generator
 	{
 		return options.output_doc;
 	}
-	
+
 	/**
 	 * Generate the path for the generated sql code.
 	 * 
@@ -134,7 +135,7 @@ public abstract class Generator
 	public String getSqlPath(MolgenisOptions options)
 	{
 		return options.output_sql;
-	}	
+	}
 
 	/**
 	 * Extension varies based on output type, i.e., .java, R, sql etc. Should
@@ -145,7 +146,8 @@ public abstract class Generator
 		return ".java";
 	}
 
-	//private static transient final Logger logger = Logger.getLogger(Generator.class.getSimpleName());
+	// private static transient final Logger logger =
+	// Logger.getLogger(Generator.class.getSimpleName());
 
 	public abstract String getDescription();
 }

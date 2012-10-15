@@ -74,16 +74,19 @@ public class DivPanel extends HtmlWidget
 	 */
 	public String toHtml()
 	{
+
 		StringBuilder strBuilder = new StringBuilder("<div");
 		if (style != null)
 		{
 			strBuilder.append(" style=\"clear:both;").append(style).append('\"');
 		}
 		strBuilder.append('>');
+
 		for (HtmlInput<?> i : this.inputs.values())
 		{
 			if (makeNewDiv)
 			{
+
 				strBuilder.append("<div style=\"clear:both;");
 
 				if (i.isHidden())
@@ -100,6 +103,7 @@ public class DivPanel extends HtmlWidget
 				}
 
 			}
+
 			strBuilder.append("<label style=\"width:16em;float:left;\" for=\"").append(i.getName()).append("\">");
 			strBuilder.append(i.getLabel()).append("</label>").append(i.toHtml());
 			if (!i.isNillable()) strBuilder.append(" *");
@@ -107,6 +111,7 @@ public class DivPanel extends HtmlWidget
 			if (makeNewDiv)
 			{
 				strBuilder.append("</div>");
+
 			}
 
 		}

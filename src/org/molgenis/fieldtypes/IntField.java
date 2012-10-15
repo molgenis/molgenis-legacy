@@ -17,32 +17,32 @@ public class IntField extends FieldType
 	{
 		return "Integer";
 	}
-	
+
 	@Override
 	public String getJavaAssignment(String value)
 	{
-		if(value == null || value.equals("")) return "null";
-		return ""+Integer.parseInt(value);
+		if (value == null || value.equals("")) return "null";
+		return "" + Integer.parseInt(value);
 	}
-	
+
 	@Override
 	public String getJavaPropertyDefault()
 	{
 		return getJavaAssignment(f.getDefaultValue());
 	}
-	
+
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
 		return "INTEGER";
 	}
-	
+
 	@Override
 	public String getOracleType() throws MolgenisModelException
 	{
 		return "NUMBER (10,0)";
 	}
-	
+
 	public String getJavaSetterType() throws MolgenisModelException
 	{
 		return "Int";
@@ -53,6 +53,7 @@ public class IntField extends FieldType
 	{
 		return "INT";
 	}
+
 	@Override
 	public String getXsdType()
 	{
@@ -76,7 +77,7 @@ public class IntField extends FieldType
 	{
 		return "int";
 	}
-	
+
 	@Override
 	public String getCppJavaPropertyType()
 	{
@@ -92,12 +93,12 @@ public class IntField extends FieldType
 	{
 		return Integer.parseInt(value);
 	}
-	
+
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.INT;
 	}
-	
+
 	@Override
 	public List<String> getAllowedOperators()
 	{

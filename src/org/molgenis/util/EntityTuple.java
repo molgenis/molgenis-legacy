@@ -9,50 +9,50 @@ import java.util.List;
 public class EntityTuple extends SimpleTuple
 {
 	final private Entity entity;
-	
+
 	/** Rather inefficient implementation that copies all into simpletuple */
 	public EntityTuple(Entity entity)
 	{
 		super();
 		this.entity = entity;
 	}
-	
+
 	@Override
 	public List<String> getFieldNames()
 	{
 		return entity.getFields();
 	}
-	
+
 	@Override
 	public String getColName(int i)
 	{
 		List<String> colNames = this.getFieldNames();
-		if(i >= 0 && i < colNames.size()) return colNames.get(i);
+		if (i >= 0 && i < colNames.size()) return colNames.get(i);
 		return null;
 	}
-	
+
 	@Override
 	public Object getObject(int column)
 	{
 		String colName = getColName(column);
-		if(colName != null) return getObject(colName);
+		if (colName != null) return getObject(colName);
 		return null;
 	}
-	
+
 	@Override
 	public Object getObject(String name)
 	{
 		return entity.get(name);
 	}
-	
+
 	@Override
 	public int getNrColumns()
 	{
 		return this.getFieldNames().size();
 	}
-	
+
 	@Override
-	public void set(String column, Object value) 
+	public void set(String column, Object value)
 	{
 		try
 		{
@@ -64,5 +64,5 @@ public class EntityTuple extends SimpleTuple
 			throw new RuntimeException(e.getMessage());
 		}
 	}
-	
+
 }

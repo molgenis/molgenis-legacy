@@ -48,8 +48,7 @@ public class JTextAreaAppender extends AppenderSkeleton
 
 	public void close()
 	{
-		if (closed)
-			return;
+		if (closed) return;
 		closed = true;
 		if (layout != null)
 		{

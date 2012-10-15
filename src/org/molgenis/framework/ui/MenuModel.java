@@ -67,8 +67,7 @@ public class MenuModel extends SimpleScreenModel
 	 */
 	public void hide(String name)
 	{
-		if (this.getController().get(name) != null)
-			hiddenScreenNames.add(name);
+		if (this.getController().get(name) != null) hiddenScreenNames.add(name);
 
 	}
 
@@ -94,7 +93,8 @@ public class MenuModel extends SimpleScreenModel
 		// remove hidden children from the list, and also commands
 		for (ScreenController<?> s : subscreens)
 		{
-			if (this.hiddenScreenNames.indexOf(s.getName()) < 0 && s instanceof ScreenController<?> && s.getModel().isVisible())
+			if (this.hiddenScreenNames.indexOf(s.getName()) < 0 && s instanceof ScreenController<?>
+					&& s.getModel().isVisible())
 			{
 				result.add(s.getModel());
 			}
@@ -103,14 +103,14 @@ public class MenuModel extends SimpleScreenModel
 		return result;
 	}
 
-//	public Login getLogin()
-//	{
-//		return getController().getRootController().getLogin();
-//	}
+	// public Login getLogin()
+	// {
+	// return getController().getRootController().getLogin();
+	// }
 
 	public ScreenModel getSelected()
 	{
-		
+
 		List<ScreenModel> subscreens = getVisibleChildren();
 		if (subscreens.contains(super.getSelected()))
 		{
@@ -122,7 +122,7 @@ public class MenuModel extends SimpleScreenModel
 		}
 		else
 		{
-			logger.error("Menu "+this.getName()+" doesn't have any subforms attached!");
+			logger.error("Menu " + this.getName() + " doesn't have any subforms attached!");
 			return null;
 		}
 	}
@@ -131,8 +131,7 @@ public class MenuModel extends SimpleScreenModel
 	public boolean isVisible()
 	{
 		// the menu is visible if one its children is visible.
-		if (this.getVisibleChildren().size() > 0)
-			return true;
+		if (this.getVisibleChildren().size() > 0) return true;
 		return false;
 	}
 
@@ -145,18 +144,17 @@ public class MenuModel extends SimpleScreenModel
 	{
 		this.position = position;
 	}
-	
+
 	@Override
 	public void reset()
 	{
 		// TODO Auto-generated method stub
-		
-	}
-	
-	public String toString()
-	{
-		return "MenuModel(name="+getName()+")";
+
 	}
 
+	public String toString()
+	{
+		return "MenuModel(name=" + getName() + ")";
+	}
 
 }
