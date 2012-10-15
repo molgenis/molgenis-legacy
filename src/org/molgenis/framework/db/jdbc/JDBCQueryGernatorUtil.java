@@ -2,6 +2,7 @@ package org.molgenis.framework.db.jdbc;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.molgenis.fieldtypes.DecimalField;
 import org.molgenis.fieldtypes.FieldType;
@@ -353,7 +354,7 @@ public class JDBCQueryGernatorUtil
 	public static String createSortSql(Mapper<?> mapper, boolean reverseSorting, QueryRule rules[])
 	{
 		// copy parameter into local temp so we can change it
-		String sort_clause = "";
+		StringBuilder sort_clauseBuilder = new StringBuilder();
 		if (rules != null)
 		{
 			Boolean revSort = reverseSorting;
@@ -376,18 +377,19 @@ public class JDBCQueryGernatorUtil
 						|| (revSort && rule.getOperator() == Operator.SORTDESC))
 				{
 					if (mapper != null) rule.setValue(mapper.getTableFieldName(rule.getValue().toString()));
-					sort_clause += rule.getValue().toString() + " ASC,";
+					sort_clauseBuilder.append(rule.getValue().toString()).append(" ASC,");
 				}
 				else if ((rule.getOperator() == QueryRule.Operator.SORTDESC && !revSort)
 						|| (revSort && rule.getOperator() == Operator.SORTASC))
 				{
 					if (mapper != null) rule.setValue(mapper.getTableFieldName(rule.getValue().toString()));
-					sort_clause += rule.getValue().toString() + " DESC,";
+					sort_clauseBuilder.append(rule.getValue().toString()).append(" DESC,");
 				}
 			}
 		}
-		if (sort_clause.length() > 0) return " ORDER BY " + sort_clause.substring(0, sort_clause.lastIndexOf(","));
-		return sort_clause;
+		if (sort_clauseBuilder.length() > 0) return " ORDER BY "
+				+ sort_clauseBuilder.substring(0, sort_clauseBuilder.lastIndexOf(","));
+		return sort_clauseBuilder.toString();
 	}
 
 	/**

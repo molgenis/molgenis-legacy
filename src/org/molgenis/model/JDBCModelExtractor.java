@@ -22,9 +22,9 @@ import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.model.jaxb.Entity;
 import org.molgenis.model.jaxb.Field;
+import org.molgenis.model.jaxb.Field.Type;
 import org.molgenis.model.jaxb.Model;
 import org.molgenis.model.jaxb.Unique;
-import org.molgenis.model.jaxb.Field.Type;
 import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.Tuple;
 
@@ -295,13 +295,13 @@ public class JDBCModelExtractor
 					}
 					else
 					{
-						String fields = "";
+						StringBuilder fieldsBuilder = new StringBuilder();
 						for (String field_name : index)
 						{
-							fields += "," + field_name;
+							fieldsBuilder.append(',').append(field_name);
 						}
 						Unique u = new Unique();
-						u.setFields(fields.substring(1));
+						u.setFields(fieldsBuilder.substring(1));
 						e.getUniques().add(u);
 					}
 

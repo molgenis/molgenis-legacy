@@ -156,55 +156,58 @@ public class JQueryTreeViewElement extends SimpleTree<JQueryTreeViewElement>
 
 	public String toHtml()
 	{
-
-		String node = null;
+		StringBuilder nodeBuilder = new StringBuilder();
 
 		if (!this.isIsbottom())
 		{
-			String childrenNode = "";
+			StringBuilder childrenNodeBuilder = new StringBuilder();
 
 			if (!this.isCollapsed() && this.hasChildren())
 			{
 
 				for (JQueryTreeViewElement childNode : getChildren())
 				{
-					childrenNode += childNode.toHtml();
+					childrenNodeBuilder.append(childNode.toHtml());
 				}
 
 			}
 
-			node = "<li id = \"" + getName().replaceAll(" ", "_") + "\" class=\"" + (isCollapsed ? "closed" : "open")
-					+ "\"><span class=\"folder\">" + (getLabel() == null ? getName() : getLabel())
-					+ "</span><ul style=\"display:" + (isCollapsed ? "none" : "block") + "\">" + childrenNode
-					+ "</ul></li>";
+			nodeBuilder.append("<li id = \"").append(getName().replaceAll(" ", "_")).append("\" class=\"");
+			nodeBuilder.append(isCollapsed ? "closed" : "open").append("\"><span class=\"folder\">");
+			nodeBuilder.append(getLabel() == null ? getName() : getLabel()).append("</span><ul style=\"display:");
+			nodeBuilder.append(isCollapsed ? "none" : "block").append("\">").append(childrenNodeBuilder);
+			nodeBuilder.append("</ul></li>");
 		}
 		else
 		{
-			node = "<li id = \"" + getName().replaceAll(" ", "_") + "\"><span class=\"point\">"
-					+ (getLabel() == null ? getName() : getLabel()) + "</span></li>";
+			nodeBuilder.append("<li id = \"").append(getName().replaceAll(" ", "_"));
+			nodeBuilder.append("\"><span class=\"point\">");
+			nodeBuilder.append(getLabel() == null ? getName() : getLabel()).append("</span></li>");
 		}
 
-		return node;
+		return nodeBuilder.toString();
 
 	}
 
 	public String toHtml(String childNode)
 	{
-		String node = null;
+		StringBuilder nodeBuilder = new StringBuilder();
 
 		if (!this.isIsbottom())
 		{
-			node = "<li id = \"" + getName().replaceAll(" ", "_") + "\" class=\"" + (isCollapsed ? "closed" : "open")
-					+ "\"><span class=\"folder\">" + (getLabel() == null ? getName() : getLabel())
-					+ "</span><ul style=\"display:" + (isCollapsed ? "none" : "block") + "\">"
-					+ (childNode == null ? "" : childNode) + "</ul></li>";
+			nodeBuilder.append("<li id = \"").append(getName().replaceAll(" ", "_")).append("\" class=\"");
+			nodeBuilder.append(isCollapsed ? "closed" : "open").append("\"><span class=\"folder\">");
+			nodeBuilder.append(getLabel() == null ? getName() : getLabel()).append("</span><ul style=\"display:");
+			nodeBuilder.append(isCollapsed ? "none" : "block").append("\">");
+			nodeBuilder.append(childNode == null ? "" : childNode).append("</ul></li>");
 		}
 		else
 		{
-			node = "<li id = \"" + getName().replaceAll(" ", "_") + "\"><span class=\"point\">"
-					+ (getLabel() == null ? getName() : getLabel()) + "</span></li>";
+			nodeBuilder.append("<li id = \"").append(getName().replaceAll(" ", "_"));
+			nodeBuilder.append("\"><span class=\"point\">");
+			nodeBuilder.append(getLabel() == null ? getName() : getLabel()).append("</span></li>");
 		}
 
-		return node;
+		return nodeBuilder.toString();
 	}
 }
