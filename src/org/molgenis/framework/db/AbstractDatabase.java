@@ -199,7 +199,6 @@ public abstract class AbstractDatabase implements Database
 		{
 			stmt = con.createStatement();
 			stmt.executeUpdate(sql);
-			stmt.close();
 		}
 		catch (Exception e)
 		{
@@ -249,7 +248,7 @@ public abstract class AbstractDatabase implements Database
 		{
 			// get all the value of all keys (composite key)
 			// use an index to hash the entities
-			String combinedKey = "";
+			StringBuilder combinedKeyBuilder = new StringBuilder();
 
 			// extract its key values and put in map
 			Map<String, Object> keyValues = new LinkedHashMap<String, Object>();
@@ -260,20 +259,11 @@ public abstract class AbstractDatabase implements Database
 			for (String key : keyNames)
 			{
 				// create a hash that concats all key values into one string
-				combinedKey += ";" + (entity.get(key) == null ? "" : entity.get(key));
+				combinedKeyBuilder.append(';');
 
-				// if (entity.get(key) == null || entity.get(key).equals(""))
-				// {
-				// if (dbAction.equals(DatabaseAction.UPDATE) ||
-				// dbAction.equals(DatabaseAction.REMOVE))
-				// {
-				// throw new DatabaseException(
-				// entityName + " is missing key '" + key + "' in line " +
-				// entity.toString());
-				// }
-				// }
 				if (entity.get(key) != null)
 				{
+					combinedKeyBuilder.append(entity.get(key));
 					incompleteKey = false;
 					keyValues.put(key, entity.get(key));
 				}
@@ -286,7 +276,7 @@ public abstract class AbstractDatabase implements Database
 			{
 				keyIndex.add(keyValues);
 				// create the entity index using the hash
-				entityIndex.put(combinedKey, entity);
+				entityIndex.put(combinedKeyBuilder.toString(), entity);
 			}
 			else
 			{

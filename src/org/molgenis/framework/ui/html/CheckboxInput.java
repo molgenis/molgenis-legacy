@@ -14,7 +14,7 @@ public class CheckboxInput extends OptionInput<List<String>>
 {
 	public static final String VALUES = "values";
 	private String onchange = null;
-	
+
 	/**
 	 * Construct a checkbox input with a name, a label and a description, as
 	 * well as one or more options and zero or more selected values.
@@ -25,8 +25,7 @@ public class CheckboxInput extends OptionInput<List<String>>
 	 * @param options
 	 * @param value
 	 */
-	public CheckboxInput(String name, String label, String description,
-			Vector<ValueLabel> options, List<String> value)
+	public CheckboxInput(String name, String label, String description, Vector<ValueLabel> options, List<String> value)
 	{
 		super(name, value);
 		super.setLabel(label);
@@ -46,13 +45,11 @@ public class CheckboxInput extends OptionInput<List<String>>
 	 * @param nillable
 	 * @param readonly
 	 */
-	public CheckboxInput(String name, List<String> options,
-			List<String> optionLabels, String label, List<String> value,
-			boolean nillable, boolean readonly)
+	public CheckboxInput(String name, List<String> options, List<String> optionLabels, String label,
+			List<String> value, boolean nillable, boolean readonly)
 	{
 		super(name, value);
-		if (optionLabels != null && optionLabels.size() > 0
-				&& optionLabels.size() != options.size()) throw new IllegalArgumentException(
+		if (optionLabels != null && optionLabels.size() > 0 && optionLabels.size() != options.size()) throw new IllegalArgumentException(
 				"optionLabels, if set, must be of same size as options");
 
 		List<ValueLabel> result = new ArrayList<ValueLabel>();
@@ -74,8 +71,9 @@ public class CheckboxInput extends OptionInput<List<String>>
 		this.setNillable(nillable);
 		this.setReadonly(readonly);
 	}
-	
-	/** Construct a new checkbox based on a Tuple with properties.
+
+	/**
+	 * Construct a new checkbox based on a Tuple with properties.
 	 * 
 	 * @param properties
 	 * @throws HtmlInputException
@@ -84,8 +82,8 @@ public class CheckboxInput extends OptionInput<List<String>>
 	public CheckboxInput(Tuple properties) throws HtmlInputException
 	{
 		super(properties);
-		if(!properties.isNull(VALUE)) this.setValue((List<String>) properties.getList(VALUE));
-		if(!properties.isNull(VALUES)) this.setValue((List<String>) properties.getList(VALUES));
+		if (!properties.isNull(VALUE)) this.setValue((List<String>) properties.getList(VALUE));
+		if (!properties.isNull(VALUES)) this.setValue((List<String>) properties.getList(VALUES));
 	}
 
 	/**
@@ -119,8 +117,7 @@ public class CheckboxInput extends OptionInput<List<String>>
 		StringBuffer optionString = new StringBuffer("");
 		String readonly = (isReadonly() ? " class=\"readonly\" readonly " : "");
 		String checked = "";
-		String onchange = (this.onchange != null) ? " onchange=\""
-				+ this.onchange + "\"" : "";
+		String onchange = (this.onchange != null) ? " onchange=\"" + this.onchange + "\"" : "";
 
 		if (!(getOptions().isEmpty()))
 		{
@@ -128,26 +125,21 @@ public class CheckboxInput extends OptionInput<List<String>>
 			{
 				if (getObject() != null)
 				{
-					checked = (((List<String>) getObject()).contains(option
-							.getValue().toString()) ? " checked " : "");
+					checked = (((List<String>) getObject()).contains(option.getValue().toString()) ? " checked " : "");
 				}
-				optionString.append("<input id=\"" + this.getId()
-						+ "\" type=\"checkbox\" " + onchange + readonly + checked
-						+ " name=\"" + this.getName() + "\" value=\""
-						+ option.getValue() + "\">" + option.getLabel()
-						+ "<br />\n");
+				optionString.append("<input id=\"" + this.getId() + "\" type=\"checkbox\" " + onchange + readonly
+						+ checked + " name=\"" + this.getName() + "\" value=\"" + option.getValue() + "\">"
+						+ option.getLabel() + "<br />\n");
 			}
 		}
 		else
 		{
 			if (getObject() != null)
 			{
-				checked = (((Vector<String>) getObject()).contains(this
-						.getName()) ? " checked " : "");
+				checked = (((Vector<String>) getObject()).contains(this.getName()) ? " checked " : "");
 			}
-			optionString.append("<input id=\"" + this.getId()
-					+ "\" type=\"checkbox\" " + onchange + readonly + checked + " name=\""
-					+ this.getName() + "\">" + this.getLabel());
+			optionString.append("<input id=\"" + this.getId() + "\" type=\"checkbox\" " + onchange + readonly + checked
+					+ " name=\"" + this.getName() + "\">" + this.getLabel());
 		}
 
 		return optionString.toString();
@@ -156,22 +148,22 @@ public class CheckboxInput extends OptionInput<List<String>>
 	@Override
 	public String getValue()
 	{
-		String value = "";
+		StringBuilder valueBuilder = new StringBuilder();
 		for (ValueLabel i : getOptions())
 		{
 			if (((Vector<String>) getObject()).contains(i.getValue()))
 			{
-				value += i.getLabel() + ", ";
+				valueBuilder.append(i.getLabel()).append(", ");
 			}
 		}
 		// remove trailing comma
-		if (value.length() > 2)
+		if (valueBuilder.length() > 2)
 		{
-			return value.substring(0, value.length() - 2);
+			return valueBuilder.substring(0, valueBuilder.length() - 2);
 		}
-		return value;
+		return valueBuilder.toString();
 	}
-	
+
 	@Override
 	public String toHtml(Tuple p) throws HtmlInputException
 	{

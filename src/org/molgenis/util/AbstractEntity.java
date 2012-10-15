@@ -180,15 +180,14 @@ public abstract class AbstractEntity implements Entity, Serializable
 
 	public String getLabelValue()
 	{
-		String result = "";
+		StringBuilder resultBuilder = new StringBuilder();
 		for (String label : this.getLabelFields())
 		{
-			if (result.equals("")) result += this.get(label) != null ? this.get(label) : "";
-			else
-				result += ":" + (this.get(label) != null ? this.get(label) : "");
+			if (resultBuilder.length() > 0) resultBuilder.append(':');
+			if (this.get(label) != null) resultBuilder.append(this.get(label));
 		}
 
-		return result;
+		return resultBuilder.toString();
 	}
 
 }

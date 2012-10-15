@@ -1,6 +1,5 @@
 package org.molgenis.framework.ui.html;
 
-
 /**
  * Accordeon layout is a MultiPanel layout that shows multiple panels underneath
  * each other. A button can be used to show one of the panels.
@@ -23,17 +22,16 @@ public class AccordeonLayout extends MultipanelLayout implements Layout
 	{
 		if (this.style == UiToolkit.JQUERY)
 		{
-			String returnString = "<div class=\"jquery_accordion\">";
+			StringBuilder strBuilder = new StringBuilder("<div class=\"jquery_accordion\">");
 
 			for (String title : elements.keySet())
 			{
-				returnString += "<h3><a href=\"#\">" + title + "</a></h3><div>";
-				returnString += elements.get(title).render();
-				returnString += "</div>";
+				strBuilder.append("<h3><a href=\"#\">").append(title).append("</a></h3><div>");
+				strBuilder.append(elements.get(title).render());
+				strBuilder.append("</div>");
 			}
-
-			returnString += "</div><script>$(\".jquery_accordion\").accordion();</script>";
-			return returnString;
+			strBuilder.append("</div><script>$(\".jquery_accordion\").accordion();</script>");
+			return strBuilder.toString();
 		}
 		else
 		{
