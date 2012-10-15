@@ -6,9 +6,7 @@
 //	Creation.
 //
 
-
 package org.molgenis.model.elements;
-
 
 // imports
 import java.util.List;
@@ -17,13 +15,10 @@ import java.util.Vector;
 import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.model.MolgenisModelException;
 
-
-
-
-
 /**
  * This class describes an updatable view, which shows two or more entities.
- * This can only be a liniair path in the entity graph otherwise updates are undefined. 
+ * This can only be a liniair path in the entity graph otherwise updates are
+ * undefined.
  * 
  * @author RA Scheltema
  * @author MA Swertz
@@ -39,23 +34,23 @@ public class View extends DBSchema implements Record
 	public View(String name, String label, DBSchema parent)
 	{
 		super(name, parent, parent.getModel());
-		
+
 		//
 		this.label = label;
 	}
-	
-	//@Override
+
+	// @Override
 	public String getLabel()
 	{
 		return label;
 	}
-	
+
 	public String getDescription()
 	{
 		return description;
 	}
 
-	public void setDescription( String description )
+	public void setDescription(String description)
 	{
 		this.description = description;
 	}
@@ -64,70 +59,69 @@ public class View extends DBSchema implements Record
 	{
 		return getFields();
 	}
-	
-	//@Override
+
+	// @Override
 	public List<Field> getFields() throws MolgenisModelException
 	{
 		// retrieve the root
 		DBSchema database = (DBSchema) getRoot();
-		
+
 		// retrieve all the fields
 		Vector<Field> fields = new Vector<Field>();
 		for (String viewentity : entities)
 		{
 			Entity entity = (Entity) database.get(viewentity);
-			
+
 			for (Field field : entity.getAllFields())
 			{
 				Field f = new Field(field);
-				
-				// for now we mis-use the user-data pointer to store the original name
+
+				// for now we mis-use the user-data pointer to store the
+				// original name
 				f.setUserData(field.getName());
-				
-				// generate the new name, which is a concatenation of the entity-name with field-name
+
+				// generate the new name, which is a concatenation of the
+				// entity-name with field-name
 				f.setName(entity.getName() + "_" + field.getName());
 				f.setLabel(entity.getName() + "::" + field.getName());
-				
+
 				fields.add(f);
 			}
 		}
-		
+
 		return fields;
 	}
 
-	//@Override
+	// @Override
 	public boolean hasXRefs()
 	{
 		// retrieve the root
 		DBSchema database = (DBSchema) getRoot();
-		
+
 		// retrieve all the fields
 		for (String viewentity : entities)
 		{
-			if (((Entity) database.get(viewentity)).hasXRefs())
-				return true;
+			if (((Entity) database.get(viewentity)).hasXRefs()) return true;
 		}
-		
+
 		return false;
 	}
-	
-	//@Override
+
+	// @Override
 	public Vector<String> getParents()
 	{
 		return new Vector<String>();
 	}
-	
-	
+
 	// access
 	/**
 	 * 
 	 */
 	public void addEntity(String entity)
 	{
-		if (!entities.contains(entity))
-			entities.add(entity);
+		if (!entities.contains(entity)) entities.add(entity);
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -135,7 +129,7 @@ public class View extends DBSchema implements Record
 	{
 		return entities;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -143,46 +137,51 @@ public class View extends DBSchema implements Record
 	{
 		return entities.size();
 	}
-	
+
 	/**
-	 * @throws MolgenisModelException 
+	 * @throws MolgenisModelException
 	 * 
 	 */
 	public List<Field> getXRefsFor(Entity e, List<Entity> entities) throws MolgenisModelException
 	{
 		Vector<Field> xrefs = new Vector<Field>();
-		
+
 		for (Entity entity : entities)
 		{
 			// check whether e has a reference to this entity
 			for (Field field : e.getAllFields())
 			{
-				if ( !(field.getType() instanceof XrefField) )
-					continue;
-				
-				try {
-					if (field.getXrefEntity().equals(entity.getName()))
-						xrefs.add(field);
-				} catch (Exception ex) {;}
+				if (!(field.getType() instanceof XrefField)) continue;
+
+				try
+				{
+					if (field.getXrefEntity().equals(entity.getName())) xrefs.add(field);
+				}
+				catch (Exception ex)
+				{
+					;
+				}
 			}
-			
+
 			// check whether this entity has a reference to e
 			for (Field field : entity.getAllFields())
 			{
-				if ( !(field.getType() instanceof XrefField) )
-					continue;
-				
-				try {
-					if (field.getXrefEntity().equals(e.getName()))
-						xrefs.add(field);
-				} catch (Exception ex) {;}
+				if (!(field.getType() instanceof XrefField)) continue;
+
+				try
+				{
+					if (field.getXrefEntity().equals(e.getName())) xrefs.add(field);
+				}
+				catch (Exception ex)
+				{
+					;
+				}
 			}
 		}
-		
+
 		return xrefs;
 	}
-	
-	
+
 	// data
 	/**  */
 	String label = "";
@@ -190,9 +189,8 @@ public class View extends DBSchema implements Record
 	String description = "";
 	/**  */
 	public Vector<String> entities = new Vector<String>();
-	
+
 	/**  */
 	private static final long serialVersionUID = 0;
-
 
 }

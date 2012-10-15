@@ -26,35 +26,33 @@ public class RestApiGen extends Generator
 	{
 		return "Generates REST service interfaces for each entity.";
 	}
-	
+
 	@Override
-	public void generate(Model model, MolgenisOptions options)
-			throws Exception
+	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
-		Template template = createTemplate( "/"+this.getClass().getSimpleName()+".java.ftl" );
+		Template template = createTemplate("/" + this.getClass().getSimpleName() + ".java.ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
-		
+
 		List<Entity> entityList = model.getEntities();
 		List<Method> methodList = model.getMethods();
 
-
-		File target = new File( this.getSourcePath(options) + APP_DIR + "/servlet/RestApi.java" );
+		File target = new File(this.getSourcePath(options) + APP_DIR + "/servlet/RestApi.java");
 		target.getParentFile().mkdirs();
-		
-		templateArgs.put("model", model );
+
+		templateArgs.put("model", model);
 		templateArgs.put("methods", methodList);
 		templateArgs.put("entities", entityList);
 		templateArgs.put("helper", new GeneratorHelper(null));
 		templateArgs.put("package", APP_DIR);
-		templateArgs.put("databaseImp", options.mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA) ? "jpa" : "jdbc");
+		templateArgs.put("databaseImp",
+				options.mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA) ? "jpa" : "jdbc");
 		templateArgs.put("db_filepath", options.db_filepath);
-		
-		OutputStream targetOut = new FileOutputStream( target );
-		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
+
+		OutputStream targetOut = new FileOutputStream(target);
+		template.process(templateArgs, new OutputStreamWriter(targetOut));
 		targetOut.close();
-		
+
 		logger.info("generated " + target);
 	}
-	
-	
+
 }

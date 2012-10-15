@@ -102,11 +102,11 @@ public class EasyPluginModel implements ScreenModel
 	{
 		controller.setError(message);
 	}
-	
+
 	@Override
 	public String toString()
 	{
-		return getClass().getSimpleName()+"(name="+getName()+")";
+		return getClass().getSimpleName() + "(name=" + getName() + ")";
 	}
 
 	@Override

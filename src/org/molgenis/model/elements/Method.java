@@ -13,19 +13,14 @@
 
 package org.molgenis.model.elements;
 
-
 // imports
 import java.util.Vector;
 
 import org.molgenis.model.MolgenisModelException;
 
-
-
-
-
 /**
- * Describes an exposable method in the molgenis framework. A method can for example
- * be exposed through a SOAP interface or in the user interface.
+ * Describes an exposable method in the molgenis framework. A method can for
+ * example be exposed through a SOAP interface or in the user interface.
  */
 public class Method extends MethodSchema
 {
@@ -34,19 +29,18 @@ public class Method extends MethodSchema
 	{
 		super(name, parent);
 	}
-	
-	
+
 	// access
 	public void setReturnType(Entity returntype) throws Exception
 	{
 		this.returntype = returntype;
 	}
-	
+
 	public Entity getReturnType()
 	{
 		return returntype;
 	}
-	
+
 	public void addParameter(Parameter parameter) throws MolgenisModelException
 	{
 		if (parameters.contains(parameter))
@@ -56,42 +50,40 @@ public class Method extends MethodSchema
 
 		parameters.add(parameter);
 	}
-	
+
 	public Vector<Parameter> getParameters()
 	{
 		return parameters;
 	}
-	
+
 	public void setQuery(MethodQuery query)
 	{
 		this.query = query;
 	}
-	
+
 	public MethodQuery getQuery()
 	{
 		return this.query;
 	}
-	
+
 	public String getDescription()
 	{
 		return description;
 	}
-	
+
 	public void setDescription(String description)
 	{
 		this.description = description;
 	}
-	
+
 	public String toString()
 	{
 		String str = "";
-		
-		if (description!=null && !description.equals(""))
-			str += description + "\n";
-		if (returntype != null)
-			str += returntype.getName() + " ";
+
+		if (description != null && !description.equals("")) str += description + "\n";
+		if (returntype != null) str += returntype.getName() + " ";
 		str += "Method(" + getName() + ")\n(\n";
-		for(Parameter parameter: parameters)
+		for (Parameter parameter : parameters)
 			str += "  " + parameter.toString() + "\n";
 		str += ");";
 		if (query != null)
@@ -102,14 +94,13 @@ public class Method extends MethodSchema
 		}
 		return str;
 	}
-	
-	
+
 	// data
 	private String description = "";
 	private Entity returntype = null;
-	private Vector<Parameter> parameters = new Vector<Parameter>(); 
-	
+	private Vector<Parameter> parameters = new Vector<Parameter>();
+
 	private MethodQuery query = null;
-	
-	private static final long serialVersionUID = 2296459638604325393L;	
+
+	private static final long serialVersionUID = 2296459638604325393L;
 }

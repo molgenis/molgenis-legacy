@@ -54,11 +54,10 @@ public abstract class ForEachEntityGenerator extends Generator
 		{
 			// calculate package from its own package
 			String packageName = entity.getNamespace().toLowerCase()
-					+ this.getClass().getPackage().toString().substring(
-							Generator.class.getPackage().toString().length());
+					+ this.getClass().getPackage().toString()
+							.substring(Generator.class.getPackage().toString().length());
 			File targetDir = new File(this.getSourcePath(options) + packageName.replace(".", "/"));
-			if (handwritten)
-				targetDir = new File(this.getHandWrittenPath(options) + packageName.replace(".", "/"));
+			if (handwritten) targetDir = new File(this.getHandWrittenPath(options) + packageName.replace(".", "/"));
 
 			try
 			{
@@ -69,7 +68,7 @@ public abstract class ForEachEntityGenerator extends Generator
 					if (!handwritten || !targetFile.exists())
 					{
 						targetDir.mkdirs();
-						
+
 						// logger.debug("trying to generated "+targetFile);
 						templateArgs.put("entity", entity);
 						templateArgs.put("model", model);
@@ -78,7 +77,7 @@ public abstract class ForEachEntityGenerator extends Generator
 						templateArgs.put("file", targetDir + "/" + GeneratorHelper.getJavaName(entity.getName())
 								+ getType() + getExtension());
 						templateArgs.put("package", packageName);
-						
+
 						templateArgs.put("databaseImp", options.mapper_implementation);
 						templateArgs.put("jpa_use_sequence", options.jpa_use_sequence);
 

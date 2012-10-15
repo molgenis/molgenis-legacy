@@ -25,7 +25,7 @@ public class HSqlCreateSubclassPerTableGen extends Generator
 	public static final transient Logger logger = Logger.getLogger(HSqlCreateSubclassPerTableGen.class);
 
 	@Override
-	public void generate( Model model, MolgenisOptions options ) throws Exception
+	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
 		// create an hsqldb connection
 		BasicDataSource data_src = new BasicDataSource();
@@ -38,19 +38,19 @@ public class HSqlCreateSubclassPerTableGen extends Generator
 
 		Connection conn = data_src.getConnection();
 		Statement stmt = null;
-		
-		//remove existing database
-		
+
+		// remove existing database
+
 		// create generator
-		Template template = this.createTemplate(this.getClass().getSimpleName()+".hsql.ftl");
+		Template template = this.createTemplate(this.getClass().getSimpleName() + ".hsql.ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
-		
-		//Output file for debug
-		File target = new File( this.getSqlPath(options) + "/create_tables.sql" );
+
+		// Output file for debug
+		File target = new File(this.getSqlPath(options) + "/create_tables.sql");
 		target.getParentFile().mkdirs();
-		OutputStream targetOut = new FileOutputStream( target );
+		OutputStream targetOut = new FileOutputStream(target);
 		List<Entity> sortedlist = model.getEntities();
-		sortedlist = MolgenisModel.sortEntitiesByDependency(sortedlist,model);
+		sortedlist = MolgenisModel.sortEntitiesByDependency(sortedlist, model);
 
 		// create arguments
 		templateArgs.put("entities", sortedlist);
@@ -58,21 +58,25 @@ public class HSqlCreateSubclassPerTableGen extends Generator
 
 		// generate
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		try{
+		try
+		{
 			template.process(templateArgs, new OutputStreamWriter(out));
-			//Write to file for debug
+			// Write to file for debug
 			targetOut.write(out.toByteArray());
-			
-			//Update the Hsql database
+
+			// Update the Hsql database
 			stmt = conn.createStatement();
 			stmt.executeUpdate(out.toString());
-		}catch(Exception e){
-			logger.debug("Something wrong with Code:" + out.toString() +" \n Error:" + e.getMessage());
+		}
+		catch (Exception e)
+		{
+			logger.debug("Something wrong with Code:" + out.toString() + " \n Error:" + e.getMessage());
 			e.printStackTrace();
 			System.exit(-1);
 		}
-		
-		for(Entity e : sortedlist){
+
+		for (Entity e : sortedlist)
+		{
 			logger.debug("Created hsql table for : " + e.getName());
 		}
 		stmt.executeUpdate("SHUTDOWN");

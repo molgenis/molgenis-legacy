@@ -36,9 +36,10 @@ public interface Login
 	 * @param password
 	 *            of user
 	 * @return true if succesfully authenticated
-	 * @throws Exception,RedirectedException 
+	 * @throws Exception
+	 *             ,RedirectedException
 	 */
-	public boolean login(Database db, String name, String password) throws Exception,HandleRequestDelegationException;
+	public boolean login(Database db, String name, String password) throws Exception, HandleRequestDelegationException;
 
 	/**
 	 * Un-authenticate the user. Now the user will be perceived as 'guest'.
@@ -50,7 +51,7 @@ public interface Login
 	 * 
 	 * @throws ParseException
 	 * @throws DatabaseException
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void reload(Database db) throws DatabaseException, ParseException, Exception;
 
@@ -90,24 +91,25 @@ public interface Login
 	 * of entities (aka 'entity level security')
 	 * 
 	 * @return readpermission
-	 * @throws DatabaseException 
-	 * @throws DatabaseException 
+	 * @throws DatabaseException
+	 * @throws DatabaseException
 	 */
 	public boolean canRead(Class<? extends Entity> entityClass) throws DatabaseException;
-	
+
 	/**
 	 * Indicates whether the user has permissions to read data from this class
 	 * of entities (aka 'entity level security')
 	 * 
 	 * @return readpermission
-	 * @throws DatabaseException 
-	 * @throws DatabaseException 
+	 * @throws DatabaseException
+	 * @throws DatabaseException
 	 */
 	public boolean canRead(Entity entity) throws DatabaseException;
 
 	/**
 	 * Indicates whether the user has permissions to read data from this
 	 * implementation of ScreenModel
+	 * 
 	 * @param screen
 	 * @return read permission
 	 * @throws DatabaseException
@@ -117,27 +119,28 @@ public interface Login
 	/**
 	 * Indicates whether the user has permissions to read data from this
 	 * implementation of ScreenModel
+	 * 
 	 * @param screen
 	 * @return read permission
 	 * @throws DatabaseException
 	 */
-//	public boolean canRead(ScreenModel model) throws DatabaseException;
+	// public boolean canRead(ScreenModel model) throws DatabaseException;
 
 	/**
 	 * Indicates whether the user has permissions to add, update, delete data
 	 * for this entity class (aka 'entity level security')
 	 * 
 	 * @return editpermission
-	 * @throws DatabaseException 
+	 * @throws DatabaseException
 	 */
 	public boolean canWrite(Class<? extends Entity> entityClass) throws DatabaseException;
-	
+
 	/**
 	 * Indicates whether the user has permissions to add, update, delete this
 	 * particular entity instance*
 	 * 
 	 * @return editpermission
-	 * @throws DatabaseException 
+	 * @throws DatabaseException
 	 */
 	public boolean canWrite(Entity entity) throws DatabaseException;
 
@@ -149,11 +152,12 @@ public interface Login
 
 	/**
 	 * Get name of form/plugin to redirect to after login
+	 * 
 	 * @return name of form/plugin
 	 */
 	public String getRedirect();
-	
+
 	public void setAdmin(List<? extends Entity> entities, Database db) throws DatabaseException;
-	
+
 	public void setRedirect(String redirect);
 }

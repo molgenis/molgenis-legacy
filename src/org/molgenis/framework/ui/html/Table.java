@@ -27,7 +27,7 @@ public class Table extends HtmlWidget
 	protected String headerCellStyle = "border: 1px solid black; padding:2px; background-color: #5B82A4; color: white";
 	boolean headerColumn = true;
 	boolean headerRow = true;
-	
+
 	/**
 	 * Constructor with empty label.
 	 * 
@@ -37,28 +37,31 @@ public class Table extends HtmlWidget
 	{
 		this(name, "");
 	}
-	
+
 	public Table(String name, String label)
 	{
 		super(name, label);
 		this.setLabel(label);
 	}
-	
+
 	/**
-	 * Constructor used to control the presence of the header column and row 
+	 * Constructor used to control the presence of the header column and row
 	 * 
 	 * @param name
 	 * @param label
-	 * @param headerColumn specify the presence of header column and row, defaults to true
+	 * @param headerColumn
+	 *            specify the presence of header column and row, defaults to
+	 *            true
 	 */
-	public Table(String name, String label, boolean headerColumn, boolean headerRow){
+	public Table(String name, String label, boolean headerColumn, boolean headerRow)
+	{
 		super(name, label);
 		this.setLabel(label);
 		this.headerColumn = headerColumn;
 		this.headerRow = headerRow;
-		
+
 	}
-	
+
 	@Override
 	/**
 	 * Renders the table.
@@ -66,112 +69,125 @@ public class Table extends HtmlWidget
 	public String toHtml()
 	{
 		String result = "<table";
-		
-		if (style != null) {
+
+		if (style != null)
+		{
 			result += " style=\"clear:both;" + style + "\"";
 		}
-		
-		
-		result += " width=\"400\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" class=\"display\" id=\"" + this.getId() + "\">";
-		if(headerRow){
+
+		result += " width=\"400\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" class=\"display\" id=\""
+				+ this.getId() + "\">";
+		if (headerRow)
+		{
 			result += printHeaders();
 		}
 		result += printBody();
 		result += "</table>";
-		
+
 		return result;
 	}
-	
-	private String printHeaders() {
-		
+
+	private String printHeaders()
+	{
+
 		String result = "<thead><tr>";
-		if(headerColumn){
-			result+= "<th></th>";
+		if (headerColumn)
+		{
+			result += "<th></th>";
 		}
-		for (String col : cols) {
+		for (String col : cols)
+		{
 			result += ("<th style=\"" + getHeaderCellStyle() + "\">" + col + "</th>");
 		}
 		result += "</tr></thead>";
-		return 		result;
+		return result;
 	}
-	
-	private String printBody() {
+
+	private String printBody()
+	{
 		String result = "<tbody>";
 		int rowCount = 0;
-		for (String row : rows) {
+		for (String row : rows)
+		{
 			result += printRow(row, rowCount);
 			rowCount++;
 		}
 		result += "</tbody>";
 		return result;
 	}
-	
-	//default visibility for subclassing in the same package
-	String printRow(String row, int rowCount) {
+
+	// default visibility for subclassing in the same package
+	String printRow(String row, int rowCount)
+	{
 		String result = "<tr>";
-		if(headerColumn){
+		if (headerColumn)
+		{
 			result += ("<th style=\"" + getHeaderCellStyle() + "\">" + row + "</th>");
 		}
-		
-		for (int colCount = 0; colCount < cols.size(); colCount++) {
-			result += ("<td style=\"" + getCellStyle(colCount, rowCount) + "\">" + 
-					getCellString(colCount, rowCount) + "</td>");
+
+		for (int colCount = 0; colCount < cols.size(); colCount++)
+		{
+			result += ("<td style=\"" + getCellStyle(colCount, rowCount) + "\">" + getCellString(colCount, rowCount) + "</td>");
 		}
 		result += "</tr>";
 		return result;
 	}
-	
+
 	/**
 	 * Set the containing div's css style.
 	 */
-	public HtmlInput setStyle(String style) {
+	public HtmlInput setStyle(String style)
+	{
 		this.style = style;
 		return this;
 	}
 
-	
 	/**
 	 * Add a column to the Table.
 	 * 
 	 * @param colName
 	 * @return
 	 */
-	public Integer addColumn(String colName) {
+	public Integer addColumn(String colName)
+	{
 		cols.add(colName);
 		return cols.size() - 1;
 	}
-	
+
 	/**
 	 * Remove the column at 'colNr' from the Table.
 	 * 
 	 * @param colNr
 	 * @return
 	 */
-	public String removeColumn(int colNr) {
+	public String removeColumn(int colNr)
+	{
 		return cols.remove(colNr);
 	}
-	
+
 	/**
 	 * Add a row to the Table.
 	 * 
 	 * @param rowName
 	 * @return
 	 */
-	public Integer addRow(String rowName) {
+	public Integer addRow(String rowName)
+	{
 		rows.add(rowName);
 		return rows.size() - 1;
 	}
-	
+
 	/**
 	 * Remove the row at 'rowNr' from the Table.
 	 * 
 	 * @param rowNr
 	 * @return
 	 */
-	public String removeRow(int rowNr) {
+	public String removeRow(int rowNr)
+	{
 		return rows.remove(rowNr);
 	}
-	
+
 	/**
 	 * Set the contents of the cell at col, row.
 	 * 
@@ -179,20 +195,23 @@ public class Table extends HtmlWidget
 	 * @param row
 	 * @param contents
 	 */
-	public void setCell(int col, int row, Object contents) {
+	public void setCell(int col, int row, Object contents)
+	{
 		cells.put(new Pair<Integer, Integer>(col, row), contents);
 	}
-	
+
 	/**
 	 * Get the contents of the cell at col, row.
+	 * 
 	 * @param col
 	 * @param row
 	 * @return
 	 */
-	public Object getCell(int col, int row) { 
+	public Object getCell(int col, int row)
+	{
 		return cells.get(new Pair<Integer, Integer>(col, row));
 	}
-	
+
 	/**
 	 * Get the contents of the cell at col, row as a String.
 	 * 
@@ -200,38 +219,43 @@ public class Table extends HtmlWidget
 	 * @param row
 	 * @return
 	 */
-	public String getCellString(int col, int row) { 
+	public String getCellString(int col, int row)
+	{
 		Object o = cells.get(new Pair<Integer, Integer>(col, row));
-		if (o == null) {
+		if (o == null)
+		{
 			return "";
 		}
-		if (o instanceof HtmlInput<?>) {
+		if (o instanceof HtmlInput<?>)
+		{
 			return ((HtmlInput<?>) o).toHtml();
 		}
 		return o.toString();
 	}
-	
+
 	/**
 	 * Set the default CSS style parameters for all non-header cells.
 	 * 
 	 * @param defaultCellStyle
 	 */
-	public void setDefaultCellStyle(String defaultCellStyle) {
+	public void setDefaultCellStyle(String defaultCellStyle)
+	{
 		this.defaultCellStyle = defaultCellStyle;
 	}
-	
+
 	/**
-	 * Set CSS style parameters for the cell at col, row.
-	 * E.g.: setCellStyle(1, 1, "border: 1px")
+	 * Set CSS style parameters for the cell at col, row. E.g.: setCellStyle(1,
+	 * 1, "border: 1px")
 	 * 
 	 * @param col
 	 * @param row
 	 * @param cellStyle
 	 */
-	public void setCellStyle(int col, int row, String cellStyle) {
+	public void setCellStyle(int col, int row, String cellStyle)
+	{
 		cellStyles.put(new Pair<Integer, Integer>(col, row), cellStyle);
 	}
-	
+
 	/**
 	 * Get the CSS style parameters for the cell at col, row.
 	 * 
@@ -239,11 +263,15 @@ public class Table extends HtmlWidget
 	 * @param row
 	 * @return
 	 */
-	public String getCellStyle(int col, int row) { 
+	public String getCellStyle(int col, int row)
+	{
 		String style = cellStyles.get(new Pair<Integer, Integer>(col, row));
-		if (style != null) {
+		if (style != null)
+		{
 			return style;
-		} else {
+		}
+		else
+		{
 			return defaultCellStyle;
 		}
 	}
@@ -269,10 +297,9 @@ public class Table extends HtmlWidget
 	}
 
 	@Override
-	public String toHtml(Tuple params) throws ParseException,
-			HtmlInputException
+	public String toHtml(Tuple params) throws ParseException, HtmlInputException
 	{
-		//TODO?
+		// TODO?
 		throw new UnsupportedOperationException();
 	}
 }

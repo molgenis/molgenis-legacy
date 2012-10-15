@@ -28,9 +28,12 @@ public class ScreenMessage
 	 * Standard constructor, where all the information about the message can be
 	 * set.
 	 * 
-	 * @param message The string representation of the message.
-	 * @param entity Pointer to the entity used in the database transaction.
-	 * @param success Indicates whether the transaction was succesfull.
+	 * @param message
+	 *            The string representation of the message.
+	 * @param entity
+	 *            Pointer to the entity used in the database transaction.
+	 * @param success
+	 *            Indicates whether the transaction was succesfull.
 	 */
 	public ScreenMessage(String message, Entity entity, boolean success)
 	{
@@ -38,12 +41,12 @@ public class ScreenMessage
 		this.message = message;
 		this.success = success;
 	}
-	
+
 	public ScreenMessage(String message, boolean success)
 	{
 		this.message = message;
 		this.success = success;
-	}	
+	}
 
 	// access
 	/**
@@ -53,10 +56,10 @@ public class ScreenMessage
 	 */
 	public String getText()
 	{
-		if(message == null) return "Unknown error";
+		if (message == null) return "Unknown error";
 		return message;
 	}
-	
+
 	public String test()
 	{
 		return "test";
@@ -81,7 +84,7 @@ public class ScreenMessage
 	{
 		return success ? true : false;
 	}
-	
+
 	/**
 	 * Returns a string-representation of this message.
 	 * 
@@ -89,18 +92,22 @@ public class ScreenMessage
 	 */
 	public String toString()
 	{
-		return getText() + ":"+( isSuccess() ? "success" : "failed");
+		return getText() + ":" + (isSuccess() ? "success" : "failed");
 	}
 
 	public String getHtml()
 	{
-		/*<#if screen.message.isSuccess()><span style="color: green">${screen.message.message}</span><p/>
-		<#else><span style="color: red">${screen.message.message}</span><p/></#if>*/
-		if(getText().length() > 0)
-			return "<span style=\"color: "+(isSuccess() ? "green" : "red")+"\">"+getText()+"</span>";
+		/*
+		 * <#if screen.message.isSuccess()><span
+		 * style="color: green">${screen.message.message}</span><p/>
+		 * <#else><span
+		 * style="color: red">${screen.message.message}</span><p/></#if>
+		 */
+		if (getText().length() > 0) return "<span style=\"color: " + (isSuccess() ? "green" : "red") + "\">"
+				+ getText() + "</span>";
 		else
 			return "<span><!-- no message--></span>";
-		
+
 	}
 
 	// member variables

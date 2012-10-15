@@ -21,8 +21,7 @@ public class ServeConfig implements ServletConfig
 		this(context, null, "undefined");
 	}
 
-	public ServeConfig(ServletContext context,
-			Hashtable<String, Object> initParams, String servletName)
+	public ServeConfig(ServletContext context, Hashtable<String, Object> initParams, String servletName)
 	{
 		this.context = context;
 		this.init_params = initParams;

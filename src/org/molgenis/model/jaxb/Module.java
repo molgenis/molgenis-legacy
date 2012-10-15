@@ -13,7 +13,7 @@ public class Module
 {
 	@XmlAttribute
 	private String name;
-	
+
 	public String getName()
 	{
 		return name;
@@ -24,7 +24,7 @@ public class Module
 		this.name = name;
 	}
 
-	@XmlElement(name="entity")
+	@XmlElement(name = "entity")
 	private List<Entity> entities = new ArrayList<Entity>();
 
 	public synchronized List<Entity> getEntities()
@@ -41,13 +41,12 @@ public class Module
 	{
 		this.entities.add(e);
 	}
-	
+
 	public Entity getEntity(String name)
 	{
 		for (Entity entity : entities)
 		{
-			if (entity.getName().toLowerCase().equals(name.toLowerCase()))
-				return entity;
+			if (entity.getName().toLowerCase().equals(name.toLowerCase())) return entity;
 		}
 		return null;
 	}

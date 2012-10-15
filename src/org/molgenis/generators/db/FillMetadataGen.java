@@ -24,31 +24,30 @@ public class FillMetadataGen extends Generator
 	{
 		return "Generates one FillMetadata class that will insert meta data into the database (for auth)";
 	}
-	
+
 	@Override
-	public void generate(Model model, MolgenisOptions options)
-			throws Exception
+	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
-		Template template = createTemplate( "/"+getClass().getSimpleName()+".java.ftl" );
+		Template template = createTemplate("/" + getClass().getSimpleName() + ".java.ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
-		
+
 		List<Entity> entityList = model.getEntities();
-		//this.sortEntitiesByXref(entityList,model); //side effect?
-		File target = new File( this.getSourcePath(options) + APP_DIR +"/FillMetadata.java" );
+		// this.sortEntitiesByXref(entityList,model); //side effect?
+		File target = new File(this.getSourcePath(options) + APP_DIR + "/FillMetadata.java");
 		target.getParentFile().mkdirs();
-		
-		templateArgs.put("model", model );
-		templateArgs.put("entities",entityList);
+
+		templateArgs.put("model", model);
+		templateArgs.put("entities", entityList);
 		templateArgs.put("package", APP_DIR);
 		templateArgs.put("auth_loginclass", options.auth_loginclass);
 		templateArgs.put("decorator_overriders", options.decorator_overriders);
 		templateArgs.put("metaData", !options.auth_loginclass.endsWith("SimpleLogin"));
-                templateArgs.put("databaseImpl", options.mapper_implementation);
-		
-		OutputStream targetOut = new FileOutputStream( target );
-		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
+		templateArgs.put("databaseImpl", options.mapper_implementation);
+
+		OutputStream targetOut = new FileOutputStream(target);
+		template.process(templateArgs, new OutputStreamWriter(targetOut));
 		targetOut.close();
-		
+
 		logger.info("generated " + target);
 	}
 

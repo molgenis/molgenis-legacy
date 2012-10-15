@@ -1,9 +1,10 @@
 package org.molgenis.model.elements;
 
-/** Helper class to deal with xref_label fields.
+/**
+ * Helper class to deal with xref_label fields.
  * 
  * @author Morris Swertz
- *
+ * 
  */
 public class FieldWithXrefLabel extends Field
 {
@@ -23,8 +24,7 @@ public class FieldWithXrefLabel extends Field
 	}
 
 	private static final long serialVersionUID = -3365294817917800934L;
-	
+
 	private String xref_label_path;
-	
-	
+
 }

@@ -25,27 +25,26 @@ public class OracleCreateSubclassPerTableGen extends Generator
 	{
 		return "Generates create tables and views for each entity.";
 	}
-	
+
 	@Override
-	public void generate(Model model, MolgenisOptions options)
-			throws Exception
+	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
-		Template template = createTemplate( "/"+this.getClass().getSimpleName()+".sql.ftl" );
+		Template template = createTemplate("/" + this.getClass().getSimpleName() + ".sql.ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
-		
+
 		List<Entity> entityList = model.getEntities();
-		entityList = MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
+		entityList = MolgenisModel.sortEntitiesByDependency(entityList, model); // side
+																				// effect?
 
-
-		File target = new File( this.getSqlPath(options) + "/create_tables.sql" );
+		File target = new File(this.getSqlPath(options) + "/create_tables.sql");
 		target.getParentFile().mkdirs();
-		
-		templateArgs.put( "model", model );
-		templateArgs.put("entities",entityList);
-		OutputStream targetOut = new FileOutputStream( target );
-		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
+
+		templateArgs.put("model", model);
+		templateArgs.put("entities", entityList);
+		OutputStream targetOut = new FileOutputStream(target);
+		template.process(templateArgs, new OutputStreamWriter(targetOut));
 		targetOut.close();
-		
+
 		logger.info("generated " + target);
 	}
 }

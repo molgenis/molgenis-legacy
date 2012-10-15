@@ -14,11 +14,11 @@ public class JndiDataSourceWrapper extends AbstractDataSourceWrapper
 	}
 
 	@Override
-	protected DataSource getDataSource() throws NamingException 
+	protected DataSource getDataSource() throws NamingException
 	{
-		InitialContext context = new InitialContext();				
-		DataSource dsource = (DataSource) context.lookup( jndiPath );
-		//logger.debug("Getting dataSource");
+		InitialContext context = new InitialContext();
+		DataSource dsource = (DataSource) context.lookup(jndiPath);
+		// logger.debug("Getting dataSource");
 		return dsource;
 	}
 }

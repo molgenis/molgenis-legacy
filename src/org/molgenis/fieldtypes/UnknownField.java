@@ -8,8 +8,9 @@ import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.model.MolgenisModelException;
 
 /**
- * This type is used when the field type is not known.
- * For example if(MolgenisFieldType.getType(name) instanceof UnknownType( {//handle this bad situation 
+ * This type is used when the field type is not known. For example
+ * if(MolgenisFieldType.getType(name) instanceof UnknownType( {//handle this bad
+ * situation
  */
 public class UnknownField extends FieldType
 {
@@ -49,7 +50,7 @@ public class UnknownField extends FieldType
 	{
 		return null;
 	}
-	
+
 	@Override
 	public String getOracleType() throws MolgenisModelException
 	{
@@ -73,7 +74,7 @@ public class UnknownField extends FieldType
 	{
 		return "void*";
 	}
-	
+
 	@Override
 	public String getCppJavaPropertyType()
 	{

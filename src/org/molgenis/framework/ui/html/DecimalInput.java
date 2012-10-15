@@ -42,8 +42,7 @@ public class DecimalInput extends ValidatingInput<Double>
 		this.validationString = "number";
 	}
 
-	public DecimalInput(String name, String label, Double value,
-			boolean nillable, boolean readonly)
+	public DecimalInput(String name, String label, Double value, boolean nillable, boolean readonly)
 	{
 		super(name, value);
 		this.setLabel(label);

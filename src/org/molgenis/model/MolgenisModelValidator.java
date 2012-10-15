@@ -92,11 +92,11 @@ public class MolgenisModelValidator
 				{
 					Field f = new Field(mref);
 					f.setEntity(entity);
-				
+
 					String mrefName = entity.getName() + "_" + f.getName();
-					if(mrefName.length() > 30)
+					if (mrefName.length() > 30)
 					{
-						mrefName = mrefName.substring(0,25) + Integer.toString(mrefName.hashCode()).substring(0,5);
+						mrefName = mrefName.substring(0, 25) + Integer.toString(mrefName.hashCode()).substring(0, 5);
 					}
 					f.setMrefName(mrefName);
 					entity.addField(0, f);
@@ -307,9 +307,9 @@ public class MolgenisModelValidator
 	 */
 	public static void createLinkTablesForMrefs(Model model) throws MolgenisModelException
 	{
-		//renamed mrefs
-		Map<String, String> renamedMrefs = new LinkedHashMap<String,String>();
-		
+		// renamed mrefs
+		Map<String, String> renamedMrefs = new LinkedHashMap<String, String>();
+
 		logger.debug("add linktable entities for mrefs...");
 		// find the multi-ref fields
 		for (Entity xref_entity_from : model.getEntities())
@@ -329,13 +329,14 @@ public class MolgenisModelValidator
 
 					// create the new entity for the link, if explicitly named
 					String mref_name = xref_field_from.getMrefName(); // explicit
-					
-					//if mref_name longer than 30 throw error
-					if(mref_name.length() > 30)
+
+					// if mref_name longer than 30 throw error
+					if (mref_name.length() > 30)
 					{
-						throw new MolgenisModelException("mref_name cannot be longer then 30 characters, found: "+mref_name);
+						throw new MolgenisModelException("mref_name cannot be longer then 30 characters, found: "
+								+ mref_name);
 					}
-					
+
 					// check if the mref already exists
 					Entity mrefEntity = null;
 					try
@@ -723,15 +724,19 @@ public class MolgenisModelValidator
 			{
 				if (entity.getAllKeys().size() < 2)
 				{
-					//check references
+					// check references
 					boolean ref = false;
-					for(Entity otherEntity: model.getEntities())
+					for (Entity otherEntity : model.getEntities())
 					{
-						for(Field f: otherEntity.getAllFields()){
-							if( (f.getType() instanceof XrefField || f.getType() instanceof MrefField) && entity.getName().equals(f.getXrefEntityName()))
+						for (Field f : otherEntity.getAllFields())
+						{
+							if ((f.getType() instanceof XrefField || f.getType() instanceof MrefField)
+									&& entity.getName().equals(f.getXrefEntityName()))
 							{
-								throw new MolgenisModelException("if primary key is autoid, there should be secondary key for entity '"
-										+ entityname + "' because of reference by "+otherEntity.getName() +"."+f.getName());
+								throw new MolgenisModelException(
+										"if primary key is autoid, there should be secondary key for entity '"
+												+ entityname + "' because of reference by " + otherEntity.getName()
+												+ "." + f.getName());
 							}
 						}
 					}
@@ -1044,13 +1049,14 @@ public class MolgenisModelValidator
 						if (f.getMrefName() == null)
 						{
 							String mrefEntityName = f.getEntity().getName() + "_" + f.getName();
-							
-							//check if longer than 30 characters, then truncate
-							if(mrefEntityName.length()>30) 
+
+							// check if longer than 30 characters, then truncate
+							if (mrefEntityName.length() > 30)
 							{
-								mrefEntityName = mrefEntityName.substring(0, 25) + Integer.toString(mrefEntityName.hashCode()).substring(0, 5);
+								mrefEntityName = mrefEntityName.substring(0, 25)
+										+ Integer.toString(mrefEntityName.hashCode()).substring(0, 5);
 							}
-							
+
 							// paranoia check on uniqueness
 							Entity mrefEntity = null;
 							try
@@ -1059,7 +1065,8 @@ public class MolgenisModelValidator
 							}
 							catch (Exception exc)
 							{
-								throw new MolgenisModelException("mref name for "+f.getEntity().getName() + "." + f.getName()+ " not unique. Please use explicit mref_name=name setting");
+								throw new MolgenisModelException("mref name for " + f.getEntity().getName() + "."
+										+ f.getName() + " not unique. Please use explicit mref_name=name setting");
 							}
 
 							if (mrefEntity != null)

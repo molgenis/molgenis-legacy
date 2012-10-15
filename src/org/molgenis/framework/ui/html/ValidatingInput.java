@@ -80,8 +80,7 @@ public class ValidatingInput<E> extends HtmlInput<E>
 	 * @param readonly
 	 * @param description
 	 */
-	public ValidatingInput(String name, String label, E value,
-			boolean nillable, boolean readonly, String description)
+	public ValidatingInput(String name, String label, E value, boolean nillable, boolean readonly, String description)
 	{
 		this(name, value);
 		this.setLabel(label);
@@ -103,11 +102,9 @@ public class ValidatingInput<E> extends HtmlInput<E>
 
 		if (this.isHidden())
 		{
-			if (this.uiToolkit == UiToolkit.ORIGINAL
-					|| this.uiToolkit == UiToolkit.JQUERY)
+			if (this.uiToolkit == UiToolkit.ORIGINAL || this.uiToolkit == UiToolkit.JQUERY)
 			{
-				return "<input name=\"" + this.getName()
-						+ "\"type=\"hidden\" value=\"" + this.getObjectString()
+				return "<input name=\"" + this.getName() + "\"type=\"hidden\" value=\"" + this.getObjectString()
 						+ "\"/>";
 			}
 		}
@@ -115,62 +112,55 @@ public class ValidatingInput<E> extends HtmlInput<E>
 		if (!this.isNillable() && !this.isReadonly()) validate += " required";
 
 		String cssClass = this.uiToolkit == UiToolkit.JQUERY ? " class=\"text ui-widget-content ui-corner-all"
-				+ validate + " " + readonly + "\""
-				: "";
-	
-		String description = " title=\""+this.getDescription()+"\"";
-		
+				+ validate + " " + readonly + "\"" : "";
+
+		String description = " title=\"" + this.getDescription() + "\"";
+
 		String descriptionJS = HtmlSettings.showDescription ? ".bt()" : "";
-		
-		
 
 		if (this.maxHeight > 1)
 		{
-			String result = "<textarea "+description
+			String result = "<textarea "
+					+ description
 					+ cssClass
 					+ " id=\""
 					+ this.getId()
 					+ "\" name=\""
 					+ this.getName()
 					+ "\"  "
-					+ (this.getSize() != null && this.getSize() > 0 ? "onfocus=\"startcounter(this, "
-							+ getSize() + ")\" onblur=\"endcounter()\""
-							: "") + " cols=\"" + this.getWidth() + "\" rows=\""
-					+ this.getHeight() + "\" " + readonly + " >"
-					+ this.getObjectString() + "</textarea>";
+					+ (this.getSize() != null && this.getSize() > 0 ? "onfocus=\"startcounter(this, " + getSize()
+							+ ")\" onblur=\"endcounter()\"" : "") + " cols=\"" + this.getWidth() + "\" rows=\""
+					+ this.getHeight() + "\" " + readonly + " >" + this.getObjectString() + "</textarea>";
 
-			result += "<script>$('#"+getId()+"')"+descriptionJS+"; showTextInput(document.getElementById('"
-					+ this.getId() + "')," + this.getMinHeight() + ","
-					+ this.getMaxHeight() + ");</script>";
+			result += "<script>$('#" + getId() + "')" + descriptionJS + "; showTextInput(document.getElementById('"
+					+ this.getId() + "')," + this.getMinHeight() + "," + this.getMaxHeight() + ");</script>";
 
 			return result;
 		}
 		else
 		{
-			String result = "<input "+description
+			String result = "<input "
+					+ description
 					+ cssClass
 					+ " id=\""
 					+ this.getId()
 					+ "\" name=\""
 					+ this.getName()
 					+ "\"  "
-					+ (this.getSize() != null && this.getSize() > 0 ? "onfocus=\"startcounter(this, "
-							+ getSize() + ")\" onblur=\"endcounter()\""
-							: "") + readonly + " value=\"" + this.getObjectString()
+					+ (this.getSize() != null && this.getSize() > 0 ? "onfocus=\"startcounter(this, " + getSize()
+							+ ")\" onblur=\"endcounter()\"" : "") + readonly + " value=\"" + this.getObjectString()
 					+ "\">";
 
-			result += "<script>$('#" + this.getId()
-					+ "')"+descriptionJS+".autoGrowInput({comfortZone: 16, minWidth:" + this.getWidth()
-					* this.fontsize + ", maxWidth: " + this.getMaxWidth()
-					* this.fontsize + "});</script>";
+			result += "<script>$('#" + this.getId() + "')" + descriptionJS
+					+ ".autoGrowInput({comfortZone: 16, minWidth:" + this.getWidth() * this.fontsize + ", maxWidth: "
+					+ this.getMaxWidth() * this.fontsize + "});</script>";
 
 			return result;
 		}
 	}
 
 	@Override
-	public String toHtml(Tuple params) throws HtmlInputException,
-			ParseException
+	public String toHtml(Tuple params) throws HtmlInputException, ParseException
 	{
 		return new StringInput(params).render();
 	}
@@ -241,6 +231,5 @@ public class ValidatingInput<E> extends HtmlInput<E>
 	{
 		this.fontsize = fontsize;
 	}
-	
-	
+
 }

@@ -17,17 +17,17 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 /**
- * This command changes the limit of the number of items shown in listview 
- *
+ * This command changes the limit of the number of items shown in listview
+ * 
  * @param <E>
  */
 public class ChangeListLimitCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = -8328256342346578115L;
-	//the limit it should change too
+	// the limit it should change too
 	private int limit = 5;
 
-	public ChangeListLimitCommand(String name, ScreenController<?>  parentScreen)
+	public ChangeListLimitCommand(String name, ScreenController<?> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Show %s items");
@@ -41,11 +41,11 @@ public class ChangeListLimitCommand<E extends Entity> extends SimpleCommand
 		// only show in list view
 		return getFormScreen().getMode().equals(Mode.LIST_VIEW);
 	}
-	
+
 	@Override
 	public String getLabel()
 	{
-		return String.format(super.getLabel(),getLimit());
+		return String.format(super.getLabel(), getLimit());
 	}
 
 	@Override

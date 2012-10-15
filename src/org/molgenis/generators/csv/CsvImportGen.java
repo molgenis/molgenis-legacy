@@ -19,34 +19,35 @@ import freemarker.template.Template;
 public class CsvImportGen extends MySqlCreateClassPerTableGen
 {
 	public static final transient Logger logger = Logger.getLogger(CsvImportGen.class);
-	
+
 	@Override
 	public String getDescription()
 	{
 		return "Generates CsvImport";
 	}
-	
-	@Override
-	public void generate(Model model, MolgenisOptions options)
-			throws Exception
-	{
-		Template template = createTemplate( "/"+this.getClass().getSimpleName()+".java.ftl" );
-		Map<String, Object> templateArgs = createTemplateArguments(options);
-		
-		List<Entity> entityList = model.getEntities();
-		entityList = MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
-		//String packageName = this.getClass().getPackage().toString().substring(Generator.class.getPackage().toString().length());
 
-		File target = new File( this.getSourcePath(options) + APP_DIR+"/CsvImport.java" );
+	@Override
+	public void generate(Model model, MolgenisOptions options) throws Exception
+	{
+		Template template = createTemplate("/" + this.getClass().getSimpleName() + ".java.ftl");
+		Map<String, Object> templateArgs = createTemplateArguments(options);
+
+		List<Entity> entityList = model.getEntities();
+		entityList = MolgenisModel.sortEntitiesByDependency(entityList, model); // side
+																				// effect?
+		// String packageName =
+		// this.getClass().getPackage().toString().substring(Generator.class.getPackage().toString().length());
+
+		File target = new File(this.getSourcePath(options) + APP_DIR + "/CsvImport.java");
 		target.getParentFile().mkdirs();
-		
-		templateArgs.put( "model", model );
-		templateArgs.put("entities",entityList);
+
+		templateArgs.put("model", model);
+		templateArgs.put("entities", entityList);
 		templateArgs.put("package", APP_DIR);
-		OutputStream targetOut = new FileOutputStream( target );
-		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
+		OutputStream targetOut = new FileOutputStream(target);
+		template.process(templateArgs, new OutputStreamWriter(targetOut));
 		targetOut.close();
-		
+
 		logger.info("generated " + target);
 	}
 }
