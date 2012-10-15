@@ -15,12 +15,9 @@ public class JQueryDataTableBeta extends TableBeta
 	public String toHtml()
 	{
 		String result = super.toHtml();
-		result += "<script>$('#" + getId() + "')"
-				+ ".css('min-height','100px')" + ".dataTable({"
-				+ "\n\"bPaginate\": false," + "\n\"bLengthChange\": true,"
-				+ "\n\"bFilter\": false," + "\n\"bSort\": false,"
-				+ "\n\"bInfo\": false," + "\n\"bJQueryUI\": true})"
-				+ "</script>";
+		result += "<script>$('#" + getId() + "')" + ".css('min-height','100px')" + ".dataTable({"
+				+ "\n\"bPaginate\": false," + "\n\"bLengthChange\": true," + "\n\"bFilter\": false,"
+				+ "\n\"bSort\": false," + "\n\"bInfo\": false," + "\n\"bJQueryUI\": true})" + "</script>";
 		return result;
 	}
 

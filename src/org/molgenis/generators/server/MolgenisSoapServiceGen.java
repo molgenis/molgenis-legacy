@@ -26,30 +26,28 @@ public class MolgenisSoapServiceGen extends Generator
 	{
 		return "Generates soap service interfaces for each entity.";
 	}
-	
+
 	@Override
-	public void generate(Model model, MolgenisOptions options)
-			throws Exception
+	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
-		Template template = createTemplate( "/"+this.getClass().getSimpleName()+".java.ftl" );
+		Template template = createTemplate("/" + this.getClass().getSimpleName() + ".java.ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
-		
+
 		List<Entity> entityList = model.getEntities();
 		List<Method> methodList = model.getMethods();
 
-
-		File target = new File( this.getSourcePath(options) + APP_DIR + "/servlet/SoapService.java" );
+		File target = new File(this.getSourcePath(options) + APP_DIR + "/servlet/SoapService.java");
 		target.getParentFile().mkdirs();
-		
-		templateArgs.put("model", model );
+
+		templateArgs.put("model", model);
 		templateArgs.put("methods", methodList);
 		templateArgs.put("entities", entityList);
 		templateArgs.put("helper", new GeneratorHelper(null));
-		templateArgs.put("package", APP_DIR+".servlet");
-		OutputStream targetOut = new FileOutputStream( target );
-		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
+		templateArgs.put("package", APP_DIR + ".servlet");
+		OutputStream targetOut = new FileOutputStream(target);
+		template.process(templateArgs, new OutputStreamWriter(targetOut));
 		targetOut.close();
-		
+
 		logger.info("generated " + target);
 	}
 }

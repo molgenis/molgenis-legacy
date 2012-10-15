@@ -4,7 +4,7 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-public class DateStringAdapter extends XmlAdapter<String,Date>
+public class DateStringAdapter extends XmlAdapter<String, Date>
 {
 
 	/**
@@ -25,8 +25,7 @@ public class DateStringAdapter extends XmlAdapter<String,Date>
 	 * Alternative String format used for Dates: {@value} .
 	 */
 	public static final String DATETIMEFORMAT2 = "yyyy-MM-dd HH:mm:ss";
-	
-	
+
 	@Override
 	public String marshal(Date v) throws Exception
 	{

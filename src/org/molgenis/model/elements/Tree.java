@@ -13,9 +13,6 @@ import org.molgenis.model.MolgenisModelException;
 
 // jdk
 
-
-
-
 /**
  * 
  */
@@ -42,13 +39,10 @@ public class Tree extends UISchema
 		 */
 		public static ViewType parseViewType(String str) throws MolgenisModelException
 		{
-			if (str == null)
-				throw new MolgenisModelException("view-type cannot be null");
+			if (str == null) throw new MolgenisModelException("view-type cannot be null");
 
-			if (str.equals(ViewType.VIEWTYPE_LIST.val))
-				return ViewType.VIEWTYPE_LIST;
-			else if (str.equals(ViewType.VIEWTYPE_RECORD.val))
-				return ViewType.VIEWTYPE_RECORD;
+			if (str.equals(ViewType.VIEWTYPE_LIST.val)) return ViewType.VIEWTYPE_LIST;
+			else if (str.equals(ViewType.VIEWTYPE_RECORD.val)) return ViewType.VIEWTYPE_RECORD;
 			else
 				return ViewType.VIEWTYPE_UNKNOWN;
 		}
@@ -59,11 +53,9 @@ public class Tree extends UISchema
 			this.val = val;
 		}
 
-
 		/** */
 		private String val;
 	}
-
 
 	// constructor(s)
 	/**
@@ -95,7 +87,7 @@ public class Tree extends UISchema
 	{
 		return this.entity;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -103,7 +95,7 @@ public class Tree extends UISchema
 	{
 		this.record = record;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -128,30 +120,36 @@ public class Tree extends UISchema
 		return this.readonly;
 	}
 
-	public String getIdField() {
+	public String getIdField()
+	{
 		return idField;
 	}
 
-	public void setIdField(String idField) {
+	public void setIdField(String idField)
+	{
 		this.idField = idField;
 	}
 
-	public String getLabelField() {
+	public String getLabelField()
+	{
 		return labelField;
 	}
 
-	public void setLabelField(String labelField) {
+	public void setLabelField(String labelField)
+	{
 		this.labelField = labelField;
 	}
 
-	public String getParentField() {
+	public String getParentField()
+	{
 		return parentField;
 	}
 
-	public void setParentField(String parentField) {
+	public void setParentField(String parentField)
+	{
 		this.parentField = parentField;
 	}
-	
+
 	//
 	/**
 	 * 
@@ -161,7 +159,6 @@ public class Tree extends UISchema
 		return Type.TREE;
 	}
 
-
 	// member variables
 	/** */
 	private Record record;
@@ -169,7 +166,7 @@ public class Tree extends UISchema
 	private Entity entity;
 	/** */
 	private boolean readonly;
-	
+
 	private String parentField;
 
 	private String idField;

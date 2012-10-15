@@ -13,9 +13,6 @@ import java.util.Observable;
 
 import java.lang.IllegalAccessException;
 
-
-
-
 /**
  * Implementation of a property. This class is a generic, which can be used for
  * adding properties to your class. It has the get and set methods, so there is
@@ -50,7 +47,8 @@ public class Property<GaType> extends Observable
 	 * Default constructor which sets the property-value to the given value and
 	 * the editable-flag to true.
 	 * 
-	 * @param value The value for the property.
+	 * @param value
+	 *            The value for the property.
 	 */
 	public Property(GaType value)
 	{
@@ -62,8 +60,10 @@ public class Property<GaType> extends Observable
 	 * Default constructor which sets the property-value to the given value and
 	 * the editable-flag to given value.
 	 * 
-	 * @param value The value for the property.
-	 * @param editable The editable-flag.
+	 * @param value
+	 *            The value for the property.
+	 * @param editable
+	 *            The editable-flag.
 	 */
 	public Property(GaType value, boolean editable)
 	{
@@ -78,9 +78,10 @@ public class Property<GaType> extends Observable
 	 * the value is changed and all the registered observers are notied of the
 	 * change.
 	 * 
-	 * @param value The new value for the property
-	 * @throws IllegalAccessException Thrown when the editable-flag has been set
-	 *             to false.
+	 * @param value
+	 *            The new value for the property
+	 * @throws IllegalAccessException
+	 *             Thrown when the editable-flag has been set to false.
 	 */
 	public synchronized void set(GaType value) throws IllegalAccessException
 	{
@@ -117,7 +118,6 @@ public class Property<GaType> extends Observable
 	{
 		return this.editable;
 	}
-
 
 	// member variables
 	/** The actual value of this property */

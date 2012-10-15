@@ -9,12 +9,12 @@ import org.molgenis.framework.server.MolgenisContext;
 public class AsyncMolgenisResponse
 {
 	HttpServletResponse response;
-	
+
 	public AsyncMolgenisResponse()
 	{
 
 	}
-	
+
 	public AsyncMolgenisResponse(HttpServletResponse response)
 	{
 		this.response = response;
@@ -22,7 +22,7 @@ public class AsyncMolgenisResponse
 
 	public AsyncMolgenisResponse(UUID id, MolgenisContext mc)
 	{
-		//this.response = (HttpServletResponse)new Harry(id,mc);
+		// this.response = (HttpServletResponse)new Harry(id,mc);
 	}
 
 	public HttpServletResponse getResponse()

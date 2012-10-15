@@ -61,8 +61,7 @@ public abstract class EntityForm<E extends Entity> extends HtmlForm
 
 	public void setInputs(List<HtmlInput<?>> inputs)
 	{
-		throw new UnsupportedOperationException(
-				"In EntityForm the inputs cannot be changed");
+		throw new UnsupportedOperationException("In EntityForm the inputs cannot be changed");
 	}
 
 	/**
@@ -92,23 +91,23 @@ public abstract class EntityForm<E extends Entity> extends HtmlForm
 	 */
 	public abstract Vector<String> getHeaders();
 
-	public List<HtmlInput<?>> getInputs(String ... fieldNames)
+	public List<HtmlInput<?>> getInputs(String... fieldNames)
 	{
 		Entity entity = this.getEntity();
 		List<HtmlInput<?>> inputs = this.getInputs();
-				List<HtmlInput<?>> result = new ArrayList<HtmlInput<?>>();
-		
-		for(String fieldName: fieldNames)
+		List<HtmlInput<?>> result = new ArrayList<HtmlInput<?>>();
+
+		for (String fieldName : fieldNames)
 		{
-			if(!entity.getFields().contains(fieldName))
+			if (!entity.getFields().contains(fieldName))
 			{
-				throw new RuntimeException(fieldName +" not known in "+this.getClass().getSimpleName());
+				throw new RuntimeException(fieldName + " not known in " + this.getClass().getSimpleName());
 			}
-			
-			for(HtmlInput<?> input: inputs)
+
+			for (HtmlInput<?> input : inputs)
 			{
-				//will this work always??
-				if(input.getName().equalsIgnoreCase(entity.getClass().getSimpleName()+"_"+fieldName))
+				// will this work always??
+				if (input.getName().equalsIgnoreCase(entity.getClass().getSimpleName() + "_" + fieldName))
 				{
 					result.add(input);
 				}
@@ -116,6 +115,6 @@ public abstract class EntityForm<E extends Entity> extends HtmlForm
 		}
 
 		return result;
-		
+
 	}
 }

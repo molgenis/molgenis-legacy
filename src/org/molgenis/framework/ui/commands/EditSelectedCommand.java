@@ -28,8 +28,7 @@ import org.molgenis.util.Tuple;
 public class EditSelectedCommand extends SimpleCommand
 {
 	private static final long serialVersionUID = -2996595009523144519L;
-	public static final transient Logger logger = Logger
-			.getLogger(EditSelectedCommand.class);
+	public static final transient Logger logger = Logger.getLogger(EditSelectedCommand.class);
 	private List<?> selectedIds = new ArrayList<Object>();
 
 	public EditSelectedCommand(String name, ScreenController<?> parentScreen)
@@ -50,8 +49,7 @@ public class EditSelectedCommand extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request,
-			OutputStream out) throws Exception
+	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream out) throws Exception
 	{
 		logger.debug(this.getName());
 
@@ -66,13 +64,12 @@ public class EditSelectedCommand extends SimpleCommand
 			}
 
 			ScreenMessage msg = null;
-			
-			//cleanup the request, only use ticked (marked with 'use_'
+
+			// cleanup the request, only use ticked (marked with 'use_'
 			Tuple updateTuple = new SimpleTuple();
-			for(HtmlInput<?> input : this.getFormScreen().getNewRecordForm()
-				.getInputs())
+			for (HtmlInput<?> input : this.getFormScreen().getNewRecordForm().getInputs())
 			{
-				if(!request.isNull("use_"+input.getName()))
+				if (!request.isNull("use_" + input.getName()))
 				{
 					updateTuple.set(input.getName(), request.getObject(input.getName()));
 				}
@@ -81,8 +78,7 @@ public class EditSelectedCommand extends SimpleCommand
 			int row = 0;
 			try
 			{
-				Query<? extends Entity> q = db.query(
-						view.getController().getEntityClass()).in(
+				Query<? extends Entity> q = db.query(view.getController().getEntityClass()).in(
 						view.create().getIdField(), idList);
 				List<? extends Entity> entities = q.find();
 
@@ -90,13 +86,12 @@ public class EditSelectedCommand extends SimpleCommand
 				for (Entity e : entities)
 				{
 					row++;
-					//set only not null values
+					// set only not null values
 					e.set(updateTuple, false);
 					db.update(e);
 				}
 				db.commitTx();
-				msg = new ScreenMessage("MASS UPDATE SUCCESS: updated "
-						+ entities.size() + " rows", null, true);
+				msg = new ScreenMessage("MASS UPDATE SUCCESS: updated " + entities.size() + " rows", null, true);
 			}
 
 			catch (Exception e)
@@ -110,13 +105,12 @@ public class EditSelectedCommand extends SimpleCommand
 					logger.error("doMassUpdate() Should never happen: " + e1);
 					e1.printStackTrace();
 				}
-				msg = new ScreenMessage("MASS UPDATE FAILED on item '" + row
-						+ "': " + e, null, false);
+				msg = new ScreenMessage("MASS UPDATE FAILED on item '" + row + "': " + e, null, false);
 			}
 
 			view.getMessages().add(msg);
 		}
-		//record the selected ids
+		// record the selected ids
 		else
 		{
 			this.selectedIds = request.getList(FormModel.INPUT_SELECTED);
@@ -149,15 +143,16 @@ public class EditSelectedCommand extends SimpleCommand
 	public List<HtmlInput<?>> getInputs() throws DatabaseException
 	{
 		List<HtmlInput<?>> inputs = new ArrayList<HtmlInput<?>>();
-		
-		if(this.selectedIds == null || this.selectedIds.size() == 0){
+
+		if (this.selectedIds == null || this.selectedIds.size() == 0)
+		{
 			Paragraph t = new Paragraph("No records were selected for updating.");
 			t.setDescription("Error.");
 			inputs.add(t);
 			return inputs;
 		}
-		
-		Paragraph t = new Paragraph("Selected ids:"+ this.selectedIds.toString());
+
+		Paragraph t = new Paragraph("Selected ids:" + this.selectedIds.toString());
 		t.setDescription("The IDs you have selected for updating.");
 		inputs.add(t);
 
@@ -170,8 +165,7 @@ public class EditSelectedCommand extends SimpleCommand
 		}
 
 		// get inputs from formscreen
-		for (HtmlInput<?> input : this.getFormScreen().getNewRecordForm()
-				.getInputs())
+		for (HtmlInput<?> input : this.getFormScreen().getNewRecordForm().getInputs())
 		{
 			if (!input.isHidden() && !input.isReadonly())
 			{
@@ -181,7 +175,7 @@ public class EditSelectedCommand extends SimpleCommand
 			}
 
 		}
-		
+
 		return inputs;
 	}
 }

@@ -25,28 +25,27 @@ public class CPPMainGen extends ForEachEntityGenerator
 	{
 		return "Generates CPP cmake file";
 	}
-	
+
 	@Override
-	public void generate(Model model, MolgenisOptions options)
-			throws Exception
+	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
-		Template template = createTemplate( "/"+this.getClass().getSimpleName()+".cpp.ftl" );
+		Template template = createTemplate("/" + this.getClass().getSimpleName() + ".cpp.ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
-		
+
 		List<Entity> entityList = model.getEntities();
-		MolgenisModel.sortEntitiesByDependency(entityList,model);
-		File target = new File(this.getCPPSourcePath(options) + "/main.cpp" );
+		MolgenisModel.sortEntitiesByDependency(entityList, model);
+		File target = new File(this.getCPPSourcePath(options) + "/main.cpp");
 		target.getParentFile().mkdirs();
-		
-		templateArgs.put("model", model );
-		templateArgs.put("entities",entityList);
-		templateArgs.put("UserHome",System.getProperty("user.dir").replace("\\", "/").toString());
-		OutputStream targetOut = new FileOutputStream( target );
-		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
+
+		templateArgs.put("model", model);
+		templateArgs.put("entities", entityList);
+		templateArgs.put("UserHome", System.getProperty("user.dir").replace("\\", "/").toString());
+		OutputStream targetOut = new FileOutputStream(target);
+		template.process(templateArgs, new OutputStreamWriter(targetOut));
 		targetOut.close();
 		logger.info("generated " + target);
 	}
-	
+
 	@Override
 	public String getSourcePath(MolgenisOptions options)
 	{

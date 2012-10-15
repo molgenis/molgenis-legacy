@@ -55,9 +55,9 @@ public class RestInterface
 
 		logger.info("starting REST request " + request.getPathInfo());
 		long start_time = System.currentTimeMillis();
-		
-		if(request.getPathInfo().startsWith("/find") || request.getPathInfo().startsWith("/count"))
-			handleRetrievalRequest(request,response, db);
+
+		if (request.getPathInfo().startsWith("/find") || request.getPathInfo().startsWith("/count")) handleRetrievalRequest(
+				request, response, db);
 
 		logger.info("servlet took: " + (System.currentTimeMillis() - start_time));
 		logger.info("------------");
@@ -99,8 +99,8 @@ public class RestInterface
 				// execute query
 				if (request.getPathInfo().startsWith("/count/"))
 				{
-					if (rulesList != null) db.count(getClassForName(entityName), rulesList
-							.toArray(new QueryRule[rulesList.size()]));
+					if (rulesList != null) db.count(getClassForName(entityName),
+							rulesList.toArray(new QueryRule[rulesList.size()]));
 					else
 					{
 						out.println(db.count(getClassForName(entityName)));
@@ -112,8 +112,8 @@ public class RestInterface
 					TupleWriter writer = new CsvWriter(out);
 					// CsvWriter writer = new CsvFileWriter( new
 					// File("c:/testout.txt") );
-					if (rulesList != null) db.find(getClassForName(entityName), writer, rulesList
-							.toArray(new QueryRule[rulesList.size()]));
+					if (rulesList != null) db.find(getClassForName(entityName), writer,
+							rulesList.toArray(new QueryRule[rulesList.size()]));
 					else
 					{
 						db.find(getClassForName(entityName), writer);
@@ -148,7 +148,6 @@ public class RestInterface
 		return (Class<? extends Entity>) Class.forName(entityName);
 	}
 
-
 	private static List<QueryRule> createQueryRulesFromRequest(HttpServletRequest request) throws Exception
 	{
 		List<QueryRule> rulesList = new ArrayList<QueryRule>();
@@ -156,7 +155,7 @@ public class RestInterface
 		if (request.getQueryString() != null)
 		{
 			logger.debug("handle find query via http-get: " + request.getQueryString());
-			rulesList = QueryRuleUtil.fromRESTstring(URLDecoder.decode(request.getQueryString(),"UTF-8"));
+			rulesList = QueryRuleUtil.fromRESTstring(URLDecoder.decode(request.getQueryString(), "UTF-8"));
 		}
 		// use 'post'
 		else
@@ -165,7 +164,8 @@ public class RestInterface
 			String queryString = "";
 			for (String name : requestTuple.getFields())
 			{
-				queryString += URLDecoder.decode(name,"UTF-8") + "=" + URLDecoder.decode(requestTuple.getString(name),"UTF-8");
+				queryString += URLDecoder.decode(name, "UTF-8") + "="
+						+ URLDecoder.decode(requestTuple.getString(name), "UTF-8");
 			}
 			logger.debug("handle find query via http-post with parameters: " + queryString);
 			rulesList = QueryRuleUtil.fromRESTstring(queryString);
@@ -206,8 +206,7 @@ public class RestInterface
 		out.println(fieldInput.getHtml() + operatorInput.getHtml() + valueInput.getHtml());
 		out.println("<br>");
 
-		out
-				.println("<input type=\"submit\" value=\"generate url\" onclick=\"generateRestUrl(this.form.elements); return false\">");
+		out.println("<input type=\"submit\" value=\"generate url\" onclick=\"generateRestUrl(this.form.elements); return false\">");
 
 		out.println("TIP: notice how the url is bookmarkeable for future downloads!");
 		out.println("TIP: click 'save as...' and name it as '.txt' file.");

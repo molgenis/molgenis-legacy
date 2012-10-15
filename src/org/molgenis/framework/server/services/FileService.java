@@ -14,7 +14,6 @@ import org.molgenis.framework.server.ServeConfig;
 
 import Acme.Serve.FileServlet;
 
-
 /// Java Servlet implementation of a HTTP file server.
 //<p>
 //Implements the "GET" and "HEAD" methods for files and directories.
@@ -23,18 +22,19 @@ import Acme.Serve.FileServlet;
 //Handles If-Modified-Since.
 //</p>
 
-public class FileService  extends FileServlet implements MolgenisService{
+public class FileService extends FileServlet implements MolgenisService
+{
 
 	private MolgenisContext mc;
-	
+
 	public FileService(MolgenisContext mc) throws ServletException
 	{
 		this.mc = mc;
-		
-		//needed to pass MIME type mapping from webserver to servlet!
-		super.init(new ServeConfig( mc.getServletContext(), null, "/"));
+
+		// needed to pass MIME type mapping from webserver to servlet!
+		super.init(new ServeConfig(mc.getServletContext(), null, "/"));
 	}
-	
+
 	private static final long serialVersionUID = -2932420561105678721L;
 
 	@Override
@@ -49,7 +49,7 @@ public class FileService  extends FileServlet implements MolgenisService{
 		{
 			throw new IOException(e);
 		}
-		
+
 	}
-	
+
 }

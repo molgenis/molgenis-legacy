@@ -20,10 +20,10 @@ public interface Tree<T> extends Serializable
 	 * Retrieve a subtree by name.
 	 * 
 	 * @param name
-	 *        of the subtree
+	 *            of the subtree
 	 * @return a subtree.
 	 */
-	public T get( String name );
+	public T get(String name);
 
 	/**
 	 * Retrieve the parent node of current element.
@@ -36,9 +36,9 @@ public interface Tree<T> extends Serializable
 	 * Set the parent of current element (and move the children accordingly).
 	 * 
 	 * @param parent
-	 *        to replace current parent of this.
+	 *            to replace current parent of this.
 	 */
-	public void setParent( T parent );
+	public void setParent(T parent);
 
 	/**
 	 * Retrieve wether this Tree has a parent
@@ -72,7 +72,7 @@ public interface Tree<T> extends Serializable
 	 * Get the children, and their children, etc. of this element.
 	 */
 	public List<T> getAllChildren();
-	
+
 	/**
 	 * Get all children, optional including self
 	 */
@@ -82,10 +82,10 @@ public interface Tree<T> extends Serializable
 	 * Get a subtree by name.
 	 * 
 	 * @param name
-	 *        of the subtree
+	 *            of the subtree
 	 * @return subtree
 	 */
-	public T getChild( String name );
+	public T getChild(String name);
 
 	/**
 	 * Print the tree.
@@ -98,11 +98,11 @@ public interface Tree<T> extends Serializable
 	 * Pretty print the (sub)tree, but only a certain levels
 	 * 
 	 * @param includeSubTree
-	 *        if true the subtree is also printed
+	 *            if true the subtree is also printed
 	 * @param level
-	 *        will print in so many levels
+	 *            will print in so many levels
 	 */
-	public String toString( boolean includeSubTree, int level );
+	public String toString(boolean includeSubTree, int level);
 
 	/**
 	 * Retrieve all tree elements as map.
@@ -121,7 +121,7 @@ public interface Tree<T> extends Serializable
 	/**
 	 * Set the value of this node/leaf
 	 */
-	public void setValue( Object o );
+	public void setValue(Object o);
 
 	/**
 	 * Translate the path of this subtree as a separated string.
@@ -129,6 +129,6 @@ public interface Tree<T> extends Serializable
 	 * @param separator
 	 * @return string with the pat. FIXME: make this return a collection.
 	 */
-	public String getPath( String separator );
+	public String getPath(String separator);
 
 }

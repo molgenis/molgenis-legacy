@@ -1,10 +1,10 @@
 package org.molgenis.model.elements;
 
-
 /**
  * Import model
+ * 
  * @author Morris Swertz
- *
+ * 
  */
 public class Import
 {
@@ -19,5 +19,5 @@ public class Import
 	{
 		this.src = src;
 	}
-	
+
 }

@@ -43,7 +43,7 @@ public abstract class MultipanelLayout extends AbstractHtmlElement implements La
 	{
 		// todo: need to think on how to implement
 		throw new UnsupportedOperationException();
-	
+
 	}
 
 	@Override
@@ -54,8 +54,7 @@ public abstract class MultipanelLayout extends AbstractHtmlElement implements La
 	}
 
 	@Override
-	public String render(Tuple params) throws ParseException,
-			HtmlInputException
+	public String render(Tuple params) throws ParseException, HtmlInputException
 	{
 		throw new UnsupportedOperationException("not implemented");
 	}

@@ -15,8 +15,8 @@ public interface DataSourceWrapper
 
 	int getMaxActive() throws NamingException;
 
-	//public String getDriverClassName() throws NamingException;
-	
-	//public int getNumActive();
-	
+	// public String getDriverClassName() throws NamingException;
+
+	// public int getNumActive();
+
 }

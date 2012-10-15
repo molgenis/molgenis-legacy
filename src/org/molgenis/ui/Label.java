@@ -3,7 +3,7 @@ package org.molgenis.ui;
 public class Label extends MolgenisComponent<Label>
 {
 	private String value;
-	
+
 	public Label(String value)
 	{
 		super();

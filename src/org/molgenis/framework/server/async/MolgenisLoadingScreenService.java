@@ -30,31 +30,33 @@ public class MolgenisLoadingScreenService implements AsyncMolgenisService
 	 * @param response
 	 */
 	@Override
-	public void handleRequest(AsyncMolgenisRequest req, AsyncMolgenisResponse res)
-			throws ParseException, DatabaseException, IOException
+	public void handleRequest(AsyncMolgenisRequest req, AsyncMolgenisResponse res) throws ParseException,
+			DatabaseException, IOException
 	{
-		//HttpServletRequest request = req.getRequest();
+		// HttpServletRequest request = req.getRequest();
 		HttpServletResponse response = res.getResponse();
 		UUID id = req.getLoadingScreenId();
 
 		try
 		{
 			PrintWriter out = response.getWriter();
-			
-			if(mc.getLoadingScreenUUIDFactory().isActiveLoadingScreenId(id))
+
+			if (mc.getLoadingScreenUUIDFactory().isActiveLoadingScreenId(id))
 			{
-				out.println("<html><head><META HTTP-EQUIV=Refresh CONTENT=\"10; URL="+"loadingscreen?id="+id.toString()+"\"></head><body>");
+				out.println("<html><head><META HTTP-EQUIV=Refresh CONTENT=\"10; URL=" + "loadingscreen?id="
+						+ id.toString() + "\"></head><body>");
 				out.println("LOADING");
 				out.println("</body></html>");
 			}
-			else{
+			else
+			{
 				LoadingScreen lscreen = mc.getLoadingScreenUUIDFactory().doneLoadingId(id);
-				out.println("<html><head><META HTTP-EQUIV=Refresh CONTENT=\"10; URL="+lscreen.service+"?id="+id.toString()+"\"></head><body>");
+				out.println("<html><head><META HTTP-EQUIV=Refresh CONTENT=\"10; URL=" + lscreen.service + "?id="
+						+ id.toString() + "\"></head><body>");
 				out.print(lscreen.output);
 				out.println("</body></html>");
 			}
-			
-			
+
 		}
 		catch (Exception e)
 		{
@@ -67,7 +69,7 @@ public class MolgenisLoadingScreenService implements AsyncMolgenisService
 	public void handleAsyncRequest(AsyncMolgenisRequest request, UUID id)
 	{
 		// loading screen itself is not async ofcourse
-		
+
 	}
 
 }
