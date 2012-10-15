@@ -91,15 +91,14 @@ public class Index implements Serializable
 	 */
 	public String toString()
 	{
-		String str = "Index(" + name + " => ";
-
+		StringBuilder strBuilder = new StringBuilder("Index(").append(name).append(" => ");
 		for (String field : fields)
 		{
-			str += field + ", ";
+			strBuilder.append(field).append(", ");
 		}
-		str += ")";
+		strBuilder.append(')');
 
-		return str;
+		return strBuilder.toString();
 	}
 
 	/**

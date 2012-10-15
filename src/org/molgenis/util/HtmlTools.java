@@ -21,13 +21,12 @@ public class HtmlTools
 		{
 			return "";
 		}
-		String enc = "";
+		StringBuilder encBuilder = new StringBuilder();
 		for (char c : input.toCharArray())
 		{
-			enc += (int) c + ".";
+			encBuilder.append((int) c).append('.');
 		}
-		enc = enc.substring(0, enc.length() - 1);
-		return enc;
+		return encBuilder.substring(0, encBuilder.length() - 1);
 	}
 
 	/**
@@ -43,13 +42,12 @@ public class HtmlTools
 		{
 			return "";
 		}
-		String enc = "";
+		StringBuilder encBuilder = new StringBuilder();
 		for (char c : input.toCharArray())
 		{
-			enc += (int) (Math.pow((c), 2) - Math.pow(10, 4)) + ".";
+			encBuilder.append((int) (Math.pow((c), 2) - Math.pow(10, 4))).append('.');
 		}
-		enc = enc.substring(0, enc.length() - 1);
-		return enc;
+		return encBuilder.substring(0, encBuilder.length() - 1);
 	}
 
 	/**
@@ -62,14 +60,14 @@ public class HtmlTools
 	 */
 	public static String fromSafeUrlStringO_b_f(String input)
 	{
-		String dec = "";
+		StringBuilder decBuilder = new StringBuilder();
 		for (String nr : input.split("\\."))
 		{
 			int i = (int) Math.sqrt(Integer.parseInt(nr) + Math.pow(10, 4));
 			char c = (char) i;
-			dec += c;
+			decBuilder.append(c);
 		}
-		return dec;
+		return decBuilder.toString();
 	}
 
 	/**
@@ -84,13 +82,12 @@ public class HtmlTools
 		{
 			return "";
 		}
-		String enc = "";
+		StringBuilder encBuilder = new StringBuilder();
 		for (char c : input.toCharArray())
 		{
-			enc += ((int) (Math.pow((c), 2) - 4321)) + ".";
+			encBuilder.append((int) (Math.pow((c), 2) - 4321)).append('.');
 		}
-		enc = enc.substring(0, enc.length() - 1);
-		return enc;
+		return encBuilder.substring(0, encBuilder.length() - 1);
 	}
 
 	/**
@@ -102,14 +99,14 @@ public class HtmlTools
 	 */
 	public static String fromSafeUrlString(String input)
 	{
-		String dec = "";
+		StringBuilder decBuilder = new StringBuilder();
 		for (String nr : input.split("\\."))
 		{
 			int i = Integer.parseInt(nr);
 			char c = (char) i;
-			dec += c;
+			decBuilder.append(c);
 		}
-		return dec;
+		return decBuilder.toString();
 	}
 
 	/**

@@ -30,49 +30,48 @@ public class JQueryDataTable extends Table
 	@Override
 	public String toHtml()
 	{
-		String result = super.toHtml();
-		result += "<script>$('#" + getId() + "')" + ".css('min-height','10px')" + ".dataTable({" +
-		// "\n\"bPaginate\": false," +
-				"\n\"bLengthChange\": true," +
-				// "\n\"bFilter\": false," +
-				"\n\"bInfo\": false," + "\n\"bAutoWidth\": false," + "\n\"bJQueryUI\": true,";
-		// "\n\"bSort\": false," +
+		StringBuilder strBuilder = new StringBuilder(super.toHtml());
+		strBuilder.append("<script>$('#").append(getId()).append("')").append(".css('min-height','10px')")
+				.append(".dataTable({");
+		strBuilder.append("\n\"bLengthChange\": true,");
+		strBuilder.append("\n\"bInfo\": false,").append("\n\"bAutoWidth\": false,").append("\n\"bJQueryUI\": true,");
+
 		if (bSort)
 		{
-			result += "\n\"bSort\": true,";
+			strBuilder.append("\n\"bSort\": true,");
 		}
 		else
 		{
-			result += "\n\"bSort\": false,";
+			strBuilder.append("\n\"bSort\": false,");
 		}
 		if (bFilter)
 		{
-			result += "\n\"bFilter\": true,";
+			strBuilder.append("\n\"bFilter\": true,");
 		}
 		else
 		{
-			result += "\n\"bFilter\": false,";
+			strBuilder.append("\n\"bFilter\": false,");
 		}
 		if (bPaginate)
 		{
-			result += "\n\"bPaginate\": true,";
+			strBuilder.append("\n\"bPaginate\": true,");
 		}
 		else
 		{
-			result += "\n\"bPaginate\": false,";
+			strBuilder.append("\n\"bPaginate\": false,");
 		}
 
-		result += "\n\"aoColumns\": [";
+		strBuilder.append("\n\"aoColumns\": [");
 		// Prevent fancy auto-detected sorting types by hard-setting to 'string'
 		// for every column
 		for (int i = 0; i < super.cols.size() + 1; i++)
 		{
-			result += "\n{ \"sType\": \"string\" },";
+			strBuilder.append("\n{ \"sType\": \"string\" },");
 		}
-		result = result.substring(0, result.length() - 1); // chop off last ,
-		result += "\n]";
-		result += "\n})</script>";
-		return result;
+		strBuilder.setLength(strBuilder.length() - 1); // chop off last ,
+		strBuilder.append("\n]");
+		strBuilder.append("\n})</script>");
+		return strBuilder.toString();
 	}
 
 	public boolean isbSort()

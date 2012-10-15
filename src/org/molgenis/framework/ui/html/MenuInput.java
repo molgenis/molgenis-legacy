@@ -49,7 +49,7 @@ public class MenuInput extends AbstractHtmlElement implements HtmlElement
 
 	protected String render(MenuInput root)
 	{
-		String items = "";
+		StringBuilder itemsBuilder = new StringBuilder();
 		if (root == null) root = this;
 
 		for (HtmlElement item : menusAndButtons)
@@ -59,12 +59,13 @@ public class MenuInput extends AbstractHtmlElement implements HtmlElement
 				ActionInput action = (ActionInput) item;
 				if (this.equals(root))
 				{
-					items += action.render() + "<br />";
+					itemsBuilder.append(action.render()).append("<br />");
 				}
 				else
 				{
-					items += "<li><a href=\"#\" onclick=\"" + action.getJavaScriptAction() + "\">"
-							+ action.getButtonValue() + "</a></li>";
+					itemsBuilder.append("<li><a href=\"#\" onclick=\"").append(action.getJavaScriptAction())
+							.append("\">");
+					itemsBuilder.append(action.getButtonValue()).append("</a></li>");
 				}
 			}
 			else
@@ -72,37 +73,42 @@ public class MenuInput extends AbstractHtmlElement implements HtmlElement
 				MenuInput menu = (MenuInput) item;
 				if (this.equals(root))
 				{
-					items += "<button onclick=\"return false;\">" + menu.getLabel() + "</button>" + menu.render(root);
+					itemsBuilder.append("<button onclick=\"return false;\">").append(menu.getLabel())
+							.append("</button>").append(menu.render(root));
 				}
 				else
 				{
-					items += "<li><a href=\"#\">" + menu.getLabel() + "</a>" + menu.render(root) + "</li>";
+					itemsBuilder.append("<li><a href=\"#\">").append(menu.getLabel()).append("</a>")
+							.append(menu.render(root)).append("</li>");
 				}
 			}
 		}
 
 		if (this.equals(root))
 		{
-			String result = "<div style=\"vertical-align:middle\"><input id=\"downloadButton\" type=\"button\" value=\"Download\" "
-					+ "onclick=\"if (document.getElementById('"
-					+ getId()
-					+ "').style.display=='none') {document.getElementById('"
-					+ getId()
-					+ "').style.display='block';} else {document.getElementById('"
-					+ getId()
-					+ "').style.display='none';} \" "
-					+ "/>"
-					+ "<script>$(\"#downloadButton\").button();</script>"
-					+ "</div>"
-					+ "<div id=\""
-					+ getId()
-					+ "\" style=\"position:absolute; z-index:1; background-color:white; padding:2px; display:none\">"
-					+ items + "</div>";
-			return result;
+			StringBuilder strBuilder = new StringBuilder(
+					"<div style=\"vertical-align:middle\"><input id=\"downloadButton\" type=\"button\" value=\"Download\" ");
+			strBuilder.append("onclick=\"if (document.getElementById('");
+			strBuilder.append(getId());
+			strBuilder.append("').style.display=='none') {document.getElementById('");
+			strBuilder.append(getId());
+			strBuilder.append("').style.display='block';} else {document.getElementById('");
+			strBuilder.append(getId());
+			strBuilder.append("').style.display='none';} \" ");
+			strBuilder.append("/>");
+			strBuilder.append("<script>$(\"#downloadButton\").button();</script>");
+			strBuilder.append("</div>");
+			strBuilder.append("<div id=\"");
+			strBuilder.append(getId());
+			strBuilder
+					.append("\" style=\"position:absolute; z-index:1; background-color:white; padding:2px; display:none\">");
+			strBuilder.append(itemsBuilder).append("</div>");
+
+			return strBuilder.toString();
 		}
 		else
 		{
-			return "<ul>" + items + "</ul>";
+			return itemsBuilder.insert(0, "<ul>").append("</ul>").toString();
 		}
 	}
 

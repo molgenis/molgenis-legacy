@@ -128,7 +128,7 @@ public class ListView extends HtmlInput<List<HtmlForm>>
 		// include hidden inputs for the sortaction
 
 		// start table rendering
-		String result = "<table class=\"listtable\">";
+		StringBuilder strBuilder = new StringBuilder("<table class=\"listtable\">");
 		int rowNo = 1;
 		for (HtmlForm form : this.getRows())
 		{
@@ -137,7 +137,8 @@ public class ListView extends HtmlInput<List<HtmlForm>>
 				// todo: add actions on the headers for sorting
 
 				// render header, only first row
-				result += "<tr><th><label>&nbsp;</label></th><th><label>&nbsp;</label></th><th><label>&nbsp;</label></th>";
+				strBuilder
+						.append("<tr><th><label>&nbsp;</label></th><th><label>&nbsp;</label></th><th><label>&nbsp;</label></th>");
 				for (HtmlInput<?> input : form.getInputs())
 				{
 
@@ -158,54 +159,54 @@ public class ListView extends HtmlInput<List<HtmlForm>>
 						// parameter
 						// sortInput.setParameter("__sortattribute",input.getName());
 
-						result += "<th><label class=\"tableheader\">" + sortAction.toLinkHtml()
-								+ (input.getName().equals(this.getSortedBy()) ? sortAction.getIconHtml() : "")
-								+ "</label></th>";
+						strBuilder.append("<th><label class=\"tableheader\">").append(sortAction.toLinkHtml());
+						strBuilder.append(input.getName().equals(this.getSortedBy()) ? sortAction.getIconHtml() : "");
+						strBuilder.append("</label></th>");
 					}
 				}
-				result += "</tr>";
+				strBuilder.append("</tr>");
 			}
 
 			// render each row, using different class to allow for alternating
 			// colour
-			result += "<tr class=\"form_listrow" + rowNo % 2 + "\">";
+			strBuilder.append("<tr class=\"form_listrow").append(rowNo % 2).append("\">");
 
 			// offset
-			result += "<td>" + (getOffset() + rowNo) + ".</td>";
+			strBuilder.append("<td>").append(getOffset() + rowNo).append(".</td>");
 
 			// checkbox
 			OnoffInput checkbox = new OnoffInput("massUpdate", "TODO", false);
-			result += "<td>" + (isSelectable() ? checkbox.toHtml() : "") + "</td>";
+			strBuilder.append("<td>").append(isSelectable() ? checkbox.toHtml() : "").append("</td>");
 
 			// render action buttons per row
-			result += "<td>";
+			strBuilder.append("<td>");
 			for (ActionInput action : form.getActions())
 			{
-				result += action.toIconHtml();
+				strBuilder.append(action.toIconHtml());
 			}
-			result += "</td>";
+			strBuilder.append("</td>");
 
 			// render other inputs
 			for (HtmlInput<?> input : form.getInputs())
 			{
 				if (!input.isHidden())
 				{
-					result += "<td title=\"" + input.getDescription() + "\">"
-							+ (isReadonly() ? input.getValue() : input.toHtml()) + "</td>";
+					strBuilder.append("<td title=\"").append(input.getDescription()).append("\">");
+					strBuilder.append(isReadonly() ? input.getValue() : input.toHtml()).append("</td>");
 				}
 			}
-			result += "</tr>";
+			strBuilder.append("</tr>");
 
 			rowNo++;
 
 		}
 
 		// render selectall
-		result += "<tr><td></td><td><input title=\"select all visible\" type=\"checkbox\" name=\"checkall\" id=\"checkall\" onclick=\"Javascript:checkAll('TODO','massUpdate')\"/></td></tr>";
+		strBuilder
+				.append("<tr><td></td><td><input title=\"select all visible\" type=\"checkbox\" name=\"checkall\" id=\"checkall\" onclick=\"Javascript:checkAll('TODO','massUpdate')\"/></td></tr>");
+		strBuilder.append("</table>");
 
-		result += "</table>";
-
-		return result;
+		return strBuilder.toString();
 	}
 
 	@Override
