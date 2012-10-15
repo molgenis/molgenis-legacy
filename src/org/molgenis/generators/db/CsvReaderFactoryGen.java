@@ -24,28 +24,27 @@ public class CsvReaderFactoryGen extends Generator
 	{
 		return "Generates one CSVReader factory. Encapsulates CsvReaders to deal with the individual entities.";
 	}
-	
+
 	@Override
-	public void generate(Model model, MolgenisOptions options)
-			throws Exception
+	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
-		Template template = createTemplate( "/"+getClass().getSimpleName()+".java.ftl" );
+		Template template = createTemplate("/" + getClass().getSimpleName() + ".java.ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
-		
+
 		List<Entity> entityList = model.getEntities();
-		//this.sortEntitiesByXref(entityList,model); //side effect?
+		// this.sortEntitiesByXref(entityList,model); //side effect?
 
-
-		File target = new File( this.getSourcePath(options) + model.getName().replace(".", "/") + "/data/CsvReaderFactory.java" );
+		File target = new File(this.getSourcePath(options) + model.getName().replace(".", "/")
+				+ "/data/CsvReaderFactory.java");
 		target.getParentFile().mkdirs();
-		
-		templateArgs.put("model", model );
-		templateArgs.put("entities",entityList);
+
+		templateArgs.put("model", model);
+		templateArgs.put("entities", entityList);
 		templateArgs.put("package", model.getName().toLowerCase() + ".data");
-		OutputStream targetOut = new FileOutputStream( target );
-		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
+		OutputStream targetOut = new FileOutputStream(target);
+		template.process(templateArgs, new OutputStreamWriter(targetOut));
 		targetOut.close();
-		
+
 		logger.info("generated " + target);
 	}
 

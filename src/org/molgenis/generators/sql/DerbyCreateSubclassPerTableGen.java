@@ -20,18 +20,18 @@ public class DerbyCreateSubclassPerTableGen extends Generator
 	public static final transient Logger logger = Logger.getLogger(DerbyCreateSubclassPerTableGen.class);
 
 	@Override
-	public void generate( Model model, MolgenisOptions options ) throws Exception
+	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
 		// create an hsqldb connection
 		Class.forName(options.db_driver);
-		Connection conn = DriverManager.getConnection(options.db_uri+";create=true");
-		
+		Connection conn = DriverManager.getConnection(options.db_uri + ";create=true");
+
 		Statement stmt = null;
 		// create generator
-		Template template = this.createTemplate(this.getClass().getSimpleName()+".hsql.ftl");
+		Template template = this.createTemplate(this.getClass().getSimpleName() + ".hsql.ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 
-		for( Entity entity : model.getEntities() )
+		for (Entity entity : model.getEntities())
 		{
 			// create arguments
 			templateArgs.put("entity", entity);
@@ -48,10 +48,10 @@ public class DerbyCreateSubclassPerTableGen extends Generator
 			// send to log
 			logger.debug("created hsql table: " + out.toString());
 		}
-		
-		//shutdown
+
+		// shutdown
 		DriverManager.getConnection("jdbc:derby:;shutdown=true");
-		
+
 		stmt.close();
 		conn.close();
 

@@ -48,13 +48,13 @@ public class MapperDecorator<E extends Entity> implements Mapper<E>
 	}
 
 	@Override
-	public List<E> find(QueryRule ...rules) throws DatabaseException
+	public List<E> find(QueryRule... rules) throws DatabaseException
 	{
 		return mapper.find(rules);
 	}
 
 	@Override
-	public void find(TupleWriter writer, QueryRule ...rules) throws DatabaseException
+	public void find(TupleWriter writer, QueryRule... rules) throws DatabaseException
 	{
 		mapper.find(writer, rules);
 	}
@@ -110,8 +110,7 @@ public class MapperDecorator<E extends Entity> implements Mapper<E>
 	}
 
 	@Override
-	public void resolveForeignKeys(List<E> enteties) throws ParseException,
-			DatabaseException
+	public void resolveForeignKeys(List<E> enteties) throws ParseException, DatabaseException
 	{
 		mapper.resolveForeignKeys(enteties);
 	}
@@ -122,24 +121,24 @@ public class MapperDecorator<E extends Entity> implements Mapper<E>
 		return mapper.createFindSqlInclRules(rules);
 	}
 
-//	@Override
-//	public int add(E entity) throws DatabaseException
-//	{
-//		return this.mapper.add(entity);
-//	}
-//
-//	@Override
-//	public int update(E entity) throws DatabaseException
-//	{
-//		// TODO Auto-generated method stub
-//		return this.mapper.update(entity);
-//	}
-//
-//	@Override
-//	public int remove(E entity) throws DatabaseException
-//	{
-//		return this.mapper.remove(entity);
-//	}
+	// @Override
+	// public int add(E entity) throws DatabaseException
+	// {
+	// return this.mapper.add(entity);
+	// }
+	//
+	// @Override
+	// public int update(E entity) throws DatabaseException
+	// {
+	// // TODO Auto-generated method stub
+	// return this.mapper.update(entity);
+	// }
+	//
+	// @Override
+	// public int remove(E entity) throws DatabaseException
+	// {
+	// return this.mapper.remove(entity);
+	// }
 
 	@Override
 	public E findById(Object id) throws DatabaseException
@@ -178,6 +177,5 @@ public class MapperDecorator<E extends Entity> implements Mapper<E>
 	{
 		return this.mapper.createList(i);
 	}
-
 
 }

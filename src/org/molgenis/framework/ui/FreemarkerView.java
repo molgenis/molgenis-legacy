@@ -114,8 +114,8 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 				// Object.class, "");
 				// ClassTemplateLoader loader2 = new ClassTemplateLoader(
 				// getClass().getSuperclass(), "");
-				MultiTemplateLoader mLoader = new MultiTemplateLoader(loaders.toArray(new TemplateLoader[loaders
-						.size()]));
+				MultiTemplateLoader mLoader = new MultiTemplateLoader(
+						loaders.toArray(new TemplateLoader[loaders.size()]));
 				conf.setTemplateLoader(mLoader);
 				logger.debug("created freemarker config");
 			}

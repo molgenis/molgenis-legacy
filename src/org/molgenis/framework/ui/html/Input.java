@@ -1,9 +1,8 @@
 package org.molgenis.framework.ui.html;
 
 /**
- * Input is the base-class for all the input classes. It provides the
- * common interface as well as some convenience methods for processing the
- * inputs.
+ * Input is the base-class for all the input classes. It provides the common
+ * interface as well as some convenience methods for processing the inputs.
  * 
  * An Input has:
  * <ul>
@@ -22,6 +21,5 @@ package org.molgenis.framework.ui.html;
  */
 public interface Input<E>
 {
-
 
 }

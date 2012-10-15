@@ -6,7 +6,9 @@ import java.util.UUID;
 import org.molgenis.util.Tuple;
 
 /**
- * Show text within a paragraph (html <p> tag).
+ * Show text within a paragraph (html
+ * <p>
+ * tag).
  */
 public class Paragraph extends HtmlInput<String>
 {
@@ -24,16 +26,15 @@ public class Paragraph extends HtmlInput<String>
 	@Override
 	public String toHtml()
 	{
-		// Don't escape special characters, so user can insert html into the paragraph
-		return "<p id=\"" + getId() + "\" name=\"" + getName() + "\""
-				+ tabIndex + " >" + getValue(false) + "</p>";
+		// Don't escape special characters, so user can insert html into the
+		// paragraph
+		return "<p id=\"" + getId() + "\" name=\"" + getName() + "\"" + tabIndex + " >" + getValue(false) + "</p>";
 	}
-	
+
 	@Override
-	public String toHtml(Tuple params) throws ParseException,
-			HtmlInputException
+	public String toHtml(Tuple params) throws ParseException, HtmlInputException
 	{
-		//pretty useless as you better use <p> inside freemarker
+		// pretty useless as you better use <p> inside freemarker
 		throw new UnsupportedOperationException();
 	}
 }

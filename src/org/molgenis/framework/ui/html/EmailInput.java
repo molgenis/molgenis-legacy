@@ -9,14 +9,14 @@ import org.molgenis.util.Tuple;
  */
 public class EmailInput extends ValidatingInput<Integer>
 {
-	
+
 	public EmailInput(String name)
 	{
 		super(name, null);
 		this.validationString = "email";
 		this.setMaxWidth(10);
 	}
-	
+
 	public EmailInput(String name, String label)
 	{
 		this(name);
@@ -27,15 +27,14 @@ public class EmailInput extends ValidatingInput<Integer>
 
 	public EmailInput(String name, Integer value)
 	{
-		super( name, value );
+		super(name, value);
 		this.validationString = "email";
 		this.setMaxWidth(10);
 	}
 
-	public EmailInput(String name, String label, Integer value,
-			boolean nillable, boolean readonly, String description)
+	public EmailInput(String name, String label, Integer value, boolean nillable, boolean readonly, String description)
 	{
-		super(name,label, value, nillable,readonly, description);
+		super(name, label, value, nillable, readonly, description);
 		this.validationString = "email";
 		this.setMaxWidth(10);
 	}
@@ -46,7 +45,7 @@ public class EmailInput extends ValidatingInput<Integer>
 		this.validationString = "email";
 		this.setMaxWidth(10);
 	}
-	
+
 	public EmailInput(Tuple params) throws HtmlInputException
 	{
 		super(params);
@@ -54,8 +53,7 @@ public class EmailInput extends ValidatingInput<Integer>
 	}
 
 	@Override
-	public String toHtml(Tuple params) throws ParseException,
-			HtmlInputException
+	public String toHtml(Tuple params) throws ParseException, HtmlInputException
 	{
 		return new EmailInput(params).render();
 	}

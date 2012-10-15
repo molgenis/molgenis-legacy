@@ -25,30 +25,35 @@ public class JpaDatabaseGen extends Generator
 	{
 		return "Generates one Jpa to talk to the data. Encapsulates Database Mappers to do this.";
 	}
-	
+
 	@Override
-	public void generate(Model model, MolgenisOptions options)
-			throws Exception
+	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
-		Template template = createTemplate( "/"+getClass().getSimpleName()+".java.ftl" );
+		Template template = createTemplate("/" + getClass().getSimpleName() + ".java.ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
-		
+
 		List<Entity> entityList = model.getEntities();
-		//this.sortEntitiesByXref(entityList,model); //side effect?
-		
-		File target = new File( this.getSourcePath(options) /*+ model.getName().toLowerCase().replace(".", "/")*/ + "/app/JpaDatabase.java" );
+		// this.sortEntitiesByXref(entityList,model); //side effect?
+
+		File target = new File(this.getSourcePath(options) /*
+															 * +
+															 * model.getName().
+															 * toLowerCase
+															 * ().replace(".",
+															 * "/")
+															 */+ "/app/JpaDatabase.java");
 		target.getParentFile().mkdirs();
-		
-		templateArgs.put("model", model );
-		templateArgs.put("entities",entityList);
+
+		templateArgs.put("model", model);
+		templateArgs.put("entities", entityList);
 		String packageName = model.getName().toLowerCase();
 		templateArgs.put("package", packageName);
 		templateArgs.put("auth_loginclass", options.auth_loginclass);
 		templateArgs.put("disable_decorators", options.disable_decorators);
-		OutputStream targetOut = new FileOutputStream( target );
-		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
+		OutputStream targetOut = new FileOutputStream(target);
+		template.process(templateArgs, new OutputStreamWriter(targetOut));
 		targetOut.close();
-		
+
 		logger.info("generated " + target);
 	}
 

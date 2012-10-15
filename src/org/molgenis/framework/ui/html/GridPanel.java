@@ -22,7 +22,9 @@ public class GridPanel extends TablePanel
 	@Override
 	public String toHtml()
 	{
+
 		StringBuilder strBuilder = new StringBuilder("<table>\n");
+
 		int cell = 0;
 
 		for (HtmlInput<?> i : this.inputs.values())
@@ -31,6 +33,7 @@ public class GridPanel extends TablePanel
 
 			if (cell % columns == 0)
 			{
+
 				if (cell != 0) strBuilder.append("</tr>\n");
 				strBuilder.append("<tr>");
 			}

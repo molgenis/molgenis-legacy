@@ -10,13 +10,12 @@ public class VerticalLayout extends FlowLayout
 			if (i instanceof HtmlInput<?>)
 			{
 				HtmlInput<?> input = (HtmlInput<?>) i;
-				returnString += "<label>" + input.getLabel() + "</label><br/>"
-						+ input.toHtml() + "<br/>";
-//				if (!"".equals(input.getDescription()))
-//				{
-//					returnString += "<div class=\"molgenis_help\">"
-//							+ input.getDescription() + "</div><br/>";
-//				}
+				returnString += "<label>" + input.getLabel() + "</label><br/>" + input.toHtml() + "<br/>";
+				// if (!"".equals(input.getDescription()))
+				// {
+				// returnString += "<div class=\"molgenis_help\">"
+				// + input.getDescription() + "</div><br/>";
+				// }
 			}
 			else
 			{

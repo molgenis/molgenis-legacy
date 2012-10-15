@@ -29,10 +29,10 @@ public class WidgetFactory
 			this.input = input;
 		}
 
-		@SuppressWarnings({ "rawtypes" })
+		@SuppressWarnings(
+		{ "rawtypes" })
 		@Override
-		public void execute(Environment env, Map params,
-				TemplateModel[] loopVars, TemplateDirectiveBody body)
+		public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
 		{
 			// transform params
 			SimpleTuple t = new SimpleTuple();
@@ -40,8 +40,7 @@ public class WidgetFactory
 			{
 				if (params.get(key) instanceof SimpleScalar)
 				{
-					t.set(key.toString(), ((SimpleScalar) params.get(key))
-							.toString());
+					t.set(key.toString(), ((SimpleScalar) params.get(key)).toString());
 				}
 				else
 				{
@@ -58,8 +57,7 @@ public class WidgetFactory
 			{
 				try
 				{
-					env.getOut().write(
-							"macro failed: " + e.getMessage() + "<br/>");
+					env.getOut().write("macro failed: " + e.getMessage() + "<br/>");
 				}
 				catch (IOException e1)
 				{
@@ -73,7 +71,7 @@ public class WidgetFactory
 
 	public static void configure(Configuration conf)
 	{
-		Map<String,HtmlInput<?>> map = new LinkedHashMap<String,HtmlInput<?>>();
+		Map<String, HtmlInput<?>> map = new LinkedHashMap<String, HtmlInput<?>>();
 		map.put("action", new ActionInput());
 		map.put("bool", new BoolInput());
 		map.put("string", new StringInput());
@@ -88,21 +86,21 @@ public class WidgetFactory
 		map.put("mref", new MrefInput());
 		map.put("text", new TextInput());
 		map.put("hidden", new HiddenInput());
-		
-		for(String key: map.keySet())
+
+		for (String key : map.keySet())
 		{
 			conf.setSharedVariable(key, new HtmlInputAdapter(map.get(key)));
 		}
 
 	}
 	// private Database db;
-	//	
+	//
 	// private static String NAME = "name";
 	// private static String LABEL = "name";
 	// private static String VALUE = "name";
 	// private static String NILLABlE = "nillable";
 	// private static String READONLY = "readonly";
-	//	
+	//
 	//
 	// /**
 	// * Constructor

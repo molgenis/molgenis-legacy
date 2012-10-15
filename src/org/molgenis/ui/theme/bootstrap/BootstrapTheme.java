@@ -54,8 +54,8 @@ public class BootstrapTheme extends BaseTheme implements ScreenView
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		return "<link href=\"bootstrap/css/bootstrap.min.css\" rel=\"stylesheet\">" +
-				"<link href=\"bootstrap/css/bootstrap-responsive.css\" rel=\"stylesheet\">" +
-				"<script type=\"text/javascript\" src=\"bootstrap/js/bootstrap.min.js\"></script>";
+		return "<link href=\"bootstrap/css/bootstrap.min.css\" rel=\"stylesheet\">"
+				+ "<link href=\"bootstrap/css/bootstrap-responsive.css\" rel=\"stylesheet\">"
+				+ "<script type=\"text/javascript\" src=\"bootstrap/js/bootstrap.min.js\"></script>";
 	}
 }

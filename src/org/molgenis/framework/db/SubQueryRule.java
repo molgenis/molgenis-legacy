@@ -9,8 +9,10 @@ public class SubQueryRule extends QueryRule
 	private final Class<?> subQueryFromClass;
 	private final Operator subQueryOperator;
 	private final String subQueryField;
-	
-	public SubQueryRule(String fieldName, Operator subQueryOperator, String subQueryField, Class<?> subQueryResultClass, Class<? extends Entity> subQueryFromClass, QueryRule... subQueryRules) {
+
+	public SubQueryRule(String fieldName, Operator subQueryOperator, String subQueryField,
+			Class<?> subQueryResultClass, Class<? extends Entity> subQueryFromClass, QueryRule... subQueryRules)
+	{
 		super(fieldName, Operator.SUBQUERY, subQueryRules);
 		this.subQueryResultClass = subQueryResultClass;
 		this.subQueryFromClass = subQueryFromClass;
@@ -32,15 +34,18 @@ public class SubQueryRule extends QueryRule
 	{
 		return subQueryOperator;
 	}
-	
-	public String getSubQueryField() {
+
+	public String getSubQueryField()
+	{
 		return subQueryField;
-	}	
-	
-	public String getSubQueryAttributeJpa() {
-	    if(!StringUtils.isEmpty(subQueryField)) {
-	        return subQueryField.substring(0,1).toLowerCase() + subQueryField.substring(1);
-	    }
-	    return subQueryField;
+	}
+
+	public String getSubQueryAttributeJpa()
+	{
+		if (!StringUtils.isEmpty(subQueryField))
+		{
+			return subQueryField.substring(0, 1).toLowerCase() + subQueryField.substring(1);
+		}
+		return subQueryField;
 	}
 }

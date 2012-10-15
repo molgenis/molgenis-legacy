@@ -18,7 +18,8 @@ import java.lang.reflect.*;
  * @author RA Scheltema
  * @version 1.0.0
  * 
- * DEPRECATED AS OF April 15th 2011. Not longer needed due to assign() in org.molgenis.util.cmdline.CmdLineParser.
+ *          DEPRECATED AS OF April 15th 2011. Not longer needed due to assign()
+ *          in org.molgenis.util.cmdline.CmdLineParser.
  */
 @Deprecated
 public class FieldAssign
@@ -58,12 +59,13 @@ public class FieldAssign
 	 * @throws IllegalAccessException
 	 *             When the obj cannot be set to the given value.
 	 * @throws CmdLineException
-	 * @throws InstantiationException 
-	 * @throws IllegalArgumentException 
+	 * @throws InstantiationException
+	 * @throws IllegalArgumentException
 	 */
 	@SuppressWarnings(
 	{ "unchecked" })
-	public void assign(final Object obj, final Object value) throws IllegalAccessException, CmdLineException, IllegalArgumentException, InstantiationException
+	public void assign(final Object obj, final Object value) throws IllegalAccessException, CmdLineException,
+			IllegalArgumentException, InstantiationException
 	{
 		if (obj == null || value == null)
 		{
@@ -112,14 +114,14 @@ public class FieldAssign
 		{
 			// TODO this is a crappy construction ...
 			// TODO we're only able to do Strings in the collection ...
-//                    System.out.println(field.getType().getSimpleName());
-//
-//                    Class iclass = field.getType().getInterfaces()[0];
-//                    if(field.getType(). List) {
-//
-//                    }
+			// System.out.println(field.getType().getSimpleName());
+			//
+			// Class iclass = field.getType().getInterfaces()[0];
+			// if(field.getType(). List) {
+			//
+			// }
 
-                    if (Collection.class.isInstance(field.getType().newInstance()))
+			if (Collection.class.isInstance(field.getType().newInstance()))
 			{
 				Collection<String> collection = (Collection<String>) field.get(obj);
 				for (String v : value.toString().split(","))

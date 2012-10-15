@@ -16,9 +16,6 @@ import java.util.List;
 
 import org.molgenis.model.MolgenisModelException;
 
-
-
-
 // invengine
 
 /**
@@ -61,7 +58,7 @@ public class Parameter implements Serializable
 		/** The type of the field is file. */
 		FILE("file"),
 		/** */
-		ENUM("enum"),;
+		ENUM("enum"), ;
 
 		// access
 		/**
@@ -77,7 +74,8 @@ public class Parameter implements Serializable
 		 * With this method the enumeration-type can be found based on the given
 		 * string.
 		 * 
-		 * @param tag The string-representation of the tag.
+		 * @param tag
+		 *            The string-representation of the tag.
 		 * @return The enumeration-type.
 		 */
 		public static Type getType(String tag)
@@ -128,21 +126,19 @@ public class Parameter implements Serializable
 			}
 		}
 
-
 		/** The string-representation of the enumeration-type. */
 		public final String tag;
 	};
 
-
 	/** Fixed value used for determining the not-set value for the varchar. */
 	public static final int LENGTH_NOT_SET = 0;
 
-
 	// constructor(s)
 	/**
-	 * Constructor specifically meant for constructing a return-type. This avoids the need
-	 * for an additional class describing basically the same thing. The properties: name, label
-	 * and default_value are set to null and nillable to false.
+	 * Constructor specifically meant for constructing a return-type. This
+	 * avoids the need for an additional class describing basically the same
+	 * thing. The properties: name, label and default_value are set to null and
+	 * nillable to false.
 	 * 
 	 * @see #Parameter(Method, Type, String, String, boolean, String)
 	 */
@@ -150,18 +146,21 @@ public class Parameter implements Serializable
 	{
 		this(parent, type, null, null, false, null);
 	}
-	
+
 	/**
 	 * Standard constructor, which sets all the common variables for a field.
 	 * Extra fields can be set with the appropriate access methods.
 	 * 
-	 * @param type The type of the field.
-	 * @param name The name of the field, which needs to be unique for the
+	 * @param type
+	 *            The type of the field.
+	 * @param name
+	 *            The name of the field, which needs to be unique for the
 	 *            entity.
-	 * @param label The label of the field, which is used for the user
-	 *            interface.
-	 * @param nillable Indicates whether this field can have the value NULL in
-	 *            the database.
+	 * @param label
+	 *            The label of the field, which is used for the user interface.
+	 * @param nillable
+	 *            Indicates whether this field can have the value NULL in the
+	 *            database.
 	 */
 	public Parameter(Method parent, Type type, String name, String label, boolean nillable, String default_value)
 	{
@@ -177,8 +176,7 @@ public class Parameter implements Serializable
 
 		this.description = "";
 
-		if (this.label == null || this.label == "")
-			this.label = this.name;
+		if (this.label == null || this.label == "") this.label = this.name;
 
 		// varchar
 		this.varchar_length = LENGTH_NOT_SET;
@@ -196,7 +194,7 @@ public class Parameter implements Serializable
 	{
 		return parent;
 	}
-	
+
 	public Method getEntity()
 	{
 		return parent;
@@ -316,8 +314,10 @@ public class Parameter implements Serializable
 	 * length the varchar can be. When this field is not of type Type.VARCHAR,
 	 * this method raises an exception.
 	 * 
-	 * @param length The maximum length the varchar field can be.
-	 * @throws Exception When the field is not of type Type.VARCHAR.
+	 * @param length
+	 *            The maximum length the varchar field can be.
+	 * @throws Exception
+	 *             When the field is not of type Type.VARCHAR.
 	 */
 	public void setVarCharLength(int length) throws Exception
 	{
@@ -335,7 +335,8 @@ public class Parameter implements Serializable
 	 * this method raises an exception.
 	 * 
 	 * @return The maximum length the varchar field can be.
-	 * @throws Exception When the field is not of type Type.VARCHAR.
+	 * @throws Exception
+	 *             When the field is not of type Type.VARCHAR.
 	 */
 	public int getVarCharLength() throws Exception
 	{
@@ -379,8 +380,7 @@ public class Parameter implements Serializable
 
 		// type
 		str += ", " + type.tag;
-		if (type == Parameter.Type.VARCHAR)
-			str += "[" + varchar_length + "]";
+		if (type == Parameter.Type.VARCHAR) str += "[" + varchar_length + "]";
 
 		// settings
 		str += ", nillable=" + nillable;
@@ -397,7 +397,8 @@ public class Parameter implements Serializable
 	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 * 
-	 * @param obj The reference object with which to compare.
+	 * @param obj
+	 *            The reference object with which to compare.
 	 * @return True if this object is the same as the obj argument, false
 	 *         otherwise.
 	 */
@@ -421,7 +422,6 @@ public class Parameter implements Serializable
 	{
 		return this.name.hashCode();
 	}
-
 
 	// member variables
 	/** */

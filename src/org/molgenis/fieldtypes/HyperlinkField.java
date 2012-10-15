@@ -15,26 +15,26 @@ public class HyperlinkField extends FieldType
 	{
 		return "String";
 	}
-	
+
 	@Override
 	public String getJavaAssignment(String value)
 	{
-		if(value == null || value.equals("") ) return "null";
-		return "\""+value+"\"";
+		if (value == null || value.equals("")) return "null";
+		return "\"" + value + "\"";
 	}
-	
+
 	@Override
 	public String getJavaPropertyDefault()
 	{
 		return getJavaAssignment(f.getDefaultValue());
 	}
-	
+
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
 		return "VARCHAR(255)";
 	}
-	
+
 	@Override
 	public String getOracleType() throws MolgenisModelException
 	{
@@ -46,6 +46,7 @@ public class HyperlinkField extends FieldType
 	{
 		return "TEXT";
 	}
+
 	@Override
 	public String getXsdType()
 	{
@@ -86,7 +87,7 @@ public class HyperlinkField extends FieldType
 	{
 		return value;
 	}
-	
+
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.HYPERLINK;

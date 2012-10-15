@@ -22,26 +22,26 @@ public class DatabaseFactoryGen extends Generator
 	{
 		return "Generates a database factory.";
 	}
-	
+
 	@Override
-	public void generate(Model model, MolgenisOptions options)
-			throws Exception
+	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
-		Template template = createTemplate( "/"+getClass().getSimpleName()+".java.ftl" );
+		Template template = createTemplate("/" + getClass().getSimpleName() + ".java.ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 
-		File target = new File( this.getSourcePath(options) + "/app/DatabaseFactory.java" );
+		File target = new File(this.getSourcePath(options) + "/app/DatabaseFactory.java");
 		target.getParentFile().mkdirs();
 
 		templateArgs.put("package", APP_DIR);
-		templateArgs.put("databaseImp", options.mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA) ? "jpa" : "jdbc");
-        templateArgs.put("auth_loginclass", options.auth_loginclass);
-        templateArgs.put("auth_redirect", options.auth_redirect);
-        
-		OutputStream targetOut = new FileOutputStream( target );
-		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
+		templateArgs.put("databaseImp",
+				options.mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA) ? "jpa" : "jdbc");
+		templateArgs.put("auth_loginclass", options.auth_loginclass);
+		templateArgs.put("auth_redirect", options.auth_redirect);
+
+		OutputStream targetOut = new FileOutputStream(target);
+		template.process(templateArgs, new OutputStreamWriter(targetOut));
 		targetOut.close();
-		
+
 		logger.info("generated " + target);
 	}
 

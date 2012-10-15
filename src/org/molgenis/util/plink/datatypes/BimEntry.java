@@ -7,9 +7,8 @@ public class BimEntry extends MapEntry
 {
 
 	private Biallele biallele;
-	
-	public BimEntry(String chromosome, String SNP, double cM, long bpPos,
-			Biallele biallele)
+
+	public BimEntry(String chromosome, String SNP, double cM, long bpPos, Biallele biallele)
 	{
 		super(chromosome, SNP, cM, bpPos);
 		this.biallele = biallele;
@@ -19,12 +18,15 @@ public class BimEntry extends MapEntry
 	{
 		return biallele;
 	}
-	
-	public static String[] bimHeader(){
-		return new String[]{"chr", "snp", "cm", "bp", "al1", "al2"};
+
+	public static String[] bimHeader()
+	{
+		return new String[]
+		{ "chr", "snp", "cm", "bp", "al1", "al2" };
 	}
-	
-	public static Tuple bimToTuple(BimEntry bim){
+
+	public static Tuple bimToTuple(BimEntry bim)
+	{
 		Tuple t = new SimpleTuple();
 		t.set("chr", bim.getChromosome());
 		t.set("snp", bim.getSNP());

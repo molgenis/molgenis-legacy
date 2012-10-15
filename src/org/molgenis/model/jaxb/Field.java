@@ -13,60 +13,60 @@ import org.apache.log4j.Logger;
 public class Field
 {
 	private static final transient Logger logger = Logger.getLogger(Field.class.getSimpleName());
-	
-	//jaxb orders properties in reverse order :-s
-	@XmlAttribute(name="mref_remoteid")
-	private String mref_remoteid;	
-	
-	@XmlAttribute(name="mref_localid")
+
+	// jaxb orders properties in reverse order :-s
+	@XmlAttribute(name = "mref_remoteid")
+	private String mref_remoteid;
+
+	@XmlAttribute(name = "mref_localid")
 	private String mref_localid;
-	
-	@XmlAttribute(name="mref_name")
+
+	@XmlAttribute(name = "mref_name")
 	private String mref_name;
-	
-	@XmlAttribute(name="xref_field")
+
+	@XmlAttribute(name = "xref_field")
 	private String xref_field;
-	
-	@XmlAttribute(name="xref_entity")
+
+	@XmlAttribute(name = "xref_entity")
 	private String xref_entity;
-	
-	@XmlAttribute(name="xref_name")
+
+	@XmlAttribute(name = "xref_name")
 	private String xref_name;
-	
-	@XmlAttribute(name="xref_label")
+
+	@XmlAttribute(name = "xref_label")
 	private String xref_label;
-	
-	@XmlAttribute(name="unique")
+
+	@XmlAttribute(name = "unique")
 	private Boolean unique;
-	
-	@XmlAttribute(name="length")
-	private Integer length;	
-	
-	@XmlAttribute(name="default")
+
+	@XmlAttribute(name = "length")
+	private Integer length;
+
+	@XmlAttribute(name = "default")
 	private String defaultValue;
-	
-	@XmlAttribute(name="description")
+
+	@XmlAttribute(name = "description")
 	private String description;
-	
-	@XmlAttribute(name="enum_options")
+
+	@XmlAttribute(name = "enum_options")
 	private String enum_options;
-	
-	@XmlAttribute(name="auto")
+
+	@XmlAttribute(name = "auto")
 	private Boolean auto = null;
-	
-	@XmlAttribute(name="nillable")
+
+	@XmlAttribute(name = "nillable")
 	private Boolean nillable = null;
-	
-	@XmlAttribute(name="readonly")
+
+	@XmlAttribute(name = "readonly")
 	private Boolean readonly = null;
-		
-	@XmlAttribute(name="type")
+
+	@XmlAttribute(name = "type")
 	private Type type;
-	
-	@XmlAttribute(name="name")
+
+	@XmlAttribute(name = "name")
 	private String name;
-	
-	@XmlAttribute(name="label")
+
+	@XmlAttribute(name = "label")
 	private String label;
 
 	/**
@@ -76,8 +76,7 @@ public class Field
 	{
 		/** The type is unknown, this case should raise an exception. */
 		@XmlEnumValue("unknown")
-		UNKNOWN("unknown", ""),
-		@XmlEnumValue("autoid")
+		UNKNOWN("unknown", ""), @XmlEnumValue("autoid")
 		AUTOID("autoid", "%s"),
 		/** The type is a simple boolean. */
 		@XmlEnumValue("bool")
@@ -126,10 +125,8 @@ public class Field
 		XREF_SINGLE("xref", ""),
 		/** Reference to another table, which can contain multiple values. */
 		@XmlEnumValue("mref")
-		XREF_MULTIPLE("mref", ""),
-		@XmlEnumValue("has")
-		HAS_SINGLE("has", ""),
-		@XmlEnumValue("has_many")
+		XREF_MULTIPLE("mref", ""), @XmlEnumValue("has")
+		HAS_SINGLE("has", ""), @XmlEnumValue("has_many")
 		HAS_MULTIPLE("has_many", ""),
 		/** hyperlink */
 		@XmlEnumValue("hyperlink")
@@ -172,42 +169,42 @@ public class Field
 		{
 			switch (type)
 			{
-				//string
+			// string
 				case Types.CHAR:
 					return STRING;
 				case Types.VARCHAR:
-					return STRING;					
-				//boolean
+					return STRING;
+					// boolean
 				case Types.BOOLEAN:
 					return BOOL;
 				case Types.BIT:
 					return BOOL;
 				case Types.TINYINT:
-					return INT;		
-				//integer
+					return INT;
+					// integer
 				case Types.INTEGER:
 					return INT;
 				case Types.SMALLINT:
-					return INT;					
+					return INT;
 				case Types.BIGINT:
 					return LONG;
-				//decimal
+					// decimal
 				case Types.REAL:
 					return DECIMAL;
 				case Types.FLOAT:
-					return DECIMAL;					
+					return DECIMAL;
 				case Types.DOUBLE:
 					return DECIMAL;
 				case Types.DECIMAL:
 					return DECIMAL;
-				//text
+					// text
 				case Types.BLOB:
 					return TEXT;
 				case Types.CLOB:
 					return TEXT;
-				case Types.LONGVARCHAR:	
+				case Types.LONGVARCHAR:
 					return TEXT;
-				//date
+					// date
 				case Types.DATE:
 					return DATE;
 				case Types.TIME:
@@ -217,28 +214,30 @@ public class Field
 				case Types.NUMERIC:
 					return DECIMAL;
 				case Types.LONGVARBINARY:
-					return TEXT;	
+					return TEXT;
 				default:
 				{
-					for(java.lang.reflect.Field f: java.sql.Types.class.getFields())
+					for (java.lang.reflect.Field f : java.sql.Types.class.getFields())
 					{
 						try
 						{
-							if( ((Integer)f.get(null)).equals(type))
+							if (((Integer) f.get(null)).equals(type))
 							{
-								logger.error("Unknown type: "+f.getName());
+								logger.error("Unknown type: " + f.getName());
 								return UNKNOWN;
 							}
 						}
-						catch (Exception e){}
+						catch (Exception e)
+						{
+						}
 					}
-					
-					logger.error("Unknown type: "+type);
+
+					logger.error("Unknown type: " + type);
 					return UNKNOWN;
 				}
 			}
 		}
-		
+
 		/**
 		 * With this method the enumeration-type can be found based on the given
 		 * string.
@@ -286,7 +285,7 @@ public class Field
 	{
 		this.name = name;
 	}
-	
+
 	public String getLabel()
 	{
 		return label;
@@ -296,7 +295,7 @@ public class Field
 	{
 		this.label = label;
 	}
-	
+
 	public Type getType()
 	{
 		return type;
@@ -306,7 +305,7 @@ public class Field
 	{
 		this.type = type;
 	}
-	
+
 	public String getDescription()
 	{
 		return description;
@@ -336,7 +335,7 @@ public class Field
 	{
 		this.xref_entity = xrefEntity;
 	}
-	
+
 	public String getXrefLabel()
 	{
 		return xref_label;
@@ -347,35 +346,36 @@ public class Field
 		this.xref_label = xref_label;
 	}
 
-	
 	public Boolean getAuto()
 	{
 		return this.auto;
 	}
-	
+
 	public void setAuto(Boolean auto)
 	{
 		this.auto = auto;
 	}
-	
+
 	public Boolean getNillable()
 	{
 		return this.nillable;
 	}
-	
+
 	public void setNillable(Boolean nillable)
 	{
 		this.nillable = nillable;
 	}
 
-	public Boolean getUnique() {
+	public Boolean getUnique()
+	{
 		return unique;
 	}
 
-	public void setUnique(Boolean unique) {
+	public void setUnique(Boolean unique)
+	{
 		this.unique = unique;
 	}
-	
+
 	public Boolean getReadonly()
 	{
 		return readonly;
@@ -386,21 +386,26 @@ public class Field
 		this.readonly = readonly;
 	}
 
-	public String getXRefName() {
+	public String getXRefName()
+	{
 		return xref_name;
 	}
 
-	public void setXRefName(String xref_name) {
+	public void setXRefName(String xref_name)
+	{
 		this.xref_name = xref_name;
 	}
-	
-	public String getEnumoptions() {
+
+	public String getEnumoptions()
+	{
 		return enum_options;
 	}
 
-	public void setEnumoptions(String enumoptions) {
+	public void setEnumoptions(String enumoptions)
+	{
 		this.enum_options = enumoptions;
 	}
+
 	public Integer getLength()
 	{
 		return length;
@@ -410,7 +415,7 @@ public class Field
 	{
 		this.length = length;
 	}
-	
+
 	public String getMrefName()
 	{
 		return mref_name;
@@ -435,7 +440,7 @@ public class Field
 	{
 		return mref_remoteid;
 	}
-	
+
 	public void setMrefRemoteid(String mref_remoteid)
 	{
 		this.mref_remoteid = mref_remoteid;

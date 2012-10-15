@@ -17,8 +17,7 @@ import org.molgenis.model.elements.Model;
 
 public class MolgenisModel
 {
-	private static final transient Logger logger = Logger
-			.getLogger(MolgenisModel.class.getSimpleName());
+	private static final transient Logger logger = Logger.getLogger(MolgenisModel.class.getSimpleName());
 
 	public static Model parse(MolgenisOptions options) throws Exception
 	{
@@ -45,8 +44,7 @@ public class MolgenisModel
 			for (String eName : options.authorizable)
 			{
 				eName = eName.trim(); // allow e.g. 'Observation, Investigation'
-				Vector<String> implNames = model.getEntity(eName)
-						.getImplementsNames();
+				Vector<String> implNames = model.getEntity(eName).getImplementsNames();
 				if (!implNames.contains("Authorizable"))
 				{
 					implNames.add("Authorizable");
@@ -60,8 +58,7 @@ public class MolgenisModel
 			MolgenisModelValidator.validate(model, options);
 
 			logger.info("parsing ui-schema");
-			model = MolgenisModelParser.parseUiSchema(options.path
-					+ options.model_userinterface, model);
+			model = MolgenisModelParser.parseUiSchema(options.path + options.model_userinterface, model);
 			// if (options.force_molgenis_package == true)
 			// model.setName("molgenis");
 
@@ -84,8 +81,8 @@ public class MolgenisModel
 		return parse(options);
 	}
 
-	public static List<Entity> sortEntitiesByDependency(List<Entity> entityList,
-			final Model model) throws MolgenisModelException
+	public static List<Entity> sortEntitiesByDependency(List<Entity> entityList, final Model model)
+			throws MolgenisModelException
 	{
 		List<Entity> result = new ArrayList<Entity>();
 
@@ -97,18 +94,18 @@ public class MolgenisModel
 			for (Entity entity : entityList)
 			{
 				List<String> deps = getDependencies(entity, model);
-				
-				//check if all deps are there
+
+				// check if all deps are there
 				boolean missing = false;
-				for(String dep: deps)
+				for (String dep : deps)
 				{
-					if(indexOf(result, dep) < 0)
+					if (indexOf(result, dep) < 0)
 					{
 						missing = true;
 						break;
 					}
 				}
-				
+
 				if (!missing)
 				{
 					toBeMoved.add(entity);
@@ -117,24 +114,25 @@ public class MolgenisModel
 					break;
 				}
 			}
-			
-			for(Entity e: toBeMoved) entityList.remove(e);
+
+			for (Entity e : toBeMoved)
+				entityList.remove(e);
 			toBeMoved.clear();
 		}
-		
-		//list not empty, cyclic?
-		for(Entity e: entityList)
+
+		// list not empty, cyclic?
+		for (Entity e : entityList)
 		{
-			logger.error("cyclic relations to '"+ e.getName() + "' depends on "+getDependencies(e, model));
+			logger.error("cyclic relations to '" + e.getName() + "' depends on " + getDependencies(e, model));
 			result.add(e);
 		}
-		
-		//result
-		for(Entity e: result)
+
+		// result
+		for (Entity e : result)
 		{
 			logger.info(e.getName());
 		}
-		
+
 		return result;
 	}
 
@@ -147,8 +145,7 @@ public class MolgenisModel
 		return -1;
 	}
 
-	private static List<String> getDependencies(Entity currentEntity,
-			Model model) throws MolgenisModelException
+	private static List<String> getDependencies(Entity currentEntity, Model model) throws MolgenisModelException
 	{
 		Set<String> dependencies = new HashSet<String>();
 
@@ -163,17 +160,15 @@ public class MolgenisModel
 				// also all subclasses have this xref!!!!
 				for (Entity e : xrefEntity.getAllDescendants())
 				{
-					if (!dependencies.contains(e.getName())) dependencies
-							.add(e.getName());
+					if (!dependencies.contains(e.getName())) dependencies.add(e.getName());
 				}
 			}
 			if (field.getType() instanceof MrefField)
 			{
 				dependencies.add(field.getXrefEntity().getName()); // mref
-															// fields
+				// fields
 				// including super classes
-				for (String name : model.getEntity(
-						field.getXrefEntity().getName()).getParents())
+				for (String name : model.getEntity(field.getXrefEntity().getName()).getParents())
 				{
 					dependencies.add(name);
 				}

@@ -21,23 +21,22 @@ public class LongField extends FieldType
 	@Override
 	public String getJavaAssignment(String value)
 	{
-		if (value == null || value.equals("") ) return "null";
+		if (value == null || value.equals("")) return "null";
 		return "" + Long.parseLong(value) + "L";
 	}
 
-	
 	@Override
 	public String getJavaPropertyDefault()
 	{
 		return getJavaAssignment(f.getDefaultValue());
 	}
-	
+
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
 		return "BIGINT";
 	}
-	
+
 	@Override
 	public String getOracleType() throws MolgenisModelException
 	{
@@ -49,6 +48,7 @@ public class LongField extends FieldType
 	{
 		return "LONG";
 	}
+
 	@Override
 	public String getXsdType()
 	{
@@ -72,7 +72,7 @@ public class LongField extends FieldType
 	{
 		return "long";
 	}
-	
+
 	@Override
 	public String getCppJavaPropertyType()
 	{
@@ -88,12 +88,12 @@ public class LongField extends FieldType
 	{
 		return Long.parseLong(value);
 	}
-	
+
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.LONG;
 	}
-	
+
 	@Override
 	public List<String> getAllowedOperators()
 	{

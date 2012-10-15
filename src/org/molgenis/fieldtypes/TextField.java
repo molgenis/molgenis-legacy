@@ -13,22 +13,22 @@ public class TextField extends FieldType
 	@Override
 	public String getJavaAssignment(String value)
 	{
-		if(value == null ||value.equals("") ) return "null";
-		return "\""+value+"\"";
+		if (value == null || value.equals("")) return "null";
+		return "\"" + value + "\"";
 	}
-	
+
 	@Override
 	public String getJavaPropertyDefault()
 	{
 		return getJavaAssignment(f.getDefaultValue());
 	}
-	
+
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
 		return "TEXT";
 	}
-	
+
 	@Override
 	public String getOracleType()
 	{
@@ -39,10 +39,10 @@ public class TextField extends FieldType
 	@Override
 	public String getHsqlType() throws MolgenisModelException
 	{
-		//these guys don't have TEXT?
+		// these guys don't have TEXT?
 		return "VARCHAR";
 	}
-	
+
 	@Override
 	public String getXsdType() throws MolgenisModelException
 	{
@@ -73,7 +73,7 @@ public class TextField extends FieldType
 	{
 		return "string";
 	}
-	
+
 	@Override
 	public String getCppJavaPropertyType()
 	{

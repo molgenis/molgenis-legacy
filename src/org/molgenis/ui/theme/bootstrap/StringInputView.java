@@ -11,8 +11,8 @@ public class StringInputView implements TwoStepView<StringInput>
 	@Override
 	public String render(StringInput e, Theme renderer) throws RenderException
 	{
-		String result = "<input class=\"input-small\" type=\"text\" id=\""+e.getId()+"\">";
-		
+		String result = "<input class=\"input-small\" type=\"text\" id=\"" + e.getId() + "\">";
+
 		return result;
 	}
 

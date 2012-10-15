@@ -31,12 +31,9 @@ public class TabbedLayout extends MultipanelLayout
 		for (String label : elements.keySet())
 		{
 			if (elements.get(label) instanceof HyperlinkInput) result += "<li><a href=\""
-					+ ((HyperlinkInput) elements.get(label)).getValue()
-					+ "\">"
-					+ label + "</a></li>";
+					+ ((HyperlinkInput) elements.get(label)).getValue() + "\">" + label + "</a></li>";
 			else
-				result += "<li><a href=\"#" + getId() + "-" + (i++) + "\">"
-						+ label + "</a></li>";
+				result += "<li><a href=\"#" + getId() + "-" + (i++) + "\">" + label + "</a></li>";
 		}
 		result += "</ul>";
 
@@ -44,8 +41,7 @@ public class TabbedLayout extends MultipanelLayout
 		i = 0;
 		for (String label : elements.keySet())
 		{
-			result += "<div id=\"" + getId() + "-" + (i++) + "\">"
-					+ elements.get(label).render() + "</div>";
+			result += "<div id=\"" + getId() + "-" + (i++) + "\">" + elements.get(label).render() + "</div>";
 		}
 
 		result += "</div>";

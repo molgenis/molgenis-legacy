@@ -16,9 +16,6 @@ import java.util.Vector;
 
 import org.molgenis.util.SimpleTree;
 
-
-
-
 /**
  * Definition of the base-class for objects in the user interface schema. This
  * class inherits from the tree, so it can hold multiple children and have
@@ -35,23 +32,24 @@ public class UISchema extends SimpleTree<UISchema>
 	private static final long serialVersionUID = 1816308705758091632L;
 
 	private String label;
-	
+
 	private String namespace;
-	
+
 	private String group;
-	
+
 	// constructor(s)
 	/**
 	 * The standard constructor, which links the object in the tree (with the
 	 * parent parameter).
 	 * 
-	 * @param name The name of the element.
-	 * @param parent The parent which will be used to link this object in the
-	 *            tree.
+	 * @param name
+	 *            The name of the element.
+	 * @param parent
+	 *            The parent which will be used to link this object in the tree.
 	 */
 	public UISchema(String name, UISchema parent)
 	{
-		//super(buildName(name, parent), parent);
+		// super(buildName(name, parent), parent);
 		super(name, parent);
 	}
 
@@ -71,27 +69,27 @@ public class UISchema extends SimpleTree<UISchema>
 	public String getPackageName()
 	{
 		return "";
-//		String name = getName();
-//
-//		// hack to get rid of the tree-root
-//		int start = name.indexOf('.');
-//		int finish = name.lastIndexOf('.');
-//
-//		if (start != -1 && finish != -1)
-//		{
-//			if (start == finish)
-//				return "";// name.substring(start+1);
-//			else
-//				return name.substring(start + 1, finish);
-//		}
-//		else if (start != -1)
-//		{
-//			return name.substring(start + 1);
-//		}
-//		else
-//		{
-//			return name.substring(0, finish);
-//		}
+		// String name = getName();
+		//
+		// // hack to get rid of the tree-root
+		// int start = name.indexOf('.');
+		// int finish = name.lastIndexOf('.');
+		//
+		// if (start != -1 && finish != -1)
+		// {
+		// if (start == finish)
+		// return "";// name.substring(start+1);
+		// else
+		// return name.substring(start + 1, finish);
+		// }
+		// else if (start != -1)
+		// {
+		// return name.substring(start + 1);
+		// }
+		// else
+		// {
+		// return name.substring(0, finish);
+		// }
 	}
 
 	/**
@@ -117,20 +115,20 @@ public class UISchema extends SimpleTree<UISchema>
 	 */
 	public String getCanonicalClassName()
 	{
-		return this.getClassName().substring(0,1).toUpperCase();
-//		+ this.getClassName().substring(1);
-//		String class_name = this.getClassName().substring(0,1).toUpperCase() 
-//			+ this.getClassName().substring(1);
-//		String package_name = this.getPackageName();
-//
-//		if (package_name.equals(""))
-//		{
-//			return class_name;
-//		}
-//		else
-//		{
-//			return package_name + "." + class_name;
-//		}
+		return this.getClassName().substring(0, 1).toUpperCase();
+		// + this.getClassName().substring(1);
+		// String class_name = this.getClassName().substring(0,1).toUpperCase()
+		// + this.getClassName().substring(1);
+		// String package_name = this.getPackageName();
+		//
+		// if (package_name.equals(""))
+		// {
+		// return class_name;
+		// }
+		// else
+		// {
+		// return package_name + "." + class_name;
+		// }
 	}
 
 	/**
@@ -175,11 +173,15 @@ public class UISchema extends SimpleTree<UISchema>
 		}
 		return menus;
 	}
-	
-	public ArrayList<String> getAllUniqueGroups(){
+
+	public ArrayList<String> getAllUniqueGroups()
+	{
 		ArrayList<String> res = new ArrayList<String>();
-		for(UISchema schema : getAllChildren()){
-			if(schema.getGroup() != null && !res.contains(schema.getGroup()) && !schema.getGroup().equals("admin") && !schema.getGroup().equals("anonymous")){
+		for (UISchema schema : getAllChildren())
+		{
+			if (schema.getGroup() != null && !res.contains(schema.getGroup()) && !schema.getGroup().equals("admin")
+					&& !schema.getGroup().equals("anonymous"))
+			{
 				res.add(schema.getGroup());
 			}
 		}
@@ -189,18 +191,18 @@ public class UISchema extends SimpleTree<UISchema>
 	public List<Form> getAllForms()
 	{
 		List<Form> forms = new ArrayList<Form>();
-		
+
 		for (UISchema element : getAllChildren())
 		{
 			if (element.getClass().equals(Form.class))
 			{
-				forms.add((Form)element);
+				forms.add((Form) element);
 			}
 		}
-		
+
 		return forms;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -239,11 +241,14 @@ public class UISchema extends SimpleTree<UISchema>
 	/**
 	 * 
 	 */
-	public Vector<Plugin> getPlugins() {
+	public Vector<Plugin> getPlugins()
+	{
 		Vector<Plugin> plugins = new Vector<Plugin>();
 
-		for (UISchema child : getChildren()) {
-			if (child.getClass().equals(Plugin.class)) {
+		for (UISchema child : getChildren())
+		{
+			if (child.getClass().equals(Plugin.class))
+			{
 				plugins.add(((Plugin) child));
 			}
 		}
@@ -253,8 +258,11 @@ public class UISchema extends SimpleTree<UISchema>
 
 	//
 	/** */
-	enum Type {UNKNOWN, FORM, TREE, MENU, PLUGIN};
-	
+	enum Type
+	{
+		UNKNOWN, FORM, TREE, MENU, PLUGIN
+	};
+
 	/**
 	 * 
 	 */
@@ -262,9 +270,6 @@ public class UISchema extends SimpleTree<UISchema>
 	{
 		return Type.UNKNOWN;
 	}
-	
-	
-
 
 	public String getLabel()
 	{
@@ -297,9 +302,9 @@ public class UISchema extends SimpleTree<UISchema>
 	{
 		this.group = group;
 	}
-	
-//	public String getNearestParentRole(){
-//		TODO role inheritance?
-//	}
-	
+
+	// public String getNearestParentRole(){
+	// TODO role inheritance?
+	// }
+
 }

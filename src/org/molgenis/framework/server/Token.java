@@ -9,7 +9,7 @@ public class Token implements Serializable
 	private String userName;
 	private Date expiresAt;
 	private Date createdAt;
-	
+
 	public Token(String userName, Date createdAt, Date expiresAt)
 	{
 		super();
@@ -33,6 +33,4 @@ public class Token implements Serializable
 		return createdAt;
 	}
 
-	
-	
 }

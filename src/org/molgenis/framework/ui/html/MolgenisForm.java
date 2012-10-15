@@ -10,28 +10,29 @@ public class MolgenisForm extends AbstractHtmlElement
 {
 	private ScreenModel model = null;
 	private Layout layout = new FlowLayout();
-	
+
 	public MolgenisForm(ScreenModel model)
 	{
 		this(model, new FlowLayout());
 	}
-	
+
 	public MolgenisForm(ScreenModel model, Layout layout)
 	{
 		this.model = model;
 		this.layout = layout;
 	}
-	
+
 	@Override
 	public String render()
-	{	
-		//use freemarker macros to render form header and footer
-		FreemarkerView view = new FreemarkerView(MolgenisForm.class.getPackage().getName().replace(".", "/")+"/MolgenisForm.ftl", getModel());
+	{
+		// use freemarker macros to render form header and footer
+		FreemarkerView view = new FreemarkerView(MolgenisForm.class.getPackage().getName().replace(".", "/")
+				+ "/MolgenisForm.ftl", getModel());
 		view.addParameter("content", layout.render());
 		String result = view.render();
 		return result;
 	}
-	
+
 	public ScreenModel getModel()
 	{
 		return model;
@@ -55,8 +56,7 @@ public class MolgenisForm extends AbstractHtmlElement
 	}
 
 	@Override
-	public String render(Tuple params) throws ParseException,
-			HtmlInputException
+	public String render(Tuple params) throws ParseException, HtmlInputException
 	{
 		throw new UnsupportedOperationException("not implemented");
 	}
