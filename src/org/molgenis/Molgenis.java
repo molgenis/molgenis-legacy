@@ -759,12 +759,13 @@ public class Molgenis
 		{
 			logger.info("Are you sure that you want overwrite database " + options.db_uri
 					+ "?\n All existing data will be overwritten. \nAnswer 'y' or 'n'.\n");
-			String answer = "";
+			StringBuilder answerBuilder = new StringBuilder();
 			int c;
 			while ((c = System.in.read()) != 13)
 			{
-				answer += (char) c;
+				answerBuilder.append((char) c);
 			}
+			String answer = answerBuilder.toString().trim();
 			if (answer.trim().equals("y"))
 			{
 				ask = false;
