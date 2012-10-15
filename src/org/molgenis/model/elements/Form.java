@@ -395,13 +395,15 @@ public class Form extends UISchema
 
 	public String toString()
 	{
-		String commands = "";
+		StringBuilder commandsBuilder = new StringBuilder();
 		for (String command : getCommands())
-			commands += command + ",";
+			commandsBuilder.append(command).append(',');
 		String sortby = "";
 		if (this.sortby != null) sortby = "sortby=" + this.sortby;
 		return String.format("Form(name=%s, entity=%s, group=%s, commands=%s,%s)", getName(), getRecord().getName(),
-				getGroup(), commands, sortby);
+
+		getGroup(), commandsBuilder.toString(), sortby);
+
 	}
 
 	public String getSortby()

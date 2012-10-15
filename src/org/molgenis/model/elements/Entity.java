@@ -1341,17 +1341,17 @@ public class Entity extends DBSchema implements Record
 	 */
 	public String toString()
 	{
-		String str = "Entity(" + getNamespace() + "." + getName() + ")\n(\n";
+		StringBuilder strBuilder = new StringBuilder("Entity(");
+		strBuilder.append(getNamespace()).append('.').append(getName()).append(")\n(\n");
 		for (Field field : fields)
-			// if (!field.getName().equals(Field.TYPE_FIELD) )
-			str += "  " + field.toString() + "\n";
+			strBuilder.append(' ').append(field.toString()).append('\n');
 		for (Unique unique : unique_fields)
-			str += "  " + unique.toString() + "\n";
+			strBuilder.append(' ').append(unique.toString()).append('\n');
 		for (Index index : indices)
-			str += "  " + index.toString() + "\n";
-		str += ");";
+			strBuilder.append(' ').append(index.toString()).append('\n');
+		strBuilder.append(");");
 
-		return str;
+		return strBuilder.toString();
 	}
 
 	/**

@@ -66,41 +66,44 @@ public class EntityTable extends HtmlWidget
 	@Override
 	public String toHtml()
 	{
-		String htmlTable = "<table class=\"listtable\">";
+		StringBuilder htmlBuilder = new StringBuilder("<table class=\"listtable\">");
 
 		// create header
-		htmlTable += "<thead><tr>";
+		htmlBuilder.append("<thead><tr>");
 		for (String column : this.columns)
 		{
-			htmlTable += "<td>" + column + "</td>";
+			htmlBuilder.append("<td>").append(column).append("</td>");
 		}
-		htmlTable += "</tr></thead>";
+		htmlBuilder.append("</tr></thead>");
 
 		// render records
 		int color = 0;
 		for (Entity e : entities)
 		{
-			htmlTable += "<tr class=\"form_listrow" + color + "\" id=\"" + e.getIdValue() + "\">";
+			htmlBuilder.append("<tr class=\"form_listrow").append(color).append("\" id=\"").append(e.getIdValue())
+					.append("\">");
 			if (color == 0) color = 1;
 			else
 				color = 0;
 			for (String column : this.columns)
 			{
-				htmlTable += "<td>"
-						+ (e.get(column) == null ? "" : e.get(column).toString().replace(">", "&gt;")
-								.replace("<", "&lt;").replace("\n", "<br/>")) + "</td>";
+
+				htmlBuilder.append("<td>");
+				if (e.get(column) != null) htmlBuilder.append(e.get(column).toString().replace(">", "&gt;")
+						.replace("<", "&lt;").replace("\n", "<br/>"));
+				htmlBuilder.append("</td>");
 			}
 			if (editButton == true)
 			{
-				htmlTable += "<td><img class=\"edit_button\" src=\"generated-res/img/editview.gif\" title=\"edit record\""
-						+ "onclick=\"submitFormMethod('" + e.getIdValue() + "');\"" + "></td>";
+				htmlBuilder
+						.append("<td><img class=\"edit_button\" src=\"generated-res/img/editview.gif\" title=\"edit record\"");
+				htmlBuilder.append("onclick=\"submitFormMethod('").append(e.getIdValue()).append("');\"></td>");
 			}
-			htmlTable += "</tr>";
+			htmlBuilder.append("</tr>");
 		}
-		htmlTable += "</table>";
+		htmlBuilder.append("</table>");
 
-		return htmlTable;
+		return htmlBuilder.toString();
 
 	}
-
 }

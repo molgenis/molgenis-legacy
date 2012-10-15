@@ -85,30 +85,33 @@ public class CsvWriter implements TupleWriter
 	 */
 	public void writeMatrix(List<String> rowNames, List<String> colNames, Object[][] elements)
 	{
-		// logger.info("writeMatrix called");
-		String cols = "";
+
+		StringBuilder colsBuilder = new StringBuilder();
+
 		for (String col : colNames)
 		{
-			cols += "\t" + col;
+			colsBuilder.append('\t').append(col);
 		}
-		writer.println(cols);
-		// logger.info("printing: " + cols);
+
+		writer.println(colsBuilder.toString());
+
 		for (int rowIndex = 0; rowIndex < rowNames.size(); rowIndex++)
 		{
-			String row = rowNames.get(rowIndex);
+			StringBuilder rowBuilder = new StringBuilder(rowNames.get(rowIndex));
 			for (int colIndex = 0; colIndex < colNames.size(); colIndex++)
 			{
 				if (elements[rowIndex][colIndex] == null)
 				{
-					row += "\t";
+					rowBuilder.append('\t');
 				}
 				else
 				{
-					row += "\t" + elements[rowIndex][colIndex];
+					rowBuilder.append('\t').append(elements[rowIndex][colIndex]);
 				}
 			}
-			writer.println(row);
-			// logger.info("printing: " + row);
+
+			writer.println(rowBuilder.toString());
+
 		}
 	}
 

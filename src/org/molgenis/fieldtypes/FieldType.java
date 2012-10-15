@@ -119,14 +119,15 @@ public abstract class FieldType
 	 */
 	public String toCsv(List<String> elements)
 	{
-		String result = "";
+		StringBuilder strBuilder = new StringBuilder();
 
 		for (String str : elements)
 		{
-			result += ((elements.get(0) == str) ? "" : ",") + "'" + str + "'";
+			if (elements.get(0) != str) strBuilder.append(',');
+			strBuilder.append('\'').append(str).append('\'');
 		}
 
-		return result;
+		return strBuilder.toString();
 	}
 
 	/**

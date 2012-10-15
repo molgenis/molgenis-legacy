@@ -32,17 +32,20 @@ public class FormView implements TwoStepView<Form>
 
 	private String renderDefault(Form element, Theme theme) throws RenderException
 	{
-		String result = "";
+
+		StringBuilder strBuilder = new StringBuilder();
+
 		for (MolgenisComponent c : element.getComponents())
 		{
-			result += theme.render(c);
+			strBuilder.append(theme.render(c));
 		}
-		return result;
+		return strBuilder.toString();
 	}
 
 	private String renderHorizontal(Form element, Theme theme) throws RenderException
 	{
-		String result = "";
+
+		StringBuilder strBuilder = new StringBuilder();
 
 		// each label triggers a new control group
 		for (MolgenisComponent<?> c : element.getComponents())
@@ -55,19 +58,21 @@ public class FormView implements TwoStepView<Form>
 				String label = i.getLabel();
 				i.label(null);
 
-				result += String
-						.format("<div class=\"control-group\"><label class=\"control-label\" for=\"%s\">%s</label><div class=\"controls\">%s</div></div>",
-								c.getId(), label, theme.render(c));
+				strBuilder
+						.append(String
+								.format("<div class=\"control-group\"><label class=\"control-label\" for=\"%s\">%s</label><div class=\"controls\">%s</div></div>",
+										c.getId(), label, theme.render(c)));
 
 				// restore
 				i.label(label);
 			}
 			else
 			{
-				result += theme.render(c);
+				strBuilder.append(theme.render(c));
 			}
 		}
 
-		return result;
+		return strBuilder.toString();
+
 	}
 }

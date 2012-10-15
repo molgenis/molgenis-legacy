@@ -148,20 +148,20 @@ public class CheckboxInput extends OptionInput<List<String>>
 	@Override
 	public String getValue()
 	{
-		String value = "";
+		StringBuilder valueBuilder = new StringBuilder();
 		for (ValueLabel i : getOptions())
 		{
 			if (((Vector<String>) getObject()).contains(i.getValue()))
 			{
-				value += i.getLabel() + ", ";
+				valueBuilder.append(i.getLabel()).append(", ");
 			}
 		}
 		// remove trailing comma
-		if (value.length() > 2)
+		if (valueBuilder.length() > 2)
 		{
-			return value.substring(0, value.length() - 2);
+			return valueBuilder.substring(0, valueBuilder.length() - 2);
 		}
-		return value;
+		return valueBuilder.toString();
 	}
 
 	@Override

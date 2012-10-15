@@ -74,43 +74,49 @@ public class DivPanel extends HtmlWidget
 	 */
 	public String toHtml()
 	{
-		String result = "<div";
+
+		StringBuilder strBuilder = new StringBuilder("<div");
 		if (style != null)
 		{
-			result += " style=\"clear:both;" + style + "\"";
+			strBuilder.append(" style=\"clear:both;").append(style).append('\"');
 		}
-		result += ">";
+		strBuilder.append('>');
+
 		for (HtmlInput<?> i : this.inputs.values())
 		{
 			if (makeNewDiv)
 			{
-				result += "<div style=\"clear:both;";
+
+				strBuilder.append("<div style=\"clear:both;");
 
 				if (i.isHidden())
 				{
-					result += "display:none\"";
+					strBuilder.append("display:none\"");
 				}
 				else
 				{
-					result += "display:block\"";
+					strBuilder.append("display:block\"");
 				}
 				if (i.getId() != null)
 				{
-					result += (" id=\"div" + i.getId() + "\">");
+					strBuilder.append(" id=\"div").append(i.getId()).append("\">");
 				}
 
 			}
-			result += "<label style=\"width:16em;float:left;\" for=\"" + i.getName() + "\">" + i.getLabel()
-					+ "</label>" + i.toHtml() + (!i.isNillable() ? " *" : "");
+
+			strBuilder.append("<label style=\"width:16em;float:left;\" for=\"").append(i.getName()).append("\">");
+			strBuilder.append(i.getLabel()).append("</label>").append(i.toHtml());
+			if (!i.isNillable()) strBuilder.append(" *");
 
 			if (makeNewDiv)
 			{
-				result += "</div>";
+				strBuilder.append("</div>");
+
 			}
 
 		}
-		result += "</div>";
-		return result;
+		strBuilder.append("</div>");
+		return strBuilder.toString();
 	}
 
 	/**

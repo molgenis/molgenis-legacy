@@ -611,15 +611,16 @@ public class CmdLineParser
 					String value = fields[i].get(options).toString();
 					if (opt.param().equals(Param.PASSWORD)) value = "xxxxxx";
 					// add padding
-					String n_spaces = "";
+					StringBuilder n_spacesBuilder = new StringBuilder();
 					for (int j = opt.name().length(); j < name_padding; j++)
-						n_spaces += " ";
-					String v_spaces = "";
+						n_spacesBuilder.append(' ');
+					StringBuilder v_spacesBuilder = new StringBuilder();
 					for (int j = value.length(); j < value_padding; j++)
-						v_spaces += " ";
+						v_spacesBuilder.append(' ');
 
 					// print
-					result.append(opt.name() + n_spaces + " = " + value + v_spaces + " #" + opt.usage() + "\n");
+					result.append(opt.name() + n_spacesBuilder.toString() + " = " + value + v_spacesBuilder.toString()
+							+ " #" + opt.usage() + "\n");
 					// TODO? ( opt.type().equals(Option.Type.OPTIONAL_ARGUMENT)
 					// ? "(optional) ":"" )
 				}

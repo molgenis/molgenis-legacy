@@ -208,7 +208,9 @@ public abstract class HtmlInput<T extends HtmlInput<T, E>, E> extends MolgenisCo
 	{
 		// we render all tags, but we stop rendering text outside tags after
 		// maxLength
-		String result = "";
+
+		StringBuilder strBuilder = new StringBuilder();
+
 		boolean inTag = false;
 		int count = 0;
 		for (char c : this.getHtmlValue().toCharArray())
@@ -222,7 +224,7 @@ public abstract class HtmlInput<T extends HtmlInput<T, E>, E> extends MolgenisCo
 
 			if (inTag || count < maxLength)
 			{
-				result += c;
+				strBuilder.append(c);
 			}
 
 			if ('>' == c)
@@ -233,7 +235,8 @@ public abstract class HtmlInput<T extends HtmlInput<T, E>, E> extends MolgenisCo
 			if (!inTag) count++;
 		}
 
-		return result;
+		return strBuilder.toString();
+
 	}
 
 	public String getHtmlValue()

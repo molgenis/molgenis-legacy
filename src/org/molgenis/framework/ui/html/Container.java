@@ -75,12 +75,12 @@ public class Container extends LinkedHashMap<String, HtmlInput<?>> implements Ht
 
 	public String toHtml()
 	{
-		String returnString = "";
+		StringBuilder strBuilder = new StringBuilder();
 		for (HtmlInput<?> i : this.getInputs())
 		{
-			returnString += i.toHtml();
+			strBuilder.append(i.toHtml());
 		}
-		return returnString;
+		return strBuilder.toString();
 	}
 
 	@Override

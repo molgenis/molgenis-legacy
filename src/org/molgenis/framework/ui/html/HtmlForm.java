@@ -125,15 +125,16 @@ public class HtmlForm extends HtmlWidget
 	@Override
 	public String toHtml()
 	{
-		String htmlTable = "<table>";
+
+		StringBuilder htmlBuilder = new StringBuilder("<table>");
 		for (HtmlInput<?> i : this.getInputs())
 		{
-			htmlTable += "<tr><td name=\"" + i.getLabel() + "\">" + i.getLabel() + "</td><td>" + i.getHtml()
-					+ "</td></tr>";
-		}
-		htmlTable += "</table>";
-		return htmlTable;
+			htmlBuilder.append("<tr><td name=\"").append(i.getLabel()).append("\">");
+			htmlBuilder.append(i.getLabel()).append("</td><td>").append(i.getHtml()).append("</td></tr>");
 
+		}
+		htmlBuilder.append("</table>");
+		return htmlBuilder.toString();
 	}
 
 }

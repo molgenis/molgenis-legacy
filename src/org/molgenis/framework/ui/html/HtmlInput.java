@@ -261,7 +261,8 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	{
 		// we render all tags, but we stop rendering text outside tags after
 		// maxLength
-		String result = "";
+
+		StringBuilder strBuilder = new StringBuilder();
 		boolean inTag = false;
 		int count = 0;
 		for (char c : this.getHtmlValue().toCharArray())
@@ -275,7 +276,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 
 			if (inTag || count < maxLength)
 			{
-				result += c;
+				strBuilder.append(c);
 			}
 
 			if ('>' == c)
@@ -286,7 +287,8 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 			if (!inTag) count++;
 		}
 
-		return result;
+		return strBuilder.toString();
+
 	}
 
 	public String getHtmlValue()
