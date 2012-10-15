@@ -8,12 +8,12 @@ public abstract class HtmlWidget extends HtmlInput<String>
 
 	public HtmlWidget(String name, String label)
 	{
-		super(name,label);
+		super(name, label);
 	}
 
 	public HtmlWidget(String name)
 	{
-		super(name,name);
+		super(name, name);
 	}
 
 }

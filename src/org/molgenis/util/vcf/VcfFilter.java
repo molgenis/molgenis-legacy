@@ -55,8 +55,6 @@ public class VcfFilter
 
 	public String toString()
 	{
-		return String.format(
-				"VcfFilter(ID=%s,Description=\"%s\")", getId(),
-				getDescription());
+		return String.format("VcfFilter(ID=%s,Description=\"%s\")", getId(), getDescription());
 	}
 }

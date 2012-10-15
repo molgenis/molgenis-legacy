@@ -23,34 +23,36 @@ import org.molgenis.framework.ui.FreemarkerView;
  */
 public class CodeInput extends StringInput
 {
-	public enum Parser {
-		
-		FREEMARKER("\"../contrib/freemarker/js/parsefreemarker.js\"", "css/freemarkercolors.css"),
-		JAVA("[\"../contrib/java/js/tokenizejava.js\",\"../contrib/java/js/parsejava.js\"]", "generated-res/lib/codemirror-1.0/contrib/java/css/javacolors.css");
-		
+	public enum Parser
+	{
+
+		FREEMARKER("\"../contrib/freemarker/js/parsefreemarker.js\"", "css/freemarkercolors.css"), JAVA(
+				"[\"../contrib/java/js/tokenizejava.js\",\"../contrib/java/js/parsejava.js\"]",
+				"generated-res/lib/codemirror-1.0/contrib/java/css/javacolors.css");
+
 		private final String path;
 		private final String css;
-		
+
 		Parser(String path, String css)
 		{
 			this.path = path;
 			this.css = css;
 		}
-		
+
 		public String getPath()
 		{
 			return path;
 		}
-		
+
 		public String getCssPath()
 		{
 			return css;
 		}
 
 	}
-	
+
 	private Parser parser = Parser.FREEMARKER;
-	
+
 	public CodeInput(String name)
 	{
 		this(name, null, Parser.FREEMARKER);
@@ -100,21 +102,17 @@ public class CodeInput extends StringInput
 				+ "\n}"
 				+ "\n .editbox {"
 				+ "\n	background: white;"
-				+ "\n}" 
+				+ "\n}"
 				+ "\n.CodeMirror-scroll {"
 				+ "\n  height: auto;"
-				+ "\n  overflow-y: hidden;"
-				+ "\n  overflow-x: auto;"
-				+ "\n  width: 100%"
-				+ "\n}"
-				+ "\n</style>";
+				+ "\n  overflow-y: hidden;" + "\n  overflow-x: auto;" + "\n  width: 100%" + "\n}" + "\n</style>";
 	}
-	
+
 	public String getParser()
 	{
 		return this.parser.getPath();
 	}
-	
+
 	public String getParserStyle()
 	{
 		return this.parser.getCssPath();
@@ -126,8 +124,6 @@ public class CodeInput extends StringInput
 		parameters.put("input", this);
 
 		// delegate to freemarker (sad Java doesn't allow multiline strings).
-		return new FreemarkerView(
-				"org/molgenis/framework/ui/html/CodeInput.ftl",
-				parameters).render();
+		return new FreemarkerView("org/molgenis/framework/ui/html/CodeInput.ftl", parameters).render();
 	}
 }

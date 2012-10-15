@@ -26,9 +26,9 @@ public class ValueLabel implements Serializable
 	 * Construct a new ValueLabel
 	 * 
 	 * @param value
-	 *        the value
+	 *            the value
 	 * @param label
-	 *        the label
+	 *            the label
 	 */
 	public ValueLabel(Object value, String label)
 	{
@@ -50,9 +50,9 @@ public class ValueLabel implements Serializable
 	 * Set the label
 	 * 
 	 * @param label
-	 *        new label
+	 *            new label
 	 */
-	public void setLabel( String label )
+	public void setLabel(String label)
 	{
 		this.label = label;
 	}
@@ -72,7 +72,7 @@ public class ValueLabel implements Serializable
 	 * 
 	 * @param value
 	 */
-	public void setValue( Object value )
+	public void setValue(Object value)
 	{
 		this.value = value;
 	}

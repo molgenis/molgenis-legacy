@@ -25,29 +25,28 @@ public class CopyMemoryToDatabaseGen extends MySqlCreateClassPerTableGen
 	{
 		return "Generates CopyMemoryToDatabase tool";
 	}
-	
+
 	@Override
-	public void generate(Model model, MolgenisOptions options)
-			throws Exception
+	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
-		Template template = createTemplate( "/"+this.getClass().getSimpleName()+".java.ftl" );
+		Template template = createTemplate("/" + this.getClass().getSimpleName() + ".java.ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
-		
+
 		List<Entity> entityList = model.getEntities();
-		MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
+		MolgenisModel.sortEntitiesByDependency(entityList, model); // side
+																	// effect?
 		String packageName = "app";
 
-
-		File target = new File( this.getSourcePath(options) + "/app/CopyMemoryToDatabase.java" );
+		File target = new File(this.getSourcePath(options) + "/app/CopyMemoryToDatabase.java");
 		target.getParentFile().mkdirs();
-		
-		templateArgs.put("model", model );
-		templateArgs.put("entities",entityList);
+
+		templateArgs.put("model", model);
+		templateArgs.put("entities", entityList);
 		templateArgs.put("package", packageName);
-		OutputStream targetOut = new FileOutputStream( target );
-		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
+		OutputStream targetOut = new FileOutputStream(target);
+		template.process(templateArgs, new OutputStreamWriter(targetOut));
 		targetOut.close();
-		
+
 		logger.info("generated " + target);
 	}
 

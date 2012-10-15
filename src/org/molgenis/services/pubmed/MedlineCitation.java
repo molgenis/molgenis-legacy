@@ -17,50 +17,50 @@ public class MedlineCitation
 	@XmlElement(name = "Article")
 	public Article article;
 
-	@XmlElementWrapper(name="MeshHeadingList")
-	@XmlElement(name="MeshHeading")
+	@XmlElementWrapper(name = "MeshHeadingList")
+	@XmlElement(name = "MeshHeading")
 	public List<MeshHeading> MeshHeadings = new ArrayList<MeshHeading>();
-	
+
 	public List<Author> authors = new ArrayList<Author>();
 
 	public String toString()
 	{
 		String result = "";
-		result += "pmid="+PMID;
-		if(article != null)
+		result += "pmid=" + PMID;
+		if (article != null)
 		{
-			result += ", title="+article.ArticleTitle;
-			
-			if(article.Journal != null)
+			result += ", title=" + article.ArticleTitle;
+
+			if (article.Journal != null)
 			{
-				result += ", journal="+article.Journal.Title;
-				if(article.Journal.JournalIssue != null)
+				result += ", journal=" + article.Journal.Title;
+				if (article.Journal.JournalIssue != null)
 				{
-					result += ", volume="+article.Journal.JournalIssue.Volume;
-					result += ", issue="+article.Journal.JournalIssue.Issue;
-					
-					if(article.Journal.JournalIssue.PubDate != null)
+					result += ", volume=" + article.Journal.JournalIssue.Volume;
+					result += ", issue=" + article.Journal.JournalIssue.Issue;
+
+					if (article.Journal.JournalIssue.PubDate != null)
 					{
-						result += ", year="+article.Journal.JournalIssue.PubDate.Year;
-						result += ", month="+article.Journal.JournalIssue.PubDate.Month;
+						result += ", year=" + article.Journal.JournalIssue.PubDate.Year;
+						result += ", month=" + article.Journal.JournalIssue.PubDate.Month;
 					}
 				}
-				
+
 			}
-			for(Author au: article.Authors)
+			for (Author au : article.Authors)
 			{
-				result+="\n"+au.toString();
+				result += "\n" + au.toString();
 			}
-			if(article.Abstract != null)
+			if (article.Abstract != null)
 			{
-				result +="\nabstract="+article.Abstract.AbstractText;
+				result += "\nabstract=" + article.Abstract.AbstractText;
 			}
 		}
-		for(MeshHeading mesh: this.MeshHeadings)
+		for (MeshHeading mesh : this.MeshHeadings)
 		{
-			result+="\nmesh="+mesh.DescriptorName;
+			result += "\nmesh=" + mesh.DescriptorName;
 		}
-		
+
 		return result;
 	}
 }

@@ -9,9 +9,8 @@ import org.molgenis.framework.db.DatabaseException;
 public interface AsyncMolgenisService
 {
 
-	public void handleRequest(AsyncMolgenisRequest request,
-			AsyncMolgenisResponse response) throws ParseException, DatabaseException,
-			IOException;
+	public void handleRequest(AsyncMolgenisRequest request, AsyncMolgenisResponse response) throws ParseException,
+			DatabaseException, IOException;
 
 	public void handleAsyncRequest(AsyncMolgenisRequest request, UUID id);
 }

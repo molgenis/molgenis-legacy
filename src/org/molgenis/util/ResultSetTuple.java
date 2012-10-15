@@ -192,10 +192,13 @@ public class ResultSetTuple extends SimpleTuple
 	{
 		try
 		{
-			if (resultset.getObject(columnName) == null) {
+			if (resultset.getObject(columnName) == null)
+			{
 				// watchout, null != false!
 				return null;
-			} else {
+			}
+			else
+			{
 				return resultset.getInt(columnName);
 			}
 		}

@@ -25,31 +25,32 @@ public class TestDataSetGen extends Generator
 	{
 		return "Generates a random data set generator useful for testing.";
 	}
-	
-	@Override
-	public void generate(Model model, MolgenisOptions options)
-			throws Exception
-	{
-		Template template = createTemplate( "/"+this.getClass().getSimpleName()+".java.ftl" );
-		Map<String, Object> templateArgs = createTemplateArguments(options);
-		
-		List<Entity> entityList = model.getEntities();
-		entityList = MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
 
-		File target = new File( this.getSourcePath(options) + "/test/TestDataSet.java" );
+	@Override
+	public void generate(Model model, MolgenisOptions options) throws Exception
+	{
+		Template template = createTemplate("/" + this.getClass().getSimpleName() + ".java.ftl");
+		Map<String, Object> templateArgs = createTemplateArguments(options);
+
+		List<Entity> entityList = model.getEntities();
+		entityList = MolgenisModel.sortEntitiesByDependency(entityList, model); // side
+																				// effect?
+
+		File target = new File(this.getSourcePath(options) + "/test/TestDataSet.java");
 		target.getParentFile().mkdirs();
-		
+
 		String packageName = "test";
-		
-		templateArgs.put("databaseImp", options.mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA) ? "jpa" : "jdbc");		
-		templateArgs.put("model", model );
-		templateArgs.put("entities",entityList);
+
+		templateArgs.put("databaseImp",
+				options.mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA) ? "jpa" : "jdbc");
+		templateArgs.put("model", model);
+		templateArgs.put("entities", entityList);
 		templateArgs.put("package", packageName);
-		
-		OutputStream targetOut = new FileOutputStream( target );
-		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
+
+		OutputStream targetOut = new FileOutputStream(target);
+		template.process(templateArgs, new OutputStreamWriter(targetOut));
 		targetOut.close();
-		
+
 		logger.info("generated " + target);
 	}
 }

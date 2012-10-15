@@ -28,9 +28,9 @@ public interface HtmlElement
 	public enum UiToolkit
 	{
 		/** jquery-ui */
-		JQUERY, 
+		JQUERY,
 		/** old layout */
-		ORIGINAL, 
+		ORIGINAL,
 		/** twitter bootstrap */
 		BOOTSTRAP
 	};

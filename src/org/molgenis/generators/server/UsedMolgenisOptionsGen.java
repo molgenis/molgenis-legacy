@@ -16,30 +16,29 @@ import freemarker.template.Template;
 public class UsedMolgenisOptionsGen extends Generator
 {
 	private static transient final Logger logger = Logger.getLogger(UsedMolgenisOptionsGen.class);
-	
+
 	@Override
 	public String getDescription()
 	{
 		return "Generates a Java class with a HashMap containing all used MolgenisOptions to be used at runtime.";
 	}
-	
+
 	@Override
-	public void generate(Model model, MolgenisOptions options)
-			throws Exception
+	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
-		Template template = createTemplate( this.getClass().getSimpleName()+".ftl" );
+		Template template = createTemplate(this.getClass().getSimpleName() + ".ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 		templateArgs.put("package", APP_DIR);
 		templateArgs.put("options", options);
 		templateArgs.put("model", model);
-		
-		File target = new File( this.getSourcePath(options)+ APP_DIR+"/servlet/UsedMolgenisOptions.java" );
+
+		File target = new File(this.getSourcePath(options) + APP_DIR + "/servlet/UsedMolgenisOptions.java");
 		target.getParentFile().mkdirs();
-		
-		OutputStream targetOut = new FileOutputStream( target );
-		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
+
+		OutputStream targetOut = new FileOutputStream(target);
+		template.process(templateArgs, new OutputStreamWriter(targetOut));
 		targetOut.close();
-		
+
 		logger.info("generated " + target);
 	}
 }

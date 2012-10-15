@@ -15,19 +15,18 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Tuple;
 
-
 public class CommandMenu extends SimpleCommand
 {
 	private static final long serialVersionUID = 7869046696648113688L;
 
 	public static final transient Logger logger = Logger.getLogger(CommandMenu.class);
 
-	/** menu items with order as entered*/
-	private Map<String,ScreenCommand> menu_items = new LinkedHashMap<String,ScreenCommand>();
+	/** menu items with order as entered */
+	private Map<String, ScreenCommand> menu_items = new LinkedHashMap<String, ScreenCommand>();
 
-	public CommandMenu(String id, ScreenController<?>  screen, String label, String icon, String action)
+	public CommandMenu(String id, ScreenController<?> screen, String label, String icon, String action)
 	{
-		super( id, screen );
+		super(id, screen);
 		this.setLabel(label);
 		this.setIcon(icon);
 		this.setJavaScriptAction(action);
@@ -35,32 +34,34 @@ public class CommandMenu extends SimpleCommand
 
 	/**
 	 * Add a menu item.
+	 * 
 	 * @param command
 	 */
-	public void addCommand( ScreenCommand command )
+	public void addCommand(ScreenCommand command)
 	{
-		if(menu_items.containsKey(command.getName()))
+		if (menu_items.containsKey(command.getName()))
 		{
-			logger.warn("addCommand: command with id '"+command.getName()+"' already exists; replaced");
+			logger.warn("addCommand: command with id '" + command.getName() + "' already exists; replaced");
 		}
-		menu_items.put(command.getName(),command);
+		menu_items.put(command.getName(), command);
 	}
-	
+
 	/**
 	 * Return the values as list.
-	 *
+	 * 
 	 */
 	public Collection<ScreenCommand> getCommands()
 	{
-		//Logger.getLogger("test").debug("returning commands "+menu_items.values().size());
+		// Logger.getLogger("test").debug("returning commands "+menu_items.values().size());
 		return menu_items.values();
 	}
 
 	/**
 	 * Find a specific command.
+	 * 
 	 * @param name
 	 */
-	public ScreenCommand getCommand( String name )
+	public ScreenCommand getCommand(String name)
 	{
 		return menu_items.get(name);
 	}
@@ -80,8 +81,7 @@ public class CommandMenu extends SimpleCommand
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request,
-			OutputStream downloadStream) throws Exception
+	public Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
 	{
 		return ScreenModel.Show.SHOW_DIALOG;
 	}

@@ -12,16 +12,16 @@
 package org.molgenis.framework.ui.html;
 
 /**
- * Input for strings that renders as textarea.
- * (Undeprecated because of practical use differs)
+ * Input for strings that renders as textarea. (Undeprecated because of
+ * practical use differs)
  */
 public class TextInput extends StringInput
 {
 	public TextInput(String name)
 	{
-		this(name,null);
+		this(name, null);
 	}
-	
+
 	public TextInput(String name, String value)
 	{
 		super(name, value);
@@ -33,46 +33,49 @@ public class TextInput extends StringInput
 	{
 		// TODO Auto-generated constructor stub
 	}
-	
-//merged with StringInput
 
-//	public String toHtml()
-//	{
-//		String readonly = (this.isReadonly()) ? "readonly class=\"readonly\" " : ""; 
-//
-//		if( this.isHidden() )
-//		{
-//			StringInput input = new StringInput(this.getName(), this.getValue());
-//			input.setLabel(this.getLabel());
-//			input.setDescription(this.getDescription());
-//			input.setHidden(true);
-//			return input.toHtml();
-//		}
-//		return "<textarea id=\""+this.getId()+"\" name=\""+this.getName()+"\" cols=\""+this.getWidth()+"\" rows=\""+this.getHeight()+"\" "+readonly+" >"+this.getValue()+"</textarea>" +
-//				"<script>showTextInput(document.getElementById('"+this.getId()+"'),5,25);</script>";
-//	}
-//	
-//	public int width;
-//
-//	public int getWidth()
-//	{
-//		return width;
-//	}
-//
-//	public void setWidth(int width)
-//	{
-//		this.width = width;
-//	}
-//	
-//	public int height;
-//
-//	public int getHeight()
-//	{
-//		return height;
-//	}
-//
-//	public void setHeight(int height)
-//	{
-//		this.height = height;
-//	}
+	// merged with StringInput
+
+	// public String toHtml()
+	// {
+	// String readonly = (this.isReadonly()) ? "readonly class=\"readonly\" " :
+	// "";
+	//
+	// if( this.isHidden() )
+	// {
+	// StringInput input = new StringInput(this.getName(), this.getValue());
+	// input.setLabel(this.getLabel());
+	// input.setDescription(this.getDescription());
+	// input.setHidden(true);
+	// return input.toHtml();
+	// }
+	// return
+	// "<textarea id=\""+this.getId()+"\" name=\""+this.getName()+"\" cols=\""+this.getWidth()+"\" rows=\""+this.getHeight()+"\" "+readonly+" >"+this.getValue()+"</textarea>"
+	// +
+	// "<script>showTextInput(document.getElementById('"+this.getId()+"'),5,25);</script>";
+	// }
+	//
+	// public int width;
+	//
+	// public int getWidth()
+	// {
+	// return width;
+	// }
+	//
+	// public void setWidth(int width)
+	// {
+	// this.width = width;
+	// }
+	//
+	// public int height;
+	//
+	// public int getHeight()
+	// {
+	// return height;
+	// }
+	//
+	// public void setHeight(int height)
+	// {
+	// this.height = height;
+	// }
 }

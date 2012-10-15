@@ -16,66 +16,64 @@ public interface Mapper<E extends Entity>
 {
 	/**
 	 * Get the database this mapper is attached to.
+	 * 
 	 * @return database
 	 */
 	public Database getDatabase();
 
 	public E create();
-	
+
 	/** Implementation of {@link Database#count(Class, QueryRule...)} */
 	public int count(QueryRule... rules) throws DatabaseException;
 
-	/** Implementation of {@link Database#find(Class, QueryRule...)}*/
+	/** Implementation of {@link Database#find(Class, QueryRule...)} */
 	public List<E> find(QueryRule... rules) throws DatabaseException;
 
-	/** Implementation of {@link Database#find(Class, TupleWriter, QueryRule...)}*/
-	public void find(TupleWriter writer, QueryRule... rules)
-			throws DatabaseException;
+	/** Implementation of {@link Database#find(Class, TupleWriter, QueryRule...)} */
+	public void find(TupleWriter writer, QueryRule... rules) throws DatabaseException;
 
-	/** Implementation of {@link Database#find(Class, TupleWriter, List, QueryRule...)*/
-	public void find(TupleWriter writer, List<String> fieldsToExport,
-			QueryRule[] rules) throws DatabaseException;
+	/**
+	 * Implementation of
+	 * 
+	 */
+	public void find(TupleWriter writer, List<String> fieldsToExport, QueryRule[] rules) throws DatabaseException;
 
 	/** Implementation of {@link Database#add(Entity)} */
-	//public int add(E entity) throws DatabaseException;	
-	
+	// public int add(E entity) throws DatabaseException;
+
 	/** Implementation of {@link Database#add(List)} */
 	public int add(List<E> entities) throws DatabaseException;
 
-	/** Implementation of {@link Database#add(Class, TupleReader, TupleWriter)}*/
-	public int add(TupleReader reader, TupleWriter writer)
-			throws DatabaseException;
+	/** Implementation of {@link Database#add(Class, TupleReader, TupleWriter)} */
+	public int add(TupleReader reader, TupleWriter writer) throws DatabaseException;
 
-	/** Implementation of {@link Database#add(Entity)}*/
-	//public int update(E entity) throws DatabaseException;
-	
-	/** Implementation of {@link Database#update(List)}*/
+	/** Implementation of {@link Database#add(Entity)} */
+	// public int update(E entity) throws DatabaseException;
+
+	/** Implementation of {@link Database#update(List)} */
 	public int update(List<E> entities) throws DatabaseException;
 
-	/** Implementation of {@link Database#update(TupleReader)}*/
+	/** Implementation of {@link Database#update(TupleReader)} */
 	public int update(TupleReader reader) throws DatabaseException;
 
-	/** Implementation of {@link Database#remove(Entity)}*/
-	//public int remove(E entity) throws DatabaseException;
-	
-	/** Implementation of {@link Database#remove(List)}*/
+	/** Implementation of {@link Database#remove(Entity)} */
+	// public int remove(E entity) throws DatabaseException;
+
+	/** Implementation of {@link Database#remove(List)} */
 	public int remove(List<E> entities) throws DatabaseException;
 
-	/** Implementation of {@link Database#remove(Class, TupleReader)*/
+	/** Implementation of  */
 	public int remove(TupleReader reader) throws DatabaseException;
 
-	public List<E> toList(TupleReader reader, int limit)
-			throws DatabaseException;
+	public List<E> toList(TupleReader reader, int limit) throws DatabaseException;
 
 	public String getTableFieldName(String field);
 
 	public FieldType getFieldType(String field);
 
-	public void resolveForeignKeys(List<E> enteties) throws ParseException,
-			DatabaseException;
+	public void resolveForeignKeys(List<E> enteties) throws ParseException, DatabaseException;
 
-	public String createFindSqlInclRules(QueryRule[] rules)
-			throws DatabaseException;
+	public String createFindSqlInclRules(QueryRule[] rules) throws DatabaseException;
 
 	public E findById(Object id) throws DatabaseException;
 

@@ -24,15 +24,13 @@ public class Division extends HtmlInput<String>
 	public String toHtml()
 	{
 		// Don't escape special characters, so user can insert html into the div
-		return "<div id=\"" + getId() + "\" name=\"" + getName() + "\""
-				+ tabIndex + " >" + getValue(false) + "</p>";
+		return "<div id=\"" + getId() + "\" name=\"" + getName() + "\"" + tabIndex + " >" + getValue(false) + "</p>";
 	}
-	
+
 	@Override
-	public String toHtml(Tuple params) throws ParseException,
-			HtmlInputException
+	public String toHtml(Tuple params) throws ParseException, HtmlInputException
 	{
-		//pretty useless as you better use <div> inside freemarker
+		// pretty useless as you better use <div> inside freemarker
 		throw new UnsupportedOperationException();
 	}
 }

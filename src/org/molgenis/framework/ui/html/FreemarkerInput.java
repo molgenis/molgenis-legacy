@@ -11,7 +11,6 @@
 
 package org.molgenis.framework.ui.html;
 
-
 /**
  * Renders an editor for freemarker including code higlighting and line numbers.
  * 

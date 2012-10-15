@@ -13,15 +13,16 @@ import org.molgenis.framework.db.DatabaseException;
  * Classes should implement this interface if they are expecting calls that
  * alter state.
  * 
- * BIG DISCUSSION: should this be generalized to JAX-RS and JAX-WS based implementation?
+ * BIG DISCUSSION: should this be generalized to JAX-RS and JAX-WS based
+ * implementation?
  */
 public interface MolgenisService
 {
 	/**
 	 * HandleRequest is the standard way how MOLGENIS treats requests that come
 	 * in from a user interface (web, script). Typically these requests come
-	 * from the web.
-	 * s
+	 * from the web. s
+	 * 
 	 * @param db
 	 *            a MOLGENIS database that can be used by the service
 	 * @param request
@@ -39,7 +40,6 @@ public interface MolgenisService
 	 *             because of problems with file uploads in the request or
 	 *             outputStream
 	 */
-	public void handleRequest(MolgenisRequest request,
-			MolgenisResponse response) throws ParseException, DatabaseException,
-			IOException;
+	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
+			DatabaseException, IOException;
 }

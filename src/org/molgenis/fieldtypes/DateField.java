@@ -19,19 +19,20 @@ public class DateField extends FieldType
 	{
 		return "java.util.Date";
 	}
-	
+
 	@Override
 	public String getJavaAssignment(String value)
 	{
-		if(value == null || value.equals("")) return "null";
-		return "java.sql.Date.valueOf(\""+value+"\")";
+		if (value == null || value.equals("")) return "null";
+		return "java.sql.Date.valueOf(\"" + value + "\")";
 	}
-	
+
 	@Override
 	public String getJavaPropertyDefault()
 	{
-		if(f.isAuto()) return "new java.sql.Date(new java.util.Date().getTime())";
-		else return getJavaAssignment(f.getDefaultValue());
+		if (f.isAuto()) return "new java.sql.Date(new java.util.Date().getTime())";
+		else
+			return getJavaAssignment(f.getDefaultValue());
 	}
 
 	@Override
@@ -39,13 +40,13 @@ public class DateField extends FieldType
 	{
 		return "DATE";
 	}
-	
+
 	@Override
 	public String getOracleType() throws MolgenisModelException
 	{
 		return "DATE";
 	}
-	
+
 	@Override
 	public String getJavaSetterType() throws MolgenisModelException
 	{
@@ -57,6 +58,7 @@ public class DateField extends FieldType
 	{
 		return "DATE";
 	}
+
 	@Override
 	public String getXsdType()
 	{
@@ -80,7 +82,7 @@ public class DateField extends FieldType
 	{
 		return "time_t";
 	}
-	
+
 	@Override
 	public String getCppJavaPropertyType()
 	{
@@ -101,7 +103,7 @@ public class DateField extends FieldType
 	{
 		return FieldTypeEnum.DATE;
 	}
-	
+
 	@Override
 	public List<String> getAllowedOperators()
 	{

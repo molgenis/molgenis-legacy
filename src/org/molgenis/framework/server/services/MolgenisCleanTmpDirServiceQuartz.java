@@ -46,45 +46,45 @@ public class MolgenisCleanTmpDirServiceQuartz implements MolgenisService
 	{
 		try
 		{
-			
+
 			CleanTmpDirTask task = new CleanTmpDirTask();
-			 
-	    	//specify your sceduler task details
-	    	JobDetail job = new JobDetail();
-	    	job.setName("cleanTmpDirJob");
-	    	job.setJobClass(CleanTmpDirJob.class);
-	 
-	    	@SuppressWarnings("unchecked")
+
+			// specify your sceduler task details
+			JobDetail job = new JobDetail();
+			job.setName("cleanTmpDirJob");
+			job.setJobClass(CleanTmpDirJob.class);
+
+			@SuppressWarnings("unchecked")
 			Map<String, CleanTmpDirTask> dataMap = job.getJobDataMap();
-	    	dataMap.put("cleanTmpDirTask", task);
-	 
-	    	//configure the scheduler time
-	    	SimpleTrigger trigger = new SimpleTrigger();
-	    	trigger.setName("runMeJobTesting");
-	    	trigger.setStartTime(new Date(System.currentTimeMillis() + 1000));
-	    	trigger.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY);
-	    	trigger.setRepeatInterval(30000);
-	    	
+			dataMap.put("cleanTmpDirTask", task);
+
+			// configure the scheduler time
+			SimpleTrigger trigger = new SimpleTrigger();
+			trigger.setName("runMeJobTesting");
+			trigger.setStartTime(new Date(System.currentTimeMillis() + 1000));
+			trigger.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY);
+			trigger.setRepeatInterval(30000);
+
 			Trigger t = TriggerUtils.makeMinutelyTrigger();
 			t.setStartTime(new Date());
 			t.setName("MolgenisCleanTmpDirServiceTrigger");
-	 
-	    	//schedule it
+
+			// schedule it
 			SchedulingService schedulingService = mc.getSchedulingService();
-//	    	Scheduler scheduler = mc.getScheduler();
-	    	
-//			if(!scheduler.isStarted())
-//			{
-//				throw new SchedulerException("Scheduler is not active");
-//			}
-//	    	
-//	    	scheduler.start();
-//	    	scheduler.scheduleJob(job, t);
+			// Scheduler scheduler = mc.getScheduler();
+
+			// if(!scheduler.isStarted())
+			// {
+			// throw new SchedulerException("Scheduler is not active");
+			// }
+			//
+			// scheduler.start();
+			// scheduler.scheduleJob(job, t);
 			HashMap<Object, Object> dataMap2 = new HashMap<Object, Object>();
-//	    	dataMap2.put("cleanTmpDirTask", task);
+			// dataMap2.put("cleanTmpDirTask", task);
 			schedulingService.scheduleOnce(dataMap2, CleanTmpDirJob.class);
-//			schedulingService.shutdown();
-			
+			// schedulingService.shutdown();
+
 			System.out.println("MolgenisCleanTmpDirService initialized.");
 
 		}

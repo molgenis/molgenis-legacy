@@ -8,8 +8,9 @@ import org.molgenis.util.Tuple;
 
 /**
  * Base class for all html elements. For scripting pu
+ * 
  * @author mswertz
- *
+ * 
  */
 public abstract class AbstractHtmlElement implements HtmlElement, ScreenView
 {
@@ -30,20 +31,19 @@ public abstract class AbstractHtmlElement implements HtmlElement, ScreenView
 	{
 		this.id = UUID.randomUUID().toString().replace("-", "");
 	}
-	
+
 	@Override
 	public void set(Tuple params) throws HtmlInputException
 	{
 		this.setId(params.getString(ID));
 		this.setClazz(params.getString(CLASS));
 	}
-	
+
 	@Override
 	public abstract String render();
 
 	@Override
-	public abstract String render(Tuple params) throws ParseException,
-			HtmlInputException;
+	public abstract String render(Tuple params) throws ParseException, HtmlInputException;
 
 	@Override
 	public String getCustomHtmlHeaders()
@@ -51,7 +51,7 @@ public abstract class AbstractHtmlElement implements HtmlElement, ScreenView
 		return null;
 	}
 
-	//PROPERTIES
+	// PROPERTIES
 	@Override
 	public String getId()
 	{

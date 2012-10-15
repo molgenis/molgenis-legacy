@@ -31,10 +31,9 @@ import org.molgenis.util.XlsWriter;
 public class DownloadSelectedXlsCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = 3619865367653131342L;
-	public static final transient Logger logger = Logger
-			.getLogger(DownloadSelectedXlsCommand.class);
+	public static final transient Logger logger = Logger.getLogger(DownloadSelectedXlsCommand.class);
 
-	public DownloadSelectedXlsCommand(String name, ScreenController<?>  parentScreen)
+	public DownloadSelectedXlsCommand(String name, ScreenController<?> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Download selected (.xls)");
@@ -52,8 +51,7 @@ public class DownloadSelectedXlsCommand<E extends Entity> extends SimpleCommand
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request,
-			OutputStream xlsDownload) throws Exception
+	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream xlsDownload) throws Exception
 	{
 		logger.debug(this.getName());
 
@@ -74,15 +72,15 @@ public class DownloadSelectedXlsCommand<E extends Entity> extends SimpleCommand
 
 		if (records.size() == 0)
 		{
-			//xlsDownload.println("No records selected.");
+			// xlsDownload.println("No records selected.");
 			return ScreenModel.Show.SHOW_MAIN;
 		}
-		
-		List<String> fieldsToExport = ((FormController<?>)this.getController()).getVisibleColumnNames();
+
+		List<String> fieldsToExport = ((FormController<?>) this.getController()).getVisibleColumnNames();
 
 		// watch out, the "IN" operator expects an Object[]
-		db.find(view.getController().getEntityClass(), new XlsWriter(xlsDownload), fieldsToExport,
-				new QueryRule("id", Operator.IN, records));
+		db.find(view.getController().getEntityClass(), new XlsWriter(xlsDownload), fieldsToExport, new QueryRule("id",
+				Operator.IN, records));
 		return ScreenModel.Show.SHOW_MAIN;
 	}
 

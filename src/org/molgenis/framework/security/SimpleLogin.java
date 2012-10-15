@@ -10,21 +10,21 @@ import org.molgenis.util.Entity;
 
 public class SimpleLogin implements Login
 {
-    public SimpleLogin()
-    {
-
-    }
-
-    public SimpleLogin(Database db, TokenFactory tm)
-    {
-
-    }        
-    
-    public SimpleLogin(Database db, String redirect, TokenFactory tm) throws Exception
+	public SimpleLogin()
 	{
 
 	}
-        
+
+	public SimpleLogin(Database db, TokenFactory tm)
+	{
+
+	}
+
+	public SimpleLogin(Database db, String redirect, TokenFactory tm) throws Exception
+	{
+
+	}
+
 	@Override
 	public void reload(Database db)
 	{
@@ -77,13 +77,13 @@ public class SimpleLogin implements Login
 		return false;
 	}
 
-        @Override
+	@Override
 	public String getUserName()
 	{
 		return "";
 	}
 
-        @Override
+	@Override
 	public Integer getUserId()
 	{
 		return 0;
@@ -123,11 +123,11 @@ public class SimpleLogin implements Login
 		return true;
 	}
 
-//	@Override
-//	public boolean canRead(org.molgenis.framework.ui.ScreenModel model)
-//	{
-//		return true;
-//	}
+	// @Override
+	// public boolean canRead(org.molgenis.framework.ui.ScreenModel model)
+	// {
+	// return true;
+	// }
 
 	@Override
 	public QueryRule getRowlevelSecurityFilters(Class<? extends Entity> klazz)

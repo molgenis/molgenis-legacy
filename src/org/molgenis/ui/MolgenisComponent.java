@@ -9,7 +9,7 @@ public abstract class MolgenisComponent<T>
 {
 	public static final String ID = "id";
 	public static final String CLASS = "class";
-	
+
 	/** unique id of this input */
 	private String id;
 
@@ -27,14 +27,14 @@ public abstract class MolgenisComponent<T>
 	{
 		this.id = UUID.randomUUID().toString().replace("-", "");
 	}
-	
+
 	public void set(Tuple params) throws HtmlInputException
 	{
 		this.id(params.getString(ID));
 		this.setClazz(params.getString(CLASS));
 	}
 
-	//PROPERTIES
+	// PROPERTIES
 	public String getId()
 	{
 		return id;
@@ -47,13 +47,11 @@ public abstract class MolgenisComponent<T>
 		return (T) this;
 	}
 
-	
 	public String getClazz()
 	{
 		return this.clazz;
 	}
 
-	
 	@SuppressWarnings("unchecked")
 	public T setClazz(String clazz)
 	{

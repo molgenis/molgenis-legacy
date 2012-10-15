@@ -25,33 +25,34 @@ public class TestCsvGen extends Generator
 	{
 		return "Generates simple junit test that creates a database and updates/queries data.";
 	}
-	
-	@Override
-	public void generate(Model model, MolgenisOptions options)
-			throws Exception
-	{
-		Template template = createTemplate( "/"+this.getClass().getSimpleName()+".java.ftl" );
-		Map<String, Object> templateArgs = createTemplateArguments(options);
-		
-		List<Entity> entityList = model.getEntities();
-		entityList = MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
 
-		File target = new File( this.getSourcePath(options) + "/test/TestCsv.java" );
+	@Override
+	public void generate(Model model, MolgenisOptions options) throws Exception
+	{
+		Template template = createTemplate("/" + this.getClass().getSimpleName() + ".java.ftl");
+		Map<String, Object> templateArgs = createTemplateArguments(options);
+
+		List<Entity> entityList = model.getEntities();
+		entityList = MolgenisModel.sortEntitiesByDependency(entityList, model); // side
+																				// effect?
+
+		File target = new File(this.getSourcePath(options) + "/test/TestCsv.java");
 		target.getParentFile().mkdirs();
-		
+
 		String packageName = "test";
-		
-		templateArgs.put("databaseImp", options.mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA) ? "jpa" : "jdbc");
-		templateArgs.put("model", model );
-		templateArgs.put("db_mode", options.db_mode );
-		templateArgs.put("entities",entityList);
+
+		templateArgs.put("databaseImp",
+				options.mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA) ? "jpa" : "jdbc");
+		templateArgs.put("model", model);
+		templateArgs.put("db_mode", options.db_mode);
+		templateArgs.put("entities", entityList);
 		templateArgs.put("package", packageName);
 		templateArgs.put("options", options);
-		
-		OutputStream targetOut = new FileOutputStream( target );
-		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
+
+		OutputStream targetOut = new FileOutputStream(target);
+		template.process(templateArgs, new OutputStreamWriter(targetOut));
 		targetOut.close();
-		
+
 		logger.info("generated " + target);
 	}
 }
