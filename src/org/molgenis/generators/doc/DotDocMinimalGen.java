@@ -23,7 +23,7 @@ public class DotDocMinimalGen extends Generator
 	public static final transient Logger logger = Logger.getLogger(DotDocMinimalGen.class);
 
 	// need to add input and output file
-	public static String GRAPHVIZ_COMMAND_WINDOWS = "dot";
+	public static final String GRAPHVIZ_COMMAND_WINDOWS = "dot";
 
 	@Override
 	public String getDescription()
