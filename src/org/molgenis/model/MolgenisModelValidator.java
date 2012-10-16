@@ -2,10 +2,8 @@ package org.molgenis.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -307,9 +305,6 @@ public class MolgenisModelValidator
 	 */
 	public static void createLinkTablesForMrefs(Model model) throws MolgenisModelException
 	{
-		// renamed mrefs
-		Map<String, String> renamedMrefs = new LinkedHashMap<String, String>();
-
 		logger.debug("add linktable entities for mrefs...");
 		// find the multi-ref fields
 		for (Entity xref_entity_from : model.getEntities())

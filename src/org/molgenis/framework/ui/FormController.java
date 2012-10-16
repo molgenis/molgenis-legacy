@@ -707,7 +707,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 				if (aParent instanceof MenuModel)
 				{
 					parentRequest.set("select", aChildName);
-					MenuController c = (MenuController) (Object) aParent;
+					MenuController c = (MenuController) aParent;
 					c.doSelect(parentRequest);
 				}
 				aChildName = aParent.getName();
