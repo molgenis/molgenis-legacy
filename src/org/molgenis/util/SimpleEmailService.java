@@ -1,13 +1,9 @@
 package org.molgenis.util;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.Date;
 import java.util.Properties;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.Multipart;
@@ -17,6 +13,10 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+
+import org.apache.commons.mail.EmailAttachment;
+import org.apache.commons.mail.MultiPartEmail;
+
 
 public class SimpleEmailService implements EmailService
 {
@@ -108,6 +108,50 @@ public class SimpleEmailService implements EmailService
 			throw new EmailException(e);
 		}
 	}
+	
+	public boolean email(String subject, String body, String toEmail, String fileAttachment, boolean deObf) throws EmailException
+	{
+		try
+		{
+			// Create the attachment
+			EmailAttachment attachment = new EmailAttachment();
+			attachment.setPath(fileAttachment);
+			attachment.setDisposition(EmailAttachment.ATTACHMENT);
+			
+			// Create the email message
+			MultiPartEmail email = new MultiPartEmail();
+			email.setHostName(this.smtpHostname);
+			if ("smtps".equals(this.smtpProtocol))
+			{
+				email.setSSL(true);
+				email.setSslSmtpPort(this.smtpPort.toString());
+			}
+			else
+			{
+				email.setSSL(false);
+				email.setSmtpPort(this.smtpPort);
+			}
+			email.addTo(toEmail);
+			email.setFrom(this.smtpFromAddress);
+			email.setSubject(subject);
+			email.setMsg(body);
+			email.setAuthentication(this.smtpUser, (deObf ? HtmlTools.fromSafeUrlStringO_b_f(smtpAu) : smtpAu));
+			
+			// add the attachment
+			email.attach(attachment);
+			
+			// send the email
+			email.send();
+			
+			return true;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new EmailException(e);
+		}
+	}
+	
 
 	public boolean email(String subject, String body, String toEmail, String fileAttachment,
 			ByteArrayOutputStream outputStream, boolean deObf) throws EmailException

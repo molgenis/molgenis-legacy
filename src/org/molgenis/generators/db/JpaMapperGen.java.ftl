@@ -255,7 +255,7 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 			${entity.namespace}.${JavaName(entity)} persistent${JavaName(entity)} = getEntityManager().find(${entity.namespace}.${JavaName(entity)}.class, ${name(entity)}.getIdValue());
 
 
-<#foreach field in entity.getImplementedFields()>
+<#foreach field in entity.getAllFields()>
 	<#assign type_label = field.getType().toString()>
 
 	<#if type_label == "xref" || type_label == "mref">
@@ -286,7 +286,7 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 				if(m.get${Name(pkey(field.getXrefEntity()))}() == null) {
 					getEntityManager().persist(m);
 				}
-				m.get${JavaName(fieldName)}<#if numRef &gt; 1 >${Name(entity)}</#if>Collection().add(${name(entity)});
+				m.get${JavaName(fieldName)}<#if numRef &gt; 1 >${Name(field.getEntity())}</#if>Collection().add(${name(entity)});
 			}
 			
 			for(${pkeyJavaType(field.getXrefEntity())} id : ${name(entity)}.get${JavaName(fieldName)}_Id()) {

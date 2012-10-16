@@ -2,12 +2,12 @@ function toggleDiv(div, image)
 {
 	if (document.getElementById(div).style.display == "block")
 	{
-		document.getElementById(image).src = "res/open.png";
+		document.getElementById(image).src = "res/img/open.png";
 		document.getElementById(div).style.display = "none";
 	}
 	else
 	{
-		document.getElementById(image).src = "res/close.png";
+		document.getElementById(image).src = "res/img/close.png";
 		document.getElementById(div).style.display = "block";
 	}
 }
