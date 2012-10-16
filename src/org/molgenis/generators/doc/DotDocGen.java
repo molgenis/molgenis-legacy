@@ -23,7 +23,7 @@ public class DotDocGen extends Generator
 	public static final transient Logger logger = Logger.getLogger(DotDocGen.class);
 
 	// need to add input and output file
-	public static String GRAPHVIZ_COMMAND_WINDOWS = "dot";
+	public final static String GRAPHVIZ_COMMAND_WINDOWS = "dot";
 
 	@Override
 	public String getDescription()

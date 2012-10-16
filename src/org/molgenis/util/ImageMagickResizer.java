@@ -24,7 +24,7 @@ public class ImageMagickResizer implements ImageResizer
 	private static final transient Logger logger = Logger.getLogger(ImageMagickResizer.class);
 
 	// assumes the command 'convert' is on classpath
-	public static String IMAGEMAGICK_COMMAND = "C:/Program Files/ImageMagick-6.5.4-Q16/convert";
+	public static final String IMAGEMAGICK_COMMAND = "C:/Program Files/ImageMagick-6.5.4-Q16/convert";
 
 	@Override
 	public boolean resize(File src, File dest, int destWidth, int destHeight) throws Exception
