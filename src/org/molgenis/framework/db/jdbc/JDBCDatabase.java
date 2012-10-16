@@ -430,20 +430,20 @@ public class JDBCDatabase extends AbstractDatabase
 		try
 		{
 			conn = this.getConnection();
-			String create_tables_sql = "";
+			StringBuilder create_tables_sqlBuilder = new StringBuilder();
 
 			InputStream fis = this.getClass().getResourceAsStream(filename);
 			BufferedReader in = new BufferedReader(new InputStreamReader(fis));
 			String line;
 			while ((line = in.readLine()) != null)
 			{
-				create_tables_sql += line + "\n";
+				create_tables_sqlBuilder.append(line).append('\n');
 			}
 			in.close();
 
 			stmt = conn.createStatement();
 			int i = 0;
-			for (String command : create_tables_sql.split(";"))
+			for (String command : create_tables_sqlBuilder.toString().split(";"))
 			{
 				if (command.trim().length() > 0)
 				{

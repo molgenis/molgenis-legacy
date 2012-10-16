@@ -59,60 +59,71 @@ public class JQueryTreeView<E> extends HtmlWidget
 	 */
 	private String renderTree(JQueryTreeViewElement node, List<String> selectedLabels)
 	{
-		String returnString;
+		StringBuilder strBuilder = new StringBuilder();
 
 		if (node.hasChildren())
 		{
 
 			if (!node.getChildren().get(0).hasChildren() && node.getCheckBox() == true)
 			{
-
-				returnString = "<li id = \"" + node.getName().replaceAll(" ", "_") + "\" class=\"closed"
-						+ "\" style=\"display:none;\"><span class=\"folder\"><input type=\"checkbox\" id=\""
-						+ node.getEntityID() + "\" name=\"" + node.getEntityID().split("_identifier_")[0] + "\""
-						+ (selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "") + " />"
-						+ node.getLabel() + "</span>\n" + "<ul>\n";
+				strBuilder.append("<li id = \"").append(node.getName().replaceAll(" ", "_"))
+						.append("\" class=\"closed");
+				strBuilder.append("\" style=\"display:none;\"><span class=\"folder\"><input type=\"checkbox\" id=\"");
+				strBuilder.append(node.getEntityID()).append("\" name=\"")
+						.append(node.getEntityID().split("_identifier_")[0]).append('\"');
+				strBuilder.append(selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "").append(" />");
+				strBuilder.append(node.getLabel()).append("</span>\n").append("<ul>\n");
 			}
 			else
 			{
-				returnString = "<li id = \"" + node.getName().replaceAll(" ", "_") + "\" class=\"closed"
-						+ "\" style=\"display:none;\"><span class=\"folder\">" + node.getLabel() + "</span>\n"
-						+ "<ul>\n";
+				strBuilder.append("<li id = \"").append(node.getName().replaceAll(" ", "_"))
+						.append("\" class=\"closed");
+				strBuilder.append("\" style=\"display:none;\"><span class=\"folder\">").append(node.getLabel())
+						.append("</span>\n");
+				strBuilder.append("<ul>\n");
 			}
 
 			Vector<JQueryTreeViewElement> children = node.getChildren();
 
 			for (JQueryTreeViewElement child : children)
 			{
-				returnString += renderTree(child, selectedLabels);
+				strBuilder.append(renderTree(child, selectedLabels));
 			}
-			returnString += "</ul>\n</li>\n";
+			strBuilder.append("</ul>\n</li>\n");
 		}
 		else
 		{
-			returnString = "<li id = \"" + node.getName().replaceAll(" ", "_")
-					+ "\" style=\"display:none;\"><span class=\"point\"><input type=\"checkbox\" id=\""
-					+ node.getEntityID() + "\" name=\"" + node.getEntityID().split("_identifier_")[0] + "\""
-					+ (selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "") + " />" + node.getLabel()
-					+ "</span></li>\n";
+			strBuilder.append("<li id = \"").append(node.getName().replaceAll(" ", "_"));
+			strBuilder.append("\" style=\"display:none;\"><span class=\"point\"><input type=\"checkbox\" id=\"");
+			strBuilder.append(node.getEntityID()).append("\" name=\"")
+					.append(node.getEntityID().split("_identifier_")[0]).append("\"");
+			strBuilder.append(selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "").append(" />")
+					.append(node.getLabel());
+			strBuilder.append("</span></li>\n");
 		}
 
-		return returnString;
+		return strBuilder.toString();
 	}
 
 	public String toHtml(List<String> selected)
 	{
-		String html = ""
-				+ "<script src=\"res/jquery-plugins/Treeview/jquery.treeview.js\" language=\"javascript\"></script>\n"
-				+ "<script src=\"res/scripts/catalogue.js\" language=\"javascript\"></script>\n"
-				+ "<link rel=\"stylesheet\" href=\"res/jquery-plugins/Treeview/jquery.treeview.css\" type=\"text/css\" media=\"screen\" />\n"
-				+ "<link rel=\"stylesheet\" href=\"res/css/catalogue.css\" type=\"text/css\" media=\"screen\" />\n"
-				+ "<script src=\"res/jquery-plugins/splitter/splitter.js\" language=\"javascript\"></script>\n"
-				+ "<link type=\"text/css\" href=\"jquery/css/smoothness/jquery-ui-1.8.7.custom.css\" rel=\"Stylesheet\"/>"
-				+ "<script src=\"jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js\" language=\"javascript\"></script>\n"
-				+ "<ul id=\"browser\" class=\"pointtree\">\n" + renderTree(treeData.getRoot(), selected) + "</ul>\n";
-
-		return html;
+		StringBuilder htmlBuilder = new StringBuilder();
+		htmlBuilder
+				.append("<script src=\"res/jquery-plugins/Treeview/jquery.treeview.js\" language=\"javascript\"></script>\n");
+		htmlBuilder.append("<script src=\"res/scripts/catalogue.js\" language=\"javascript\"></script>\n");
+		htmlBuilder
+				.append("<link rel=\"stylesheet\" href=\"res/jquery-plugins/Treeview/jquery.treeview.css\" type=\"text/css\" media=\"screen\" />\n");
+		htmlBuilder
+				.append("<link rel=\"stylesheet\" href=\"res/css/catalogue.css\" type=\"text/css\" media=\"screen\" />\n");
+		htmlBuilder
+				.append("<script src=\"res/jquery-plugins/splitter/splitter.js\" language=\"javascript\"></script>\n");
+		htmlBuilder
+				.append("<link type=\"text/css\" href=\"jquery/css/smoothness/jquery-ui-1.8.7.custom.css\" rel=\"Stylesheet\"/>");
+		htmlBuilder
+				.append("<script src=\"jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js\" language=\"javascript\"></script>\n");
+		htmlBuilder.append("<ul id=\"browser\" class=\"pointtree\">\n")
+				.append(renderTree(treeData.getRoot(), selected)).append("</ul>\n");
+		return htmlBuilder.toString();
 	}
 
 	@Override

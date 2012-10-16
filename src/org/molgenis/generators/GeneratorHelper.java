@@ -608,16 +608,14 @@ public class GeneratorHelper
 		if (name == null) return " NULL ";
 
 		String[] split = name.split("_");
-		String result = "";
+		StringBuilder strBuilder = new StringBuilder();
 		for (int i = 0; i < split.length; i++)
 		{
-			if (i > 0) result += "_";
-			if (split[i].equals("")) result += "";
-			else
-				result += firstToUpper(split[i]);
+			if (i > 0) strBuilder.append('_');
+			if (!split[i].isEmpty()) strBuilder.append(firstToUpper(split[i]));
 		}
 
-		return result;
+		return strBuilder.toString();
 	}
 
 	public List<Entity> getSubclasses(Entity superclass, Model m)
@@ -797,12 +795,12 @@ public class GeneratorHelper
 		// }
 		// }
 
-		String result = "";
+		StringBuilder strBuilder = new StringBuilder();
 		for (String i : imports)
 		{
-			result += "import " + i + ";\n";
+			strBuilder.append("import ").append(i).append(";\n");
 		}
-		return result;
+		return strBuilder.toString();
 	}
 
 	public List<Tuple> loadExampleData(String fileName)

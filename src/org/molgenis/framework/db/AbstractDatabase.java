@@ -333,13 +333,13 @@ public abstract class AbstractDatabase implements Database
 			for (E p : selectForUpdate)
 			{
 				// reconstruct composite key so we can use the entityIndex
-				String combinedKey = "";
+				StringBuilder combinedKeyBuilder = new StringBuilder();
 				for (String key : keyNames)
 				{
-					combinedKey += ";" + p.get(key);
+					combinedKeyBuilder.append(';').append(p.get(key));
 				}
 				// copy existing from entityIndex to existingEntities
-				entityIndex.remove(combinedKey);
+				entityIndex.remove(combinedKeyBuilder.toString());
 				existingEntities.add(p);
 			}
 			// copy remaining to newEntities

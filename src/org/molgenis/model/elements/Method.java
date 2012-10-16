@@ -78,21 +78,21 @@ public class Method extends MethodSchema
 
 	public String toString()
 	{
-		String str = "";
+		StringBuilder strBuilder = new StringBuilder();
 
-		if (description != null && !description.equals("")) str += description + "\n";
-		if (returntype != null) str += returntype.getName() + " ";
-		str += "Method(" + getName() + ")\n(\n";
+		if (description != null && !description.equals("")) strBuilder.append(description).append('\n');
+		if (returntype != null) strBuilder.append(returntype.getName()).append(' ');
+		strBuilder.append("Method(").append(getName()).append(")\n(\n");
 		for (Parameter parameter : parameters)
-			str += "  " + parameter.toString() + "\n";
-		str += ");";
+			strBuilder.append("  ").append(parameter.toString()).append('\n');
+		strBuilder.append(");");
 		if (query != null)
 		{
-			str += "\n-> " + query.getEntity() + ":\n";
+			strBuilder.append("\n-> ").append(query.getEntity()).append(":\n");
 			for (MethodQuery.Rule rule : query.getRules())
-				str += "   " + rule.getField() + " " + rule.getOperator() + " " + rule.getParameter() + "\n";
+				strBuilder.append("   ").append(rule.getField()).append(' ').append(rule.getOperator()).append(' ').append(rule.getParameter()).append('\n');
 		}
-		return str;
+		return strBuilder.toString();
 	}
 
 	// data

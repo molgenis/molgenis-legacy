@@ -107,20 +107,20 @@ public class MenuController extends SimpleScreenController<MenuModel>
 
 	public String getCustomHtmlHeaders()
 	{
-		String result = "<!--custom html headers: " + this.getName() + "-->";
+		StringBuilder strBuilder = new StringBuilder("<!--custom html headers: ").append(this.getName()).append("-->");
 
 		if (this.getModel() != null && this.getModel().getSelected() != null)
 		{
-			result += this.getModel().getSelected().getController().getCustomHtmlHeaders();
+			strBuilder.append(this.getModel().getSelected().getController().getCustomHtmlHeaders());
 		}
 		else
 		{
 			for (ScreenController<?> c : this.getChildren())
 			{
-				result += c.getCustomHtmlHeaders();
+				strBuilder.append(c.getCustomHtmlHeaders());
 			}
 		}
 
-		return result;
+		return strBuilder.toString();
 	}
 }

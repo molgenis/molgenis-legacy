@@ -40,14 +40,14 @@ public class Menu extends UISchema
 
 		public static Position getPosition(String position) throws MolgenisModelException
 		{
-			String options = "";
+			StringBuilder optionsBuilder = new StringBuilder();
 			for (Position p : Position.values())
 			{
 				if (p.toString().equalsIgnoreCase(position)) return p;
-				options += p.toString() + ", ";
+				optionsBuilder.append(p.toString()).append(", ");
 			}
 			throw new MolgenisModelException("position='" + position + "' is UNKNOWN for menu. Valid options: "
-					+ options);
+					+ optionsBuilder.toString());
 		}
 	};
 
