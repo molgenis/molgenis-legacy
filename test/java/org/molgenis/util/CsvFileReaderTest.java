@@ -153,6 +153,10 @@ public class CsvFileReaderTest
 				assertEquals(rows.get(1).getString("t2col1"), "val3");
 				assertEquals(rows.get(1).getString("t2col2"), "val4");
 			}
+			catch (Exception e)
+			{
+				throw e;
+			}
 			finally
 			{
 				IOUtils.closeQuietly(reader);

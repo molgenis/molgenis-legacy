@@ -12,6 +12,7 @@ import java.util.zip.DataFormatException;
  */
 public class CsvStringReader extends CsvBufferedReaderMultiline
 {
+	String csvString;
 
 	/**
 	 * Construct the CsvReader for a String.
@@ -22,6 +23,16 @@ public class CsvStringReader extends CsvBufferedReaderMultiline
 	 */
 	public CsvStringReader(String csvString) throws IOException, DataFormatException
 	{
-		super(new BufferedReader(new StringReader(csvString)));
+		super();
+		this.csvString = csvString;
+		this.reset();
+
+	}
+
+	@Override
+	public void reset() throws IOException, DataFormatException
+	{
+		this.reader = new BufferedReader(new StringReader(csvString));
+		if (this.hasHeader) this.columnnames = colnames();
 	}
 }

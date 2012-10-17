@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.RandomAccessFile;
@@ -21,30 +20,32 @@ import org.apache.commons.io.IOUtils;
 public class CsvFileReader extends CsvBufferedReaderMultiline
 {
 	/** the File that is being read */
-	private final File sourceFile;
+	private File sourceFile;
+
+	/** encodig */
+	private String encoding;
 
 	public CsvFileReader(File file, boolean hasHeader) throws IOException, DataFormatException
 	{
-		super(new BufferedReader(new FileReader(file)), hasHeader);
+		super();
 		this.sourceFile = file;
+		this.hasHeader = hasHeader;
+		this.reset();
 	}
 
 	public CsvFileReader(File file) throws IOException, DataFormatException
 	{
-		super(new BufferedReader(new FileReader(file)));
+		super();
 		this.sourceFile = file;
+		this.reset();
 	}
 
 	public CsvFileReader(final File file, final String encoding) throws IOException, DataFormatException
 	{
-		super(new BufferedReader(new InputStreamReader(new FileInputStream(file), encoding)));
+		super();
+		this.encoding = encoding;
 		this.sourceFile = file;
-	}
-
-	public CsvFileReader(InputStream csvStream) throws IOException, DataFormatException
-	{
-		super(new BufferedReader(new InputStreamReader(csvStream)));
-		this.sourceFile = null;
+		this.reset();
 	}
 
 	/**
@@ -158,7 +159,13 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 			this.reader.close();
 		}
 		// create a fresh InputStream to read from, the old one is closed
-		this.reader = new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile)));
-		super.reset();
+		if (this.encoding != null)
+		{
+			this.reader = new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile), encoding));
+		}
+		else
+		{
+			this.reader = new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile)));
+		}
 	}
 }
