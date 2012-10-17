@@ -23,27 +23,20 @@ public interface EmailService
 	public void setSmtpFromAddress(String smtpFromAddress);
 
 	public boolean email(String subject, String body, String toEmail, boolean deObf) throws EmailException;
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.molgenis.util.email.EmailService#sendEmail(java.lang.String,
-	 * java.lang.String, java.lang.String)
+	
+	/* (non-Javadoc)
+	 * @see org.molgenis.util.email.EmailService#sendEmail(java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public boolean email(String subject, String body, String toEmail) throws EmailException;
+	public abstract boolean email(String subject, String body, String toEmail) throws EmailException;
 
-	public boolean email(String subject, String body, String toEmail, boolean deObf, String sender)
-			throws EmailException;
-
-	public boolean email(String subject, String body, String toEmail, String fileAttachment,
-			ByteArrayOutputStream outputStream, boolean deObf) throws EmailException;
-
-	public boolean email(String subject, String body, String toEmail, String fileAttachment,
-			ByteArrayOutputStream outputStream, boolean deObf, String sender) throws EmailException;
-
-	/*
-	 * (non-Javadoc)
-	 * 
+	public boolean email(String subject, String body, String toEmail, boolean deObf, String sender) throws EmailException;
+	
+	public boolean email(String subject, String body, String toEmail, String fileAttachment, boolean deObf) throws EmailException;
+	
+	public boolean email(String subject, String body, String toEmail, String fileAttachment, ByteArrayOutputStream outputStream, boolean deObf) throws EmailException;
+	
+	public boolean email(String subject, String body, String toEmail, String fileAttachment, ByteArrayOutputStream outputStream, boolean deObf, String sender) throws EmailException;
+	/* (non-Javadoc)
 	 * @see org.molgenis.util.email.EmailServer#getSmtpHostName()
 	 */
 	/*

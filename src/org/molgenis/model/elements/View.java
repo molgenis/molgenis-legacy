@@ -155,7 +155,7 @@ public class View extends DBSchema implements Record
 
 				try
 				{
-					if (field.getXrefEntity().equals(entity.getName())) xrefs.add(field);
+					if (field.getXrefEntity().getName().equals(entity.getName())) xrefs.add(field);
 				}
 				catch (Exception ex)
 				{
@@ -170,7 +170,7 @@ public class View extends DBSchema implements Record
 
 				try
 				{
-					if (field.getXrefEntity().equals(e.getName())) xrefs.add(field);
+					if (field.getXrefEntity().getName().equals(e.getName())) xrefs.add(field);
 				}
 				catch (Exception ex)
 				{
