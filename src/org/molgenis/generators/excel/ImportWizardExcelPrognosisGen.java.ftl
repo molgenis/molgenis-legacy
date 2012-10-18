@@ -18,7 +18,7 @@ package ${package};
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -33,13 +33,13 @@ import ${entity.namespace}.excel.${JavaName(entity)}ExcelReader;
 public class ImportWizardExcelPrognosis {
 
 	// map of all sheets, and whether they are importable (recognized) or not
-	private Map<String, Boolean> sheetsImportable = new HashMap<String, Boolean>();
+	private Map<String, Boolean> sheetsImportable = new LinkedHashMap<String, Boolean>();
 
 	// map of importable sheets and their importable fields
-	private Map<String, List<String>> fieldsImportable = new HashMap<String, List<String>>();
+	private Map<String, List<String>> fieldsImportable = new LinkedHashMap<String, List<String>>();
 
 	// map of importable sheets and their unknown fields
-	private Map<String, List<String>> fieldsUnknown = new HashMap<String, List<String>>();
+	private Map<String, List<String>> fieldsUnknown = new LinkedHashMap<String, List<String>>();
 
 	// import order of the sheets
 	private List<String> importOrder = new ArrayList<String>();
@@ -48,7 +48,7 @@ public class ImportWizardExcelPrognosis {
 
 		Workbook workbook = Workbook.getWorkbook(excelFile);
 		ArrayList<String> lowercasedSheetNames = new ArrayList<String>();
-		Map<String, String> lowerToOriginalName = new HashMap<String, String>();
+		Map<String, String> lowerToOriginalName = new LinkedHashMap<String, String>();
 
 		try {
 
