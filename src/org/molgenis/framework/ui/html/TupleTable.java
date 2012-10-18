@@ -18,28 +18,31 @@ public class TupleTable extends HtmlWidget
 	@Override
 	public String toHtml()
 	{
-		String result = "<div><table id=\"" + getName() + "\"><thead><tr>";
+		StringBuilder strBuilder = new StringBuilder();
+		strBuilder.append("<div><table id=\"").append(getName()).append("\"><thead><tr>");
+
 		// header
 		if (tuples.size() > 0) for (String name : tuples.get(0).getFields())
 		{
-			result += "<th>" + name + "</th>";
+			strBuilder.append("<th>").append(name).append("</th>");
 		}
-		result += "</tr></thead><tbody>";
+		strBuilder.append("</tr></thead><tbody>");
+
 		// body
 		for (Tuple t : tuples)
 		{
-			result += "<tr>";
+			strBuilder.append("<tr>");
 
 			for (String name : t.getFields())
-				result += "<td>" + (t.isNull(name) ? "" : t.getString(name)) + "</td>";
+				strBuilder.append("<td>").append(t.isNull(name) ? "" : t.getString(name)).append("</td>");
 
-			result += "</tr>";
+			strBuilder.append("</tr>");
 		}
-		result += "</tbody></table><script>$('#"
-				+ getName()
-				+ "').dataTable({'bJQueryUI': true,'sPaginationType': 'full_numbers','sScrollX': '100%','bScrollCollapse': true});</script></div>";
+		strBuilder.append("</tbody></table><script>$('#");
+		strBuilder.append(getName());
+		strBuilder
+				.append("').dataTable({'bJQueryUI': true,'sPaginationType': 'full_numbers','sScrollX': '100%','bScrollCollapse': true});</script></div>");
 
-		return result;
+		return strBuilder.toString();
 	}
-
 }

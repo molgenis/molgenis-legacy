@@ -23,32 +23,38 @@ public class TabbedLayout extends MultipanelLayout
 	{
 		Map<String, HtmlElement> elements = this.getElements();
 
-		String result = "<div id=\"" + this.getId() + "\">";
+		StringBuilder strBuilder = new StringBuilder();
+		strBuilder.append("<div id=\"").append(this.getId()).append("\">");
 
 		// create tabs
-		result += "<ul>";
+		strBuilder.append("<ul>");
 		int i = 0;
 		for (String label : elements.keySet())
 		{
-			if (elements.get(label) instanceof HyperlinkInput) result += "<li><a href=\""
-					+ ((HyperlinkInput) elements.get(label)).getValue() + "\">" + label + "</a></li>";
+			if (elements.get(label) instanceof HyperlinkInput)
+			{
+				strBuilder.append("<li><a href=\"").append(((HyperlinkInput) elements.get(label)).getValue());
+				strBuilder.append("\">").append("</a></li>");
+			}
 			else
-				result += "<li><a href=\"#" + getId() + "-" + (i++) + "\">" + label + "</a></li>";
+			{
+				strBuilder.append("<li><a href=\"#").append(getId()).append('-').append(i++).append("\">");
+				strBuilder.append(label).append("</a></li>");
+			}
 		}
-		result += "</ul>";
+		strBuilder.append("</ul>");
 
 		// create bodies
 		i = 0;
 		for (String label : elements.keySet())
 		{
-			result += "<div id=\"" + getId() + "-" + (i++) + "\">" + elements.get(label).render() + "</div>";
+			strBuilder.append("<div id=\"").append(getId()).append('-').append(i++).append("\">");
+			strBuilder.append(elements.get(label).render()).append("</div>");
 		}
+		strBuilder.append("</div>");
 
-		result += "</div>";
+		strBuilder.append("</div><script>$(\"#").append(getId()).append("\").tabs();</script>");
 
-		result += "</div><script>$(\"#" + getId() + "\").tabs();</script>";
-
-		return result;
+		return strBuilder.toString();
 	}
-
 }

@@ -81,8 +81,8 @@ public class TableBlock
 
 	public String renderRows()
 	{
-		String result = "";
-		// iterate throught the rows and cols; render unless it is spanning
+		StringBuilder strBuilder = new StringBuilder();
+		// iterate through the rows and cols; render unless it is spanning
 		for (int row = 0; row < values.length; row++)
 		{
 			// only open tr if it is not complete in 'spanning'.
@@ -96,7 +96,7 @@ public class TableBlock
 					{
 						if (tr == false)
 						{
-							result += "\t\n<tr>";
+							strBuilder.append("\t\n<tr>");
 							tr = true;
 						}
 
@@ -104,14 +104,15 @@ public class TableBlock
 						String colspan = td.getColspan() > 1 ? " colspan=" + td.getColspan() : "";
 						String rowspan = td.getRowspan() > 1 ? " rowspan=" + td.getRowspan() : "";
 						String value = td.getValue() != null ? td.getValue().render() : "";
-						result += "<td" + colspan + rowspan + ">" + value + "</td>";
+						strBuilder.append("<td").append(colspan).append(rowspan).append('>');
+						strBuilder.append(value).append("</td>");
 					}
 				}
 			}
-			if (tr) result += "</tr>";
+			if (tr) strBuilder.append("</tr>");
 		}
 
-		return result;
+		return strBuilder.toString();
 	}
 
 	/** Helper method to resize the values array */
