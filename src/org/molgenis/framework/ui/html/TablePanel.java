@@ -67,26 +67,27 @@ public class TablePanel extends HtmlWidget
 	 */
 	public String toHtml()
 	{
-		String result = "";
+		StringBuilder strBuilder = new StringBuilder();
 		for (HtmlInput<?> i : this.inputs.values())
 		{
-			result += "<div style=\"clear:both; ";
+			strBuilder.append("<div style=\"clear:both; ");
 			if (i.isHidden())
 			{
-				result += "display:none\"";
+				strBuilder.append("display:none\"");
 			}
 			else
 			{
-				result += "display:block\"";
+				strBuilder.append("display:block\"");
 			}
 			if (i.getId() != null)
 			{
-				result += (" id=\"div" + i.getId() + "\"");
+				strBuilder.append(" id=\"div").append(i.getId()).append("\"");
 			}
-			result += "><label style=\"width:16em;float:left;\" for=\"" + i.getName() + "\">" + i.getLabel()
-					+ "</label>" + i.toHtml() + (!i.isNillable() ? " *" : "") + "</div>";
+			strBuilder.append("><label style=\"width:16em;float:left;\" for=\"").append(i.getName()).append("\">");
+			strBuilder.append(i.getLabel()).append("</label>").append(i.toHtml());
+			strBuilder.append(!i.isNillable() ? " *" : "").append("</div>");
 		}
-		return result;
+		return strBuilder.toString();
 	}
 
 	/**

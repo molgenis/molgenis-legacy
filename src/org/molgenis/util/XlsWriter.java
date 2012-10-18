@@ -15,8 +15,6 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
-import org.apache.log4j.Logger;
-
 /**
  * Write values to an Excel file
  */
@@ -121,8 +119,7 @@ public class XlsWriter implements TupleWriter
 	{
 		for (int i = 0; i < headers.size(); i++)
 		{
-
-			String contents = "";
+			StringBuilder contentsBuilder = new StringBuilder();
 
 			Object fieldValue = e.get(headers.get(i));
 			if (fieldValue != null)
@@ -135,11 +132,11 @@ public class XlsWriter implements TupleWriter
 					{
 						if (j != 0)
 						{
-							contents += ",";
+							contentsBuilder.append(',');
 						}
 						if (list.get(j) != null)
 						{
-							contents += list.get(j).toString();
+							contentsBuilder.append(list.get(j).toString());
 						}
 						else
 						{
@@ -150,11 +147,11 @@ public class XlsWriter implements TupleWriter
 				}
 				else
 				{
-					contents = fieldValue.toString();
+					contentsBuilder.append(fieldValue.toString());
 				}
 
 			}
-			Label l = new Label(i, rowIndex, contents, cellFormat);
+			Label l = new Label(i, rowIndex, contentsBuilder.toString(), cellFormat);
 			sheet.addCell(l);
 		}
 		rowIndex++;

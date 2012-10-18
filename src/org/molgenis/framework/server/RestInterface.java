@@ -14,10 +14,10 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.util.CsvWriter;
-import org.molgenis.util.TupleWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.TupleWriter;
 
 /**
  * Implementation of the REST interface
@@ -161,12 +161,13 @@ public class RestInterface
 		else
 		{
 			Tuple requestTuple = new HttpServletRequestTuple(request);
-			String queryString = "";
+			StringBuilder queryStringBuilder = new StringBuilder();
 			for (String name : requestTuple.getFields())
 			{
-				queryString += URLDecoder.decode(name, "UTF-8") + "="
-						+ URLDecoder.decode(requestTuple.getString(name), "UTF-8");
+				queryStringBuilder.append(URLDecoder.decode(name, "UTF-8")).append('=');
+				queryStringBuilder.append(URLDecoder.decode(requestTuple.getString(name), "UTF-8"));
 			}
+			String queryString = queryStringBuilder.toString();
 			logger.debug("handle find query via http-post with parameters: " + queryString);
 			rulesList = QueryRuleUtil.fromRESTstring(queryString);
 		}
