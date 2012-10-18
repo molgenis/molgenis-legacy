@@ -12,14 +12,15 @@ public class SelectInputView implements TwoStepView<SelectInput>
 	@Override
 	public String render(SelectInput element, Theme renderer) throws RenderException
 	{
-		String options = "";
+		StringBuilder optionsBuilder = new StringBuilder();
 		for (ValueLabel vl : element.getOptions())
 		{
 			String selected = vl.equals(element.getValue()) ? " selected" : "";
-			options += String.format("<option %svalue=\"%s\">%s</option>", selected, vl.getValue(), vl.getLabel());
+			optionsBuilder.append(String.format("<option %svalue=\"%s\">%s</option>", selected, vl.getValue(),
+					vl.getLabel()));
 		}
 
-		return String.format("<select id=\"%s\">%s</select>", element.getId(), options);
+		return String.format("<select id=\"%s\">%s</select>", element.getId(), optionsBuilder.toString());
 	}
 
 }

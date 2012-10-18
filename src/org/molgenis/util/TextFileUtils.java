@@ -82,7 +82,7 @@ public class TextFileUtils
 
 		int nrOfNewLines = 1;
 		boolean countingNewlines = true;
-		String terminatorSequence = "";
+		StringBuilder terminatorSequenceBuilder = new StringBuilder();
 
 		while (countingNewlines)
 		{
@@ -91,12 +91,12 @@ public class TextFileUtils
 
 			if (c == '\r')
 			{
-				terminatorSequence += "r";
+				terminatorSequenceBuilder.append('r');
 				nrOfNewLines++;
 			}
 			else if (c == '\n')
 			{
-				terminatorSequence += "n";
+				terminatorSequenceBuilder.append('n');
 				nrOfNewLines++;
 			}
 			else
@@ -110,7 +110,7 @@ public class TextFileUtils
 		// replace \r\n combinations with \n (note: separators are added in
 		// reverse
 		// order)
-		terminatorSequence = terminatorSequence.replaceAll("nr", "n");
+		String terminatorSequence = terminatorSequenceBuilder.toString().replaceAll("nr", "n");
 
 		return terminatorSequence.length();
 

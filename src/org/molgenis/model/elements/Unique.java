@@ -124,15 +124,15 @@ public class Unique implements Serializable
 	// Object overloads
 	public String toString()
 	{
-		String str = "Unique(";
+		StringBuilder strBuilder = new StringBuilder("Unique(");
 
 		for (String field : fields)
 		{
-			str += field + ", ";
+			strBuilder.append(field).append(", ");
 		}
-		str += ")";
+		strBuilder.append(')');
 
-		return str;
+		return strBuilder.toString();
 	}
 
 	/**

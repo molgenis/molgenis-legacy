@@ -114,32 +114,32 @@ public class VcfRecord
 	// just for testing
 	public String toString()
 	{
-		String info = "[";
+		StringBuilder infoBuilder = new StringBuilder().append('[');
 		boolean first = true;
 		for (VcfInfo i : this.getInfoMetadata())
 		{
-			if (!first) info += ",";
-			info += i.getId() + "=" + this.getInfo(i.getId());
+			if (!first) infoBuilder.append(',');
+			infoBuilder.append(i.getId()).append('=').append(this.getInfo(i.getId()));
 			first = false;
 		}
-		info += "]";
+		infoBuilder.append(']');
 
-		String sampleInfo = "";
+		StringBuilder sampleInfoBuilder = new StringBuilder();
 		for (String sample : this.getSamples())
 		{
-			sampleInfo += ", " + sample + "=[";
+			sampleInfoBuilder.append(", ").append(sample).append("=[");
 			first = true;
 			for (String format : this.getFormat())
 			{
-				if (!first) sampleInfo += ",";
-				sampleInfo += format + "=" + this.getSampleValue(sample, format);
+				if (!first) sampleInfoBuilder.append(',');
+				sampleInfoBuilder.append(format).append('=').append(this.getSampleValue(sample, format));
 				first = false;
 			}
-			sampleInfo += "]";
+			sampleInfoBuilder.append(']');
 		}
 
 		return String.format("VcfRecord(chrom=%s,pos=%s,id=%s,ref=%s,alt=%s,qual=%s,filter=%s,info=%s,format=%s%s )",
-				getChrom(), getPos(), getId(), getRef(), getAlt(), getQual(), getFilter(), info, getFormat(),
-				sampleInfo);
+				getChrom(), getPos(), getId(), getRef(), getAlt(), getQual(), getFilter(), infoBuilder.toString(),
+				getFormat(), sampleInfoBuilder.toString());
 	}
 }

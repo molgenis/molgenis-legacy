@@ -89,48 +89,48 @@ public class Table extends HtmlWidget
 
 	private String printHeaders()
 	{
-
-		String result = "<thead><tr>";
+		StringBuilder strBuilder = new StringBuilder("<thead><tr>");
 		if (headerColumn)
 		{
-			result += "<th></th>";
+			strBuilder.append("<th></th>");
 		}
 		for (String col : cols)
 		{
-			result += ("<th style=\"" + getHeaderCellStyle() + "\">" + col + "</th>");
+			strBuilder.append("<th style=\"").append(getHeaderCellStyle()).append("\">").append(col).append("</th>");
 		}
-		result += "</tr></thead>";
-		return result;
+		strBuilder.append("</tr></thead>");
+		return strBuilder.toString();
 	}
 
 	private String printBody()
 	{
-		String result = "<tbody>";
+		StringBuilder strBuilder = new StringBuilder("<tbody>");
 		int rowCount = 0;
 		for (String row : rows)
 		{
-			result += printRow(row, rowCount);
+			strBuilder.append(printRow(row, rowCount));
 			rowCount++;
 		}
-		result += "</tbody>";
-		return result;
+		strBuilder.append("</tbody>");
+		return strBuilder.toString();
 	}
 
 	// default visibility for subclassing in the same package
 	String printRow(String row, int rowCount)
 	{
-		String result = "<tr>";
+		StringBuilder strBuilder = new StringBuilder("<tr>");
 		if (headerColumn)
 		{
-			result += ("<th style=\"" + getHeaderCellStyle() + "\">" + row + "</th>");
+			strBuilder.append("<th style=\"").append(getHeaderCellStyle()).append("\">").append(row).append("</th>");
 		}
 
 		for (int colCount = 0; colCount < cols.size(); colCount++)
 		{
-			result += ("<td style=\"" + getCellStyle(colCount, rowCount) + "\">" + getCellString(colCount, rowCount) + "</td>");
+			strBuilder.append("<td style=\"").append(getCellStyle(colCount, rowCount)).append("\">");
+			strBuilder.append(getCellString(colCount, rowCount)).append("</td>");
 		}
-		result += "</tr>";
-		return result;
+		strBuilder.append("</tr>");
+		return strBuilder.toString();
 	}
 
 	/**

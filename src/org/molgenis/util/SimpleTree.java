@@ -214,7 +214,7 @@ public class SimpleTree<T extends Tree> implements Tree<T>, Serializable
 
 	public String toString(boolean includeSubTree, int level)
 	{
-		String str = toString();
+		StringBuilder strBuilder = new StringBuilder(toString());
 
 		if (includeSubTree && getChildren().size() > 0)
 		{
@@ -225,13 +225,12 @@ public class SimpleTree<T extends Tree> implements Tree<T>, Serializable
 			}
 			for (Tree element : getChildren())
 			{
-				str += "\n" + indent + element.toString(true, level + 1) + ",";
+				strBuilder.append('\n').append(indent).append(element.toString(true, level + 1)).append(',');
 			}
-
-			str = str.substring(0, str.length() - 1);
+			strBuilder.deleteCharAt(strBuilder.length() - 1);
 		}
 
-		return str;
+		return strBuilder.toString();
 	}
 
 	public Object getValue()
