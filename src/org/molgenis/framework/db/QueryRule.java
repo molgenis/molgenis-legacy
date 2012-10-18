@@ -10,7 +10,6 @@
 
 package org.molgenis.framework.db;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -42,9 +41,6 @@ public class QueryRule implements Cloneable
 	/** The value to compare entries of the field in the database with */
 	protected Object value = null;
 
-	/** Indicate wheter this should evaluate to OR */
-	private boolean or = false; // default AND
-
 	/** Place to store nested rules */
 	// FIXME: why not put this in value?
 	private QueryRule[] nestedRules;
@@ -59,7 +55,6 @@ public class QueryRule implements Cloneable
 		operator = copy.operator;
 		field = copy.field;
 		value = copy.value;
-		or = copy.or;
 		if (copy.nestedRules != null)
 		{
 			nestedRules = new QueryRule[copy.nestedRules.length];
@@ -346,30 +341,6 @@ public class QueryRule implements Cloneable
 	public QueryRule[] getNestedRules()
 	{
 		return nestedRules;
-	}
-
-	@Override
-	public boolean equals(Object o)
-	{
-		if (o != null && o instanceof QueryRule)
-		{
-			final QueryRule r = (QueryRule) o;
-
-			if ((
-			// field
-			r.getField() != null && r.getField().equals(this.getField()) || r.getField() == this.getField())
-					// operator
-					&& (r.getOperator() != null && r.getOperator().equals(this.getOperator()) || r.getOperator() == this
-							.getOperator())
-					// value
-					&& (r.getValue() != null && r.getValue().equals(this.getValue()) || r.getValue() == this.getValue())
-					// nested rules
-					&& (r.getNestedRules() != null && Arrays.equals(r.getNestedRules(), this.getNestedRules())))
-			{
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@Override
