@@ -68,33 +68,34 @@ public class SelectInput extends OptionInput<Object>
 			return input.toHtml();
 		}
 
-		String optionsHtml = "";
+		StringBuilder optionsHtmlBuilder = new StringBuilder();
 
 		for (ValueLabel choice : getOptions())
 		{
 			if (super.getObject() != null && super.getObject().toString().equals(choice.getValue().toString()))
 			{
-				optionsHtml += "\t<option selected value=\"" + choice.getValue() + "\">" + choice.getLabel()
-						+ "</option>\n";
+				optionsHtmlBuilder.append("\t<option selected value=\"").append(choice.getValue()).append("\">");
+				optionsHtmlBuilder.append(choice.getLabel()).append("</option>\n");
 			}
 			else if (!this.isReadonly())
 			{
-				optionsHtml += "\t<option value=\"" + choice.getValue() + "\">" + choice.getLabel() + "</option>\n";
+				optionsHtmlBuilder.append("\t<option value=\"").append(choice.getValue()).append("\">");
+				optionsHtmlBuilder.append(choice.getLabel()).append("</option>\n");
 			}
 		}
 		// start with empty option, unless there was already a value selected
 		if ((!this.isReadonly() && this.isNillable()) || ("".equals(super.getObject()) && this.isNillable()))
 		{
-			if (super.getObject() != null && super.getObject().toString().equals("")) optionsHtml = "\t<option value=\"\">&nbsp;</option>\n"
-					+ optionsHtml;
+			if (super.getObject() != null && super.getObject().toString().equals("")) optionsHtmlBuilder.insert(0,
+					"\t<option value=\"\">&nbsp;</option>\n");
 			else
-				optionsHtml += "\t<option value=\"\">&nbsp;</option>\n";
+				optionsHtmlBuilder.append("\t<option value=\"\">&nbsp;</option>\n");
 		}
 
 		if (this.uiToolkit == UiToolkit.ORIGINAL)
 		{
 			return "<select class=\"" + this.getClazz() + "\" id=\"" + this.getId() + "\" name=\"" + this.getName()
-					+ "\" " + readonly + onchange + ">\n" + optionsHtml.toString() + "</select>\n";
+					+ "\" " + readonly + onchange + ">\n" + optionsHtmlBuilder.toString() + "</select>\n";
 		}
 		else if (this.uiToolkit == UiToolkit.JQUERY)
 		{
@@ -103,7 +104,7 @@ public class SelectInput extends OptionInput<Object>
 			return "<select class=\"" + readonly + " ui-widget-content ui-corner-all\" id=\"" + this.getId()
 					+ "\" name=\"" + this.getName() + "\" " + onchange
 					+ (this.getWidth() != -1 ? " style=\"width:" + this.getWidth() + "em;\" " : "") + description
-					+ ">\n" + optionsHtml.toString() + "</select><script>$(\"#" + this.getId()
+					+ ">\n" + optionsHtmlBuilder.toString() + "</select><script>$(\"#" + this.getId()
 					+ "\").chosen();</script>\n";
 		}
 		return "STYLE NOT AVAILABLE";

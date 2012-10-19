@@ -158,14 +158,13 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends 
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		String result = "";
+		StringBuilder resultBuilder = new StringBuilder();
 		for (ScreenController<?> c : this.getChildren())
 		{
-			result += "<!--custom html headers: " + c.getName() + "-->";
-			result += c.getCustomHtmlHeaders();
+			resultBuilder.append("<!--custom html headers: ").append(c.getName()).append("-->");
+			resultBuilder.append(c.getCustomHtmlHeaders());
 		}
-
-		return result;
+		return resultBuilder.toString();
 	}
 
 	@Override
@@ -177,14 +176,12 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends 
 	@Override
 	public String getCustomHtmlBodyOnLoad()
 	{
-		String result = "";
+		StringBuilder resultBuilder = new StringBuilder();
 		for (ScreenController<?> c : this.getChildren())
 		{
-			// result += "<!--custom body onload: " + c.getName() + "-->";
-			result += c.getCustomHtmlBodyOnLoad();
+			resultBuilder.append(c.getCustomHtmlBodyOnLoad());
 		}
-
-		return result;
+		return resultBuilder.toString();
 	}
 
 	/**

@@ -407,16 +407,16 @@ public class SimpleTuple implements Tuple
 
 		String result = this.getString(column);
 		String[] lines = result.split("\\n");
-		String cleanresult = "";
+		StringBuilder cleanresultBuilder = new StringBuilder();
 		for (int i = 0; i < lines.length; i++)
 		{
 			String line = lines[i];
 			line = line.replaceAll("\\s", "");
 			line = line.replaceAll("^[0-9]*", "");
-			cleanresult += line;
+			cleanresultBuilder.append(line);
 		}
 
-		result = cleanresult;
+		result = cleanresultBuilder.toString();
 
 		Vector<Integer> nonIUBpos = new Vector<Integer>();
 
@@ -545,25 +545,24 @@ public class SimpleTuple implements Tuple
 	public String toString()
 	{
 		if (this.getNrColumns() == 0) return "EMPTY TUPLE";
-		String result = "";
+		StringBuilder resultBuilder = new StringBuilder();
 		for (int columnIndex = 0; columnIndex < this.getNrColumns(); columnIndex++)
 		{
 			if (getColName(columnIndex) != null)
 			{
-				result += getColName(columnIndex) + "='" + getObject(columnIndex)
-
-				+ "' ";
+				resultBuilder.append(getColName(columnIndex)).append("='");
+				resultBuilder.append(getObject(columnIndex)).append("' ");
 			}
 			else
 			{
-				result += columnIndex + "='" + getObject(columnIndex) + "' ";
+				resultBuilder.append(columnIndex).append("='").append(getObject(columnIndex)).append("' ");
 			}
 		}
-		if (result.length() > 0)
+		if (resultBuilder.length() > 0)
 		{
-			result = result.substring(0, result.length() - 1);
+			resultBuilder.deleteCharAt(resultBuilder.length() - 1);
 		}
-		return result;
+		return resultBuilder.toString();
 	}
 
 	public File getFile(String string)

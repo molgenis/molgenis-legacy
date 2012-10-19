@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.molgenis.util.test.AbstractResourceTest;
 import org.testng.annotations.Test;
 
@@ -17,13 +18,18 @@ public class ExcelReaderTest extends AbstractResourceTest
 		File csvFile = getTestResource("/test.xls");
 
 		ExcelReader reader = new ExcelReader(csvFile, "test");
-
 		List<Tuple> result = new ArrayList<Tuple>();
-		for (Tuple t : reader)
+		try
 		{
-			result.add(t);
+			for (Tuple t : reader)
+			{
+				result.add(t);
+			}
 		}
-
+		finally
+		{
+			IOUtils.closeQuietly(reader);
+		}
 		assertEquals(result.get(0).getString("col1"), "val1");
 		assertEquals(result.get(0).getString("col2"), "val2");
 
