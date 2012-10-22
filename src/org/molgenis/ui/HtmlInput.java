@@ -14,14 +14,14 @@ import org.molgenis.util.Tuple;
  * 
  * 
  */
-public abstract class HtmlInput<T extends HtmlInput<T,E>,E> extends MolgenisComponent
+public abstract class HtmlInput<T extends HtmlInput<T, E>, E> extends MolgenisComponent
 {
 	// STRING CONSTANTS
 	/** String constants for property name 'name' */
 	public static final String NAME = "name";
 
-//	/** String constants for property name 'label' */
-//	public static final String LABEL = "label";
+	// /** String constants for property name 'label' */
+	// public static final String LABEL = "label";
 
 	/** String constants for property name 'name' */
 	public static final String VALUE = "value";
@@ -37,7 +37,7 @@ public abstract class HtmlInput<T extends HtmlInput<T,E>,E> extends MolgenisComp
 
 	/** String constants for property name 'hidden' */
 	public static final String HIDDEN = "hidden";
-	
+
 	public static final String JQUERYPROPERTIES = "Jqueryproperties";
 
 	// PROPERTIES
@@ -82,7 +82,7 @@ public abstract class HtmlInput<T extends HtmlInput<T,E>,E> extends MolgenisComp
 
 	/** to pass jquery script properties. */
 	private String Jqueryproperties;
-	
+
 	/** Tab index of this input (optionl) */
 	protected String tabIndex = "";
 
@@ -98,11 +98,11 @@ public abstract class HtmlInput<T extends HtmlInput<T,E>,E> extends MolgenisComp
 	 */
 	public HtmlInput(String name, E value)
 	{
-		if(name == null) name = UUID.randomUUID().toString().replace("-","");
+		if (name == null) name = UUID.randomUUID().toString().replace("-", "");
 		this.id(name.replace(" ", ""));
 		this.setName(name.replace(" ", ""));
-		//this.setLabel(name);
-		//this.setDescription(name);
+		// this.setLabel(name);
+		// this.setDescription(name);
 		this.id(name);
 		this.setValue(value);
 	}
@@ -113,7 +113,7 @@ public abstract class HtmlInput<T extends HtmlInput<T,E>,E> extends MolgenisComp
 	{
 		this.id = t.getString(NAME);
 		this.name = t.getString(NAME);
-		//this.label = t.getString(LABEL);
+		// this.label = t.getString(LABEL);
 		this.value = (E) t.getObject(VALUE);
 		if (t.getBool(NILLABLE) != null) this.nillable = t.getBool(NILLABLE);
 		if (t.getBool(READONLY) != null) this.readonly = t.getBool(READONLY);
@@ -133,18 +133,19 @@ public abstract class HtmlInput<T extends HtmlInput<T,E>,E> extends MolgenisComp
 	{
 		return label;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public T label(String label)
 	{
-		//assert (label != null); fails web tests due to label -> null constructors, so allow it
+		// assert (label != null); fails web tests due to label -> null
+		// constructors, so allow it
 		this.label = label;
 		return (T) this;
 	}
 
 	public String getName()
 	{
-		if(name == null) return this.getId();
+		if (name == null) return this.getId();
 		return name;
 	}
 
@@ -160,11 +161,12 @@ public abstract class HtmlInput<T extends HtmlInput<T,E>,E> extends MolgenisComp
 	{
 		return value;
 	}
-	
+
 	public String getObjectString()
 	{
-		if(this.value == null) return "";
-		else return value.toString();
+		if (this.value == null) return "";
+		else
+			return value.toString();
 	}
 
 	// TODO: This *needs* to be renamed to getValueToString() or removed!!!
@@ -188,68 +190,69 @@ public abstract class HtmlInput<T extends HtmlInput<T,E>,E> extends MolgenisComp
 		}
 
 		// todo: why different from getHtmlValue()??
-//		if (replaceSpechialChars)
-//		{
-//			return  this.renderDecorator.render(getObject().toString().replace("\n", "<br>")
-//					.replace("\r", "").replace(">", "&gt;")
-//					.replace("<", "&lt;"));
-//		}
-//		else
-//		{
+		// if (replaceSpechialChars)
+		// {
+		// return
+		// this.renderDecorator.render(getObject().toString().replace("\n",
+		// "<br>")
+		// .replace("\r", "").replace(">", "&gt;")
+		// .replace("<", "&lt;"));
+		// }
+		// else
+		// {
 		return getObject().toString();
-//		}
+		// }
 	}
-	
+
 	public String getHtmlValue(int maxLength)
 	{
-		//we render all tags, but we stop rendering text outside tags after maxLength
-		String result = "";
+		// we render all tags, but we stop rendering text outside tags after
+		// maxLength
+		StringBuilder strBuilder = new StringBuilder();
 		boolean inTag = false;
 		int count = 0;
-		for(char c: this.getHtmlValue().toCharArray())
+		for (char c : this.getHtmlValue().toCharArray())
 		{
-			//check if we go into tag
-			if('<' == c)
+			// check if we go into tag
+			if ('<' == c)
 			{
-				inTag = true; 
+				inTag = true;
 
 			}
-				
-			if(inTag || count < maxLength)
+
+			if (inTag || count < maxLength)
 			{
-				result += c;
+				strBuilder.append(c);
 			}
-			
-			if('>' == c)
+
+			if ('>' == c)
 			{
 				inTag = false;
 			}
-			
-			if(!inTag) count++;
+
+			if (!inTag) count++;
 		}
 
-		
-		return result;
+		return strBuilder.toString();
 	}
 
 	public String getHtmlValue()
 	{
 		String value = null;
 		value = this.getValue();
-				//.replace("\n", "<br>").replace("\r", "")
-				//.replace(">", "&gt;").replace("<", "&lt;");
+		// .replace("\n", "<br>").replace("\r", "")
+		// .replace(">", "&gt;").replace("<", "&lt;");
 		return this.renderDecorator.render(value);
 	}
 
 	public String getJavaScriptValue()
 	{
-		String value = StringEscapeUtils.escapeXml(StringEscapeUtils
-				.escapeJavaScript(this.getValue()));
+		String value = StringEscapeUtils.escapeXml(StringEscapeUtils.escapeJavaScript(this.getValue()));
 		return value;
 	}
-	
-	//BORING PROPERTIES
-	public HtmlInput<T,E> setValue(E value)
+
+	// BORING PROPERTIES
+	public HtmlInput<T, E> setValue(E value)
 	{
 		this.value = value;
 		return this;
@@ -260,7 +263,7 @@ public abstract class HtmlInput<T extends HtmlInput<T,E>,E> extends MolgenisComp
 		return readonly;
 	}
 
-	public HtmlInput<T,E> setReadonly(boolean readonly)
+	public HtmlInput<T, E> setReadonly(boolean readonly)
 	{
 		this.readonly = readonly;
 		return this;
@@ -271,7 +274,7 @@ public abstract class HtmlInput<T extends HtmlInput<T,E>,E> extends MolgenisComp
 		return hidden;
 	}
 
-	public HtmlInput<T,E> setHidden(boolean hidden)
+	public HtmlInput<T, E> setHidden(boolean hidden)
 	{
 		this.hidden = hidden;
 		return this;
@@ -296,7 +299,7 @@ public abstract class HtmlInput<T extends HtmlInput<T,E>,E> extends MolgenisComp
 		return style;
 	}
 
-	public HtmlInput<T,E> setStyle(String style)
+	public HtmlInput<T, E> setStyle(String style)
 	{
 		this.style = style;
 		return this;
@@ -307,7 +310,7 @@ public abstract class HtmlInput<T extends HtmlInput<T,E>,E> extends MolgenisComp
 		return tooltip;
 	}
 
-	public HtmlInput<T,E> setTooltip(String tooltip)
+	public HtmlInput<T, E> setTooltip(String tooltip)
 	{
 		this.tooltip = tooltip;
 		return this;
@@ -318,7 +321,7 @@ public abstract class HtmlInput<T extends HtmlInput<T,E>,E> extends MolgenisComp
 		return target.replace(".", "_");
 	}
 
-	public HtmlInput<T,E> setTarget(String target)
+	public HtmlInput<T, E> setTarget(String target)
 	{
 		this.target = target.replace(".", "_");
 		return this;
@@ -329,7 +332,7 @@ public abstract class HtmlInput<T extends HtmlInput<T,E>,E> extends MolgenisComp
 		return description;
 	}
 
-	public HtmlInput<T,E> setDescription(String description)
+	public HtmlInput<T, E> setDescription(String description)
 	{
 		this.description = description;
 		return this;
@@ -340,7 +343,7 @@ public abstract class HtmlInput<T extends HtmlInput<T,E>,E> extends MolgenisComp
 		return nillable;
 	}
 
-	public HtmlInput<T,E> setNillable(boolean required)
+	public HtmlInput<T, E> setNillable(boolean required)
 	{
 		this.nillable = required;
 		return this;
@@ -371,13 +374,13 @@ public abstract class HtmlInput<T extends HtmlInput<T,E>,E> extends MolgenisComp
 		return size;
 	}
 
-	public synchronized HtmlInput<T,E> setSize(Integer size)
+	public synchronized HtmlInput<T, E> setSize(Integer size)
 	{
 		this.size = size;
 		return this;
 	}
 
-	public HtmlInput<T,E> setTabIndex(int tabidx)
+	public HtmlInput<T, E> setTabIndex(int tabidx)
 	{
 		tabIndex = " tabindex=" + Integer.toString(tabidx);
 		return this;

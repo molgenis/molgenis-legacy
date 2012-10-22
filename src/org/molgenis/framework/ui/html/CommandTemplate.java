@@ -36,8 +36,7 @@ public class CommandTemplate extends LinkedHashMap<String, HtmlInput<?>>
 	@Override
 	public HtmlInput get(Object key)
 	{
-		if (key instanceof String) return super.get(((String) key)
-				.toLowerCase());
+		if (key instanceof String) return super.get(((String) key).toLowerCase());
 		return super.get(key);
 	}
 

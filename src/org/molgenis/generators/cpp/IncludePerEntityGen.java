@@ -25,8 +25,7 @@ public class IncludePerEntityGen extends ForEachEntityGenerator
 	{
 		return "Generate CPP header files";
 	}
-	
-	
+
 	@Override
 	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
@@ -37,21 +36,30 @@ public class IncludePerEntityGen extends ForEachEntityGenerator
 		for (Entity entity : model.getEntities())
 		{
 			// calculate package from its own package
-			String packageName = entity.getNamespace().toLowerCase() + this.getClass().getPackage().toString().substring(Generator.class.getPackage().toString().length());
-			
-			File targetDir = new File((this.getSourcePath(options).endsWith("/")?this.getSourcePath(options):this.getSourcePath(options)+"/") + packageName.replace(".", "/").replace("/cpp", ""));
-			try{
-				File targetFile = new File(targetDir + "/" + GeneratorHelper.getJavaName(entity.getName()) + getExtension());
+			String packageName = entity.getNamespace().toLowerCase()
+					+ this.getClass().getPackage().toString()
+							.substring(Generator.class.getPackage().toString().length());
+
+			File targetDir = new File((this.getSourcePath(options).endsWith("/") ? this.getSourcePath(options)
+					: this.getSourcePath(options) + "/")
+					+ packageName.replace(".", "/").replace("/cpp", ""));
+			try
+			{
+				File targetFile = new File(targetDir + "/" + GeneratorHelper.getJavaName(entity.getName())
+						+ getExtension());
 				targetDir.mkdirs();
-				
+
 				// logger.debug("trying to generated "+targetFile);
 				templateArgs.put("entity", entity);
 				templateArgs.put("model", model);
 				templateArgs.put("db_driver", options.db_driver);
 				templateArgs.put("template", template.getName());
-				templateArgs.put("file", targetDir.getCanonicalPath().replace("\\", "/") + "/" + GeneratorHelper.firstToUpper(entity.getName()) + getType() + getExtension());
+				templateArgs.put(
+						"file",
+						targetDir.getCanonicalPath().replace("\\", "/") + "/"
+								+ GeneratorHelper.firstToUpper(entity.getName()) + getType() + getExtension());
 				templateArgs.put("package", packageName);
-				
+
 				OutputStream targetOut = new FileOutputStream(targetFile);
 
 				template.process(templateArgs, new OutputStreamWriter(targetOut));
@@ -66,12 +74,12 @@ public class IncludePerEntityGen extends ForEachEntityGenerator
 		}
 	}
 
-	
 	@Override
-	public String getExtension(){
+	public String getExtension()
+	{
 		return ".h";
 	}
-	
+
 	@Override
 	public String getSourcePath(MolgenisOptions options)
 	{

@@ -31,10 +31,9 @@ import org.molgenis.util.Tuple;
 public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = 3619865367653131342L;
-	public static final transient Logger logger = Logger
-			.getLogger(DownloadSelectedCommand.class);
+	public static final transient Logger logger = Logger.getLogger(DownloadSelectedCommand.class);
 
-	public DownloadSelectedCommand(String name, ScreenController<?>  parentScreen)
+	public DownloadSelectedCommand(String name, ScreenController<?> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Download selected (.txt)");
@@ -73,15 +72,15 @@ public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand
 
 		if (records.size() == 0)
 		{
-			//csvDownload.println("No records selected.");
+			// csvDownload.println("No records selected.");
 			return ScreenModel.Show.SHOW_MAIN;
 		}
-		
-		List<String> fieldsToExport = ((FormController<?>)this.getController()).getVisibleColumnNames();
+
+		List<String> fieldsToExport = ((FormController<?>) this.getController()).getVisibleColumnNames();
 
 		// watch out, the "IN" operator expects an Object[]
-		db.find(view.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport,
-				new QueryRule("id", Operator.IN, records));
+		db.find(view.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport, new QueryRule("id",
+				Operator.IN, records));
 		return ScreenModel.Show.SHOW_MAIN;
 	}
 

@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 public class RScript
 {
 	/** command to run R */
+	// don't make final; this is assigned at runtime
 	public static String R_COMMAND = "R CMD BATCH --vanilla --slave";
 
 	/** logger */

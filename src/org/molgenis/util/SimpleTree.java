@@ -24,41 +24,44 @@ import org.apache.commons.lang.StringUtils;
  * Implementation of a simple tree
  */
 @SuppressWarnings("unchecked")
-public class SimpleTree<T extends Tree> implements Tree<T>,Serializable
+public class SimpleTree<T extends Tree> implements Tree<T>, Serializable
 {
 	/** Unique name of this element */
 	protected String name;
-	/** Optional, the value of this element*/
+	/** Optional, the value of this element */
 	private Object value;
 	/** parent.name (or null if root element) */
 	protected String parentName;
 	/** map of tree elements (ordered) */
 	protected Map<String, T> treeElements;
 	/** Serializable id */
-	static final long serialVersionUID = 7443849689931440159L;	
-	
+	static final long serialVersionUID = 7443849689931440159L;
+
 	/**
 	 * Construct a new Tree
-	 * @param name unique name
-	 * @param parent the parent of this Tree. If null, then this is the root.
+	 * 
+	 * @param name
+	 *            unique name
+	 * @param parent
+	 *            the parent of this Tree. If null, then this is the root.
 	 */
 	public SimpleTree(String name, T parent)
 	{
-		//System.out.println("SimpleTree name:" + name + "parent"+ parent);
+		// System.out.println("SimpleTree name:" + name + "parent"+ parent);
 
-		//checks
+		// checks
 		if (StringUtils.isEmpty(name))
 		{
 			throw new IllegalArgumentException("name cannot be empty");
 		}
-		if (parent != null)
-			try
-			{
-				if(parent.get(name) != null)
-					throw new IllegalArgumentException("elements already exists with name = '" + name + "'");
-			} catch(NullPointerException e)
-			{
-			}
+		if (parent != null) try
+		{
+			if (parent.get(name) != null) throw new IllegalArgumentException("elements already exists with name = '"
+					+ name + "'");
+		}
+		catch (NullPointerException e)
+		{
+		}
 
 		// body
 		this.name = name;
@@ -69,34 +72,35 @@ public class SimpleTree<T extends Tree> implements Tree<T>,Serializable
 		}
 		else
 		{
-			treeElements = parent.getTreeElements(); //get a pointer to tree elements.
+			treeElements = parent.getTreeElements(); // get a pointer to tree
+														// elements.
 			parentName = parent.getName();
 		}
-		treeElements.put(name, (T)this);
+		treeElements.put(name, (T) this);
 	}
 
 	public final String getName()
 	{
 		return this.name;
 	}
-	
+
 	public void setName(String name)
 	{
-		//System.out.println("name " + name );
+		// System.out.println("name " + name );
 
 		if (StringUtils.isEmpty(name))
 		{
 			throw new IllegalArgumentException("name cannot be empty");
-		}		
+		}
 		treeElements.remove(getName());
 		this.name = name;
-		treeElements.put(name,(T)this);
+		treeElements.put(name, (T) this);
 	}
-	
+
 	public void setName(String name, String url)
 	{
 		setName(name);
-		
+
 	}
 
 	public T get(String name)
@@ -106,8 +110,7 @@ public class SimpleTree<T extends Tree> implements Tree<T>,Serializable
 
 	public final T getParent()
 	{
-		if (parentName != null)
-			return treeElements.get(parentName);
+		if (parentName != null) return treeElements.get(parentName);
 		else
 			return null;
 	}
@@ -117,7 +120,8 @@ public class SimpleTree<T extends Tree> implements Tree<T>,Serializable
 		// does the parent already contain an element with my name
 		if (parent != null && parent.get(name) != null)
 		{
-			throw new IllegalArgumentException(this.toString() + ".setParent(" + parent.toString() + ") failed: a element already exists with name = '" + name + "', being " + parent.get(name));
+			throw new IllegalArgumentException(this.toString() + ".setParent(" + parent.toString()
+					+ ") failed: a element already exists with name = '" + name + "', being " + parent.get(name));
 		}
 
 		// oh, and if there are any keys that are in both maps that map to
@@ -128,7 +132,8 @@ public class SimpleTree<T extends Tree> implements Tree<T>,Serializable
 			{
 				if (pkey.equals(ckey) && !parent.getTreeElements().get(pkey).equals(this.treeElements.get(ckey)))
 				{
-					throw new IllegalArgumentException("setParent(" + parent.getName() + "): duplicate child '" + ckey + "'/'" + pkey + "'");
+					throw new IllegalArgumentException("setParent(" + parent.getName() + "): duplicate child '" + ckey
+							+ "'/'" + pkey + "'");
 				}
 			}
 		}
@@ -156,18 +161,18 @@ public class SimpleTree<T extends Tree> implements Tree<T>,Serializable
 			return (T) getParent().getRoot();
 		}
 	}
-	
+
 	public final List<T> getAllChildren()
 	{
 		return this.getAllChildren(false);
 	}
-	
-	/** sort in order of dependency*/
+
+	/** sort in order of dependency */
 	public final List<T> getAllChildren(boolean includeSelf)
 	{
 		ArrayList<T> all_children = new ArrayList<T>();
-		if(includeSelf) all_children.add((T)this);
-		for(T child: getChildren())
+		if (includeSelf) all_children.add((T) this);
+		for (T child : getChildren())
 		{
 			all_children.add(child);
 			all_children.addAll(child.getAllChildren());
@@ -209,7 +214,7 @@ public class SimpleTree<T extends Tree> implements Tree<T>,Serializable
 
 	public String toString(boolean includeSubTree, int level)
 	{
-		String str = toString();
+		StringBuilder strBuilder = new StringBuilder(toString());
 
 		if (includeSubTree && getChildren().size() > 0)
 		{
@@ -218,70 +223,67 @@ public class SimpleTree<T extends Tree> implements Tree<T>,Serializable
 			{
 				indent += "    ";
 			}
-			for (Tree element: getChildren())
+			for (Tree element : getChildren())
 			{
-				str += "\n" + indent + element.toString(true, level + 1) + ",";
+				strBuilder.append('\n').append(indent).append(element.toString(true, level + 1)).append(',');
 			}
-
-			str = str.substring(0, str.length() - 1);
+			strBuilder.deleteCharAt(strBuilder.length() - 1);
 		}
 
-		return str;
+		return strBuilder.toString();
 	}
-	
-	public Object getValue() {
+
+	public Object getValue()
+	{
 		return value;
 	}
 
-	public void setValue(Object value) {
+	public void setValue(Object value)
+	{
 		this.value = value;
 	}
 
-	public Map<String,T> getTreeElements()
+	public Map<String, T> getTreeElements()
 	{
 		return this.treeElements;
-	}	
-	
+	}
+
 	public String toString()
 	{
 		return getClass().getSimpleName() + "(name='" + getName() + "')";
 	}
-	
+
 	public boolean hasChildren()
 	{
-		if (this.getChildren().isEmpty())
-			return false;
+		if (this.getChildren().isEmpty()) return false;
 		return true;
 	}
-	
+
 	public boolean hasParent()
 	{
-		if (this.getParent() == null)
-			return false;
+		if (this.getParent() == null) return false;
 		return true;
 	}
-	
+
 	public String getStringValue()
 	{
-		if (value == null)
-			return "";
-		return value.toString();		
+		if (value == null) return "";
+		return value.toString();
 	}
-	
+
 	public String getPath(String separator)
 	{
-		if(this.getParent() != null)
-			return this.getParent().getPath(separator)+separator+this.getName();
+		if (this.getParent() != null) return this.getParent().getPath(separator) + separator + this.getName();
 		return this.getName();
 	}
-	
+
 	public void remove()
 	{
-		for(T t: this.getAllChildren())
+		for (T t : this.getAllChildren())
 		{
 			this.treeElements.remove(t.getName());
 		}
 		this.treeElements.remove(this.getName());
 	}
-	
+
 }

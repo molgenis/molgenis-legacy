@@ -21,8 +21,7 @@ public class Biallele
 
 	public Biallele(String allele) throws Exception
 	{
-		if (allele.length() != 2) throw new Exception(
-				"Input must have 2 characters (allele 1 & 2)");
+		if (allele.length() != 2) throw new Exception("Input must have 2 characters (allele 1 & 2)");
 		this.allele1 = allele.charAt(0);
 		this.allele2 = allele.charAt(1);
 	}

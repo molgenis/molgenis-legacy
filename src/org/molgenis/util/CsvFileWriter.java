@@ -16,9 +16,10 @@ public class CsvFileWriter extends CsvWriter
 	{
 		super(new PrintWriter(new BufferedWriter(new FileWriter(f))));
 	}
-	
+
 	/**
-	 * @param f the file to be written to
+	 * @param f
+	 *            the file to be written to
 	 * @throws IOException
 	 */
 	public CsvFileWriter(File f, List<String> fields) throws IOException
@@ -28,14 +29,15 @@ public class CsvFileWriter extends CsvWriter
 
 	/**
 	 * Append to existing csv using custom headers.
+	 * 
 	 * @param file
 	 * @param fields
 	 * @param append
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public CsvFileWriter(File file, List<String> fields, boolean append) throws IOException
 	{
-		super(new PrintWriter(new BufferedWriter(new FileWriter(file,append))), fields);
+		super(new PrintWriter(new BufferedWriter(new FileWriter(file, append))), fields);
 	}
 
 }

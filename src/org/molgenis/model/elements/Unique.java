@@ -17,9 +17,6 @@ import java.util.Vector;
 
 import org.molgenis.model.MolgenisModelException;
 
-
-
-
 /**
  * This class describes a unique (combination of) field(s) associated with
  * entity.
@@ -35,23 +32,28 @@ public class Unique implements Serializable
 
 	/** The fields of the associated entity that make up this unique. */
 	private List<String> fields;
-	
-	/** The unique applies only to this entity (under the hood, the constraint is than reduced to include 'type' */
+
+	/**
+	 * The unique applies only to this entity (under the hood, the constraint is
+	 * than reduced to include 'type'
+	 */
 	private boolean subclass = false;
 
 	/** Used for serialization purposes */
 	private static final long serialVersionUID = -1201614213585052020L;
-	
-	/** A description of this constraint*/
+
+	/** A description of this constraint */
 	private String description;
-	
+
 	// constructor(s)
 	/**
 	 * Constructor, which sets the associated entity and a single field as the
 	 * unique.
 	 * 
-	 * @param entity The entity this unique is associated with.
-	 * @param field The field that makes up this unique.
+	 * @param entity
+	 *            The entity this unique is associated with.
+	 * @param field
+	 *            The field that makes up this unique.
 	 */
 	public Unique(Entity entity, String fieldName, boolean subclass, String description)
 	{
@@ -62,7 +64,7 @@ public class Unique implements Serializable
 
 		this.fields.add(fieldName);
 	}
-	
+
 	/** Copy constructor */
 	public Unique(Unique u)
 	{
@@ -76,10 +78,12 @@ public class Unique implements Serializable
 	 * Constructor, which sets the associated entity and the list of fields as
 	 * the unique.
 	 * 
-	 * @param entity The entity this unique is associated with.
-	 * @param fields The fields that make up this unique.
+	 * @param entity
+	 *            The entity this unique is associated with.
+	 * @param fields
+	 *            The fields that make up this unique.
 	 */
-	public Unique(Entity entity, List<String> fieldNames,  boolean subclass, String description)
+	public Unique(Entity entity, List<String> fieldNames, boolean subclass, String description)
 	{
 		this.entity = entity;
 		this.fields = fieldNames;
@@ -92,15 +96,16 @@ public class Unique implements Serializable
 	 * Returns a list of all the fields that make up this unique.
 	 * 
 	 * @return The fields that make up the unique.
-	 * @throws MolgenisModelException 
+	 * @throws MolgenisModelException
 	 */
 	public Vector<Field> getFields() throws MolgenisModelException
 	{
 		Vector<Field> result = new Vector<Field>();
-		for(String fieldName: fields)
+		for (String fieldName : fields)
 		{
 			Field f = entity.getAllField(fieldName);
-			if(f == null) throw new MolgenisModelException("Unknown unique field: "+this.getEntity().getName() + "."+fieldName);
+			if (f == null) throw new MolgenisModelException("Unknown unique field: " + this.getEntity().getName() + "."
+					+ fieldName);
 			result.add(f);
 		}
 		return result;
@@ -119,21 +124,22 @@ public class Unique implements Serializable
 	// Object overloads
 	public String toString()
 	{
-		String str = "Unique(";
+		StringBuilder strBuilder = new StringBuilder("Unique(");
 
 		for (String field : fields)
 		{
-			str += field + ", ";
+			strBuilder.append(field).append(", ");
 		}
-		str += ")";
+		strBuilder.append(')');
 
-		return str;
+		return strBuilder.toString();
 	}
 
 	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 * 
-	 * @param obj The reference object with which to compare.
+	 * @param obj
+	 *            The reference object with which to compare.
 	 * @return True if this object is the same as the obj argument, false
 	 *         otherwise.
 	 */
@@ -152,7 +158,7 @@ public class Unique implements Serializable
 		return subclass;
 	}
 
-	public void setSubclass( boolean subclass )
+	public void setSubclass(boolean subclass)
 	{
 		this.subclass = subclass;
 	}

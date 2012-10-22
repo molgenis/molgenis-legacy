@@ -23,26 +23,25 @@ public class PersistenceGen extends Generator
 	{
 		return "Generates persistence.xml";
 	}
-	
-	@Override
-	public void generate(Model model, MolgenisOptions options)
-			throws Exception
-	{
-		Template template = createTemplate( "/"+getClass().getSimpleName()+".xml.ftl" );
-		Map<String, Object> templateArgs = createTemplateArguments(options);
-		
-		
-		File target = new File( this.getSourcePath(options) + "/META-INF/persistence.xml" );
-		//File target = new File( this.getHandWrittenPath(options) + "/META-INF/persistence.xml" );
-		target.getParentFile().mkdirs();
-		
-		templateArgs.put("options", options);
-                templateArgs.put("model", model);
 
-		OutputStream targetOut = new FileOutputStream( target );
-		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
+	@Override
+	public void generate(Model model, MolgenisOptions options) throws Exception
+	{
+		Template template = createTemplate("/" + getClass().getSimpleName() + ".xml.ftl");
+		Map<String, Object> templateArgs = createTemplateArguments(options);
+
+		File target = new File(this.getSourcePath(options) + "/META-INF/persistence.xml");
+		// File target = new File( this.getHandWrittenPath(options) +
+		// "/META-INF/persistence.xml" );
+		target.getParentFile().mkdirs();
+
+		templateArgs.put("options", options);
+		templateArgs.put("model", model);
+
+		OutputStream targetOut = new FileOutputStream(target);
+		template.process(templateArgs, new OutputStreamWriter(targetOut));
 		targetOut.close();
-		
+
 		logger.info("generated " + target);
 	}
 }

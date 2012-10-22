@@ -34,8 +34,7 @@ public class TpedFileDriver extends AbstractFileDriver
 	 * @return
 	 * @throws Exception
 	 */
-	public List<TpedEntry> getEntries(final long from, final long to)
-			throws Exception
+	public List<TpedEntry> getEntries(final long from, final long to) throws Exception
 	{
 		reader.reset();
 		final ArrayList<TpedEntry> result = new ArrayList<TpedEntry>();
@@ -51,21 +50,17 @@ public class TpedFileDriver extends AbstractFileDriver
 				{
 					String al1 = tuple.getString(col);
 					String al2 = tuple.getString(col + 1);
-					if (al1 == null) throw new Exception(Helper.errorMsg(
-							line_number, col));
-					if (al2 == null) throw new Exception(Helper.errorMsg(
-							line_number, col + 1));
+					if (al1 == null) throw new Exception(Helper.errorMsg(line_number, col));
+					if (al2 == null) throw new Exception(Helper.errorMsg(line_number, col + 1));
 					Biallele biallele = new Biallele(al1, al2);
 					bialleles.add(biallele);
 				}
 
 				for (int objIndex = 0; objIndex < 4; objIndex++)
 				{
-					if (tuple.getObject(objIndex) == null) throw new Exception(
-							Helper.errorMsg(line_number, objIndex));
+					if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number, objIndex));
 				}
-				TpedEntry te = new TpedEntry(tuple.getString(0),
-						tuple.getString(1), tuple.getDouble(2),
+				TpedEntry te = new TpedEntry(tuple.getString(0), tuple.getString(1), tuple.getDouble(2),
 						tuple.getLong(3), bialleles);
 				result.add(te);
 			}
@@ -93,21 +88,17 @@ public class TpedFileDriver extends AbstractFileDriver
 			{
 				String al1 = tuple.getString(col);
 				String al2 = tuple.getString(col + 1);
-				if (al1 == null) throw new Exception(Helper.errorMsg(
-						line_number, col));
-				if (al2 == null) throw new Exception(Helper.errorMsg(
-						line_number, col + 1));
+				if (al1 == null) throw new Exception(Helper.errorMsg(line_number, col));
+				if (al2 == null) throw new Exception(Helper.errorMsg(line_number, col + 1));
 				Biallele biallele = new Biallele(al1, al2);
 				bialleles.add(biallele);
 			}
 
 			for (int objIndex = 0; objIndex < 4; objIndex++)
 			{
-				if (tuple.getObject(objIndex) == null) throw new Exception(
-						Helper.errorMsg(line_number, objIndex));
+				if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number, objIndex));
 			}
-			TpedEntry te = new TpedEntry(tuple.getString(0),
-					tuple.getString(1), tuple.getDouble(2), tuple.getLong(3),
+			TpedEntry te = new TpedEntry(tuple.getString(0), tuple.getString(1), tuple.getDouble(2), tuple.getLong(3),
 					bialleles);
 			result.add(te);
 		}

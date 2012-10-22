@@ -10,9 +10,8 @@ import org.molgenis.framework.server.MolgenisRequest;
 public class AsyncMolgenisRequest extends MolgenisRequest
 {
 
-
 	UUID loadingScreenId;
-	
+
 	public AsyncMolgenisRequest(HttpServletRequest request) throws Exception
 	{
 		super(request);
@@ -24,7 +23,7 @@ public class AsyncMolgenisRequest extends MolgenisRequest
 		super(request, response);
 
 	}
-	
+
 	public UUID getLoadingScreenId()
 	{
 		return loadingScreenId;
@@ -35,6 +34,4 @@ public class AsyncMolgenisRequest extends MolgenisRequest
 		this.loadingScreenId = loadingScreenId;
 	}
 
-	
-	
 }

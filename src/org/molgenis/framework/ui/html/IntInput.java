@@ -9,14 +9,14 @@ import org.molgenis.util.Tuple;
  */
 public class IntInput extends ValidatingInput<Integer>
 {
-	
+
 	public IntInput(String name)
 	{
 		super(name, null);
 		this.validationString = "digits";
 		this.setMaxWidth(10);
 	}
-	
+
 	public IntInput(String name, String label)
 	{
 		this(name);
@@ -27,15 +27,14 @@ public class IntInput extends ValidatingInput<Integer>
 
 	public IntInput(String name, Integer value)
 	{
-		super( name, value );
+		super(name, value);
 		this.validationString = "digits";
 		this.setMaxWidth(10);
 	}
 
-	public IntInput(String name, String label, Integer value,
-			boolean nillable, boolean readonly, String description)
+	public IntInput(String name, String label, Integer value, boolean nillable, boolean readonly, String description)
 	{
-		super(name,label, value, nillable,readonly, description);
+		super(name, label, value, nillable, readonly, description);
 		this.validationString = "digits";
 		this.setMaxWidth(10);
 	}
@@ -46,7 +45,7 @@ public class IntInput extends ValidatingInput<Integer>
 		this.validationString = "digits";
 		this.setMaxWidth(10);
 	}
-	
+
 	public IntInput(Tuple params) throws HtmlInputException
 	{
 		super(params);
@@ -54,8 +53,7 @@ public class IntInput extends ValidatingInput<Integer>
 	}
 
 	@Override
-	public String toHtml(Tuple params) throws ParseException,
-			HtmlInputException
+	public String toHtml(Tuple params) throws ParseException, HtmlInputException
 	{
 		return new IntInput(params).render();
 	}

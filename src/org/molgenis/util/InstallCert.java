@@ -163,7 +163,6 @@ public class InstallCert
 		ks.store(out, passphrase);
 		out.close();
 
-
 		logger.info(cert);
 
 		logger.info("Added certificate to keystore 'jssecacerts' using alias '" + alias + "'");

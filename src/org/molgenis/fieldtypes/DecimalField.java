@@ -22,22 +22,22 @@ public class DecimalField extends FieldType
 	@Override
 	public String getJavaAssignment(String value)
 	{
-		if(value == null || value.equals("") ) return "null";
-		return ""+Double.parseDouble(value);
+		if (value == null || value.equals("")) return "null";
+		return "" + Double.parseDouble(value);
 	}
-	
+
 	@Override
 	public String getJavaPropertyDefault()
 	{
 		return getJavaAssignment(f.getDefaultValue());
 	}
-	
+
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
 		return "DECIMAL(65,30)";
 	}
-	
+
 	@Override
 	public String getOracleType() throws MolgenisModelException
 	{
@@ -49,7 +49,7 @@ public class DecimalField extends FieldType
 	{
 		return "DOUBLE";
 	}
-	
+
 	@Override
 	public String getXsdType()
 	{
@@ -89,12 +89,12 @@ public class DecimalField extends FieldType
 	{
 		return Double.parseDouble(value);
 	}
-	
+
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.DECIMAL;
 	}
-	
+
 	@Override
 	public List<String> getAllowedOperators()
 	{

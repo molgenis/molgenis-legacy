@@ -195,8 +195,7 @@ public interface ScreenCommand extends Serializable, ScreenModel
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public ScreenModel.Show handleRequest(Database db, Tuple request,
-			OutputStream downloadStream) throws Exception;
+	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception;
 
 	/**
 	 * @return boolean whether this action should be treated as a download

@@ -65,20 +65,20 @@ public class DatabaseWriter implements TupleWriter
 	@Override
 	public void setHeaders(List<String> fields)
 	{
-		//TODO we could use this to only set particular fields
+		// TODO we could use this to only set particular fields
 		throw new UnsupportedOperationException("can only write fields in class");
 	}
 
 	@Override
 	public void writeEndOfLine()
 	{
-		//NA
+		// NA
 	}
 
 	@Override
 	public void close() throws Exception
 	{
-		if(batch.size() > 0)
+		if (batch.size() > 0)
 		{
 			db.add(batch);
 			batch.clear();
@@ -87,8 +87,7 @@ public class DatabaseWriter implements TupleWriter
 	}
 
 	@Override
-	public void writeMatrix(List<String> rowNames, List<String> colNames,
-			Object[][] elements)
+	public void writeMatrix(List<String> rowNames, List<String> colNames, Object[][] elements)
 	{
 		throw new UnsupportedOperationException();
 	}

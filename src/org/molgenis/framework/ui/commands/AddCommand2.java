@@ -28,7 +28,7 @@ public class AddCommand2<E extends Entity> extends SimpleCommand
 	Vector<ScreenMessage> messages = new Vector<ScreenMessage>();
 	boolean success = false;
 
-	public AddCommand2(String name, ScreenController<?>  parent)
+	public AddCommand2(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 		this.setLabel("Add new record");
@@ -40,7 +40,7 @@ public class AddCommand2<E extends Entity> extends SimpleCommand
 	public List<HtmlInput<?>> getInputs() throws DatabaseException
 	{
 		CommandTemplate f = new CommandTemplate();
-		f.addAll(this.getFormScreen().getNewRecordForm().getInputs());		
+		f.addAll(this.getFormScreen().getNewRecordForm().getInputs());
 		f.setAll(previousRequest);
 		return f.getInputs();
 	}
@@ -77,12 +77,13 @@ public class AddCommand2<E extends Entity> extends SimpleCommand
 		if (this.getName().equals(request.getAction()))
 		{
 			// delegate to the form controller
-			//boolean success = ((FormController) this.getScreen().getController()).doAdd(db, request);
-			this.messages = this.getFormScreen().getMessages(); 
+			// boolean success = ((FormController)
+			// this.getScreen().getController()).doAdd(db, request);
+			this.messages = this.getFormScreen().getMessages();
 		}
 		return ScreenModel.Show.SHOW_MAIN;
 	}
-	
+
 	public Vector<ScreenMessage> getMessages()
 	{
 		return messages;

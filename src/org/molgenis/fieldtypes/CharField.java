@@ -15,10 +15,10 @@ public class CharField extends FieldType
 	@Override
 	public String getJavaAssignment(String value) throws MolgenisModelException
 	{
-		if(value == null || value.equals("") ) return "null";
-		return "\""+value+"\"";
+		if (value == null || value.equals("")) return "null";
+		return "\"" + value + "\"";
 	}
-	
+
 	@Override
 	public String getJavaPropertyDefault() throws MolgenisModelException
 	{
@@ -34,20 +34,21 @@ public class CharField extends FieldType
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
-		return "CHAR("+f.getVarCharLength()+")";
+		return "CHAR(" + f.getVarCharLength() + ")";
 	}
-	
+
 	@Override
 	public String getOracleType() throws MolgenisModelException
 	{
-		return "CHAR("+f.getVarCharLength()+")";
+		return "CHAR(" + f.getVarCharLength() + ")";
 	}
 
 	@Override
 	public String getHsqlType() throws MolgenisModelException
 	{
-		return "CHAR("+f.getVarCharLength()+")";
+		return "CHAR(" + f.getVarCharLength() + ")";
 	}
+
 	@Override
 	public String getXsdType() throws MolgenisModelException
 	{
@@ -61,7 +62,7 @@ public class CharField extends FieldType
 	}
 
 	@Override
-	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws  HtmlInputException
+	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
 		return new StringInput(name);
 	}
@@ -93,7 +94,7 @@ public class CharField extends FieldType
 	{
 		return FieldTypeEnum.CHAR;
 	}
-	
+
 	@Override
 	public List<String> getAllowedOperators()
 	{

@@ -20,20 +20,19 @@ public abstract class IntegratedPluginController<M extends ScreenModel> extends 
 		super(name, parent);
 		this.setModel(model);
 	}
-	
+
 	public String include(Tuple request, String path)
 	{
-		HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
-		HttpServletRequest httpRequest   = rt.getRequest();
+		HttpServletRequestTuple rt = (HttpServletRequestTuple) request;
+		HttpServletRequest httpRequest = rt.getRequest();
 		HttpServletResponse httpResponse = rt.getResponse();
-		RedirectTextWrapper respWrapper  = new RedirectTextWrapper(httpResponse);
-			
+		RedirectTextWrapper respWrapper = new RedirectTextWrapper(httpResponse);
+
 		// Call/include page
 		try
 		{
 			RequestDispatcher dispatcher = httpRequest.getRequestDispatcher(path);
-			if (dispatcher != null)
-				dispatcher.include(httpRequest, respWrapper);
+			if (dispatcher != null) dispatcher.include(httpRequest, respWrapper);
 		}
 		catch (Exception e)
 		{
@@ -42,7 +41,7 @@ public abstract class IntegratedPluginController<M extends ScreenModel> extends 
 
 		return respWrapper.getOutput();
 	}
-	
+
 	private class RedirectTextWrapper extends HttpServletResponseWrapper
 	{
 		private PrintWriter printWriter;
@@ -52,7 +51,7 @@ public abstract class IntegratedPluginController<M extends ScreenModel> extends 
 		{
 			super(response);
 			this.stringWriter = new StringWriter();
-			this.printWriter  = new PrintWriter(stringWriter);
+			this.printWriter = new PrintWriter(stringWriter);
 		}
 
 		@Override

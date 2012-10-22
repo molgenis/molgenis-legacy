@@ -97,6 +97,19 @@ public abstract class MolgenisFrontController extends HttpServlet implements Mol
 	{
 		HttpServletRequest req = request.getRequest();
 
+		// block spiders
+		String userAgent = req.getHeader("User-Agent");
+		for (String spider : new String[]
+		{ "Googlebot", "Yammybot", "Openbot", "Yahoo", "Slurp", "msnbot", "ia_archiver", "Lycos", "Scooter",
+				"AltaVista", "Teoma", "Gigabot", "Googlebot-Mobile" })
+		{
+			if (userAgent.contains(spider))
+			{
+				response.response.sendError(403, "This page is forbidden for spiders.");
+				return;
+			}
+		}
+
 		// lots of info about request variables & webservers @
 		// http://gbic.target.rug.nl/forum/showthread.php?tid=690
 

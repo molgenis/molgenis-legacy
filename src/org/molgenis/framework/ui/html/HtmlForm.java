@@ -75,7 +75,7 @@ public class HtmlForm extends HtmlWidget
 		return this;
 	}
 
-	public void addInput(HtmlInput<?> ... inputs)
+	public void addInput(HtmlInput<?>... inputs)
 	{
 		for (HtmlInput<?> input : inputs)
 		{
@@ -111,28 +111,28 @@ public class HtmlForm extends HtmlWidget
 	 * All fields that are not in this list will be marked as 'collapsed' so
 	 * they are not visible unless the button 'details' is pushed
 	 * 
-	 * @param compactView list of field names
+	 * @param compactView
+	 *            list of field names
 	 */
 	public void setCompactView(List<String> compactView)
 	{
 		this.compactView = compactView;
 	}
-	
+
 	/**
-	 * A simple method to create a edited view for one entity. 
+	 * A simple method to create a edited view for one entity.
 	 */
 	@Override
 	public String toHtml()
 	{
-		String htmlTable = "<table>";
-		for(HtmlInput<?> i: this.getInputs())
+		StringBuilder htmlBuilder = new StringBuilder("<table>");
+		for (HtmlInput<?> i : this.getInputs())
 		{
-			htmlTable += "<tr><td name=\"" + i.getLabel() + "\">" + 
-		                 i.getLabel() + "</td><td>"+ i.getHtml() +"</td></tr>";
+			htmlBuilder.append("<tr><td name=\"").append(i.getLabel()).append("\">");
+			htmlBuilder.append(i.getLabel()).append("</td><td>").append(i.getHtml()).append("</td></tr>");
 		}
-		htmlTable += "</table>";
-		return htmlTable;
-
+		htmlBuilder.append("</table>");
+		return htmlBuilder.toString();
 	}
 
 }

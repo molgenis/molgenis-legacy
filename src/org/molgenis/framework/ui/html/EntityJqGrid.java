@@ -64,8 +64,8 @@ public class EntityJqGrid extends HtmlWidget
 					colDefs += String.format("{name: '%s', index: '%s', width: 55},", field.getName(), field.getName());
 				}
 			}
-			colDefs.substring(0, colDefs.length() - 2);
-			colNames.substring(0, colNames.length() - 2);
+			colDefs = colDefs.substring(0, colDefs.length() - 2);
+			colNames = colNames.substring(0, colNames.length() - 2);
 
 			// configure the jqGrid
 			String result = "";
@@ -93,8 +93,11 @@ public class EntityJqGrid extends HtmlWidget
 
 			// create search box. OnChange, update postData with filter and
 			// reload
-			result += "\n$('#" + getName()
-					+ "_pager_left').append('<label>Search: <input type=\"text\" onkeyup=\"$(\\\'#"+getName()+"\\\').setGridParam({postData : { filter : this.value} }).trigger(\\\'reloadGrid\\\');\"></label>');";
+			result += "\n$('#"
+					+ getName()
+					+ "_pager_left').append('<label>Search: <input type=\"text\" onkeyup=\"$(\\\'#"
+					+ getName()
+					+ "\\\').setGridParam({postData : { filter : this.value} }).trigger(\\\'reloadGrid\\\');\"></label>');";
 
 			result += "\n</script>";
 
