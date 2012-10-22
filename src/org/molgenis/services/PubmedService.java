@@ -35,11 +35,12 @@ public class PubmedService
 	public List<PubmedArticle> getPubmedArticlesForIds(List<Integer> ids) throws MalformedURLException, JAXBException,
 			IOException
 	{
-		String url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&retmode=xml&id=";
+		StringBuilder urlBuilder = new StringBuilder(
+				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&retmode=xml&id=");
 		for (Integer i : ids)
-			url += i + ",";
-		url = url.substring(0, url.length() - 1);
-		return getCitations(new URL(url)).articles;
+			urlBuilder.append(i).append(',');
+		urlBuilder.deleteCharAt(urlBuilder.length() - 1);
+		return getCitations(new URL(urlBuilder.toString())).articles;
 	}
 
 	private PubmedArticleSet getCitations(URL url) throws JAXBException, IOException

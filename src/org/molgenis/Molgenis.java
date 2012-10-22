@@ -800,14 +800,14 @@ public class Molgenis
 			// + File.separator + "create_tables.sql";
 
 			// READ THE FILE
-			String create_tables_sql = "";
+			StringBuilder create_tables_sqlBuilder = new StringBuilder();
 			try
 			{
 				BufferedReader in = new BufferedReader(new FileReader(create_tables_file));
 				String line;
 				while ((line = in.readLine()) != null)
 				{
-					create_tables_sql += line + "\n";
+					create_tables_sqlBuilder.append(line).append('\n');
 				}
 				in.close();
 			}
@@ -828,7 +828,7 @@ public class Molgenis
 					String line;
 					while ((line = in.readLine()) != null)
 					{
-						create_tables_sql += line + "\n";
+						create_tables_sqlBuilder.append(line).append('\n');
 					}
 					in.close();
 				}
@@ -843,6 +843,7 @@ public class Molgenis
 			logger.info("Updating database....");
 			int i = 0;
 
+			String create_tables_sql = create_tables_sqlBuilder.toString();
 			for (String command : create_tables_sql.split(";"))
 			{
 				if (command.trim().length() > 0)

@@ -73,7 +73,7 @@ public class MolgenisRequest extends HttpServletRequestTuple
 	public String toString()
 	{
 		if (this.getNrColumns() == 0) return "NONE";
-		String result = "";
+		StringBuilder strBuilder = new StringBuilder();
 		for (int columnIndex = 0; columnIndex < this.getNrColumns(); columnIndex++)
 		{
 
@@ -91,7 +91,7 @@ public class MolgenisRequest extends HttpServletRequestTuple
 			if (getColName(columnIndex) != null)
 			{
 				name = getColName(columnIndex);
-				result += name + " ";
+				strBuilder.append(name).append(' ');
 			}
 
 			// print name + value
@@ -107,7 +107,7 @@ public class MolgenisRequest extends HttpServletRequestTuple
 			// }
 
 		}
-		return result;
+		return strBuilder.toString();
 	}
 
 }
