@@ -53,11 +53,12 @@ public class Processor extends PRSchema
 
 	public String toString()
 	{
-		String str = "Processor(" + getName() + ")\n(\n";
+		StringBuilder strBuilder = new StringBuilder();
+		strBuilder.append("Processor(").append(getName()).append(")\n(\n");
 		for (Dataset dataset : datasets)
-			str += "  " + dataset.toString() + "\n";
-		str += ");";
-		return str;
+			strBuilder.append(' ').append(dataset.toString()).append('\n');
+		strBuilder.append(");");
+		return strBuilder.toString();
 	}
 
 	private Vector<Dataset> datasets = new Vector<Dataset>();
