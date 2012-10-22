@@ -59,7 +59,7 @@ public class Renderers
 					tupleTable);
 			final PrintWriter pout = new PrintWriter(request.getResponse().getOutputStream());
 			String json = new Gson().toJson(result);
-			System.out.println("printing JSON: " + json);
+			//System.out.println("printing JSON: " + json);
 			pout.print(json);
 			pout.close();
 		}

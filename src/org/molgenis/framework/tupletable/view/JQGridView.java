@@ -596,16 +596,7 @@ public class JQGridView extends HtmlWidget
 			}
 			result.rows.add(rowMap);
 		}
-		
-		System.out.println("buildJQGridResults result:");
-		for(HashMap<String,String> m : result.rows)
-		{
-			for(String key : m.keySet())
-			{
-				System.out.print("Key: " + key + " value: " + m.get(key) + "\t");
-			}
-			System.out.println();
-		}
+
 		return result;
 	}
 }

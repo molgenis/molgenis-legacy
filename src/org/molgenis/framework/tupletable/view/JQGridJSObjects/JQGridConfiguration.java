@@ -140,7 +140,7 @@ public class JQGridConfiguration
 		}
 
 
-		System.out.println(new Gson().toJson(settings));
+		//System.out.println(new Gson().toJson(settings));
 	}
 
 	public JQGridConfiguration(String id, String url, String caption)
