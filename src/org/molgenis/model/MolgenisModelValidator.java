@@ -582,7 +582,7 @@ public class MolgenisModelValidator
 						// 'fieldname_xreflabel'
 						if (xref_label == null)
 						{
-							String validFields = "";
+							StringBuilder validFieldsBuilder = new StringBuilder();
 							Map<String, List<Field>> candidates = field.allPossibleXrefLabels();
 
 							if (candidates.size() == 0)
@@ -604,7 +604,7 @@ public class MolgenisModelValidator
 								{
 									xref_label = candidates.get(validLabel).get(candidates.get(validLabel).size() - 1);
 								}
-								validFields += "," + validLabel;
+								validFieldsBuilder.append(',').append(validLabel);
 							}
 
 							// still null, must be error
@@ -612,7 +612,7 @@ public class MolgenisModelValidator
 							{
 								throw new MolgenisModelException("xref label '" + xref_label_name
 										+ "' does not exist for field " + entityname + "." + fieldname
-										+ ". Valid labels include " + validFields);
+										+ ". Valid labels include " + validFieldsBuilder.toString());
 							}
 
 						}

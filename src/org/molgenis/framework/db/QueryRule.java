@@ -384,23 +384,23 @@ public class QueryRule implements Cloneable
 	 */
 	public String toString()
 	{
-		String result = "";
+		StringBuilder strBuilder = new StringBuilder();
 		if (this.getOperator().equals(Operator.NESTED))
 		{
-			result += "(";
+			strBuilder.append('(');
 
 			for (final QueryRule rule : this.getNestedRules())
 			{
-				result += rule.toString();
+				strBuilder.append(rule.toString());
 			}
-			result += ")";
+			strBuilder.append(')');
 		}
 		else
 		{
-			result = (this.getField() == null ? "" : (this.getField() + " ")) + this.getOperator()
-					+ (value == null ? "" : " '" + value + "'");
+			strBuilder.append(this.getField() == null ? "" : (this.getField() + " "));
+			strBuilder.append(this.getOperator()).append(value == null ? "" : " '" + value + "'");
 		}
-		return result;
+		return strBuilder.toString();
 	}
 
 	public static QueryRule eq(String name, Object value)
