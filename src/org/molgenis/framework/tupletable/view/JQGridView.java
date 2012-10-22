@@ -16,6 +16,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
+import org.molgenis.framework.tupletable.DatabaseTupleTable;
 import org.molgenis.framework.tupletable.EditableTupleTable;
 import org.molgenis.framework.tupletable.FilterableTupleTable;
 import org.molgenis.framework.tupletable.TableException;
@@ -71,7 +72,7 @@ public class JQGridView extends HtmlWidget
 
 	private final TupleTableBuilder tupleTableBuilder;
 
-	public JQGridView(String name, TupleTableBuilder tupleTableBuilder)
+	private JQGridView(String name, TupleTableBuilder tupleTableBuilder)
 	{
 		super(name);
 		this.tupleTableBuilder = tupleTableBuilder;
@@ -136,9 +137,19 @@ public class JQGridView extends HtmlWidget
 	{
 		try
 		{
+			if(db.getConnection().isClosed())
+			{
+				throw new HandleRequestDelegationException(new Exception("handleRequest: Connection is closed!"));
+			}
+			
 			final TupleTable tupleTable = tupleTableBuilder.create(request);
 			tupleTable.setColLimit(maxVisibleColumnCount);
-
+			
+			if(tupleTable instanceof DatabaseTupleTable)
+			{
+				((DatabaseTupleTable) tupleTable).setDb(db);
+			}
+			
 			final Operation operation = StringUtils.isNotEmpty(request.getString(OPERATION)) ? Operation
 					.valueOf(request.getString(OPERATION)) : Operation.RENDER_DATA;
 
@@ -537,7 +548,7 @@ public class JQGridView extends HtmlWidget
 			throws TableException, IOException
 	{
 
-		final JQGridConfiguration config = new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(),
+		final JQGridConfiguration config = new JQGridConfiguration(db, getId(), "Name", tupleTableBuilder.getUrl(),
 				getLabel(), tupleTable);
 
 		if (searchOptions != null)
@@ -584,6 +595,16 @@ public class JQGridView extends HtmlWidget
 				rowMap.put(fieldName, rowValue); // TODO encode to HTML
 			}
 			result.rows.add(rowMap);
+		}
+		
+		System.out.println("buildJQGridResults result:");
+		for(HashMap<String,String> m : result.rows)
+		{
+			for(String key : m.keySet())
+			{
+				System.out.print("Key: " + key + " value: " + m.get(key) + "\t");
+			}
+			System.out.println();
 		}
 		return result;
 	}

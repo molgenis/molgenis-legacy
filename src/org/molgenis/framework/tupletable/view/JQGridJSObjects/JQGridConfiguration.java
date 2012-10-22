@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.tupletable.DatabaseTupleTable;
 import org.molgenis.framework.tupletable.EditableTupleTable;
 import org.molgenis.framework.tupletable.FilterableTupleTable;
 import org.molgenis.framework.tupletable.TableException;
@@ -94,9 +96,14 @@ public class JQGridConfiguration
 	@SuppressWarnings("unchecked")
 	public Object[] toolbar = Arrays.asList(true, "top").toArray();
 
-	public JQGridConfiguration(String id, String idField, String url, String caption, TupleTable tupleTable)
+	public JQGridConfiguration(Database db, String id, String idField, String url, String caption, TupleTable tupleTable)
 			throws TableException
 	{
+		if(tupleTable instanceof DatabaseTupleTable)
+		{
+			((DatabaseTupleTable) tupleTable).setDb(db);
+		}
+		
 		this.id = id;
 		this.pager = "#" + id + "_pager";
 		this.url = url;
