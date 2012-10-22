@@ -133,28 +133,12 @@ public class JQGridConfiguration
 			settings.del = true;
 		}
 
-		// FIXME: why is this special?
-		// if (tupleTable instanceof ProtocolTable)
-		// {
-		// for (final Field f : tupleTable.getColumns())
-		// {
-		// JQGridColModel model = new JQGridColModel(f);
-		// if (tupleTable instanceof FilterableTupleTable)
-		// {
-		// model.sortable = true;
-		// }
-		// colModel.add(model);
-		// colNames.add(f.getSqlName());
-		// }
-		// }
-
-		else
+		//set col names
+		for (final Field f : tupleTable.getColumns())
 		{
-			for (final Field f : tupleTable.getColumns())
-			{
-				colModel.add(new JQGridColModel(f.getLabel()));
-			}
+			colModel.add(new JQGridColModel(f));
 		}
+
 
 		System.out.println(new Gson().toJson(settings));
 	}
