@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.List;
@@ -66,7 +67,7 @@ public class HSqlCreateSubclassPerTableGen extends Generator
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try
 		{
-			template.process(templateArgs, new OutputStreamWriter(out));
+			template.process(templateArgs, new OutputStreamWriter(out, Charset.forName("UTF-8")));
 			// Write to file for debug
 			targetOut.write(out.toByteArray());
 

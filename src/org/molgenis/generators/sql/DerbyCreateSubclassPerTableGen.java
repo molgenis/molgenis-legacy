@@ -2,6 +2,7 @@ package org.molgenis.generators.sql;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -39,7 +40,7 @@ public class DerbyCreateSubclassPerTableGen extends Generator
 
 			// generate
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			template.process(templateArgs, new OutputStreamWriter(out));
+			template.process(templateArgs, new OutputStreamWriter(out, Charset.forName("UTF-8")));
 
 			// send to database
 			stmt = conn.createStatement();

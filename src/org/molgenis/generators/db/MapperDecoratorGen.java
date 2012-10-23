@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import org.molgenis.MolgenisOptions;
@@ -75,7 +76,7 @@ public class MapperDecoratorGen extends ForEachEntityGenerator
 
 						OutputStream targetOut = new FileOutputStream(targetFile);
 
-						template.process(templateArgs, new OutputStreamWriter(targetOut));
+						template.process(templateArgs, new OutputStreamWriter(targetOut, Charset.forName("UTF-8")));
 						targetOut.close();
 
 						// logger.info("generated " +
