@@ -2,6 +2,7 @@ package org.molgenis.generators.ui;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Map;
@@ -79,7 +80,11 @@ public class EasyPluginModelGen extends Generator
 				if (!targetFile.exists() && c == null)
 				{
 					File targetDir = new File(this.getHandWrittenPath(options) + "/" + packageName.replace(".", "/"));
-					targetDir.mkdirs();
+					boolean created = targetDir.mkdirs();
+					if (!created && !targetDir.exists())
+					{
+						throw new IOException("could not create " + targetDir);
+					}
 
 					templateArgs.put("screen", plugin);
 					templateArgs.put("template", template.getName());
