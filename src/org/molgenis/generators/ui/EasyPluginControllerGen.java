@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -89,7 +90,7 @@ public class EasyPluginControllerGen extends Generator
 					templateArgs.put("flavor", plugin.getFlavor().toString().toLowerCase());
 
 					OutputStream targetOut = new FileOutputStream(targetFile);
-					template.process(templateArgs, new OutputStreamWriter(targetOut));
+					template.process(templateArgs, new OutputStreamWriter(targetOut, Charset.forName("UTF-8")));
 					targetOut.close();
 
 					logger.info("generated "
