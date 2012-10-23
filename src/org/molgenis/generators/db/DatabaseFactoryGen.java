@@ -2,6 +2,7 @@ package org.molgenis.generators.db;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Map;
@@ -30,7 +31,11 @@ public class DatabaseFactoryGen extends Generator
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 
 		File target = new File(this.getSourcePath(options) + "/app/DatabaseFactory.java");
-		target.getParentFile().mkdirs();
+		boolean created = target.getParentFile().mkdirs();
+		if (!created && !target.getParentFile().exists())
+		{
+			throw new IOException("could not create " + target.getParentFile());
+		}
 
 		templateArgs.put("package", APP_DIR);
 		templateArgs.put("databaseImp",

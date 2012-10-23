@@ -2,6 +2,7 @@ package org.molgenis.generators.ui;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Map;
@@ -55,7 +56,11 @@ public class FormControllerGen extends Generator
 				templateArgs.put("package", APP_DIR + ".ui");
 
 				File targetDir = new File(this.getSourcePath(options) + APP_DIR + "/ui/");
-				targetDir.mkdirs();
+				boolean created = targetDir.mkdirs();
+				if (!created && !targetDir.exists())
+				{
+					throw new IOException("could not create " + targetDir);
+				}
 
 				File targetFile = new File(targetDir + "/" + GeneratorHelper.getJavaName(screen.getClassName())
 						+ "FormController.java");

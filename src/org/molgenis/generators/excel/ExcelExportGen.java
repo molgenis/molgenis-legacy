@@ -2,6 +2,7 @@ package org.molgenis.generators.excel;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
@@ -34,11 +35,13 @@ public class ExcelExportGen extends MySqlCreateClassPerTableGen
 
 		List<Entity> entityList = MolgenisModel.sortEntitiesByDependency(model.getEntities(), model); // side
 																										// effect?
-		// String packageName =
-		// this.getClass().getPackage().toString().substring(Generator.class.getPackage().toString().length());
 
 		File target = new File(this.getSourcePath(options) + APP_DIR + "/ExcelExport.java");
-		target.getParentFile().mkdirs();
+		boolean created = target.getParentFile().mkdirs();
+		if (!created && !target.getParentFile().exists())
+		{
+			throw new IOException("could not create " + target.getParentFile());
+		}
 
 		templateArgs.put("model", model);
 		templateArgs.put("entities", entityList);

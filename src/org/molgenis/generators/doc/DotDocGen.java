@@ -43,7 +43,11 @@ public class DotDocGen extends Generator
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 
 		File target = new File(this.getDocumentationPath(options) + "/objectmodel-uml-diagram.dot");
-		target.getParentFile().mkdirs();
+		boolean created = target.getParentFile().mkdirs();
+		if (!created && !target.getParentFile().exists())
+		{
+			throw new IOException("could not create " + target.getParentFile());
+		}
 
 		List<Entity> entityList = model.getEntities();
 		// MolgenisLanguage.sortEntitiesByDependency(entityList, model); // side
