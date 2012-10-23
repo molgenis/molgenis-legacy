@@ -459,23 +459,23 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 			// check whether the parent has changed and then reset
 			List<QueryRule> newSystemRules = model.getSystemRules();
 
-			if (!newSystemRules.equals(model.getSystemRules()))
+			// if (!newSystemRules.equals(model.getSystemRules()))
+			// {
+			// remember old user filters
+			// List<QueryRule> oldRules = Arrays.asList(pager.getFilters());
+			pager.resetFilters();
+			for (QueryRule rule : newSystemRules)
 			{
-				// remember old user filters
-				// List<QueryRule> oldRules = Arrays.asList(pager.getFilters());
-				pager.resetFilters();
-				for (QueryRule rule : newSystemRules)
-				{
-					pager.addFilter(rule);
-				}
-
-				model.setSystemRules(newSystemRules);
-
-				for (QueryRule rule : this.rewriteAllRules(db, model.getUserRules()))
-				{
-					pager.addFilter(rule);
-				}
+				pager.addFilter(rule);
 			}
+
+			model.setSystemRules(newSystemRules);
+
+			for (QueryRule rule : this.rewriteAllRules(db, model.getUserRules()))
+			{
+				pager.addFilter(rule);
+			}
+			// }
 
 			// check view and set limit accordingly
 			// if (view.getMode().equals(Mode.EDIT_VIEW) && !view.isReadonly())
