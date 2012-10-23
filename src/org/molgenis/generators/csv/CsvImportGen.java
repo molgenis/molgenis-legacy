@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +48,7 @@ public class CsvImportGen extends MySqlCreateClassPerTableGen
 		templateArgs.put("entities", entityList);
 		templateArgs.put("package", APP_DIR);
 		OutputStream targetOut = new FileOutputStream(target);
-		template.process(templateArgs, new OutputStreamWriter(targetOut));
+		template.process(templateArgs, new OutputStreamWriter(targetOut, Charset.forName("UTF-8")));
 		targetOut.close();
 
 		logger.info("generated " + target);

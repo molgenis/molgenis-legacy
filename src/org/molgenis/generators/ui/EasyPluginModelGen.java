@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -94,7 +95,7 @@ public class EasyPluginModelGen extends Generator
 					templateArgs.put("package", packageName);
 
 					OutputStream targetOut = new FileOutputStream(targetFile);
-					template.process(templateArgs, new OutputStreamWriter(targetOut));
+					template.process(templateArgs, new OutputStreamWriter(targetOut, Charset.forName("UTF-8")));
 					targetOut.close();
 
 					logger.info("generated "
