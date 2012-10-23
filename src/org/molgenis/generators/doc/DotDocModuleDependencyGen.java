@@ -45,7 +45,11 @@ public class DotDocModuleDependencyGen extends Generator
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 
 		File target = new File(this.getDocumentationPath(options) + "/module-dependency-diagram.dot");
-		target.getParentFile().mkdirs();
+		boolean created = target.getParentFile().mkdirs();
+		if (!created && !target.getParentFile().exists())
+		{
+			throw new IOException("could not create " + target.getParentFile());
+		}
 
 		// count the relationships
 		Map<String, Integer> mapOfRelations = new LinkedHashMap<String, Integer>();
