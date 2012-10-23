@@ -2,6 +2,7 @@ package org.molgenis.generators.cpp;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Map;
@@ -47,7 +48,11 @@ public class IncludePerEntityGen extends ForEachEntityGenerator
 			{
 				File targetFile = new File(targetDir + "/" + GeneratorHelper.getJavaName(entity.getName())
 						+ getExtension());
-				targetDir.mkdirs();
+				boolean created = targetDir.mkdirs();
+				if (!created && !targetDir.exists())
+				{
+					throw new IOException("could not create " + targetDir);
+				}
 
 				// logger.debug("trying to generated "+targetFile);
 				templateArgs.put("entity", entity);

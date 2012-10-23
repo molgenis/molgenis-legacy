@@ -2,6 +2,7 @@ package org.molgenis.generators.db;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
@@ -36,7 +37,11 @@ public class CsvReaderFactoryGen extends Generator
 
 		File target = new File(this.getSourcePath(options) + model.getName().replace(".", "/")
 				+ "/data/CsvReaderFactory.java");
-		target.getParentFile().mkdirs();
+		boolean created = target.getParentFile().mkdirs();
+		if (!created && !target.getParentFile().exists())
+		{
+			throw new IOException("could not create " + target.getParentFile());
+		}
 
 		templateArgs.put("model", model);
 		templateArgs.put("entities", entityList);

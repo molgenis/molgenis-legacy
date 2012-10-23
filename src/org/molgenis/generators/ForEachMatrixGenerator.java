@@ -2,6 +2,7 @@ package org.molgenis.generators;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Map;
@@ -56,7 +57,11 @@ public abstract class ForEachMatrixGenerator extends Generator
 		// apply generator to each matrix
 		for (Matrix matrix : model.getMatrices())
 		{
-			targetDir.mkdirs();
+			boolean created = targetDir.mkdirs();
+			if (!created && !targetDir.exists())
+			{
+				throw new IOException("could not create " + targetDir);
+			}
 
 			File targetFile = new File(targetDir + "/" + GeneratorHelper.firstToUpper(matrix.getName()) + getType()
 					+ getExtension());

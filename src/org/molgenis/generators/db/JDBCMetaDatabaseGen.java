@@ -2,6 +2,7 @@ package org.molgenis.generators.db;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
@@ -37,7 +38,11 @@ public class JDBCMetaDatabaseGen extends Generator
 																				// effect?
 
 		File target = new File(this.getSourcePath(options) + APP_DIR + "/JDBCMetaDatabase.java");
-		target.getParentFile().mkdirs();
+		boolean created = target.getParentFile().mkdirs();
+		if (!created && !target.getParentFile().exists())
+		{
+			throw new IOException("could not create " + target.getParentFile());
+		}
 
 		templateArgs.put("model", model);
 		templateArgs.put("entities", entityList);
