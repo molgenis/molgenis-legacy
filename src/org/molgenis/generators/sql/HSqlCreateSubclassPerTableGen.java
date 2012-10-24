@@ -73,7 +73,7 @@ public class HSqlCreateSubclassPerTableGen extends Generator
 
 			// Update the Hsql database
 			stmt = conn.createStatement();
-			stmt.executeUpdate(out.toString());
+			stmt.executeUpdate(out.toString("UTF-8"));
 		}
 		catch (Exception e)
 		{
