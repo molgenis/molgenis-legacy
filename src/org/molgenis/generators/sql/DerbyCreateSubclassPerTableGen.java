@@ -44,7 +44,7 @@ public class DerbyCreateSubclassPerTableGen extends Generator
 
 			// send to database
 			stmt = conn.createStatement();
-			stmt.executeUpdate(out.toString());
+			stmt.executeUpdate(out.toString("UTF-8"));
 
 			// send to log
 			logger.debug("created hsql table: " + out.toString());
