@@ -142,6 +142,9 @@
 	       	jvmargs="-Xms1024M -Xmx1024M ">
 	      	<sourcePath path="${dir.src}" />
 	       	<class location="${dir.classes}" />
+	   		<auxclasspath>
+	   			<path refid="classpath" />
+			</auxclasspath>
 	   	</findbugs>
 	</target>
 	
