@@ -2,6 +2,7 @@ package org.molgenis.generators.db;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
@@ -53,7 +54,11 @@ public class MapperDecoratorGen extends ForEachEntityGenerator
 							.lastIndexOf(".") + 1);
 
 					File targetDir = new File(this.getHandWrittenPath(options) + "/" + packageName.replace(".", "/"));
-					targetDir.mkdirs();
+					boolean created = targetDir.mkdirs();
+					if (!created && !targetDir.exists())
+					{
+						throw new IOException("could not create " + targetDir);
+					}
 
 					File targetFile = new File(this.getHandWrittenPath(options) + "/" + fullKlazzName.replace(".", "/")
 							+ ".java");
