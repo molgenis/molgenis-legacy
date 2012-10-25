@@ -2,6 +2,7 @@ package org.molgenis.generators.cpp;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
@@ -53,7 +54,11 @@ public class SourcePerEntityGen extends ForEachEntityGenerator
 			{
 				File targetFile = new File(targetDir + "/" + GeneratorHelper.getJavaName(entity.getName())
 						+ getExtension());
-				targetDir.mkdirs();
+				boolean created = targetDir.mkdirs();
+				if (!created && !targetDir.exists())
+				{
+					throw new IOException("could not create " + targetDir);
+				}
 				templateArgs.put("entity", entity);
 				templateArgs.put("model", model);
 				templateArgs.put("options", options);
