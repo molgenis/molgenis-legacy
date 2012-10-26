@@ -2,6 +2,7 @@ package org.molgenis.generators.python;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
@@ -61,7 +62,11 @@ public class PythonDataTypeGen extends ForEachEntityGenerator
 			if (handwritten) targetDir = new File(this.getHandWrittenPath(options)
 					+ packageName.replace(".", "/").replace("/python", ""));
 
-			targetDir.mkdirs();
+			boolean created = targetDir.mkdirs();
+			if (!created && !targetDir.exists())
+			{
+				throw new IOException("could not create " + targetDir);
+			}
 
 			try
 			{

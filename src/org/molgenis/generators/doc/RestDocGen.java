@@ -2,6 +2,7 @@ package org.molgenis.generators.doc;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
@@ -31,7 +32,11 @@ public class RestDocGen extends Generator
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 
 		File target = new File(this.getDocumentationPath(options) + "/tabledoc.html");
-		target.getParentFile().mkdirs();
+		boolean created = target.getParentFile().mkdirs();
+		if (!created && !target.getParentFile().exists())
+		{
+			throw new IOException("could not create " + target.getParentFile());
+		}
 
 		templateArgs.put("model", model);
 		OutputStream targetOut = new FileOutputStream(target);

@@ -2,6 +2,7 @@ package org.molgenis.generators.R;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
@@ -62,7 +63,11 @@ public class RApiGen extends Generator
 		// File targetFile = new File( this.getSourcePath(options) +
 		// model.getName().replace(".","/") + "/source.R" );
 		File targetFile = new File(this.getSourcePath(options) + "app/servlet/source.R");
-		targetFile.getParentFile().mkdirs();
+		boolean created = targetFile.getParentFile().mkdirs();
+		if (!created && !targetFile.getParentFile().exists())
+		{
+			throw new IOException("could not create " + targetFile.getParentFile());
+		}
 
 		templateArgs.put("model", model);
 		templateArgs.put("template", template.getName());

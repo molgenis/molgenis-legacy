@@ -2,6 +2,7 @@ package org.molgenis.generators.server;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
@@ -38,7 +39,11 @@ public class SoapApiGen extends Generator
 		List<Method> methodList = model.getMethods();
 
 		File target = new File(this.getSourcePath(options) + APP_DIR + "/servlet/SoapApi.java");
-		target.getParentFile().mkdirs();
+		boolean created = target.getParentFile().mkdirs();
+		if (!created && !target.getParentFile().exists())
+		{
+			throw new IOException("could not create " + target.getParentFile());
+		}
 
 		templateArgs.put("model", model);
 		templateArgs.put("methods", methodList);
