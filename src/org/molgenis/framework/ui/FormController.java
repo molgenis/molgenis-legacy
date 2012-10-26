@@ -21,6 +21,8 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.molgenis.fieldtypes.MrefField;
+import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
@@ -411,6 +413,13 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 						// case of xref/mref
 						QueryRule fieldRule = new QueryRule(this.getSearchField(field.getName()), r.getOperator(),
 								r.getValue());
+
+						if (field.getType() instanceof XrefField || field.getType() instanceof MrefField)
+						{
+							List<Field> labels = field.getXrefLabels();
+							if (labels.size() > 0) fieldRule.setField(field.getXrefLabels().get(0).getName());
+						}
+
 						// if(field.getType().getClass().getSimpleName().equals("XrefField")
 						// ||
 						// field.getType().getClass().getSimpleName().equals("MrefField")
