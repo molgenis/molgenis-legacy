@@ -29,7 +29,7 @@ public class CsvExporter extends AbstractExporter
 
 		// write headers
 		List<String> headers = new ArrayList<String>();
-		for (Field column : table.getColumns())
+		for (Field column : tupleTable.getColumns())
 		{
 			headers.add(column.getSqlName());
 		}
@@ -37,7 +37,7 @@ public class CsvExporter extends AbstractExporter
 		csv.writeHeader();
 
 		// write rows
-		for (Tuple row : table)
+		for (Tuple row : tupleTable)
 		{
 			csv.writeRow(row);
 		}
