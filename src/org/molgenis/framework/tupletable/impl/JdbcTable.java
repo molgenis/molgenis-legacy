@@ -14,7 +14,7 @@ import org.molgenis.util.Tuple;
 
 public class JdbcTable extends AbstractFilterableTupleTable
 {
-
+	private Database db;
 	private List<Tuple> rs;
 	private List<Field> columns;
 	private final String query;
@@ -113,11 +113,6 @@ public class JdbcTable extends AbstractFilterableTupleTable
 		}
 	}
 
-	/**
-	 * very bad: bypasses all security and connection management
-	 */
-	private Database db;
-
 	public void setDb(Database db)
 	{
 		if (db == null) throw new NullPointerException("database cannot be null in setDb(db)");
@@ -126,14 +121,6 @@ public class JdbcTable extends AbstractFilterableTupleTable
 
 	public Database getDb()
 	{
-		// try
-		// {
-		// db = DatabaseFactory.create();
-		// }
-		// catch (DatabaseException e)
-		// {
-		// throw new RuntimeException(e);
-		// }
 		return this.db;
 	}
 }

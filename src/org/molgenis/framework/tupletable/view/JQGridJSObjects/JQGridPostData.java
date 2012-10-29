@@ -10,17 +10,38 @@ import com.google.gson.Gson;
  */
 public class JQGridPostData
 {
+	private JQGridFilter filters;
+	/** sort order */
+	private String sord;
+	/** sort index field name */
+	private String sidx;
+	/** number of rows to show */
+	private int rows;
+	/** page offset, each page being rows long */
+	private int page;
+	private int colPage;
+
+	public JQGridPostData()
+	{
+		this.sord = null;
+		this.sidx = null;
+		this.rows = 0;
+		this.page = 0;
+		this.colPage = 1;
+		this.filters = new JQGridFilter();
+	}
+
 	public JQGridPostData(Tuple request)
 	{
-		rows = request.getInt("rows");
-		page = request.getInt("page");
-		sidx = request.getString("sidx");
-		sord = request.getString("sord");
-		colPage = request.getInt("colPage");
+		this.rows = request.getInt("rows");
+		this.page = request.getInt("page");
+		this.sidx = request.getString("sidx");
+		this.sord = request.getString("sord");
+		this.colPage = request.getInt("colPage");
 
-		this.filters = new Gson().fromJson(request.getString("filters"), JQGridFilter.class);
+		JQGridFilter gridFilter = new Gson().fromJson(request.getString("filters"), JQGridFilter.class);
 
-		if (filters == null)
+		if (gridFilter == null)
 		{
 			// Check simple, single search
 			String searchString = request.getString("searchString");
@@ -30,24 +51,70 @@ public class JQGridPostData
 			if ((searchString != null) && (searchField != null) && (searchOper != null))
 			{
 				JQGridRule.JQGridOp op = JQGridRule.JQGridOp.valueOf(searchOper);
-				filters = new JQGridFilter();
-				filters.rules.add(new JQGridRule(searchField, op, searchString));
+				gridFilter = new JQGridFilter();
+				gridFilter.addRule(new JQGridRule(searchField, op, searchString));
 			}
 		}
+		this.filters = gridFilter;
 	}
 
-	public JQGridPostData()
+	public JQGridFilter getFilters()
 	{
+		return filters;
 	}
 
-	public JQGridFilter filters = new JQGridFilter();
-	/** sort order */
-	public String sord = null;
-	/** sort index field name */
-	public String sidx = null;
-	/** number of rows to show */
-	public int rows = 0;
-	/** page offset, each page being rows long */
-	public int page = 0;
-	public int colPage = 1;
+	public void setFilters(JQGridFilter filters)
+	{
+		this.filters = filters;
+	}
+
+	public String getSord()
+	{
+		return sord;
+	}
+
+	public void setSord(String sord)
+	{
+		this.sord = sord;
+	}
+
+	public String getSidx()
+	{
+		return sidx;
+	}
+
+	public void setSidx(String sidx)
+	{
+		this.sidx = sidx;
+	}
+
+	public int getRows()
+	{
+		return rows;
+	}
+
+	public void setRows(int rows)
+	{
+		this.rows = rows;
+	}
+
+	public int getPage()
+	{
+		return page;
+	}
+
+	public void setPage(int page)
+	{
+		this.page = page;
+	}
+
+	public int getColPage()
+	{
+		return colPage;
+	}
+
+	public void setColPage(int colPage)
+	{
+		this.colPage = colPage;
+	}
 }

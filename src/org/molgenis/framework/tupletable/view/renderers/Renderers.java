@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import javax.servlet.ServletOutputStream;
@@ -57,11 +59,16 @@ public class Renderers
 		{
 			final JQGridResult result = JQGridView.buildJQGridResults(tupleTable.getCount(), totalPages, currentPage,
 					tupleTable);
-			final PrintWriter pout = new PrintWriter(request.getResponse().getOutputStream());
-			String json = new Gson().toJson(result);
-			//System.out.println("printing JSON: " + json);
-			pout.print(json);
-			pout.close();
+
+			Writer writer = new OutputStreamWriter(request.getResponse().getOutputStream(), Charset.forName("UTF-8"));
+			try
+			{
+				new Gson().toJson(result, writer);
+			}
+			finally
+			{
+				writer.close();
+			}
 		}
 	}
 
