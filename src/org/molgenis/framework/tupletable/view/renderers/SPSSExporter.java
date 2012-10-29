@@ -42,7 +42,7 @@ public class SPSSExporter extends CsvExporter
 	{
 		BufferedWriter spsWriter = new BufferedWriter(new OutputStreamWriter(spssOs));
 
-		List<Field> columns = table.getColumns();
+		List<Field> columns = tupleTable.getColumns();
 		StringWriter valLabels = new StringWriter();
 		StringWriter colNames = new StringWriter();
 		List<Field> categoricalFields = new ArrayList<Field>();

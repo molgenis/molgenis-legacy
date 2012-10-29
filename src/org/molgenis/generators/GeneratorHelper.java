@@ -194,10 +194,11 @@ public class GeneratorHelper
 	{
 		StringBuilder strBuilder = new StringBuilder();
 
-		if (elements != null) for (String str : elements)
+		if (elements != null)
 		{
-			if (elements.get(0) != str) strBuilder.append(',');
-			strBuilder.append('\'').append(str).append('\'');
+			for (String str : elements)
+				strBuilder.append('\'').append(str).append('\'').append(',');
+			if (!elements.isEmpty()) strBuilder.deleteCharAt(strBuilder.length() - 1);
 		}
 
 		return strBuilder.toString();

@@ -1,29 +1,19 @@
-package org.molgenis.framework.tupletable.test;
-
-import java.util.List;
+package org.molgenis.framework.tupletable.impl;
 
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.TupleTable;
-import org.molgenis.framework.tupletable.impl.MemoryTableFactory;
 import org.molgenis.util.Tuple;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class TestMemoryTable
+public class MemoryTableTest
 {
-	List<Tuple> rows;
-	TupleTable table;
-
-	@BeforeClass
-	public void setup()
-	{
-		table = MemoryTableFactory.create(5,5);
-	}
 
 	@Test
 	public void test1() throws TableException
 	{
+		TupleTable table = MemoryTableFactory.create(5, 5);
+
 		// check columns
 		Assert.assertEquals("col1", table.getColumns().get(0).getName());
 		Assert.assertEquals("col2", table.getColumns().get(1).getName());
@@ -50,6 +40,8 @@ public class TestMemoryTable
 	@Test
 	public void testLimitOffset() throws TableException
 	{
+		TupleTable table = MemoryTableFactory.create(5, 5);
+
 		table.setLimitOffset(2, 3);
 
 		// limit == 2
@@ -65,6 +57,8 @@ public class TestMemoryTable
 	@Test
 	public void testColLimitOffset() throws TableException
 	{
+		TupleTable table = MemoryTableFactory.create(5, 5);
+
 		table.setColLimit(2);
 		table.setColOffset(1);
 
@@ -73,12 +67,12 @@ public class TestMemoryTable
 		for (Tuple row : table.getRows())
 		{
 			Assert.assertEquals(row.getNrColumns(), 2);
-			
-			//we expect col2 and col3
+
+			// we expect col2 and col3
 			Assert.assertEquals(row.getColName(0), "col2");
 			Assert.assertEquals(row.getColName(1), "col3");
-			
-			//we expect
+
+			// we expect
 			Assert.assertEquals(row.getObject("col2"), "val2," + i++);
 		}
 

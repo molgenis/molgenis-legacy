@@ -81,10 +81,8 @@ public class EntityDataTable extends HtmlWidget
 		strBuilder.append("\n	'bProcessing' : true,");
 		strBuilder.append("\n	'aoColumns' : [");
 		for (String label : labels)
-		{
-			if (label != labels.get(0)) strBuilder.append(',');
-			strBuilder.append("{ 'mDataProp' : '").append(label).append("'}");
-		}
+			strBuilder.append("{ 'mDataProp' : '").append(label).append("'}").append(',');
+		if (!labels.isEmpty()) strBuilder.deleteCharAt(strBuilder.length() - 1);
 		strBuilder.append("	],");
 		strBuilder.append("	'fnServerParams' : function(aoData) {");
 		strBuilder.append("\n	aoData.push({");

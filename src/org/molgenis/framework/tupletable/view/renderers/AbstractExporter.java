@@ -7,11 +7,12 @@ import org.molgenis.framework.tupletable.TupleTable;
 
 public abstract class AbstractExporter
 {
-	protected final TupleTable table;
+	protected final TupleTable tupleTable;
 
-	public AbstractExporter(TupleTable tableModel)
+	public AbstractExporter(TupleTable tupleTable)
 	{
-		this.table = tableModel;
+		if (tupleTable == null) throw new IllegalArgumentException();
+		this.tupleTable = tupleTable;
 	}
 
 	public abstract void export(OutputStream os) throws TableException;

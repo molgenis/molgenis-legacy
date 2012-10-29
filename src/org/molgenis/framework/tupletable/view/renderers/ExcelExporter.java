@@ -49,7 +49,7 @@ public class ExcelExporter extends AbstractExporter
 		createHeaders();
 
 		int rowIdx = 1; // headers are row 0
-		for (Tuple row : table)
+		for (Tuple row : tupleTable)
 		{
 			writeRow(row, rowIdx++);
 		}
@@ -73,7 +73,7 @@ public class ExcelExporter extends AbstractExporter
 
 		final Row headerRow = sh.createRow(0);
 		int colIdx = 0;
-		for (Field column : table.getColumns())
+		for (Field column : tupleTable.getColumns())
 		{
 			final Cell headerCell = headerRow.createCell(colIdx++);
 			headerCell.setCellValue(column.getName());
@@ -84,7 +84,7 @@ public class ExcelExporter extends AbstractExporter
 	{
 		final Row excelRow = sh.createRow(rowIdx);
 		int colIdx = 0;
-		final List<Field> columns = table.getColumns();
+		final List<Field> columns = tupleTable.getColumns();
 		for (final Field column : columns)
 		{
 			final Cell c = excelRow.createCell(colIdx++);
