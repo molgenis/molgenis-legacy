@@ -71,6 +71,40 @@ public class CsvTableTest
 	}
 
 	@Test
+	public void testLimitOffsetString_File() throws Exception
+	{
+		File file = File.createTempFile("CsvTableFile_file", null);
+		try
+		{
+			// create csv
+			String csvString = "firstName\tlastName";
+			csvString += "\nlucky\tluke";
+			csvString += "\ncalamity\tjane";
+			csvString += "\njolly\tjumper";
+
+			FileUtils.write(file, csvString, Charset.forName("UTF-8"));
+			CsvTable csvTable = new CsvTable(file);
+			testTable(csvTable);
+
+			TupleTable table = new CsvTable(file);
+
+			table.setLimitOffset(1, 1);
+
+			assertEquals(table.getCount(), 3);
+
+			assertEquals(table.getRows().size(), 1);
+
+			assertEquals(table.getRows().get(0).getString("firstName"), "calamity");
+
+		}
+		finally
+		{
+			file.delete();
+		}
+
+	}
+
+	@Test
 	public void testColLimit() throws Exception
 	{
 		// create csv
