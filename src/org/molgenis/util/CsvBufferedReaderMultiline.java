@@ -150,7 +150,7 @@ public abstract class CsvBufferedReaderMultiline extends AbstractTupleReader imp
 		}
 	}
 
-	/** This method gets next tuple, if availabe */
+	/** This method gets next tuple, if available */
 	public Tuple next()
 	{
 		try
@@ -467,7 +467,20 @@ public abstract class CsvBufferedReaderMultiline extends AbstractTupleReader imp
 	}
 
 	@Override
-	public abstract void reset() throws IOException, DataFormatException;
+	public void reset() throws IOException
+	{
+		if (this.hasHeader)
+		{
+			try
+			{
+				this.columnnames = colnames();
+			}
+			catch (DataFormatException e)
+			{
+				throw new IOException(e);
+			}
+		}
+	}
 
 	@Override
 	public boolean isClosed()
