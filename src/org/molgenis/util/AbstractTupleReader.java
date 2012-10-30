@@ -30,7 +30,7 @@ public abstract class AbstractTupleReader implements TupleReader
 	protected char separator = 0;
 	/** boolean indicating the parser is working */
 	protected boolean isParsing = false;
-	/** booleain indicating that the resource parsed has headers... */
+	/** boolean indicating that the resource parsed has headers... */
 	protected boolean hasHeader = true;
 
 	public String getBlockEnd()
