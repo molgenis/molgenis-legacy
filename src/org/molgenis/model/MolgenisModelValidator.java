@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -597,14 +598,15 @@ public class MolgenisModelValidator
 												+ ". \nCouldn't find suitable secondary keys to use as xref_label. \nDid you set a unique=\"true\" or <unique fields=\" ...>?");
 							}
 
-							for (String validLabel : candidates.keySet())
+							for (Entry<String, List<Field>> entry : candidates.entrySet())
 							{
-								// logger.debug("Checking: "+validLabel);
-								if (xref_label_name.equals(validLabel))
+								String key = entry.getKey();
+								if (xref_label_name.equals(key))
 								{
-									xref_label = candidates.get(validLabel).get(candidates.get(validLabel).size() - 1);
+									List<Field> value = entry.getValue();
+									xref_label = value.get(value.size() - 1);
 								}
-								validFieldsBuilder.append(',').append(validLabel);
+								validFieldsBuilder.append(',').append(key);
 							}
 
 							// still null, must be error

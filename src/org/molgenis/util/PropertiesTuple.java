@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
@@ -33,9 +34,9 @@ public class PropertiesTuple extends SimpleTuple
 
 	private void loadFromProperties(Properties p)
 	{
-		for (Object key : p.keySet())
+		for (Entry<Object, Object> entry : p.entrySet())
 		{
-			this.set(key.toString(), p.get(key));
+			this.set(entry.getKey().toString(), entry.getValue());
 		}
 	}
 }
