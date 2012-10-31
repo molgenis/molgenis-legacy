@@ -32,8 +32,7 @@ public class FileInput extends HtmlInput<Object>
 		this(name, null);
 	}
 
-	public FileInput(String name, String label, String value, boolean nillable,
-			boolean readonly)
+	public FileInput(String name, String label, String value, boolean nillable, boolean readonly)
 	{
 		this(name, value);
 		this.setLabel(label);
@@ -55,8 +54,7 @@ public class FileInput extends HtmlInput<Object>
 	{
 		// FIXME how to check not null file uploads
 		this.setNillable(true);
-		String readonly = (isReadonly() ? "readonly class=\"readonly\" readonly "
-				: "");
+		String readonly = (isReadonly() ? "readonly class=\"readonly\" readonly " : "");
 
 		StringInput hidden = new StringInput(this.getName(), super.getValue());
 		hidden.setLabel(this.getLabel());
@@ -68,19 +66,17 @@ public class FileInput extends HtmlInput<Object>
 			return hidden.toHtml();
 		}
 
-		if(uiToolkit == UiToolkit.ORIGINAL)
+		if (uiToolkit == UiToolkit.ORIGINAL)
 		{
 			return hidden.toHtml()
-					+ (!isReadonly() ? "<input type=\"file\" " + readonly
-							+ "name=\"filefor_" + getName() + "\" size=\"20\">"
-							: "") + getValue();
+					+ (!isReadonly() ? "<input type=\"file\" " + readonly + "name=\"filefor_" + getName()
+							+ "\" size=\"20\">" : "") + getValue();
 		}
 		else if (uiToolkit == UiToolkit.JQUERY)
 		{
 			return hidden.toHtml()
 					+ (!isReadonly() ? "<input class=\"ui-widget-content ui-corner-all\" type=\"file\" " + readonly
-							+ "name=\"filefor_" + getName() + "\" size=\"20\">"
-							: "") + getValue();
+							+ "name=\"filefor_" + getName() + "\" size=\"20\">" : "") + getValue();
 		}
 		else
 		{
@@ -93,10 +89,9 @@ public class FileInput extends HtmlInput<Object>
 	 */
 	public String getValue()
 	{
-		if (super.getValue() != "") return super.getValue()
+		if (!super.getValue().isEmpty()) return super.getValue()
 				+ "<input class=\"manbutton\" type=\"image\" src=\"generated-res/img/download.png\" alt=\"download\" onclick=\"this.form.__filename.value = '"
-				+ super.getValue() + "';this.form.__action.value='"
-				+ ACTION_DOWNLOAD + "'; return true;\"/>";
+				+ super.getValue() + "';this.form.__action.value='" + ACTION_DOWNLOAD + "'; return true;\"/>";
 		return super.getValue();
 	}
 

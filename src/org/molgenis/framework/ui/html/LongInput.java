@@ -8,14 +8,14 @@ public class LongInput extends ValidatingInput<Long>
 
 	public LongInput(String name, Long value)
 	{
-		super (name, value);
+		super(name, value);
 		this.validationString = "digits";
 		this.setMaxWidth(10);
 	}
-	
+
 	public LongInput(String name)
 	{
-		this (name, null);
+		this(name, null);
 		this.validationString = "digits";
 		this.setMaxWidth(10);
 	}

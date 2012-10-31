@@ -25,7 +25,7 @@ public class RemoveSelectedCommand extends SimpleCommand
 	private static final long serialVersionUID = 4730493886936446817L;
 	public static final transient Logger logger = Logger.getLogger(RemoveSelectedCommand.class);
 
-	public RemoveSelectedCommand(String name, ScreenController<?>  parentScreen)
+	public RemoveSelectedCommand(String name, ScreenController<?> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Remove selected");
@@ -36,15 +36,15 @@ public class RemoveSelectedCommand extends SimpleCommand
 	@Override
 	public boolean isVisible()
 	{
-		//only in listview
-		return getFormScreen().getMode().equals(Mode.LIST_VIEW)  && !this.getFormScreen().isReadonly();
+		// only in listview
+		return getFormScreen().getMode().equals(Mode.LIST_VIEW) && !this.getFormScreen().isReadonly();
 	}
 
 	@Override
 	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
 	{
 		logger.debug(this.getName());
-		
+
 		FormModel<? extends Entity> view = getFormScreen();
 
 		ScreenMessage msg = null;
@@ -59,7 +59,8 @@ public class RemoveSelectedCommand extends SimpleCommand
 			}
 
 			// find selected entities
-			Query<? extends Entity> q = db.query(view.getController().getEntityClass()).in(view.create().getIdField(), idList);
+			Query<? extends Entity> q = db.query(view.getController().getEntityClass()).in(view.create().getIdField(),
+					idList);
 			List<? extends Entity> selection = q.find();
 
 			// delete selected entities
@@ -71,14 +72,14 @@ public class RemoveSelectedCommand extends SimpleCommand
 			msg = new ScreenMessage("REMOVE SELECTION FAILED: " + e.getMessage(), null, false);
 		}
 		view.getMessages().add(msg);
-		
+
 		// **make sure the user sees a record**/
 		if (msg.isSuccess())
 		{
 			view.getPager().prev(db);
 			// resetChildren();
 		}
-		
+
 		return ScreenModel.Show.SHOW_MAIN;
 	}
 

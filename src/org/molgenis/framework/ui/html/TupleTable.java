@@ -11,32 +11,38 @@ public class TupleTable extends HtmlWidget
 	public TupleTable(String name, List<Tuple> tuples)
 	{
 		super(name);
-		assert(tuples!=null);
+		assert (tuples != null);
 		this.tuples = tuples;
 	}
 
 	@Override
 	public String toHtml()
-	{		
-		String result = "<div><table id=\"" + getName() + "\"><thead><tr>";
+	{
+		StringBuilder strBuilder = new StringBuilder();
+		strBuilder.append("<div><table id=\"").append(getName()).append("\"><thead><tr>");
+
 		// header
 		if (tuples.size() > 0) for (String name : tuples.get(0).getFields())
 		{
-			result += "<th>" + name + "</th>";
+			strBuilder.append("<th>").append(name).append("</th>");
 		}
-		result += "</tr></thead><tbody>";
-		//body
-		for(Tuple t: tuples)
-		{
-			result +="<tr>";
-			
-			for(String name: t.getFields()) result +="<td>"+(t.isNull(name) ? "" : t.getString(name))+"</td>";
-			
-			result +="</tr>";
-		}
-		result += "</tbody></table><script>$('#"+getName()+"').dataTable({'bJQueryUI': true,'sPaginationType': 'full_numbers','sScrollX': '100%','bScrollCollapse': true});</script></div>";
-		
-		return result;
-	}
+		strBuilder.append("</tr></thead><tbody>");
 
+		// body
+		for (Tuple t : tuples)
+		{
+			strBuilder.append("<tr>");
+
+			for (String name : t.getFields())
+				strBuilder.append("<td>").append(t.isNull(name) ? "" : t.getString(name)).append("</td>");
+
+			strBuilder.append("</tr>");
+		}
+		strBuilder.append("</tbody></table><script>$('#");
+		strBuilder.append(getName());
+		strBuilder
+				.append("').dataTable({'bJQueryUI': true,'sPaginationType': 'full_numbers','sScrollX': '100%','bScrollCollapse': true});</script></div>");
+
+		return strBuilder.toString();
+	}
 }

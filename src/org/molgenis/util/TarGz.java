@@ -24,8 +24,7 @@ public class TarGz
 
 	public static File tarDir(File dir) throws IOException
 	{
-		File archiveLocation = new File(dir.getParentFile() + File.separator
-				+ dir.getName() + ".tar.gz");
+		File archiveLocation = new File(dir.getParentFile() + File.separator + dir.getName() + ".tar.gz");
 
 		boolean unixArchiveFormat = true;
 
@@ -38,8 +37,7 @@ public class TarGz
 
 			try
 			{
-				outStream = new GZIPOutputStream(new FileOutputStream(
-						archiveLocation));
+				outStream = new GZIPOutputStream(new FileOutputStream(archiveLocation));
 			}
 			catch (IOException ex)
 			{
@@ -68,9 +66,7 @@ public class TarGz
 					entry.setUSTarFormat();
 				}
 				// FIXME: index -1 wanneer verkeerde file sep!
-				entry.setName(entry.getName().substring(
-						entry.getName().lastIndexOf("/") + 1,
-						entry.getName().length()));
+				entry.setName(entry.getName().substring(entry.getName().lastIndexOf("/") + 1, entry.getName().length()));
 
 				// add to tar. just a file, no need for recursion ('false')
 				archive.writeEntry(entry, false);
@@ -90,9 +86,7 @@ public class TarGz
 					entry.setUSTarFormat();
 				}
 				// FIXME: index -1 wanneer verkeerde file sep!
-				entry.setName(entry.getName().substring(
-						entry.getName().lastIndexOf("/") + 1,
-						entry.getName().length()));
+				entry.setName(entry.getName().substring(entry.getName().lastIndexOf("/") + 1, entry.getName().length()));
 
 				// write entry (now a tar) to tar
 				archive.writeEntry(entry, false);
@@ -132,8 +126,7 @@ public class TarGz
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private static File tarExtract(File archive, File extractDir,
-			boolean nested, List<File> markedDeleted)
+	private static File tarExtract(File archive, File extractDir, boolean nested, List<File> markedDeleted)
 			throws InvalidHeaderException, IOException, InterruptedException
 	{
 		InputStream inStream = System.in;
@@ -148,12 +141,13 @@ public class TarGz
 			ex.printStackTrace(System.err);
 		}
 		return tarExtract(inStream, extractDir, nested, markedDeleted);
-		
+
 	}
-	
+
 	/**
 	 * 
-	 * @param inStream = the inputstream from a file
+	 * @param inStream
+	 *            = the inputstream from a file
 	 * @param extractDir
 	 * @param keepNested
 	 *            Extract nested tar.gz files as usual, but do not attempt to
@@ -167,8 +161,7 @@ public class TarGz
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private static File tarExtract(InputStream inStream, File extractDir,
-			boolean nested, List<File> markedDeleted)
+	private static File tarExtract(InputStream inStream, File extractDir, boolean nested, List<File> markedDeleted)
 			throws InvalidHeaderException, IOException, InterruptedException
 	// private static File tarExtract(File archive, File extractDir, boolean
 	// nested) throws InvalidHeaderException, IOException
@@ -203,8 +196,7 @@ public class TarGz
 
 		for (File tarGzFile : findTarGzFiles(extractDir))
 		{
-			File subDir = new File(extractDir.getAbsolutePath()
-					+ File.separator
+			File subDir = new File(extractDir.getAbsolutePath() + File.separator
 					+ tarGzFile.getName().replace(".tar.gz", ""));
 			markedDeleted.add(tarGzFile);
 			// System.out.println("markedDeleted: " + tarGzFile.getName());
@@ -233,8 +225,7 @@ public class TarGz
 					delSuccess = f.delete();
 					if (!delSuccess)
 					{
-						System.out.println("WARNING could not delete "
-								+ f.getAbsolutePath());
+						System.out.println("WARNING could not delete " + f.getAbsolutePath());
 					}
 				}
 				// System.out.println(f.getAbsolutePath() +", delete? = " +
@@ -258,31 +249,32 @@ public class TarGz
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static File tarExtract(File archive, File extractDir)
-			throws InvalidHeaderException, IOException, InterruptedException
+	public static File tarExtract(File archive, File extractDir) throws InvalidHeaderException, IOException,
+			InterruptedException
 	{
 		return tarExtract(archive, extractDir, false, new ArrayList<File>());
 	}
-	
+
 	/**
-	 * Wrapper for private static File tarExtract(InputStream inStream, File extractDir,
-	 * boolean nested, List<File> markedDeleted). Adds nested = false and empty
-	 * file list used ONLY in recursion to avoid MS Windows not deleting the
-	 * appropriate files.
+	 * Wrapper for private static File tarExtract(InputStream inStream, File
+	 * extractDir, boolean nested, List<File> markedDeleted). Adds nested =
+	 * false and empty file list used ONLY in recursion to avoid MS Windows not
+	 * deleting the appropriate files.
 	 * 
-	 * @param inStream = the inputstream from a file
+	 * @param inStream
+	 *            = the inputstream from a file
 	 * @param extractDir
 	 * @return
 	 * @throws InvalidHeaderException
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static File tarExtract(InputStream inStream, File extractDir)
-			throws InvalidHeaderException, IOException, InterruptedException
+	public static File tarExtract(InputStream inStream, File extractDir) throws InvalidHeaderException, IOException,
+			InterruptedException
 	{
 		return tarExtract(inStream, extractDir, false, new ArrayList<File>());
 	}
-	
+
 	/**
 	 * Wrapper for public static File tarExtract(File archive, File extractDir).
 	 * Adds default extractDir by getting the java tmp dir and archive name.
@@ -300,21 +292,19 @@ public class TarGz
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static File tarExtract(File archive) throws InvalidHeaderException,
-			IOException, InterruptedException
+	public static File tarExtract(File archive) throws InvalidHeaderException, IOException, InterruptedException
 	{
-		String archiveName = archive.getName().substring(0,
-				archive.getName().indexOf("."));
-		File extractDir = new File(System.getProperty("java.io.tmpdir")
-				+ File.separator + archiveName + "_extract");
+		String archiveName = archive.getName().substring(0, archive.getName().indexOf("."));
+		File extractDir = new File(System.getProperty("java.io.tmpdir") + File.separator + archiveName + "_extract");
 		return tarExtract(archive, extractDir);
 	}
-	
+
 	/**
 	 * Wrapper for public static File tarExtract(File archive, File extractDir).
 	 * Adds default extractDir by getting the java tmp dir and archive name.
 	 * 
-	 * @param inStream = the inputstream from a file
+	 * @param inStream
+	 *            = the inputstream from a file
 	 * @param keepNested
 	 *            Extract nested tar.gz files as usual, but do not attempt to
 	 *            delete the nested tar.gz files after extraction. This was
@@ -327,12 +317,11 @@ public class TarGz
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static File tarExtract(InputStream inStream) throws InvalidHeaderException,
-			IOException, InterruptedException
+	public static File tarExtract(InputStream inStream) throws InvalidHeaderException, IOException,
+			InterruptedException
 	{
-		String archiveName = "inputstream_"+System.nanoTime();
-		File extractDir = new File(System.getProperty("java.io.tmpdir")
-				+ File.separator + archiveName + "_extract");
+		String archiveName = "inputstream_" + System.nanoTime();
+		File extractDir = new File(System.getProperty("java.io.tmpdir") + File.separator + archiveName + "_extract");
 		return tarExtract(inStream, extractDir);
 	}
 
@@ -374,17 +363,15 @@ public class TarGz
 	 *                illegal argument
 	 */
 
-	public static void fileCopy(final File src, File dst,
-			final boolean overwrite) throws IOException,
+	public static void fileCopy(final File src, File dst, final boolean overwrite) throws IOException,
 			IllegalArgumentException
 	{
-		//long startTimer = System.currentTimeMillis();
+		// long startTimer = System.currentTimeMillis();
 
 		// checks
 		if (!src.isFile() || !src.exists())
 		{
-			throw new IllegalArgumentException("Source file '"
-					+ src.getAbsolutePath() + "' not found.");
+			throw new IllegalArgumentException("Source file '" + src.getAbsolutePath() + "' not found.");
 		}
 
 		if (dst.exists())
@@ -397,15 +384,13 @@ public class TarGz
 			{
 				if (!overwrite)
 				{
-					throw new IllegalArgumentException("Destination file '"
-							+ dst.getAbsolutePath() + "' already exists.");
+					throw new IllegalArgumentException("Destination file '" + dst.getAbsolutePath()
+							+ "' already exists.");
 				}
 			}
 			else
 			{
-				throw new IllegalArgumentException(
-						"Invalid destination object '" + dst.getAbsolutePath()
-								+ "'.");
+				throw new IllegalArgumentException("Invalid destination object '" + dst.getAbsolutePath() + "'.");
 			}
 		}
 
@@ -415,8 +400,7 @@ public class TarGz
 		{
 			if (!dstParent.mkdirs())
 			{
-				throw new IOException("Failed to create directory "
-						+ dstParent.getAbsolutePath());
+				throw new IOException("Failed to create directory " + dstParent.getAbsolutePath());
 			}
 		}
 

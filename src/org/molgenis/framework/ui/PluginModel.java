@@ -11,8 +11,7 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
-public abstract class PluginModel<E extends Entity> extends
-		SimpleScreenController<ScreenModel> implements ScreenModel
+public abstract class PluginModel<E extends Entity> extends SimpleScreenController<ScreenModel> implements ScreenModel
 {
 	private static final long serialVersionUID = -6748634936592503575L;
 	private String label;
@@ -24,36 +23,35 @@ public abstract class PluginModel<E extends Entity> extends
 		super(name, null, parent);
 		// label is the last part of the name
 		this.setModel(this);
-		this.setLabel(this.getName().substring(
-				this.getName().lastIndexOf("_") + 1));
+		this.setLabel(this.getName().substring(this.getName().lastIndexOf("_") + 1));
 	}
 
 	public ScreenView getView()
 	{
 		throw new UnsupportedOperationException();
 	}
-	
+
 	public Login getLogin()
 	{
 		return this.getApplicationController().getLogin();
 	}
-	
+
 	public TokenFactory getTokenFactory()
 	{
 		return this.getController().getApplicationController().getMolgenisContext().getTokenFactory();
 	}
-	
+
 	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException, Exception
 	{
-		
+
 	}
-	
-	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException, Exception
+
+	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException,
+			Exception
 	{
 		this.handleRequest(db, request);
 		return Show.SHOW_MAIN;
 	}
-
 
 	/**
 	 * A plugin is actually a model-view-controller structure. The extension of
@@ -63,8 +61,9 @@ public abstract class PluginModel<E extends Entity> extends
 	 */
 
 	/**
-	 * Show plugin or not, depending on whether the user is authenticated.
-	 * Note: at the moment you can still override this method in your plugin to bypass security (evil).
+	 * Show plugin or not, depending on whether the user is authenticated. Note:
+	 * at the moment you can still override this method in your plugin to bypass
+	 * security (evil).
 	 */
 	@Override
 	public boolean isVisible()
@@ -165,7 +164,7 @@ public abstract class PluginModel<E extends Entity> extends
 	 *      For example: <#macro MyPlugin screen> Hello World </#macro>
 	 */
 	public abstract String getViewName();
-	
+
 	@Override
 	public abstract void reload(Database db);
 
@@ -188,16 +187,16 @@ public abstract class PluginModel<E extends Entity> extends
 	{
 		return this.getApplicationController();
 	}
-	
+
 	/** Shorthand for setMessages(new ScreenMessage("success message",true)); */
 	public void setSuccess(String message)
 	{
-		this.setMessages(new ScreenMessage(message,true));
+		this.setMessages(new ScreenMessage(message, true));
 	}
-	
+
 	/** Shorthand for setMessages(new ScreenMessage("succes message",false)); */
 	public void setError(String message)
 	{
-		this.setMessages(new ScreenMessage(message,false));
+		this.setMessages(new ScreenMessage(message, false));
 	}
 }

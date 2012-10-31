@@ -44,8 +44,8 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.DatabaseException;
 
 import static  org.testng.AssertJUnit.*;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 <#list model.entities as entity>
@@ -82,7 +82,7 @@ public class TestCsv
 </#if>
 	
 <#if databaseImp = 'jpa'>		
-	@BeforeTest
+	@BeforeClass
 	public static void oneTimeSetUp()   
 	{
 		try
@@ -98,12 +98,12 @@ public class TestCsv
 		}
 		logger.info("Database created");
 	}
-	@AfterTest
+	@AfterClass
 	public static void destory() {
             JpaUtil.dropTables((JpaDatabase)db, configOverrides);		
 	}	
 <#else>
-	@BeforeTest
+	@BeforeClass
 	public static void oneTimeSetUp()   
 	{
 		try
@@ -119,7 +119,7 @@ public class TestCsv
 		logger.info("Database created");
 	}
 
-	@AfterTest
+	@AfterClass
 	public static void destory() {
             
 	}
@@ -242,9 +242,9 @@ public class TestCsv
 		for(File f: dir1.listFiles())
 		{
 			File f2 = new File(dir2.getAbsolutePath()+File.separator+f.getName());
-			boolean result = CompareCSV.compareCSVFilesByContent(f, f2, errorMessage);
+			boolean result = CompareCSV.compareCSVFilesByContent(f, f2);
 			if(!result) {
-				logger.error("Difference between "+f+" and "+f2 + "\t" + errorMessage);
+				logger.error(f + " and " + f2 + " differ");
 				return false;
 			}
 		}

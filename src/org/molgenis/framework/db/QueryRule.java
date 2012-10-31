@@ -10,6 +10,7 @@
 
 package org.molgenis.framework.db;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -30,7 +31,8 @@ import org.apache.commons.lang.StringUtils;
  * @author Richard Scheltema
  * @author Morris Swertz
  */
-public class QueryRule implements Cloneable {
+public class QueryRule
+{
 	/** The operator being applied to the field and value */
 	protected Operator operator;
 
@@ -40,25 +42,25 @@ public class QueryRule implements Cloneable {
 	/** The value to compare entries of the field in the database with */
 	protected Object value = null;
 
-	/** Indicate wheter this should evaluate to OR */
-	private boolean or = false; // default AND
-
 	/** Place to store nested rules */
 	// FIXME: why not put this in value?
 	private QueryRule[] nestedRules;
 
-	public QueryRule() {
+	public QueryRule()
+	{
 
 	}
 
-	public QueryRule(QueryRule copy) {
+	public QueryRule(QueryRule copy)
+	{
 		operator = copy.operator;
 		field = copy.field;
 		value = copy.value;
-		or = copy.or;
-		if (copy.nestedRules != null) {
+		if (copy.nestedRules != null)
+		{
 			nestedRules = new QueryRule[copy.nestedRules.length];
-			for (int i = 0; i < copy.nestedRules.length; i++) {
+			for (int i = 0; i < copy.nestedRules.length; i++)
+			{
 				nestedRules[i] = new QueryRule(copy.nestedRules[i]);
 			}
 		}
@@ -67,7 +69,8 @@ public class QueryRule implements Cloneable {
 	/**
 	 * Different types of rules that can be applied.
 	 */
-	public enum Operator {
+	public enum Operator
+	{
 		/** search all fields */
 		SEARCH("search"),
 		/** 'field' equal to 'value' */
@@ -136,7 +139,8 @@ public class QueryRule implements Cloneable {
 		 * @param name
 		 *            of the operator
 		 */
-		Operator(String label) {
+		Operator(String label)
+		{
 			this.label = label;
 		}
 
@@ -144,7 +148,8 @@ public class QueryRule implements Cloneable {
 		 * Get the String label of the Operator.
 		 */
 		@Override
-		public String toString() {
+		public String toString()
+		{
 			return label;
 		}
 	}
@@ -164,13 +169,14 @@ public class QueryRule implements Cloneable {
 	 * @param value
 	 *            The value.
 	 */
-	public QueryRule(String field, Operator operator, Object value) {
-		if (operator == Operator.LIMIT || operator == Operator.OFFSET
-				|| operator == Operator.SORTASC
-				|| operator == Operator.SORTDESC || operator == Operator.LAST
-				|| operator == Operator.AND || operator == Operator.OR) {
-			throw new IllegalArgumentException("QueryRule(): Operator."
-					+ operator + " cannot be used with two arguments");
+	public QueryRule(String field, Operator operator, Object value)
+	{
+		if (operator == Operator.LIMIT || operator == Operator.OFFSET || operator == Operator.SORTASC
+				|| operator == Operator.SORTDESC || operator == Operator.LAST || operator == Operator.AND
+				|| operator == Operator.OR)
+		{
+			throw new IllegalArgumentException("QueryRule(): Operator." + operator
+					+ " cannot be used with two arguments");
 		}
 		this.field = field;
 		this.operator = operator;
@@ -183,7 +189,8 @@ public class QueryRule implements Cloneable {
 	 * @param rules
 	 *            to be nested.
 	 */
-	public QueryRule(QueryRule... rules) {
+	public QueryRule(QueryRule... rules)
+	{
 		operator = Operator.NESTED;
 		nestedRules = rules;
 	}
@@ -195,25 +202,33 @@ public class QueryRule implements Cloneable {
 	 * @param operator
 	 * @param value
 	 */
-	public QueryRule(Operator operator, Object value) {
-		if (operator == Operator.LIMIT || operator == Operator.OFFSET
-				|| operator == Operator.SORTASC
-				|| operator == Operator.SORTDESC || operator == Operator.SEARCH) {
+	public QueryRule(Operator operator, Object value)
+	{
+		if (operator == Operator.LIMIT || operator == Operator.OFFSET || operator == Operator.SORTASC
+				|| operator == Operator.SORTDESC || operator == Operator.SEARCH)
+		{
 			this.operator = operator;
 			this.value = value;
-		} else {
-			throw new IllegalArgumentException("QueryRule(): Operator."
-					+ operator + " cannot be used with one argument");
+		}
+		else
+		{
+			throw new IllegalArgumentException("QueryRule(): Operator." + operator
+					+ " cannot be used with one argument");
 		}
 	}
 
-	public QueryRule(Operator operator, QueryRule nestedRules) {
-		if (operator == Operator.NOT || operator == Operator.IN_SUBQUERY) {
+	public QueryRule(Operator operator, QueryRule nestedRules)
+	{
+		if (operator == Operator.NOT || operator == Operator.IN_SUBQUERY)
+		{
 			this.operator = operator;
-			this.nestedRules = new QueryRule[] { nestedRules };
-		} else {
-			throw new IllegalArgumentException("QueryRule(): Operator."
-					+ operator + " cannot be used with one argument");
+			this.nestedRules = new QueryRule[]
+			{ nestedRules };
+		}
+		else
+		{
+			throw new IllegalArgumentException("QueryRule(): Operator." + operator
+					+ " cannot be used with one argument");
 		}
 	}
 
@@ -221,21 +236,26 @@ public class QueryRule implements Cloneable {
 	 * Specific constructor for rules that don't have a value or field such as
 	 * LAST
 	 */
-	public QueryRule(Operator operator) {
-		if (operator == Operator.LAST || operator == Operator.AND
-				|| operator == Operator.OR) {
+	public QueryRule(Operator operator)
+	{
+		if (operator == Operator.LAST || operator == Operator.AND || operator == Operator.OR)
+		{
 			this.operator = operator;
-		} else {
-			throw new IllegalArgumentException("QueryRule(): Operator '"
-					+ operator + "' cannot be used without arguments");
+		}
+		else
+		{
+			throw new IllegalArgumentException("QueryRule(): Operator '" + operator
+					+ "' cannot be used without arguments");
 		}
 	}
 
-	public QueryRule(List<QueryRule> rules) {
+	public QueryRule(List<QueryRule> rules)
+	{
 		this(rules.toArray(new QueryRule[rules.size()]));
 	}
 
-	public QueryRule(String field, Operator equals, String value) {
+	public QueryRule(String field, Operator equals, String value)
+	{
 		this(field, equals, (Object) value);
 	}
 
@@ -244,16 +264,19 @@ public class QueryRule implements Cloneable {
 	 * 
 	 * @return The field-name.
 	 */
-	public String getField() {
+	public String getField()
+	{
 		return field;
 	}
 
 	/**
 	 * Returns the field-name as a JPA Attribute
 	 */
-	public String getJpaAttribute() {
-		if(!StringUtils.isEmpty(field)) {
-			return field.substring(0,1).toLowerCase() + field.substring(1);
+	public String getJpaAttribute()
+	{
+		if (!StringUtils.isEmpty(field))
+		{
+			return field.substring(0, 1).toLowerCase() + field.substring(1);
 		}
 		return field;
 	}
@@ -264,7 +287,8 @@ public class QueryRule implements Cloneable {
 	 * @param field
 	 *            The new field-name.
 	 */
-	public void setField(String field) {
+	public void setField(String field)
+	{
 		this.field = field;
 	}
 
@@ -273,7 +297,8 @@ public class QueryRule implements Cloneable {
 	 * 
 	 * @return The operator.
 	 */
-	public Operator getOperator() {
+	public Operator getOperator()
+	{
 		return operator;
 	}
 
@@ -283,7 +308,8 @@ public class QueryRule implements Cloneable {
 	 * @param operator
 	 *            The new operator.
 	 */
-	public void setOperator(Operator operator) {
+	public void setOperator(Operator operator)
+	{
 		this.operator = operator;
 	}
 
@@ -292,7 +318,8 @@ public class QueryRule implements Cloneable {
 	 * 
 	 * @return The value.
 	 */
-	public Object getValue() {
+	public Object getValue()
+	{
 		return value;
 	}
 
@@ -302,7 +329,8 @@ public class QueryRule implements Cloneable {
 	 * @param value
 	 *            The new value.
 	 */
-	public void setValue(Object value) {
+	public void setValue(Object value)
+	{
 		this.value = value;
 	}
 
@@ -311,55 +339,72 @@ public class QueryRule implements Cloneable {
 	 * 
 	 * @return Nested rule set
 	 */
-	public QueryRule[] getNestedRules() {
+	public QueryRule[] getNestedRules()
+	{
 		return nestedRules;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (o != null && o instanceof QueryRule) {
-			final QueryRule r = (QueryRule) o;
-
-			if ((
-					// field
-					r.getField() != null
-					&& r.getField().equals(this.getField()) || r.getField() == this.getField())
-					// operator
-					&& (r.getOperator() != null
-					&& r.getOperator().equals(this.getOperator()) || r.getOperator() == this.getOperator())
-					// value
-					&& (r.getValue() != null
-					&& r.getValue().equals(this.getValue()) || r.getValue() == this.getValue())
-					// nested rules
-					&& (r.getNestedRules() != null
-					&& r.getNestedRules().equals(this.getNestedRules()) || r.getNestedRules() == this.getNestedRules())) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@Override
 	/**
 	 * 
 	 */
-	public String toString() {
-		String result = "";
-		if (this.getOperator().equals(Operator.NESTED)) {
-			result += "(";
+	public String toString()
+	{
+		StringBuilder strBuilder = new StringBuilder();
+		if (this.getOperator().equals(Operator.NESTED))
+		{
+			strBuilder.append('(');
 
-			for (final QueryRule rule : this.getNestedRules()) {
-				result += rule.toString();
+			for (final QueryRule rule : this.getNestedRules())
+			{
+				strBuilder.append(rule.toString());
 			}
-			result += ")";
-		} else {
-			result = (this.getField() == null ? "" : (this.getField() + " "))
-					+ this.getOperator() + (value == null ? "" : " '" + value + "'");
+			strBuilder.append(')');
 		}
+		else
+		{
+			strBuilder.append(this.getField() == null ? "" : (this.getField() + " "));
+			strBuilder.append(this.getOperator()).append(value == null ? "" : " '" + value + "'");
+		}
+		return strBuilder.toString();
+	}
+
+	public static QueryRule eq(String name, Object value)
+	{
+		return new QueryRule(name, Operator.EQUALS, value);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((field == null) ? 0 : field.hashCode());
+		result = prime * result + Arrays.hashCode(nestedRules);
+		result = prime * result + ((operator == null) ? 0 : operator.hashCode());
+		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
 	}
 
-	public static QueryRule eq(String name, Object value) {
-		return new QueryRule(name, Operator.EQUALS, value);
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		QueryRule other = (QueryRule) obj;
+		if (field == null)
+		{
+			if (other.field != null) return false;
+		}
+		else if (!field.equals(other.field)) return false;
+		if (!Arrays.equals(nestedRules, other.nestedRules)) return false;
+		if (operator != other.operator) return false;
+		if (value == null)
+		{
+			if (other.value != null) return false;
+		}
+		else if (!value.equals(other.value)) return false;
+		return true;
 	}
 }

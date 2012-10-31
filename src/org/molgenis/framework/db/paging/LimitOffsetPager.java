@@ -58,10 +58,10 @@ public class LimitOffsetPager<E extends Entity> extends AbstractPager<E>
 		q.addRules(rules);
 		try
 		{
-			for(String fieldName: this.getEntityClass().newInstance().getFields())
+			for (String fieldName : this.getEntityClass().newInstance().getFields())
 			{
-				if(fieldName.equals(Field.TYPE_FIELD))
-					q.equals(Field.TYPE_FIELD, this.getEntityClass().getSimpleName());
+				if (fieldName.equals(Field.TYPE_FIELD)) q.equals(Field.TYPE_FIELD, this.getEntityClass()
+						.getSimpleName());
 			}
 		}
 		catch (InstantiationException e)
@@ -111,7 +111,7 @@ public class LimitOffsetPager<E extends Entity> extends AbstractPager<E>
 				}
 			case LAST:
 				// set it to be the last valid offset
-				if (count > limit) offset = (int)Math.round(Math.floor((count - 1) / limit) * limit);
+				if (count > limit) offset = (int) Math.round(Math.floor((count - 1) / limit) * limit);
 				else
 					offset = 0;
 				logger.debug("handled last, offset: " + offset + ", limit: " + limit + ", count: " + count);

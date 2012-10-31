@@ -2,10 +2,9 @@ package org.molgenis.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -92,11 +91,11 @@ public class MolgenisModelValidator
 				{
 					Field f = new Field(mref);
 					f.setEntity(entity);
-				
+
 					String mrefName = entity.getName() + "_" + f.getName();
-					if(mrefName.length() > 30)
+					if (mrefName.length() > 30)
 					{
-						mrefName = mrefName.substring(0,25) + Integer.toString(mrefName.hashCode()).substring(0,5);
+						mrefName = mrefName.substring(0, 25) + Integer.toString(mrefName.hashCode()).substring(0, 5);
 					}
 					f.setMrefName(mrefName);
 					entity.addField(0, f);
@@ -307,9 +306,6 @@ public class MolgenisModelValidator
 	 */
 	public static void createLinkTablesForMrefs(Model model) throws MolgenisModelException
 	{
-		//renamed mrefs
-		Map<String, String> renamedMrefs = new LinkedHashMap<String,String>();
-		
 		logger.debug("add linktable entities for mrefs...");
 		// find the multi-ref fields
 		for (Entity xref_entity_from : model.getEntities())
@@ -329,13 +325,14 @@ public class MolgenisModelValidator
 
 					// create the new entity for the link, if explicitly named
 					String mref_name = xref_field_from.getMrefName(); // explicit
-					
-					//if mref_name longer than 30 throw error
-					if(mref_name.length() > 30)
+
+					// if mref_name longer than 30 throw error
+					if (mref_name.length() > 30)
 					{
-						throw new MolgenisModelException("mref_name cannot be longer then 30 characters, found: "+mref_name);
+						throw new MolgenisModelException("mref_name cannot be longer then 30 characters, found: "
+								+ mref_name);
 					}
-					
+
 					// check if the mref already exists
 					Entity mrefEntity = null;
 					try
@@ -586,7 +583,7 @@ public class MolgenisModelValidator
 						// 'fieldname_xreflabel'
 						if (xref_label == null)
 						{
-							String validFields = "";
+							StringBuilder validFieldsBuilder = new StringBuilder();
 							Map<String, List<Field>> candidates = field.allPossibleXrefLabels();
 
 							if (candidates.size() == 0)
@@ -601,14 +598,15 @@ public class MolgenisModelValidator
 												+ ". \nCouldn't find suitable secondary keys to use as xref_label. \nDid you set a unique=\"true\" or <unique fields=\" ...>?");
 							}
 
-							for (String validLabel : candidates.keySet())
+							for (Entry<String, List<Field>> entry : candidates.entrySet())
 							{
-								// logger.debug("Checking: "+validLabel);
-								if (xref_label_name.equals(validLabel))
+								String key = entry.getKey();
+								if (xref_label_name.equals(key))
 								{
-									xref_label = candidates.get(validLabel).get(candidates.get(validLabel).size() - 1);
+									List<Field> value = entry.getValue();
+									xref_label = value.get(value.size() - 1);
 								}
-								validFields += "," + validLabel;
+								validFieldsBuilder.append(',').append(key);
 							}
 
 							// still null, must be error
@@ -616,7 +614,7 @@ public class MolgenisModelValidator
 							{
 								throw new MolgenisModelException("xref label '" + xref_label_name
 										+ "' does not exist for field " + entityname + "." + fieldname
-										+ ". Valid labels include " + validFields);
+										+ ". Valid labels include " + validFieldsBuilder.toString());
 							}
 
 						}
@@ -723,15 +721,19 @@ public class MolgenisModelValidator
 			{
 				if (entity.getAllKeys().size() < 2)
 				{
-					//check references
+					// check references
 					boolean ref = false;
-					for(Entity otherEntity: model.getEntities())
+					for (Entity otherEntity : model.getEntities())
 					{
-						for(Field f: otherEntity.getAllFields()){
-							if( (f.getType() instanceof XrefField || f.getType() instanceof MrefField) && entity.getName().equals(f.getXrefEntityName()))
+						for (Field f : otherEntity.getAllFields())
+						{
+							if ((f.getType() instanceof XrefField || f.getType() instanceof MrefField)
+									&& entity.getName().equals(f.getXrefEntityName()))
 							{
-								throw new MolgenisModelException("if primary key is autoid, there should be secondary key for entity '"
-										+ entityname + "' because of reference by "+otherEntity.getName() +"."+f.getName());
+								throw new MolgenisModelException(
+										"if primary key is autoid, there should be secondary key for entity '"
+												+ entityname + "' because of reference by " + otherEntity.getName()
+												+ "." + f.getName());
 							}
 						}
 					}
@@ -1044,13 +1046,14 @@ public class MolgenisModelValidator
 						if (f.getMrefName() == null)
 						{
 							String mrefEntityName = f.getEntity().getName() + "_" + f.getName();
-							
-							//check if longer than 30 characters, then truncate
-							if(mrefEntityName.length()>30) 
+
+							// check if longer than 30 characters, then truncate
+							if (mrefEntityName.length() > 30)
 							{
-								mrefEntityName = mrefEntityName.substring(0, 25) + Integer.toString(mrefEntityName.hashCode()).substring(0, 5);
+								mrefEntityName = mrefEntityName.substring(0, 25)
+										+ Integer.toString(mrefEntityName.hashCode()).substring(0, 5);
 							}
-							
+
 							// paranoia check on uniqueness
 							Entity mrefEntity = null;
 							try
@@ -1059,7 +1062,8 @@ public class MolgenisModelValidator
 							}
 							catch (Exception exc)
 							{
-								throw new MolgenisModelException("mref name for "+f.getEntity().getName() + "." + f.getName()+ " not unique. Please use explicit mref_name=name setting");
+								throw new MolgenisModelException("mref name for " + f.getEntity().getName() + "."
+										+ f.getName() + " not unique. Please use explicit mref_name=name setting");
 							}
 
 							if (mrefEntity != null)

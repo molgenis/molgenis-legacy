@@ -27,7 +27,6 @@ package ${package};
 import org.molgenis.framework.ui.MenuModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.MenuController;
-import org.molgenis.framework.ui.MenuModel;
 
 /**
  *

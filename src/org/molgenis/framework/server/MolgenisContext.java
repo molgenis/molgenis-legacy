@@ -17,14 +17,14 @@ public class MolgenisContext
 	private MolgenisOptions usedOptions;
 	private String variant;
 	private TokenFactory tokenFactory;
-//	private Scheduler scheduler;
+	// private Scheduler scheduler;
 	private SchedulingService schedulingService;
-	
+
 	// other "static" variables here, eg.
 	// molgenis version
 	// date/time of generation
 	// revision number
-	
+
 	public MolgenisContext(ServletConfig sc, DataSource ds, MolgenisOptions usedOptions, String variant)
 	{
 		this.sc = sc;
@@ -32,31 +32,31 @@ public class MolgenisContext
 		this.usedOptions = usedOptions;
 		this.variant = variant;
 		this.tokenFactory = new TokenFactory();
-		
-		//start Quartz scheduler
-//		try
-//		{
-//			this.scheduler = StdSchedulerFactory.getDefaultScheduler();
-//			this.scheduler.start();
-//			System.out.println("Quartz scheduler started");
-//		}
-//		catch (SchedulerException e)
-//		{
-//			System.err.println("FATAL EXCEPTION: failure for starting scheduler in MolgenisContext.");
-//			e.printStackTrace();
-//			System.exit(0);
-//		}
+
+		// start Quartz scheduler
+		// try
+		// {
+		// this.scheduler = StdSchedulerFactory.getDefaultScheduler();
+		// this.scheduler.start();
+		// System.out.println("Quartz scheduler started");
+		// }
+		// catch (SchedulerException e)
+		// {
+		// System.err.println("FATAL EXCEPTION: failure for starting scheduler in MolgenisContext.");
+		// e.printStackTrace();
+		// System.exit(0);
+		// }
 
 		this.schedulingService = new SchedulingService();
-//		try
-//		{
-//			this.schedulingService.start();
-//		}
-//		catch (SchedulerException e)
-//		{
-//			System.err.println("FATAL EXCEPTION: failure for starting scheduler in MolgenisContext.");
-//			e.printStackTrace();
-//		}
+		// try
+		// {
+		// this.schedulingService.start();
+		// }
+		// catch (SchedulerException e)
+		// {
+		// System.err.println("FATAL EXCEPTION: failure for starting scheduler in MolgenisContext.");
+		// e.printStackTrace();
+		// }
 	}
 
 	public SchedulingService getSchedulingService()
@@ -66,9 +66,9 @@ public class MolgenisContext
 
 	public Scheduler getScheduler() throws SchedulerException
 	{
-		StdSchedulerFactory ssf = (StdSchedulerFactory) this.sc.getServletContext().getAttribute("org.quartz.impl.StdSchedulerFactory.KEY");
-		if (ssf != null)
-			return ssf.getScheduler();
+		StdSchedulerFactory ssf = (StdSchedulerFactory) this.sc.getServletContext().getAttribute(
+				"org.quartz.impl.StdSchedulerFactory.KEY");
+		if (ssf != null) return ssf.getScheduler();
 		else
 			throw new SchedulerException("Scheduler not started");
 	}
@@ -87,7 +87,7 @@ public class MolgenisContext
 	{
 		return sc;
 	}
-	
+
 	public ServletContext getServletContext()
 	{
 		return sc.getServletContext();
@@ -107,5 +107,5 @@ public class MolgenisContext
 	{
 		this.usedOptions = usedOptions;
 	}
-	
+
 }

@@ -147,21 +147,22 @@ public class MolgenisXrefService implements MolgenisService
 		for (int i = 0; i < records.size(); i++)
 		{
 			final String key = records.get(i).get(xrefField).toString();
-			String value = "";
+			StringBuilder valueBuilder = new StringBuilder();
 			for (int j = 0; j < xref_labels.size(); j++)
 			{
 				// hack
-				if (j > 0) value += "|";
-				value += records.get(i).get(xref_labels.get(j)).toString();
+				if (j > 0) valueBuilder.append('|');
+				valueBuilder.append(records.get(i).get(xref_labels.get(j)).toString());
 			}
-			values.put(key, value);
+			values.put(key, valueBuilder.toString());
 		}
 
 		// make JSON object string
 		final List<String> keyValuePairs = new ArrayList<String>();
 		for (final Entry<String, String> entry : values.entrySet())
 		{
-			keyValuePairs.add(String.format(JSON_KEY_VALUE, StringEscapeUtils.escapeJavaScript(entry.getKey()), StringEscapeUtils.escapeJavaScript(entry.getValue())));
+			keyValuePairs.add(String.format(JSON_KEY_VALUE, StringEscapeUtils.escapeJavaScript(entry.getKey()),
+					StringEscapeUtils.escapeJavaScript(entry.getValue())));
 		}
 		final String json = String.format("[%s]", StringUtils.join(keyValuePairs, ","));
 		return json;

@@ -15,8 +15,6 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
-import org.apache.log4j.Logger;
-
 /**
  * Write values to an Excel file
  */
@@ -29,50 +27,53 @@ public class XlsWriter implements TupleWriter
 	private WritableFont cellFont;
 	private WritableCellFormat cellFormat;
 	private List<String> headers = new ArrayList<String>();
-	
-	//need to keep track of the rownumber we're writing in!
+
+	// need to keep track of the rownumber we're writing in!
 	public int rowIndex = 1;
-	
-	public XlsWriter(OutputStream writer, List<String> headers) throws WriteException, IOException {
+
+	public XlsWriter(OutputStream writer, List<String> headers) throws WriteException, IOException
+	{
 		this(writer);
 		this.headers = headers;
 	}
-	
+
 	/**
-	 * Construct an Excel writer using a PrintWriter.
-	 * This is the constructor that is used by db.find().
+	 * Construct an Excel writer using a PrintWriter. This is the constructor
+	 * that is used by db.find().
 	 * 
 	 * @param writer
-	 * @throws IOException 
-	 * @throws WriteException 
+	 * @throws IOException
+	 * @throws WriteException
 	 */
-	public XlsWriter(OutputStream outputStream) throws IOException, WriteException {
-		
+	public XlsWriter(OutputStream outputStream) throws IOException, WriteException
+	{
+
 		// Create workbook around the output stream
 		WorkbookSettings ws = new WorkbookSettings();
 		ws.setLocale(new Locale("en", "EN"));
 		this.workbook = Workbook.createWorkbook(outputStream, ws);
 
 		// Format the fonts
-	    this.headerFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD);
-	    this.headerFormat = new WritableCellFormat(headerFont);
-	    this.headerFormat.setWrap(false);
-	    this.cellFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD);
-	    this.cellFormat = new WritableCellFormat(cellFont);
-	    this.cellFormat.setWrap(false);
-	    
-	    // Create a sheet to write in
-	    // TODO: give sheet the name of the entity somehow!!
-	    String sheetName = "untitled";
-	    int sheetIndex = 0;
-	    sheet = workbook.createSheet(sheetName, sheetIndex);
+		this.headerFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD);
+		this.headerFormat = new WritableCellFormat(headerFont);
+		this.headerFormat.setWrap(false);
+		this.cellFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD);
+		this.cellFormat = new WritableCellFormat(cellFont);
+		this.cellFormat.setWrap(false);
+
+		// Create a sheet to write in
+		// TODO: give sheet the name of the entity somehow!!
+		String sheetName = "untitled";
+		int sheetIndex = 0;
+		sheet = workbook.createSheet(sheetName, sheetIndex);
 	}
-	
+
 	@Override
 	public void writeHeader() throws Exception
 	{
 		// Add and store headers
-		for(int i = 0; i < headers.size(); i++){
+		for (int i = 0; i < headers.size(); i++)
+		{
 			String header = headers.get(i);
 			Label l = new Label(i, 0, header, headerFormat);
 			sheet.addCell(l);
@@ -80,19 +81,22 @@ public class XlsWriter implements TupleWriter
 	}
 
 	@Override
-	public void setHeaders(List<String> headers) {
+	public void setHeaders(List<String> headers)
+	{
 		this.headers = headers;
-	}
-	
-	@Override
-	public void writeEndOfLine() {
-		//go to next row
-		
 	}
 
 	@Override
-	public void close() throws Exception {
-		//close the excel file; no writing allowed anymore
+	public void writeEndOfLine()
+	{
+		// go to next row
+
+	}
+
+	@Override
+	public void close() throws Exception
+	{
+		// close the excel file; no writing allowed anymore
 		workbook.write();
 		workbook.close();
 	}
@@ -107,30 +111,32 @@ public class XlsWriter implements TupleWriter
 	 */
 	public void writeMatrix(List<String> rowNames, List<String> colNames, Object[][] elements)
 	{
-		
+
 	}
-	
+
 	@Override
 	public void writeRow(Entity e) throws Exception
 	{
-		for(int i = 0; i < headers.size(); i++){
-			
-			String contents = "";
-			
+		for (int i = 0; i < headers.size(); i++)
+		{
+			StringBuilder contentsBuilder = new StringBuilder();
+
 			Object fieldValue = e.get(headers.get(i));
-			if(fieldValue != null){
-				
+			if (fieldValue != null)
+			{
+
 				if (fieldValue instanceof List<?>)
 				{
 					List<?> list = (List<?>) fieldValue;
 					for (int j = 0; j < list.size(); j++)
 					{
-						if (j != 0) {
-							contents += ",";
+						if (j != 0)
+						{
+							contentsBuilder.append(',');
 						}
 						if (list.get(j) != null)
 						{
-							contents += list.get(j).toString();
+							contentsBuilder.append(list.get(j).toString());
 						}
 						else
 						{
@@ -138,12 +144,14 @@ public class XlsWriter implements TupleWriter
 						}
 					}
 
-				} else {
-					contents = fieldValue.toString();
 				}
-				
+				else
+				{
+					contentsBuilder.append(fieldValue.toString());
+				}
+
 			}
-			Label l = new Label(i, rowIndex, contents, cellFormat);
+			Label l = new Label(i, rowIndex, contentsBuilder.toString(), cellFormat);
 			sheet.addCell(l);
 		}
 		rowIndex++;
@@ -152,7 +160,7 @@ public class XlsWriter implements TupleWriter
 	@Override
 	public void writeRow(Tuple t)
 	{
-		
+
 	}
 
 	@Override

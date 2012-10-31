@@ -14,7 +14,6 @@ package org.molgenis.framework.ui.html;
 
 // jdk
 import java.text.ParseException;
-import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.util.Entity;
@@ -29,13 +28,13 @@ import org.molgenis.util.Tuple;
  */
 public class XrefInput<E extends Entity> extends AbstractRefInput<E>
 {
-	protected XrefInput() {
+	protected XrefInput()
+	{
 		super();
 	}
-	
+
 	/** Minimal constructor */
-	public XrefInput(String name,
-			Class<? extends Entity> xrefEntityClass, E value)
+	public XrefInput(String name, Class<? extends Entity> xrefEntityClass, E value)
 	{
 		super(name, xrefEntityClass, value);
 		setXrefEntity(xrefEntityClass);
@@ -49,8 +48,7 @@ public class XrefInput<E extends Entity> extends AbstractRefInput<E>
 	}
 
 	/** Complete constructor */
-	public XrefInput(String name, String label, E value, Boolean nillable,
-			Boolean readonly, String description,
+	public XrefInput(String name, String label, E value, Boolean nillable, Boolean readonly, String description,
 			Class<? extends Entity> xrefEntityClass)
 	{
 		super(name, xrefEntityClass, label, value, nillable, readonly, description);
@@ -73,38 +71,35 @@ public class XrefInput<E extends Entity> extends AbstractRefInput<E>
 	 */
 	public String getValue()
 	{
-		if (getObject() != null) 
-			return this.getObject().getLabelValue();
+		if (getObject() != null) return this.getObject().getLabelValue();
 		return StringUtils.EMPTY;
 	}
 
 	@Override
-	public String toHtml(Tuple params) throws ParseException,
-			HtmlInputException
+	public String toHtml(Tuple params) throws ParseException, HtmlInputException
 	{
 		return new XrefInput(params).render();
 	}
-	
+
 	public void set(Tuple t) throws HtmlInputException
 	{
 		super.set(t);
-		if (t.isNull(XREF_ENTITY)) throw new HtmlInputException(
-				"parameter " + XREF_ENTITY + " cannot be null");
+		if (t.isNull(XREF_ENTITY)) throw new HtmlInputException("parameter " + XREF_ENTITY + " cannot be null");
 		else
 			this.setXrefEntity(t.getString(XREF_ENTITY));
 	}
 
-	public XrefInput(String name, String entityClassname)
-			throws HtmlInputException, ClassNotFoundException
+	public XrefInput(String name, String entityClassname) throws HtmlInputException, ClassNotFoundException
 	{
 		this(name, (Class<E>) Class.forName(entityClassname), null);
 	}
-	
+
 	@Override
 	protected String renderOptions()
 	{
 		final StringBuilder options = new StringBuilder();
-		if(this.getObject() != null) options.append(String.format("\t<option selected value=\"%s\">%s</option>\n", getObject().getIdValue(), this.getValue()));
+		if (this.getObject() != null) options.append(String.format("\t<option selected value=\"%s\">%s</option>\n",
+				getObject().getIdValue(), this.getValue()));
 		return options.toString();
 	}
 
@@ -112,5 +107,12 @@ public class XrefInput<E extends Entity> extends AbstractRefInput<E>
 	protected String getHtmlRefType()
 	{
 		return "search";
+	}
+
+	@Override
+	public String renderHidden()
+	{
+		Object value = this.getObject() == null ? "" : this.getObject().getIdValue();
+		return "<input name=\"" + this.getName() + "\" type=\"hidden\" value=\"" + value + "\"/>";
 	}
 }

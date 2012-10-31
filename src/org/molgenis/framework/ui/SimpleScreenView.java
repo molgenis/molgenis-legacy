@@ -22,7 +22,7 @@ public abstract class SimpleScreenView<M extends ScreenModel> implements ScreenV
 {
 	String customHtmlHeaders = "";
 	M model = null;
-	
+
 	public SimpleScreenView(M model)
 	{
 		this.model = model;

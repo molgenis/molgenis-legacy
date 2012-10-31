@@ -2,7 +2,7 @@
   <head>
     <script src="js/codemirror.js" type="text/javascript"></script>
     <title>CodeMirror: Sparql demonstration</title>
-    <link rel="stylesheet" type="text/css" href="css/docs.css"/>
+    <link rel="stylesheet" type="text/css" href="css/docs.css"></link>
   </head>
   <body style="padding: 20px;">
 
@@ -11,15 +11,15 @@ highlighter.</p>
 
 <div style="border-top: 1px solid black; border-bottom: 1px solid black;">
 <textarea id="code" cols="120" rows="30">
-PREFIX a: &lt;http://www.w3.org/2000/10/annotation-ns#>
-PREFIX dc: &lt;http://purl.org/dc/elements/1.1/>
-PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/>
+PREFIX a: &lt;http://www.w3.org/2000/10/annotation-ns#&gt;
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
 
 # Comment!
 
 SELECT ?given ?family
 WHERE {
-  ?annot a:annotates &lt;http://www.w3.org/TR/rdf-sparql-query/> .
+  ?annot a:annotates &lt;http://www.w3.org/TR/rdf-sparql-query/&gt; .
   ?annot dc:creator ?c .
   OPTIONAL {?c foaf:given ?given ;
                foaf:family ?family } .

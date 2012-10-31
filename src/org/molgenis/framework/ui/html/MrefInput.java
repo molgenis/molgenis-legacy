@@ -23,10 +23,9 @@ import org.molgenis.util.Tuple;
  * loaded dynamically via an 'ajax' service.
  */
 public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
-{	
+{
 	/** Minimal constructor */
-	public MrefInput(String name, Class<? extends Entity> xrefEntityClass,
-			List<E> dummyList)
+	public MrefInput(String name, Class<? extends Entity> xrefEntityClass, List<E> dummyList)
 	{
 		super(name, xrefEntityClass, dummyList);
 		setXrefEntity(xrefEntityClass);
@@ -57,16 +56,16 @@ public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
 	 * @throws ClassNotFoundException
 	 * @throws ClassNotFoundException
 	 */
-//	@Deprecated
-//	public MrefInput(String name, String entityName) throws HtmlInputException
-//	{
-//		super(name, entityName);
-//	}
+	// @Deprecated
+	// public MrefInput(String name, String entityName) throws
+	// HtmlInputException
+	// {
+	// super(name, entityName);
+	// }
 
 	/** Complete constructor */
 	@Deprecated
-	public MrefInput(String name, String label, List<E> values,
-			Boolean nillable, Boolean readonly, String description,
+	public MrefInput(String name, String label, List<E> values, Boolean nillable, Boolean readonly, String description,
 			Class<? extends Entity> xrefEntityClass)
 	{
 		super(name, xrefEntityClass, label, values, nillable, readonly, description);
@@ -77,14 +76,14 @@ public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
 	 * Alternative complete constructor using String name of entityClass
 	 * 
 	 * @throws HtmlInputException
-	 * @throws ClassNotFoundException 
+	 * @throws ClassNotFoundException
 	 */
 	@Deprecated
-	public MrefInput(String name, String label, List<E> values,
-			Boolean nillable, Boolean readonly, String description,
+	public MrefInput(String name, String label, List<E> values, Boolean nillable, Boolean readonly, String description,
 			String xrefEntityClass) throws HtmlInputException, ClassNotFoundException
 	{
-		super(name, (Class<? extends Entity>) Class.forName(xrefEntityClass) ,label, values, nillable, readonly, description);
+		super(name, (Class<? extends Entity>) Class.forName(xrefEntityClass), label, values, nillable, readonly,
+				description);
 		setXrefEntity(xrefEntityClass);
 	}
 
@@ -94,7 +93,7 @@ public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
 	 * @throws HtmlInputException
 	 */
 	public MrefInput(Tuple t) throws HtmlInputException
-	{	
+	{
 		super(t);
 	}
 
@@ -109,16 +108,15 @@ public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
 	 */
 	public String getValue()
 	{
-		String result = "";
+		StringBuilder strBuilder = new StringBuilder();
 		for (Entity value : getObject())
 		{
-			if (result.toString().equals("")) result += value.getLabelValue();
+			if (strBuilder.length() == 0) strBuilder.append(value.getLabelValue());
 			else
-				result += ", " + value.getLabelValue();
+				strBuilder.append(", ").append(value.getLabelValue());
 		}
-		return result;
+		return strBuilder.toString();
 	}
-
 
 	@Override
 	public String toHtml(Tuple params) throws HtmlInputException
@@ -130,22 +128,34 @@ public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
 	protected String renderOptions()
 	{
 		final String option = "\t<option selected value=\"%s\">%s</option>\n";
-		
+
 		final StringBuilder result = new StringBuilder();
 		for (Entity value : getObject())
 		{
-			result.append(
-					String.format(option, value.getIdValue(), value.getLabelValue())
-			);
+			result.append(String.format(option, value.getIdValue(), value.getLabelValue()));
 		}
-		
-		return result.toString(); 
+
+		return result.toString();
 	}
 
 	@Override
 	protected String getHtmlRefType()
 	{
 		return "multiple";
+	}
+
+	@Override
+	public String renderHidden()
+	{
+		StringBuilder strBuilder = new StringBuilder();
+
+		for (E object : this.getObject())
+		{
+			strBuilder.append("<input name=\"").append(this.getName()).append("\" type=\"hidden\" value=\"");
+			strBuilder.append(object.getIdValue()).append("\"/>");
+		}
+
+		return strBuilder.toString();
 	}
 
 }

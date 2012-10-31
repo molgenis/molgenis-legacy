@@ -26,8 +26,7 @@ import org.molgenis.util.Tuple;
 public class AddCsvFileCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = -4067952586340535730L;
-	public static final transient Logger logger = Logger
-			.getLogger(AddCsvFileCommand.class);
+	public static final transient Logger logger = Logger.getLogger(AddCsvFileCommand.class);
 
 	public AddCsvFileCommand(String name, ScreenController<?> owner)
 	{
@@ -61,8 +60,7 @@ public class AddCsvFileCommand<E extends Entity> extends SimpleCommand
 	public List<HtmlInput<?>> getInputs() throws DatabaseException
 	{
 		// delegate to the formscreen
-		List<HtmlInput<?>> inputs = this.getFormScreen().getNewRecordForm()
-				.getInputs();
+		List<HtmlInput<?>> inputs = this.getFormScreen().getNewRecordForm().getInputs();
 
 		// remove not-null constraints
 		for (HtmlInput<?> i : inputs)
@@ -79,8 +77,7 @@ public class AddCsvFileCommand<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request,
-			OutputStream downloadStream) throws Exception
+	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
 	{
 		logger.debug(this.getName());
 
@@ -90,27 +87,22 @@ public class AddCsvFileCommand<E extends Entity> extends SimpleCommand
 			ScreenMessage msg = null;
 			try
 			{
-				CsvToDatabase<? extends Entity> csvReader = this
-						.getFormScreen().getCsvReader();
+				CsvToDatabase<? extends Entity> csvReader = this.getFormScreen().getCsvReader();
 
-				int updatedRows = csvReader.importCsv(db, new CsvFileReader(
-						request.getFile("filefor___csvdata")), request,
-						DatabaseAction.ADD);
+				int updatedRows = csvReader.importCsv(db, new CsvFileReader(request.getFile("filefor___csvdata")),
+						request, DatabaseAction.ADD);
 				// for (E entity : entities)
 				// logger.debug("parsed: " + entity);
 				// view.getDatabase().add(entities);
-				msg = new ScreenMessage("CSV UPLOAD SUCCESS: added "
-						+ updatedRows + " rows", null, true);
-				logger.debug("CSV UPLOAD SUCCESS: added " + updatedRows
-						+ " rows");
+				msg = new ScreenMessage("CSV UPLOAD SUCCESS: added " + updatedRows + " rows", null, true);
+				logger.debug("CSV UPLOAD SUCCESS: added " + updatedRows + " rows");
 				getFormScreen().getPager().resetFilters();
 				getFormScreen().getPager().last(db);
 			}
 			catch (Exception e)
 			{
 				e.printStackTrace();
-				msg = new ScreenMessage("CSV UPLOAD FAILED: " + e.getMessage(),
-						null, false);
+				msg = new ScreenMessage("CSV UPLOAD FAILED: " + e.getMessage(), null, false);
 				logger.error("CSV UPLOAD FAILED: " + e.getMessage());
 			}
 			getFormScreen().getMessages().add(msg);

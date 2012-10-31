@@ -9,8 +9,7 @@ public class PStatementMapperGen extends ForEachEntityGenerator
 	{
 		return "Generates database mappers for each entity (concrete class per table). Uses prepared statements.";
 	}
-	
-	
+
 	@Override
 	public String getType()
 	{

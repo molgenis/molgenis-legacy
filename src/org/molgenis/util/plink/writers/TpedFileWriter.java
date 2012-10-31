@@ -12,7 +12,7 @@ import org.molgenis.util.plink.datatypes.TpedEntry;
 public class TpedFileWriter
 {
 	private CsvFileWriter writer;
-	
+
 	public TpedFileWriter(File tpedFile) throws Exception
 	{
 		writer = new CsvFileWriter(tpedFile);
@@ -20,38 +20,44 @@ public class TpedFileWriter
 		writer.setSeparator(" ");
 		writer.setListSeparator(" ");
 	}
-	
+
 	/**
 	 * Close the underlying writer.
 	 */
-	public void close(){
+	public void close()
+	{
 		writer.close();
 	}
-	
+
 	/**
 	 * Write a single entry.
 	 */
-	public void writeSingle(TpedEntry tped){
+	public void writeSingle(TpedEntry tped)
+	{
 		writer.writeRow(TpedEntry.tpedToTuple(tped));
 	}
-	
+
 	/**
 	 * Write multiple entries in order.
 	 */
-	public void writeMulti(List<TpedEntry> tpeds){
-		for(TpedEntry tped : tpeds){
+	public void writeMulti(List<TpedEntry> tpeds)
+	{
+		for (TpedEntry tped : tpeds)
+		{
 			writer.writeRow(TpedEntry.tpedToTuple(tped));
 		}
 	}
-	
+
 	/**
 	 * Write all entries and close the writer.
 	 */
-	public void writeAll(List<TpedEntry> tpeds){
-		for(TpedEntry tped : tpeds){
+	public void writeAll(List<TpedEntry> tpeds)
+	{
+		for (TpedEntry tped : tpeds)
+		{
 			writer.writeRow(TpedEntry.tpedToTuple(tped));
 		}
 		writer.close();
 	}
-	
+
 }

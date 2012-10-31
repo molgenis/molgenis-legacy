@@ -18,8 +18,7 @@ public class PasswordInput extends ValidatingInput<String>
 		super(name, value);
 	}
 
-	public PasswordInput(String name, String label, String value,
-			Boolean readonly, Boolean nillable, String description)
+	public PasswordInput(String name, String label, String value, Boolean readonly, Boolean nillable, String description)
 	{
 		super(name, label, value, readonly, nillable, description);
 	}
@@ -32,8 +31,7 @@ public class PasswordInput extends ValidatingInput<String>
 	@Override
 	public String toHtml()
 	{
-		String readonly = (this.isReadonly()) ? "readonly class=\"readonly\" "
-				: "";
+		String readonly = (this.isReadonly()) ? "readonly class=\"readonly\" " : "";
 
 		if (this.isHidden())
 		{
@@ -44,36 +42,29 @@ public class PasswordInput extends ValidatingInput<String>
 
 		if (this.uiToolkit.equals(UiToolkit.ORIGINAL))
 		{
-			return "<input type=\"password\" id=\"" + getId() + "\" name=\""
-					+ getName() + "\" value=\"" + getValue() + "\" " + readonly
-					+ tabIndex + " />";
+			return "<input type=\"password\" id=\"" + getId() + "\" name=\"" + getName() + "\" value=\"" + getValue()
+					+ "\" " + readonly + tabIndex + " />";
 		}
 		else
 		{
 
-			String validate = this.isNillable() || this.isReadonly() ? ""
-					: " required";
+			String validate = this.isNillable() || this.isReadonly() ? "" : " required";
 			String cssClass = this.uiToolkit == UiToolkit.JQUERY ? " class=\"text ui-widget-content ui-corner-all"
-					+ validate + " " + readonly + "\""
-					: "";
+					+ validate + " " + readonly + "\"" : "";
 			String result = "<input type=\"password\""
-				+ cssClass
-				+ " id=\""
-				+ this.getId()
-				+ "\" name=\""
-				+ this.getName()
-				+ "\"  "
-				+ (this.getSize() != null && this.getSize() > 0 ? "onfocus=\"startcounter(this, "
-						+ getSize() + ")\" onblur=\"endcounter()\""
-						: "") + readonly + " value=\"" + this.getValue()
-				+ "\">";
+					+ cssClass
+					+ " id=\""
+					+ this.getId()
+					+ "\" name=\""
+					+ this.getName()
+					+ "\"  "
+					+ (this.getSize() != null && this.getSize() > 0 ? "onfocus=\"startcounter(this, " + getSize()
+							+ ")\" onblur=\"endcounter()\"" : "") + readonly + " value=\"" + this.getValue() + "\">";
 
-		result += "<script>$('#" + this.getId()
-				+ "').autoGrowInput({comfortZone: 16, minWidth:" + this.getWidth()
-				* this.getFontsize() + ", maxWidth: " + this.getMaxWidth()
-				* this.getFontsize() + "});</script>";
+			result += "<script>$('#" + this.getId() + "').autoGrowInput({comfortZone: 16, minWidth:" + this.getWidth()
+					* this.getFontsize() + ", maxWidth: " + this.getMaxWidth() * this.getFontsize() + "});</script>";
 
-		return result;
+			return result;
 		}
 
 	}

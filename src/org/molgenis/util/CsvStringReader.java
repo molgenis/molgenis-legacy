@@ -6,29 +6,50 @@ import java.io.StringReader;
 import java.util.zip.DataFormatException;
 
 /**
- * CsvReader for a delimited text String.
+ * CSV reader for <a href="http://tools.ietf.org/html/rfc4180">comma-separated
+ * value Strings</a>
  * 
  * @see org.molgenis.util.CsvReader#parse
  */
 public class CsvStringReader extends CsvBufferedReaderMultiline
-{	
-	private String string;
-	
+{
+	/** Input comma-separated value String */
+	private String csvString;
+
 	/**
 	 * Construct the CsvReader for a String.
-	 * @param csvString 
-	 * @throws DataFormatException 
-	 * @throws IOException 
+	 * 
+	 * @param csvString
+	 * @throws DataFormatException
+	 * @throws IOException
 	 */
-	public CsvStringReader(String csvString) throws IOException, DataFormatException
+	public CsvStringReader(String csvString) throws IOException
 	{
-		super(new BufferedReader(new StringReader(csvString)));
-		this.string = csvString;
+		this(csvString, true);
+
 	}
-	
-	public void reset() throws IOException, DataFormatException
+
+	/**
+	 * Construct the CsvReader for a String.
+	 * 
+	 * @param csvString
+	 * @throws DataFormatException
+	 * @throws IOException
+	 */
+	public CsvStringReader(String csvString, boolean hasHeader) throws IOException
 	{
-		this.reader = new BufferedReader(new StringReader(string));
+		super();
+		if (csvString == null) throw new IllegalArgumentException("csvString is null");
+		this.csvString = csvString;
+		this.hasHeader = hasHeader;
+		this.reset();
+	}
+
+	@Override
+	public void reset() throws IOException
+	{
+		if (this.reader != null) this.reader.close();
+		this.reader = new BufferedReader(new StringReader(csvString));
 		super.reset();
 	}
 }

@@ -12,7 +12,7 @@ public class NsequenceInput extends TextInput
 		super.setWidth(100);
 		super.setHeight(6);
 	}
-	
+
 	public NsequenceInput(String name)
 	{
 		this(name, null);
@@ -22,38 +22,34 @@ public class NsequenceInput extends TextInput
 	public String getValue()
 	{
 		String value = "";
-		if( getObject() == null )
-			return value;
-		
-		value = getObject().toString();		
-		String newvalue = "";
-		
-		for (int i = 0; i < value.length(); i+=80)
+		if (getObject() == null) return value;
+
+		value = getObject().toString();
+		StringBuilder newvalueBuilder = new StringBuilder();
+
+		for (int i = 0; i < value.length(); i += 80)
 		{
-			String line = (i+80 < value.length()) ? value.substring(i, i+80) : value.substring(i, value.length());			
-			String newline = "";
-			if (i < 10)
-				newline += "&nbsp;";
-			if (i < 100)
-				newline += "&nbsp;";
-			if (i < 1000)
-				newline += "&nbsp;";
-			newline += (i+1);
-			
-			for (int j = 0; j < line.length(); j+=10)
+			String line = (i + 80 < value.length()) ? value.substring(i, i + 80) : value.substring(i, value.length());
+			StringBuilder newlineBuilder = new StringBuilder();
+			if (i < 10) newlineBuilder.append("&nbsp;");
+			if (i < 100) newlineBuilder.append("&nbsp;");
+			if (i < 1000) newlineBuilder.append("&nbsp;");
+			newlineBuilder.append(i + 1);
+
+			for (int j = 0; j < line.length(); j += 10)
 			{
-				String part = (j+10 < line.length()) ? line.substring(j, j+10) : line.substring(j, line.length());
-				newline += "&nbsp;" + part;				
+				String part = (j + 10 < line.length()) ? line.substring(j, j + 10) : line.substring(j, line.length());
+				newlineBuilder.append("&nbsp;").append(part);
 			}
-			newvalue += newline + "\n";
+			newvalueBuilder.append(newlineBuilder).append('\n');
 		}
-		
-		return newvalue;
+
+		return newvalueBuilder.toString();
 	}
-	
+
 	public String getHtmlValue()
 	{
-		return "<span class=\"seqQual\">" + this.getValue().replace("\n","<br>") + "</span>";
+		return "<span class=\"seqQual\">" + this.getValue().replace("\n", "<br>") + "</span>";
 	}
 
 }

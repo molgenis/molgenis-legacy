@@ -8,7 +8,7 @@ public abstract class EasyPluginView<M extends EasyPluginModel> extends SimpleSc
 	{
 		super(model);
 	}
-	
+
 	public abstract HtmlElement getInputs(M model);
 
 	@Override

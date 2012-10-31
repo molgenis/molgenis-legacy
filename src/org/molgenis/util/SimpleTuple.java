@@ -12,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
@@ -105,9 +106,9 @@ public class SimpleTuple implements Tuple
 
 	public SimpleTuple(Map<String, Object> valueMap)
 	{
-		for (String key : valueMap.keySet())
+		for (Entry<String, Object> entry : valueMap.entrySet())
 		{
-			this.set(key, valueMap.get(key));
+			this.set(entry.getKey(), entry.getValue());
 		}
 	}
 
@@ -309,13 +310,15 @@ public class SimpleTuple implements Tuple
 	public Boolean getBoolean(int column)
 	{
 		if (getObject(column) == null || getString(column).equals("")) return null;
-		return Boolean.valueOf(getString(column).toLowerCase().equals("true") || getString(column).trim().equals("1"));
+		return Boolean.valueOf(getString(column).toLowerCase().equals("true") || getString(column).trim().equals("1")
+				|| getString(column).trim().equalsIgnoreCase("on"));
 	}
 
 	public Boolean getBoolean(String column)
 	{
 		if (getObject(column) == null || getString(column).equals("")) return null;
-		return Boolean.valueOf(getString(column).toLowerCase().equals("true") || getString(column).trim().equals("1"));
+		return Boolean.valueOf(getString(column).toLowerCase().equals("true") || getString(column).trim().equals("1")
+				|| getString(column).trim().equalsIgnoreCase("on"));
 	}
 
 	public Double getDecimal(int column)
@@ -405,16 +408,16 @@ public class SimpleTuple implements Tuple
 
 		String result = this.getString(column);
 		String[] lines = result.split("\\n");
-		String cleanresult = "";
+		StringBuilder cleanresultBuilder = new StringBuilder();
 		for (int i = 0; i < lines.length; i++)
 		{
 			String line = lines[i];
 			line = line.replaceAll("\\s", "");
 			line = line.replaceAll("^[0-9]*", "");
-			cleanresult += line;
+			cleanresultBuilder.append(line);
 		}
 
-		result = cleanresult;
+		result = cleanresultBuilder.toString();
 
 		Vector<Integer> nonIUBpos = new Vector<Integer>();
 
@@ -427,12 +430,15 @@ public class SimpleTuple implements Tuple
 		}
 		if (nonIUBpos.size() > 0)
 		{
-			String invalid = "there are " + nonIUBpos.size() + " non-IUB characters in your sequence.";
+			StringBuilder invalidBuilder = new StringBuilder();
+			invalidBuilder.append("there are ").append(nonIUBpos.size())
+					.append(" non-IUB characters in your sequence.");
 			for (Integer pos : nonIUBpos)
 			{
-				invalid += " '" + result.charAt(pos) + "' on position " + (pos + 1) + ".";
+				invalidBuilder.append(" '").append(result.charAt(pos)).append("' on position ");
+				invalidBuilder.append(pos + 1).append('.');
 			}
-			throw new ParseException(invalid, 0);
+			throw new ParseException(invalidBuilder.toString(), 0);
 		}
 		return result;
 	}
@@ -457,7 +463,7 @@ public class SimpleTuple implements Tuple
 
 	public java.sql.Date getDate(int column) throws ParseException
 	{
-		if (this.getObject(column) == null || this.getString(column) == "") return null;
+		if (this.getObject(column) == null || this.getString(column).equals("")) return null;
 		if (this.getObject(column) instanceof java.sql.Date) return (java.sql.Date) this.getObject(column);
 		if (this.getObject(column) instanceof java.sql.Timestamp) return (java.sql.Date) this.getObject(column);
 		if (this.getObject(column) instanceof java.util.Date) return new java.sql.Date(
@@ -494,7 +500,7 @@ public class SimpleTuple implements Tuple
 
 	public java.sql.Date getDate(String column) throws ParseException
 	{
-		if (this.getObject(column) == null || this.getString(column) == "") return null;
+		if (this.getObject(column) == null || this.getString(column).equals("")) return null;
 		if (this.getObject(column) instanceof java.sql.Date) return (java.sql.Date) this.getObject(column);
 		if (this.getObject(column) instanceof java.sql.Timestamp) return (java.sql.Date) this.getObject(column);
 		if (this.getObject(column) instanceof java.util.Date) return new java.sql.Date(
@@ -543,25 +549,24 @@ public class SimpleTuple implements Tuple
 	public String toString()
 	{
 		if (this.getNrColumns() == 0) return "EMPTY TUPLE";
-		String result = "";
+		StringBuilder resultBuilder = new StringBuilder();
 		for (int columnIndex = 0; columnIndex < this.getNrColumns(); columnIndex++)
 		{
 			if (getColName(columnIndex) != null)
 			{
-				result += getColName(columnIndex) + "='" + getObject(columnIndex)
-
-				+ "' ";
+				resultBuilder.append(getColName(columnIndex)).append("='");
+				resultBuilder.append(getObject(columnIndex)).append("' ");
 			}
 			else
 			{
-				result += columnIndex + "='" + getObject(columnIndex) + "' ";
+				resultBuilder.append(columnIndex).append("='").append(getObject(columnIndex)).append("' ");
 			}
 		}
-		if (result.length() > 0)
+		if (resultBuilder.length() > 0)
 		{
-			result = result.substring(0, result.length() - 1);
+			resultBuilder.deleteCharAt(resultBuilder.length() - 1);
 		}
-		return result;
+		return resultBuilder.toString();
 	}
 
 	public File getFile(String string)
@@ -578,7 +583,7 @@ public class SimpleTuple implements Tuple
 
 	public Timestamp getTimestamp(String column) throws ParseException
 	{
-		if (this.getObject(column) == null || this.getString(column) == "") return null;
+		if (this.getObject(column) == null || this.getString(column).equals("")) return null;
 		if (this.getObject(column) instanceof java.sql.Timestamp) return (java.sql.Timestamp) this.getObject(column);
 		try
 		{
@@ -622,7 +627,7 @@ public class SimpleTuple implements Tuple
 
 	public Timestamp getTimestamp(int column) throws ParseException
 	{
-		if (this.getObject(column) == null || this.getString(column) == "") return null;
+		if (this.getObject(column) == null || this.getString(column).equals("")) return null;
 		if (this.getObject(column) instanceof java.sql.Timestamp) return (java.sql.Timestamp) this.getObject(column);
 		try
 		{

@@ -8,21 +8,24 @@ import org.molgenis.util.Tuple;
 public class TpedEntry extends MapEntry
 {
 
-	//list iterates individuals, so 1 list per SNP
-	//NOTE: this is the inverse of PED format!
+	// list iterates individuals, so 1 list per SNP
+	// NOTE: this is the inverse of PED format!
 	List<Biallele> bialleles;
-	
+
 	public TpedEntry(String chromosome, String SNP, double cM, long bpPos, List<Biallele> bialleles)
 	{
 		super(chromosome, SNP, cM, bpPos);
 		this.bialleles = bialleles;
 	}
 
-	public static String[] tpedHeader(){
-		return new String[]{"chr", "snp", "cm", "bp", "bial"};
+	public static String[] tpedHeader()
+	{
+		return new String[]
+		{ "chr", "snp", "cm", "bp", "bial" };
 	}
-	
-	public static Tuple tpedToTuple(TpedEntry tped){
+
+	public static Tuple tpedToTuple(TpedEntry tped)
+	{
 		Tuple t = new SimpleTuple();
 		t.set("chr", tped.getChromosome());
 		t.set("snp", tped.getSNP());
@@ -37,7 +40,4 @@ public class TpedEntry extends MapEntry
 		return bialleles;
 	}
 
-
-	
-	
 }

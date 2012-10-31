@@ -19,6 +19,8 @@ package ${package};
 
 public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.AbstractJpaMapper<${entity.namespace}.${JavaName(entity)}>
 {
+	private final static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(${JavaName(entity)}JpaMapper.class);
+
 	public ${JavaName(entity)}JpaMapper(org.molgenis.framework.db.Database db) 
 	{
 		super(db);
@@ -253,7 +255,7 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 			${entity.namespace}.${JavaName(entity)} persistent${JavaName(entity)} = getEntityManager().find(${entity.namespace}.${JavaName(entity)}.class, ${name(entity)}.getIdValue());
 
 
-<#foreach field in entity.getImplementedFields()>
+<#foreach field in entity.getAllFields()>
 	<#assign type_label = field.getType().toString()>
 
 	<#if type_label == "xref" || type_label == "mref">
@@ -284,7 +286,7 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 				if(m.get${Name(pkey(field.getXrefEntity()))}() == null) {
 					getEntityManager().persist(m);
 				}
-				m.get${JavaName(fieldName)}<#if numRef &gt; 1 >${Name(entity)}</#if>Collection().add(${name(entity)});
+				m.get${JavaName(fieldName)}<#if numRef &gt; 1 >${Name(field.getEntity())}</#if>Collection().add(${name(entity)});
 			}
 			
 			for(${pkeyJavaType(field.getXrefEntity())} id : ${name(entity)}.get${JavaName(fieldName)}_Id()) {
@@ -361,7 +363,16 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 				create(${name(entity)});
 				++count;
 			}
-		} 
+		}
+		catch (org.hibernate.exception.SQLGrammarException sge)
+		{
+			log.error("Message: " + sge.getMessage());
+			log.error("SQL: " + sge.getSQL());
+			log.error("SQLState: " + sge.getSQLState());
+			log.error("SQLException: " + sge.getSQLException());
+			sge.printStackTrace();
+			throw new org.molgenis.framework.db.DatabaseException(sge);
+		}
 		catch (Exception ex) 
 		{
             throw new org.molgenis.framework.db.DatabaseException(ex);

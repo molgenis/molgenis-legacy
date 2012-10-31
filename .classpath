@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test/resources"/>
+	<classpathentry kind="src" path="test/java"/>
+	<classpathentry excluding="org/molgenis/framework/ui/res/lib/" kind="src" path="src"/>
+	<classpathentry kind="src" path="generated/java"/>
+	<classpathentry kind="src" path="generated/test/java"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="lib/ant-apache-log4j.jar">
@@ -83,7 +87,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/freemarker.jar" sourcepath="/Users/jorislops/.m2/repository/org/freemarker/freemarker/2.3.16/freemarker-2.3.16-sources.jar">
+	<classpathentry exported="true" kind="lib" path="lib/freemarker.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -443,7 +447,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/hibernate/hibernate-jpa-2.0-api-1.0.0.Final.jar" sourcepath="/Users/jorislops/.m2/repository/org/hibernate/javax/persistence/hibernate-jpa-2.0-api/1.0.0.Final/hibernate-jpa-2.0-api-1.0.0.Final-sources.jar">
+	<classpathentry exported="true" kind="lib" path="lib/hibernate/hibernate-jpa-2.0-api-1.0.0.Final.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -528,11 +532,19 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/cxf-bundle-minimal-2.5.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/selenium-server-standalone-2.19.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/tjws-1.98.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib/selenium-server-standalone-2.25.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/simplecaptcha-1.2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/keggapi.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mindterm.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.semanticweb.HermiT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ontocat-0.9.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mockito-all-1.9.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-email-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/findbugs-2.0.1/lib/annotations.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

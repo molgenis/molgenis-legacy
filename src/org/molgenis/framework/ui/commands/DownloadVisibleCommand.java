@@ -21,8 +21,9 @@ import org.molgenis.util.Tuple;
 
 /**
  * This command downloads the records currently shown as csv.
+ * 
  * @author Morris Swertz
- *
+ * 
  * @param <E>
  */
 public class DownloadVisibleCommand extends SimpleCommand
@@ -30,7 +31,7 @@ public class DownloadVisibleCommand extends SimpleCommand
 	private static final long serialVersionUID = -6279819301321361448L;
 	public static final transient Logger logger = Logger.getLogger(DownloadVisibleCommand.class);
 
-	public DownloadVisibleCommand(String name, ScreenController<?>  parentScreen)
+	public DownloadVisibleCommand(String name, ScreenController<?> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setDownload(true);
@@ -43,10 +44,11 @@ public class DownloadVisibleCommand extends SimpleCommand
 	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream csvDownload) throws Exception
 	{
 		FormModel<?> view = this.getFormScreen();
-		List<String> fieldsToExport = ((FormController<?>)this.getController()).getVisibleColumnNames();
+		List<String> fieldsToExport = ((FormController<?>) this.getController()).getVisibleColumnNames();
 		CsvWriter writer = new CsvWriter(csvDownload, fieldsToExport);
 		writer.writeHeader();
-		for(Entity e: view.getRecords()) writer.writeRow(e);
+		for (Entity e : view.getRecords())
+			writer.writeRow(e);
 		writer.close();
 		return ScreenModel.Show.SHOW_MAIN;
 	}

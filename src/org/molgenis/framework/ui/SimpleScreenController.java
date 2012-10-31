@@ -15,9 +15,6 @@ package org.molgenis.framework.ui;
 import java.io.IOException;
 import java.io.Serializable;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.html.HtmlInputException;
@@ -29,9 +26,8 @@ import org.molgenis.util.SimpleTree;
  * Base-class for a screen displaying information from the invengine system to
  * the user.
  */
-public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
-		SimpleTree<ScreenController<?>> implements ScreenController<MODEL>,
-		Serializable
+public abstract class SimpleScreenController<MODEL extends ScreenModel> extends SimpleTree<ScreenController<?>>
+		implements ScreenController<MODEL>, Serializable
 {
 	// member variables
 	/** */
@@ -48,8 +44,7 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 	// private String viewName;
 
 	// constructor
-	public SimpleScreenController(String name, MODEL model,
-			ScreenController<?> parent)
+	public SimpleScreenController(String name, MODEL model, ScreenController<?> parent)
 	{
 		super(name, parent);
 		this.model = model;
@@ -67,8 +62,6 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 	 */
 	public abstract void reload(Database db) throws Exception;
 
-	
-	
 	/**
 	 * This is the actual control-method, which changes the view. The view
 	 * itself may delegate requests to other objects (e.g. delegate insert to
@@ -77,10 +70,11 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 	 * 
 	 * @param request
 	 *            The http-request in a convenient map.
-	 * @throws HandleRequestDelegationException 
-	 * @throws Exception 
+	 * @throws HandleRequestDelegationException
+	 * @throws Exception
 	 */
-	//public abstract void handleRequest(Database db, Tuple request) throws Exception, HandleRequestDelegationException;
+	// public abstract void handleRequest(Database db, Tuple request) throws
+	// Exception, HandleRequestDelegationException;
 
 	// public String getFromRequest(Tuple request, String name)
 	// {
@@ -164,14 +158,13 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		String result = "";
+		StringBuilder resultBuilder = new StringBuilder();
 		for (ScreenController<?> c : this.getChildren())
 		{
-			result += "<!--custom html headers: " + c.getName() + "-->";
-			result += c.getCustomHtmlHeaders();
+			resultBuilder.append("<!--custom html headers: ").append(c.getName()).append("-->");
+			resultBuilder.append(c.getCustomHtmlHeaders());
 		}
-
-		return result;
+		return resultBuilder.toString();
 	}
 
 	@Override
@@ -183,14 +176,12 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 	@Override
 	public String getCustomHtmlBodyOnLoad()
 	{
-		String result = "";
+		StringBuilder resultBuilder = new StringBuilder();
 		for (ScreenController<?> c : this.getChildren())
 		{
-			//result += "<!--custom body onload: " + c.getName() + "-->";
-			result += c.getCustomHtmlBodyOnLoad();
+			resultBuilder.append(c.getCustomHtmlBodyOnLoad());
 		}
-
-		return result;
+		return resultBuilder.toString();
 	}
 
 	/**
@@ -231,9 +222,9 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 	public String render() throws HtmlInputException
 	{
 		String result = this.getView().render();
-		if(result == null || "".equals(result))
+		if (result == null || "".equals(result))
 		{
-			throw new HtmlInputException("render showed nothing for "+this);
+			throw new HtmlInputException("render showed nothing for " + this);
 		}
 		return result;
 	}
@@ -242,19 +233,13 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 	// public void setParent(Object parent)
 	// {
 	// // TODO Auto-generated method stub
-	//		
+	//
 	// }
-	
+
 	@Override
 	public Database getDatabase()
 	{
 		return this.getApplicationController().getDatabase();
-	}
-	
-	@Override
-	public String getApplicationUrl()
-	{
-		return this.getApplicationController().getApplicationUrl();
 	}
 
 }

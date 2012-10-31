@@ -189,7 +189,7 @@ public class CsvExport
 		if(db.count(${JavaName(entity)}.class<#if entity.hasAncestor() || entity.isRootAncestor()>, new QueryRule("${typefield()}",Operator.EQUALS, "${Name(entity)}")</#if>) > 0)
 		{
 			
-			Query<${JavaName(entity)}> query = db.query(${JavaName(entity)}.class);
+			org.molgenis.framework.db.Query<${JavaName(entity)}> query = db.query(${JavaName(entity)}.class);
 			<#if entity.hasAncestor() || entity.isRootAncestor()>QueryRule type = new QueryRule("${typefield()}",Operator.EQUALS, "${Name(entity)}");
 			query.addRules(type);</#if>
 			QueryRule[] newRules = matchQueryRulesToEntity(db.getMetaData().getEntity("${Name(entity)}"), rules);

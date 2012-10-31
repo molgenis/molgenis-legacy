@@ -18,7 +18,7 @@ import org.molgenis.model.elements.Field;
 /**
  * Abstract Entity class that implements common parts for each Entity.
  */
-@XmlRootElement(name="entity")
+@XmlRootElement(name = "entity")
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class AbstractEntity implements Entity, Serializable
 {
@@ -28,175 +28,166 @@ public abstract class AbstractEntity implements Entity, Serializable
 	private static final long serialVersionUID = 1L;
 	@XmlTransient
 	private boolean readonly;
-	
-	
-	public static boolean isObjectRepresentation(String objStr) {
+
+	public static boolean isObjectRepresentation(String objStr)
+	{
 		int left = objStr.indexOf("(");
 		int right = objStr.lastIndexOf(")");
 		return (left == -1 || right == -1) ? false : true;
 	}
-	
-	public static <T extends Entity> T setValuesFromString(String objStr, Class<T> klass) throws Exception {
-		T result;
-		try
-		{
-			result = klass.newInstance();
-		}
-		catch (Exception e)
-		{
-			throw e;
-		}
-		
+
+	public static <T extends Entity> T setValuesFromString(String objStr, Class<T> klass) throws Exception
+	{
+		T result = klass.newInstance();
+
 		int left = objStr.indexOf("(");
 		int right = objStr.lastIndexOf(")");
-		
-		//String entityName = objStr.substring(0, left);
-		String content = null;
-		try {
-			 content = objStr.substring(left+1, right);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+
+		String content = objStr.substring(left + 1, right);
+
 		String[] attrValues = content.split(" ");
-		for(String attrValue : attrValues) {
+		for (String attrValue : attrValues)
+		{
 			String[] av = attrValue.split("=");
 			String attr = av[0];
 			String value = av[1];
-			if(value.charAt(0) == '\'' && value.charAt(value.length() -1) == '\'') {
-				value = value.substring(1, value.length()-1);
-			} 
+			if (value.charAt(0) == '\'' && value.charAt(value.length() - 1) == '\'')
+			{
+				value = value.substring(1, value.length() - 1);
+			}
 			result.set(attr, value);
-		}		
+		}
 		return result;
 	}
-	
-	
+
 	public void set(String name, Object value) throws Exception
 	{
-		//inefficient
+		// inefficient
 		Tuple t = new SimpleTuple();
-		t.set(name,value);
-		this.set(t,false);
+		t.set(name, value);
+		this.set(t, false);
 	}
 
-	public void set( Tuple values ) throws Exception
+	public void set(Tuple values) throws Exception
 	{
-		this.set(values,true);
+		this.set(values, true);
 	}
-	
+
 	public Tuple getValues()
 	{
 		Tuple t = new SimpleTuple();
-		for(String field: this.getFields())
+		for (String field : this.getFields())
 		{
-			t.set(field,this.get(field));
+			t.set(field, this.get(field));
 		}
 		return t;
 	}
-	
-	public String getValues( String sep )
+
+	public String getValues(String sep)
 	{
 		StringWriter out = new StringWriter();
-		for(String field: this.getFields())
+		for (String field : this.getFields())
 		{
 			{
-					Object valueO = get(field);
-					String valueS;
-					if (valueO != null)
-						valueS = valueO.toString();
-					else 
-						valueS = "";
-					valueS = valueS.replaceAll("\r\n"," ").replaceAll("\n"," ").replaceAll("\r"," ");
-					valueS = valueS.replaceAll("\t"," ").replaceAll(sep," ");
-					out.write(valueS);
-				}
+				Object valueO = get(field);
+				String valueS;
+				if (valueO != null) valueS = valueO.toString();
+				else
+					valueS = "";
+				valueS = valueS.replaceAll("\r\n", " ").replaceAll("\n", " ").replaceAll("\r", " ");
+				valueS = valueS.replaceAll("\t", " ").replaceAll(sep, " ");
+				out.write(valueS);
+			}
 		}
 		return out.toString();
 	}
-	
+
 	public void setReadonly(boolean readonly)
 	{
 		this.readonly = readonly;
 	}
-	
+
 	public boolean isReadonly()
 	{
 		return readonly;
 	}
-	
-	@SuppressWarnings("deprecation")
+
 	public static java.sql.Date string2date(String str) throws ParseException
 	{
 		try
 		{
 			DateFormat formatter = new SimpleDateFormat(SimpleTuple.DATEFORMAT, Locale.US);
-			return new java.sql.Date(formatter.parse(str).getDate());
+			return new java.sql.Date(formatter.parse(str).getTime());
 		}
 		catch (ParseException pe)
 		{
 			try
 			{
 				DateFormat formatter = new SimpleDateFormat(SimpleTuple.DATEFORMAT2, Locale.US);
-				return new java.sql.Date(formatter.parse(str).getDate());
+				return new java.sql.Date(formatter.parse(str).getTime());
 			}
 			catch (ParseException pe2)
 			{
-				throw new ParseException("parsing failed: expected date value formatted '" + SimpleTuple.DATEFORMAT+ " or "+SimpleTuple.DATEFORMAT2, 0);
+				throw new ParseException("parsing failed: expected date value formatted '" + SimpleTuple.DATEFORMAT
+						+ " or " + SimpleTuple.DATEFORMAT2, 0);
 			}
-		}		
+		}
 	}
-	
-	/** Default implementation. Will be overriden if your entity model contains subclasses */
+
+	/**
+	 * Default implementation. Will be overriden if your entity model contains
+	 * subclasses
+	 */
 	public String get__Type()
 	{
-		if(this.get(Field.TYPE_FIELD) != null)
-			return this.get(Field.TYPE_FIELD).toString();
+		if (this.get(Field.TYPE_FIELD) != null) return this.get(Field.TYPE_FIELD).toString();
 		return null;
 	}
-	
-	/** Default implementation. Will be overriden if your entity model contains subclasses */
+
+	/**
+	 * Default implementation. Will be overriden if your entity model contains
+	 * subclasses
+	 */
 	public String get__TypeLabel()
 	{
-		if(this.get(Field.TYPE_FIELD+"_Label") != null)
-			return this.get(Field.TYPE_FIELD+"_Label").toString();
+		if (this.get(Field.TYPE_FIELD + "_Label") != null) return this.get(Field.TYPE_FIELD + "_Label").toString();
 		return null;
 	}
-	
-	/** Default implementation. Will be overriden if your entity model contains subclasses */
+
+	/**
+	 * Default implementation. Will be overriden if your entity model contains
+	 * subclasses
+	 */
 	public List<ValueLabel> get__TypeOptions()
 	{
-		if(this.get(Field.TYPE_FIELD+"_options") != null)
-			return (List<ValueLabel>) this.get(Field.TYPE_FIELD+"_options");
+		if (this.get(Field.TYPE_FIELD + "_options") != null) return (List<ValueLabel>) this.get(Field.TYPE_FIELD
+				+ "_options");
 		return null;
 	}
-	
+
 	public void set__Type(String type)
 	{
-		//throwing would be better but requires more refactoring
+		// throwing would be better but requires more refactoring
 		try
 		{
 			this.set(Field.TYPE_FIELD, type);
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 	}
-	
+
 	public String getLabelValue()
 	{
-		String result = "";
+		StringBuilder resultBuilder = new StringBuilder();
 		for (String label : this.getLabelFields())
 		{
-			if (result.equals("")) result += this.get(label) != null ? this.get(label)
-					: "";
-			else
-				result += ":"
-						+ (this.get(label) != null ? this.get(label) : "");
+			if (resultBuilder.length() > 0) resultBuilder.append(':');
+			if (this.get(label) != null) resultBuilder.append(this.get(label));
 		}
 
-		return result;
+		return resultBuilder.toString();
 	}
-	
-	 
+
 }
