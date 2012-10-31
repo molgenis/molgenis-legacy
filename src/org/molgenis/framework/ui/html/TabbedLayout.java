@@ -1,6 +1,7 @@
 package org.molgenis.framework.ui.html;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class TabbedLayout extends MultipanelLayout
 {
@@ -29,17 +30,18 @@ public class TabbedLayout extends MultipanelLayout
 		// create tabs
 		strBuilder.append("<ul>");
 		int i = 0;
-		for (String label : elements.keySet())
+		for (Entry<String, HtmlElement> entry : elements.entrySet())
 		{
-			if (elements.get(label) instanceof HyperlinkInput)
+			HtmlElement htmlElement = entry.getValue();
+			if (htmlElement instanceof HyperlinkInput)
 			{
-				strBuilder.append("<li><a href=\"").append(((HyperlinkInput) elements.get(label)).getValue());
+				strBuilder.append("<li><a href=\"").append(((HyperlinkInput) htmlElement).getValue());
 				strBuilder.append("\">").append("</a></li>");
 			}
 			else
 			{
 				strBuilder.append("<li><a href=\"#").append(getId()).append('-').append(i++).append("\">");
-				strBuilder.append(label).append("</a></li>");
+				strBuilder.append(entry.getKey()).append("</a></li>");
 			}
 		}
 		strBuilder.append("</ul>");
