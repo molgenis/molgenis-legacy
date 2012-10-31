@@ -12,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
@@ -105,9 +106,9 @@ public class SimpleTuple implements Tuple
 
 	public SimpleTuple(Map<String, Object> valueMap)
 	{
-		for (String key : valueMap.keySet())
+		for (Entry<String, Object> entry : valueMap.entrySet())
 		{
-			this.set(key, valueMap.get(key));
+			this.set(entry.getKey(), entry.getValue());
 		}
 	}
 

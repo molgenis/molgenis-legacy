@@ -758,11 +758,13 @@ public class Field implements Serializable
 			{
 				// match agains all known labels
 				Map<String, List<Field>> candidates = this.allPossibleXrefLabels();
-				for (String test : candidates.keySet())
+				for (Entry<String, List<Field>> entry : candidates.entrySet())
 				{
-					if (test.toLowerCase().equals(label.toLowerCase()))
+					String key = entry.getKey();
+					if (key.toLowerCase().equals(label.toLowerCase()))
 					{
-						result.add(candidates.get(test).get(candidates.get(test).size() - 1));
+						List<Field> value = entry.getValue();
+						result.add(value.get(value.size() - 1));
 					}
 				}
 
