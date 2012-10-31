@@ -22,9 +22,9 @@ import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.model.jaxb.Entity;
 import org.molgenis.model.jaxb.Field;
+import org.molgenis.model.jaxb.Field.Type;
 import org.molgenis.model.jaxb.Model;
 import org.molgenis.model.jaxb.Unique;
-import org.molgenis.model.jaxb.Field.Type;
 import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.Tuple;
 
@@ -60,7 +60,7 @@ public class JDBCModelExtractor
 		props.load(new FileInputStream("molgenis.properties"));
 		extractXml(props);
 	}
-	
+
 	public static String extractXml(MolgenisOptions options)
 	{
 		try
@@ -101,7 +101,7 @@ public class JDBCModelExtractor
 			return null;
 		}
 	}
-	
+
 	public static Model extractModel(Properties p)
 	{
 		BasicDataSource data_src = new BasicDataSource();
@@ -129,7 +129,7 @@ public class JDBCModelExtractor
 			return null;
 		}
 	}
-	
+
 	public static Model extractModel(BasicDataSource data_src)
 	{
 		Model m = new Model();
@@ -218,8 +218,8 @@ public class JDBCModelExtractor
 						}
 						else
 						{
-							if(fieldInfo.getInt("COLUMN_SIZE") != 255) f.setLength(fieldInfo.getInt("COLUMN_SIZE"));
-							f.setType(null); //defaults to string
+							if (fieldInfo.getInt("COLUMN_SIZE") != 255) f.setLength(fieldInfo.getInt("COLUMN_SIZE"));
+							f.setType(null); // defaults to string
 						}
 					}
 
@@ -295,13 +295,13 @@ public class JDBCModelExtractor
 					}
 					else
 					{
-						String fields = "";
+						StringBuilder fieldsBuilder = new StringBuilder();
 						for (String field_name : index)
 						{
-							fields += "," + field_name;
+							fieldsBuilder.append(',').append(field_name);
 						}
 						Unique u = new Unique();
-						u.setFields(fields.substring(1));
+						u.setFields(fieldsBuilder.substring(1));
 						e.getUniques().add(u);
 					}
 
@@ -409,102 +409,108 @@ public class JDBCModelExtractor
 			}
 
 			// TODO GUESS the type="mref"
-			// rule: any entity that is not a subclass and that has maximum two xref fields and autoid field
+			// rule: any entity that is not a subclass and that has maximum two
+			// xref fields and autoid field
 			// should be a mref
 			List<Entity> toBeRemoved = new ArrayList<Entity>();
-			for (Entity e : m.getEntities()) if("".equals(e.getExtends()))
-			{
-
-				if (e.getFields().size() <= 3)
+			for (Entity e : m.getEntities())
+				if ("".equals(e.getExtends()))
 				{
-					int xrefs = 0;
-					String idField = null;
-					// the column refering to 'localEntity'
-					String localIdField = null;
-					// the localEntiy
-					String localEntity = null;
-					// the column referring to 'remoteEntity'
-					String localEntityField = null;
-					// the column the localIdField is referning to
-					String remoteIdField = null;
-					// the column remoteEntity
-					String remoteEntity = null;
-					// the column the remoteIdField is referring to
-					String remoteEntityField = null;
 
-					for (Field f : e.getFields())
+					if (e.getFields().size() <= 3)
 					{
-						if (Field.Type.AUTOID.equals(f.getType()))
+						int xrefs = 0;
+						String idField = null;
+						// the column refering to 'localEntity'
+						String localIdField = null;
+						// the localEntiy
+						String localEntity = null;
+						// the column referring to 'remoteEntity'
+						String localEntityField = null;
+						// the column the localIdField is referning to
+						String remoteIdField = null;
+						// the column remoteEntity
+						String remoteEntity = null;
+						// the column the remoteIdField is referring to
+						String remoteEntityField = null;
+
+						for (Field f : e.getFields())
 						{
-							idField = f.getName();
-						}
-						else if (Field.Type.XREF_SINGLE.equals(f.getType()))
-						{
-							xrefs++;
-							if (xrefs == 1)
+							if (Field.Type.AUTOID.equals(f.getType()))
 							{
-								localIdField = f.getName();
-								// localEntityField is just the idField of the
-								// localEntity
-								localEntity = f.getXrefField().substring(0, f.getXrefField().indexOf("."));
-								localEntityField = f.getXrefField().substring(f.getXrefField().indexOf(".") + 1);
+								idField = f.getName();
+							}
+							else if (Field.Type.XREF_SINGLE.equals(f.getType()))
+							{
+								xrefs++;
+								if (xrefs == 1)
+								{
+									localIdField = f.getName();
+									// localEntityField is just the idField of
+									// the
+									// localEntity
+									localEntity = f.getXrefField().substring(0, f.getXrefField().indexOf("."));
+									localEntityField = f.getXrefField().substring(f.getXrefField().indexOf(".") + 1);
+								}
+								else
+								{
+									remoteIdField = f.getName();
+									// should be the id field of the remote
+									// entity
+									remoteEntity = f.getXrefField().substring(0, f.getXrefField().indexOf("."));
+									remoteEntityField = f.getXrefField().substring(f.getXrefField().indexOf(".") + 1);
+								}
+							}
+						}
+
+						// if valid mref, drop this entity and add mref fields
+						// to
+						// the other entities.
+						if (xrefs == 2 && (e.getFields().size() == 2 || idField != null))
+						{
+							// add mref on 'local' end
+							Entity localContainer = m.getEntity(localEntity);
+							Field localField = new Field();
+							if (localContainer.getField(e.getName()) == null)
+							{
+								localField.setName(e.getName());
+							}
+
+							localField.setType(Field.Type.XREF_MULTIPLE);
+							localField.setXrefField(remoteEntity + "." + remoteEntityField);
+							localField.setMrefName(e.getName());
+							localField.setMrefLocalid(localIdField);
+							localField.setMrefRemoteid(remoteIdField);
+							localContainer.getFields().add(localField);
+
+							// add mref to remote end
+							Entity remoteContainer = m.getEntity(remoteEntity);
+							Field remoteField = new Field();
+							remoteField.setType(Field.Type.XREF_MULTIPLE);
+							remoteField.setXrefField(localEntity + "." + localEntityField);
+							remoteField.setMrefName(e.getName());
+							// don't need to add local id as it is refering back
+							remoteField.setMrefLocalid(remoteIdField);
+							remoteField.setMrefRemoteid(localIdField);
+
+							if (remoteContainer.getField(e.getName()) == null)
+							{
+								remoteField.setName(e.getName());
 							}
 							else
 							{
-								remoteIdField = f.getName();
-								// should be the id field of the remote entity
-								remoteEntity = f.getXrefField().substring(0, f.getXrefField().indexOf("."));
-								remoteEntityField = f.getXrefField().substring(f.getXrefField().indexOf(".") + 1);
+								throw new RuntimeException("MREF creation failed: there is already a field "
+										+ remoteContainer.getName() + "." + e.getName());
 							}
-						}
-					}
 
-					// if valid mref, drop this entity and add mref fields to
-					// the other entities. 
-					if (xrefs == 2 && (e.getFields().size() == 2 || idField != null))
-					{
-						// add mref on 'local' end
-						Entity localContainer = m.getEntity(localEntity);
-						Field localField = new Field();
-						if (localContainer.getField(e.getName()) == null)
-						{
-							localField.setName(e.getName());
-						}
-						
-						localField.setType(Field.Type.XREF_MULTIPLE);
-						localField.setXrefField(remoteEntity + "." + remoteEntityField);
-						localField.setMrefName(e.getName());
-						localField.setMrefLocalid(localIdField);
-						localField.setMrefRemoteid(remoteIdField);
-						localContainer.getFields().add(localField);
+							remoteContainer.getFields().add(remoteField);
 
-						// add mref to remote end
-						Entity remoteContainer = m.getEntity(remoteEntity);
-						Field remoteField = new Field();
-						remoteField.setType(Field.Type.XREF_MULTIPLE);
-						remoteField.setXrefField(localEntity + "." + localEntityField);
-						remoteField.setMrefName(e.getName());
-						// don't need to add local id as it is refering back
-						remoteField.setMrefLocalid(remoteIdField);
-						remoteField.setMrefRemoteid(localIdField);
-						
-						if (remoteContainer.getField(e.getName()) == null)
-						{
-							remoteField.setName(e.getName());
+							// remove the link table as separate entity
+							toBeRemoved.add(e);
+							logger.debug("guessed mref " + e.getName());
 						}
-						else
-						{
-							throw new RuntimeException("MREF creation failed: there is already a field "+remoteContainer.getName()+"."+e.getName());
-						}
-						
-						remoteContainer.getFields().add(remoteField);
-
-						// remove the link table as separate entity
-						toBeRemoved.add(e);
-						logger.debug("guessed mref " + e.getName());
 					}
 				}
-			}
 			m.getEntities().removeAll(toBeRemoved);
 
 			// logger.info(MolgenisLanguage.summarize(m));

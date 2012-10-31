@@ -47,14 +47,17 @@ public class TableBeta extends HtmlWidget
 	/**
 	 * Set the cel(row,col) to value including row and/or column spanning
 	 * 
-	 * @param row index
-	 * @param col index
-	 * @param value 
-	 * @param rowspan the number of row elements to span
-	 * @param colspan the number of col elements to span
+	 * @param row
+	 *            index
+	 * @param col
+	 *            index
+	 * @param value
+	 * @param rowspan
+	 *            the number of row elements to span
+	 * @param colspan
+	 *            the number of col elements to span
 	 */
-	public void set(int row, int col, HtmlElement value, int rowspan,
-			int colspan)
+	public void set(int row, int col, HtmlElement value, int rowspan, int colspan)
 	{
 		body.set(row, col, value, rowspan, colspan);
 	}
@@ -72,25 +75,28 @@ public class TableBeta extends HtmlWidget
 	{
 		set(row, col, value, 1, 1);
 	}
-	
+
 	public void set(int row, int col, String string, int rowspan, int colspan)
 	{
 		this.set(row, col, new CustomHtml(string), rowspan, colspan);
 	}
-	
+
 	/**
 	 * Set the cel(row,col) to value including row and/or column spanning
 	 * 
-	 * @param row index
-	 * @param col index
-	 * @param value 
-	 * @param rowspan the number of row elements to span
-	 * @param colspan the number of col elements to span
+	 * @param row
+	 *            index
+	 * @param col
+	 *            index
+	 * @param value
+	 * @param rowspan
+	 *            the number of row elements to span
+	 * @param colspan
+	 *            the number of col elements to span
 	 */
-	public void setHead(int row, int col, HtmlElement value, int rowspan,
-			int colspan)
+	public void setHead(int row, int col, HtmlElement value, int rowspan, int colspan)
 	{
-		header.set(row, col, value, rowspan, colspan); 
+		header.set(row, col, value, rowspan, colspan);
 	}
 
 	/**
@@ -106,7 +112,7 @@ public class TableBeta extends HtmlWidget
 	{
 		setHead(row, col, value, 1, 1);
 	}
-	
+
 	public void setHead(int row, int col, String string, int rowspan, int colspan)
 	{
 		setHead(row, col, new CustomHtml(string), rowspan, colspan);
@@ -115,14 +121,17 @@ public class TableBeta extends HtmlWidget
 	/**
 	 * Set the cel(row,col) to value including row and/or column spanning
 	 * 
-	 * @param row index
-	 * @param col index
-	 * @param value 
-	 * @param rowspan the number of row elements to span
-	 * @param colspan the number of col elements to span
+	 * @param row
+	 *            index
+	 * @param col
+	 *            index
+	 * @param value
+	 * @param rowspan
+	 *            the number of row elements to span
+	 * @param colspan
+	 *            the number of col elements to span
 	 */
-	public void setFoot(int row, int col, HtmlElement value, int rowspan,
-			int colspan)
+	public void setFoot(int row, int col, HtmlElement value, int rowspan, int colspan)
 	{
 		footer.set(row, col, value, rowspan, colspan);
 	}
@@ -140,24 +149,22 @@ public class TableBeta extends HtmlWidget
 	{
 		setFoot(row, col, value, 1, 1);
 	}
-	
+
 	public void setFoot(int row, int col, String string, int rowspan, int colspan)
 	{
 		setFoot(row, col, new CustomHtml(string), rowspan, colspan);
 	}
-	
+
 	@Override
 	public String toHtml()
 	{
-		String attributes = this.getStyle() != null ? " style=\""
-				+ this.getStyle() + "\"" : "";
-		attributes += this.getClazz() != null ? " class=\"" + this.getClazz()
-				+ "\"" : "";
+		String attributes = this.getStyle() != null ? " style=\"" + this.getStyle() + "\"" : "";
+		attributes += this.getClazz() != null ? " class=\"" + this.getClazz() + "\"" : "";
 
 		String result = "\n<table id=\"" + getName() + "\"" + attributes + ">";
 
-		result += "<thead>"+header.renderRows()+"</thead>";
-		result += "<tbody>"+body.renderRows()+"</tbody>";
+		result += "<thead>" + header.renderRows() + "</thead>";
+		result += "<tbody>" + body.renderRows() + "</tbody>";
 
 		result += "\n</table>";
 

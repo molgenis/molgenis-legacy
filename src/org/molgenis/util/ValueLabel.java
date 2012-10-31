@@ -1,10 +1,14 @@
 package org.molgenis.util;
 
+import java.io.Serializable;
+
 /**
  * Specific pair to link String label to Object.
  */
-public class ValueLabel
+public class ValueLabel implements Serializable
 {
+	/* The serial version UID of this class. Needed for serialization. */
+	private static final long serialVersionUID = -6539081630192819896L;
 	/** The label */
 	private String label;
 	/** The value */
@@ -22,9 +26,9 @@ public class ValueLabel
 	 * Construct a new ValueLabel
 	 * 
 	 * @param value
-	 *        the value
+	 *            the value
 	 * @param label
-	 *        the label
+	 *            the label
 	 */
 	public ValueLabel(Object value, String label)
 	{
@@ -46,9 +50,9 @@ public class ValueLabel
 	 * Set the label
 	 * 
 	 * @param label
-	 *        new label
+	 *            new label
 	 */
-	public void setLabel( String label )
+	public void setLabel(String label)
 	{
 		this.label = label;
 	}
@@ -68,7 +72,7 @@ public class ValueLabel
 	 * 
 	 * @param value
 	 */
-	public void setValue( Object value )
+	public void setValue(Object value)
 	{
 		this.value = value;
 	}

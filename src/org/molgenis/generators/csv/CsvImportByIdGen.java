@@ -2,8 +2,10 @@ package org.molgenis.generators.csv;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -19,35 +21,36 @@ import freemarker.template.Template;
 public class CsvImportByIdGen extends MySqlCreateClassPerTableGen
 {
 	public static final transient Logger logger = Logger.getLogger(CsvImportByIdGen.class);
-	
+
 	@Override
 	public String getDescription()
 	{
 		return "Generates CsvImportExport";
 	}
-	
+
 	@Override
-	public void generate(Model model, MolgenisOptions options)
-			throws Exception
+	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
-		Template template = createTemplate( "/"+this.getClass().getSimpleName()+".java.ftl" );
+		Template template = createTemplate("/" + this.getClass().getSimpleName() + ".java.ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
-		
+
 		List<Entity> entityList = model.getEntities();
-		entityList = MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
-		//String packageName = this.getClass().getPackage().toString().substring(Generator.class.getPackage().toString().length());
+		entityList = MolgenisModel.sortEntitiesByDependency(entityList, model); // side
+																				// effect?
+		File target = new File(this.getSourcePath(options) + "/app/CsvImportById.java");
+		boolean created = target.getParentFile().mkdirs();
+		if (!created && !target.getParentFile().exists())
+		{
+			throw new IOException("could not create " + target.getParentFile());
+		}
 
-
-		File target = new File( this.getSourcePath(options) +  "/app/CsvImportById.java" );
-		target.getParentFile().mkdirs();
-		
-		templateArgs.put( "model", model );
-		templateArgs.put("entities",entityList);
+		templateArgs.put("model", model);
+		templateArgs.put("entities", entityList);
 		templateArgs.put("package", "app");
-		OutputStream targetOut = new FileOutputStream( target );
-		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
+		OutputStream targetOut = new FileOutputStream(target);
+		template.process(templateArgs, new OutputStreamWriter(targetOut, Charset.forName("UTF-8")));
 		targetOut.close();
-		
+
 		logger.info("generated " + target);
 	}
 }

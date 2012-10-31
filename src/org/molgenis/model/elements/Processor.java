@@ -19,9 +19,6 @@ import org.molgenis.model.MolgenisModelException;
 
 // jdk
 
-
-
-
 /**
  * Describes a database-entity (or table).
  * 
@@ -38,7 +35,7 @@ public class Processor extends PRSchema
 	{
 		super(name, parent);
 	}
-	
+
 	public void addDataset(Dataset dataset) throws MolgenisModelException
 	{
 		if (datasets.contains(dataset))
@@ -48,22 +45,23 @@ public class Processor extends PRSchema
 
 		datasets.add(dataset);
 	}
-	
+
 	public Vector<Dataset> getDatasets()
 	{
 		return datasets;
 	}
-	
+
 	public String toString()
 	{
-		String str = "Processor(" + getName() + ")\n(\n";
-		for(Dataset dataset: datasets)
-			str += "  " + dataset.toString() + "\n";
-		str += ");";
-		return str;
+		StringBuilder strBuilder = new StringBuilder();
+		strBuilder.append("Processor(").append(getName()).append(")\n(\n");
+		for (Dataset dataset : datasets)
+			strBuilder.append(' ').append(dataset.toString()).append('\n');
+		strBuilder.append(");");
+		return strBuilder.toString();
 	}
-	
-	private Vector<Dataset> datasets = new Vector<Dataset>(); 
-	
-	private static final long serialVersionUID = 2296459638604325393L;	
+
+	private Vector<Dataset> datasets = new Vector<Dataset>();
+
+	private static final long serialVersionUID = 2296459638604325393L;
 }

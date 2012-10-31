@@ -20,8 +20,7 @@ public class Plugin extends UISchema
 {
 	public enum Flavor
 	{
-		FREEMARKER("freemarker"), EASY("easy"), UNKNOWN(
-				"unknown");
+		FREEMARKER("freemarker"), EASY("easy"), UNKNOWN("unknown");
 
 		private String tag;
 
@@ -35,17 +34,16 @@ public class Plugin extends UISchema
 			return this.tag;
 		}
 
-		public static Flavor getPluginMethod(String method)
-				throws MolgenisModelException
+		public static Flavor getPluginMethod(String method) throws MolgenisModelException
 		{
-			String options = "";
+			StringBuilder optionsBuilder = new StringBuilder();
 			for (Flavor p : Flavor.values())
 			{
 				if (p.toString().equalsIgnoreCase(method)) return p;
-				options += p.toString() + ", ";
+				optionsBuilder.append(p.toString()).append(", ");
 			}
-			throw new MolgenisModelException("method='" + method
-					+ "' is UNKNOWN for plugin. Valid options: " + options);
+			throw new MolgenisModelException("method='" + method + "' is UNKNOWN for plugin. Valid options: "
+					+ optionsBuilder.toString());
 		}
 	};
 
@@ -113,13 +111,11 @@ public class Plugin extends UISchema
 	{
 		if (getRecord() != null)
 		{
-			return String.format("Plugin(name=%s, entity=%s, group=%s)",
-					getName(), getRecord().getName(), getGroup());
+			return String.format("Plugin(name=%s, entity=%s, group=%s)", getName(), getRecord().getName(), getGroup());
 		}
 		else
 		{
-			return String.format("Plugin(name=%s, group=%s)", getName(),
-					getGroup());
+			return String.format("Plugin(name=%s, group=%s)", getName(), getGroup());
 		}
 	}
 

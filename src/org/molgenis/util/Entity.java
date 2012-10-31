@@ -20,22 +20,23 @@ import java.util.Vector;
  */
 public interface Entity
 {
-	
+
 	/**
 	 * Generic setter
+	 * 
 	 * @param fieldName
-	 * @param value 
-	 * @throws ParseException 
+	 * @param value
+	 * @throws ParseException
 	 */
 	public void set(String fieldName, Object value) throws Exception;
-	
+
 	/**
 	 * Set the properties of this entity using the values from a Tuple.
 	 * 
 	 * @param values
 	 * @throws ParseException
 	 */
-	public void set( Tuple values ) throws Exception;
+	public void set(Tuple values) throws Exception;
 
 	/**
 	 * Set the properties of this entity using the values from a Tuple.
@@ -46,24 +47,26 @@ public interface Entity
 	 * desired when one is reconstructing an existing Entity, and not when
 	 * instantiating an Entity for the first time.
 	 * 
-	 * @param values a tuple map of values
-	 * @param strict whether null values should be mapped also from Tuple to
-	 *        Entity
+	 * @param values
+	 *            a tuple map of values
+	 * @param strict
+	 *            whether null values should be mapped also from Tuple to Entity
 	 * @throws ParseException
 	 */
-	public void set( Tuple values, boolean strict ) throws Exception;
+	public void set(Tuple values, boolean strict) throws Exception;
 
 	/**
 	 * Generic getter (by fieldname)
 	 */
-	public Object get( String columnName );
-	
+	public Object get(String columnName);
+
 	/**
 	 * Primary key field name
 	 */
 	public String getIdField();
+
 	public Object getIdValue();
-	
+
 	/**
 	 * Secondary key field names
 	 */
@@ -73,48 +76,57 @@ public interface Entity
 	 * Get the values as a Tuple.
 	 */
 	public Tuple getValues();
-	
+
 	/**
-	 * Get the names used as aliases for the field indexes (e.g. for use in {@link #get(String)}).
+	 * Get the names used as aliases for the field indexes (e.g. for use in
+	 * {@link #get(String)}).
 	 * 
 	 * @return column names.
 	 */
 	public Vector<String> getFields();
-	
+
 	/**
-	 * Get the names used as aliases for the field indexes (e.g. for use in {@link #get(String)}).
+	 * Get the names used as aliases for the field indexes (e.g. for use in
+	 * {@link #get(String)}).
+	 * 
 	 * @skipAutoIds removes autoid fields
 	 * @return column names.
 	 */
 	public Vector<String> getFields(boolean skipAutoIds);
-	
-	/** Mark an Entity as readonly. 
-	 * @param readonly to set an Entity to be readonly. 
-	 */
-	public void setReadonly( boolean readonly );
 
-	/** Whether this Entity is readonly.
+	/**
+	 * Mark an Entity as readonly.
+	 * 
+	 * @param readonly
+	 *            to set an Entity to be readonly.
+	 */
+	public void setReadonly(boolean readonly);
+
+	/**
+	 * Whether this Entity is readonly.
 	 * 
 	 * @return boolean indicating whether this Entity is readonly.
 	 */
 	public boolean isReadonly();
-	
-	/**@deprecated
-	 * This method will be removed because it is too specific.*/
-	public String getValues( String sep );
-	/**@deprecated
-	 * This method will be removed because it is too specific.*/
-	public String getFields( String sep );	
-	
+
+	/**
+	 * @deprecated This method will be removed because it is too specific.
+	 */
+	public String getValues(String sep);
+
+	/**
+	 * @deprecated This method will be removed because it is too specific.
+	 */
+	public String getFields(String sep);
+
 	/**
 	 * Validates attribute and tupel constraints (such as not null).
 	 */
 	public void validate() throws Exception;
 
-
 	Entity create(Tuple tuple) throws Exception;
-	
-	//for JPA only
+
+	// for JPA only
 	public String getXrefIdFieldName(String fieldName);
 
 	public String getLabelValue();

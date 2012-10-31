@@ -1,6 +1,5 @@
 package org.molgenis.model.elements;
 
-
 // jdk
 import java.util.List;
 import java.util.Vector;
@@ -8,10 +7,6 @@ import java.util.Vector;
 import org.molgenis.model.MolgenisModelException;
 
 // invengine
-
-
-
-
 
 /**
  * This interface describes the functionality for a Record. A record is defined
@@ -26,31 +21,28 @@ public interface Record
 	 * 
 	 */
 	public String getName();
-	
+
 	/**
 	 * 
 	 */
 	public String getLabel();
-	
+
 	/**
-	 * @throws MolgenisModelException 
+	 * @throws MolgenisModelException
 	 * 
 	 */
 	public List<Field> getFields() throws MolgenisModelException;
-	
+
 	/**
 	 * 
 	 */
 	public Vector<String> getParents();
 
-	
 	// small utility methods
 	/**
 	 * 
 	 */
 	public boolean hasXRefs();
-	
-	//public List<Field> getAllFields(Record e, String type);
+
+	// public List<Field> getAllFields(Record e, String type);
 }
-
-

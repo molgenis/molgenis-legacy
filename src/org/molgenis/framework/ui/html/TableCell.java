@@ -12,17 +12,17 @@ public class TableCell
 	int rowspan;
 	int colspan;
 	HtmlElement value;
-	
+
 	public TableCell(int row, int col, HtmlElement value)
 	{
 		this.row = row;
 		this.col = col;
 		this.value = value;
 	}
-	
+
 	public TableCell(int row, int col, HtmlElement value, int rowspan, int colspan)
 	{
-		this(row,col,value);
+		this(row, col, value);
 		this.rowspan = rowspan;
 		this.colspan = colspan;
 	}

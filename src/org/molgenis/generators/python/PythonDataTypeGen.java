@@ -2,8 +2,10 @@ package org.molgenis.generators.python;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import org.molgenis.MolgenisOptions;
@@ -15,51 +17,56 @@ import org.molgenis.model.elements.Model;
 
 import freemarker.template.Template;
 
-
 public class PythonDataTypeGen extends ForEachEntityGenerator
 {
-	
+
 	private boolean includeAbstract = false;
 
 	private boolean handwritten = false;
-	
+
 	public PythonDataTypeGen()
 	{
-		//include abstract entities
+		// include abstract entities
 		super(true);
 	}
-	
+
 	@Override
 	public String getDescription()
 	{
 		return "Generates Python classes for each entity.";
 	}
-	
+
 	public String getType()
 	{
-		return "";		
+		return "";
 	}
-	
+
 	@Override
 	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
 		Template template = this.createTemplate(this.getClass().getSimpleName() + getExtension() + ".ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 
-		//logger.error("packageName:" + "ENTITY"+ this.getClass().getPackage().toString().substring(Generator.class.getPackage().toString().length()));
-		
+		// logger.error("packageName:" + "ENTITY"+
+		// this.getClass().getPackage().toString().substring(Generator.class.getPackage().toString().length()));
+
 		// apply generator to each entity
 		for (Entity entity : model.getEntities())
 		{
 			// calculate package from its own package
 			String packageName = entity.getNamespace().toLowerCase()
-					+ this.getClass().getPackage().toString().substring(
-							Generator.class.getPackage().toString().length());
-			File targetDir = new File(this.getPythonSourcePath(options) + packageName.replace(".", "/").replace("/python", ""));
-			if (handwritten)
-				targetDir = new File(this.getHandWrittenPath(options) + packageName.replace(".", "/").replace("/python", ""));
+					+ this.getClass().getPackage().toString()
+							.substring(Generator.class.getPackage().toString().length());
+			File targetDir = new File(this.getPythonSourcePath(options)
+					+ packageName.replace(".", "/").replace("/python", ""));
+			if (handwritten) targetDir = new File(this.getHandWrittenPath(options)
+					+ packageName.replace(".", "/").replace("/python", ""));
 
-			targetDir.mkdirs();
+			boolean created = targetDir.mkdirs();
+			if (!created && !targetDir.exists())
+			{
+				throw new IOException("could not create " + targetDir);
+			}
 
 			try
 			{
@@ -67,11 +74,14 @@ public class PythonDataTypeGen extends ForEachEntityGenerator
 				{
 					File targetFile = new File(targetDir + "/" + GeneratorHelper.firstToUpper(entity.getName())
 							+ getType() + getExtension());
-					
-					//logger.error("targetDir: " +targetDir.getAbsolutePath());
-					//logger.error(" GeneratorHelper.firstToUpper(entity.getName()): " + GeneratorHelper.firstToUpper(entity.getName()));
-					//logger.error("getType() + getExtension(): " +getType() + getExtension());
-					//logger.error("targetFile: " + targetFile.getAbsolutePath());
+
+					// logger.error("targetDir: " +targetDir.getAbsolutePath());
+					// logger.error(" GeneratorHelper.firstToUpper(entity.getName()): "
+					// + GeneratorHelper.firstToUpper(entity.getName()));
+					// logger.error("getType() + getExtension(): " +getType() +
+					// getExtension());
+					// logger.error("targetFile: " +
+					// targetFile.getAbsolutePath());
 					if (!handwritten || !targetFile.exists())
 					{
 
@@ -86,7 +96,7 @@ public class PythonDataTypeGen extends ForEachEntityGenerator
 
 						OutputStream targetOut = new FileOutputStream(targetFile);
 
-						template.process(templateArgs, new OutputStreamWriter(targetOut));
+						template.process(templateArgs, new OutputStreamWriter(targetOut, Charset.forName("UTF-8")));
 						targetOut.close();
 
 						// logger.info("generated " +
@@ -102,12 +112,11 @@ public class PythonDataTypeGen extends ForEachEntityGenerator
 			}
 		}
 	}
-	
+
 	@Override
 	public String getExtension()
 	{
 		return ".py";
 	}
 
-	
 }

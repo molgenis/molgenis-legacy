@@ -7,10 +7,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Unique
 {
-	@XmlAttribute(name="fields")
+	@XmlAttribute(name = "fields")
 	String fields = null;
 
-//GETTERS AND SETTERS BELOW
+	// GETTERS AND SETTERS BELOW
 	public String getFields()
 	{
 		return fields;

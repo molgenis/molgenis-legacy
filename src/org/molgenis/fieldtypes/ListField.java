@@ -17,33 +17,33 @@ public class ListField extends FieldType
 	{
 		return "new java.util.ArrayList<?>()";
 	}
-	
+
 	@Override
 	public String getJavaAssignment(String value)
 	{
 		return "NOT IMPLEMENTED";
 	}
-	
+
 	@Override
 	public String getJavaPropertyType()
 	{
 		return "java.util.List<?>";
 	}
-	
+
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
-		//should never happen?
+		// should never happen?
 		return "LIST CANNOT BE IN SQL";
 	}
-	
+
 	@Override
 	public String getOracleType() throws MolgenisModelException
 	{
-		//should never happen?
+		// should never happen?
 		return "LIST CANNOT BE IN SQL";
 	}
-	
+
 	@Override
 	public String getJavaSetterType() throws MolgenisModelException
 	{
@@ -55,10 +55,10 @@ public class ListField extends FieldType
 	{
 		return "LIST CANNOT BE IN SQL";
 	}
-	
+
 	public String getXsdType()
 	{
-		return "" ;
+		return "";
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class ListField extends FieldType
 	{
 		return "vector<Entity>";
 	}
-	
+
 	@Override
 	public String getCppJavaPropertyType()
 	{
@@ -97,7 +97,7 @@ public class ListField extends FieldType
 	{
 		return Arrays.asList(StringUtils.split(value, ","));
 	}
-	
+
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.LIST;

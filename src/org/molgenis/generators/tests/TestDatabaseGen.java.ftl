@@ -26,10 +26,6 @@ import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.framework.db.jpa.JpaUtil;
 </#if>
 
-<#if db_mode = 'standalone'>
-import app.servlet.MolgenisServlet;
-</#if>
-
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -48,8 +44,8 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.DatabaseException;
 
 import static  org.testng.AssertJUnit.*;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 <#list model.entities as entity>
@@ -68,14 +64,14 @@ public class TestDatabase
 	private static java.util.Map<String, Object> configOverrides = new java.util.HashMap<String, Object>();
 	static {
 		configOverrides.put("javax.persistence.jdbc.url", "${options.dbUri}_test");
-		configOverrides.put("hibernate.hbm2ddl.auto", "create-drop");		
+		configOverrides.put("hibernate.hbm2ddl.auto", "create");		
 	}
 </#if>
 
 	/*
 	 * Create a database to use
 	 */
-	@BeforeTest
+	@BeforeClass(alwaysRun = true)
 	public static void oneTimeSetUp()   
 	{
 		try
@@ -85,6 +81,7 @@ public class TestDatabase
 		//new emptyDatabase(new MolgenisServlet().getDatabase(), false);	
 		<#if databaseImp = 'jpa'>		
 			db = DatabaseFactory.create(configOverrides);
+			JpaUtil.createTables(db, true, configOverrides);
 		<#else>
 			<#if db_mode = 'standalone'>
 			//db = new MolgenisServlet().getDatabase();
@@ -103,8 +100,8 @@ public class TestDatabase
 		logger.info("Database created");
 	}
 <#if databaseImp = 'jpa'>		
-	@AfterTest
-	public static void destory() {
+	@AfterClass(alwaysRun = true)
+	public static void destroy() {
 		JpaUtil.dropTables((JpaDatabase)db, configOverrides);
 	}	
 </#if>		

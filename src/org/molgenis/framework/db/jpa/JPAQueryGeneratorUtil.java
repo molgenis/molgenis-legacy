@@ -36,18 +36,15 @@ import org.molgenis.util.Entity;
 public class JPAQueryGeneratorUtil
 {
 
-	public static <IN extends Entity> TypedQuery<IN> createQuery(
-			Database db, Class<IN> inputClass, Mapper<IN> mapper,
+	public static <IN extends Entity> TypedQuery<IN> createQuery(Database db, Class<IN> inputClass, Mapper<IN> mapper,
 			EntityManager em, QueryRule... rules) throws DatabaseException
 	{
 		return createQuery(db, inputClass, inputClass, mapper, em, rules);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <IN extends Entity, OUT> TypedQuery<OUT> createQuery(
-			Database db, Class<IN> inputClass, Class<OUT> outputClass,
-			Mapper<IN> mapper, EntityManager em, QueryRule... rules)
-			throws DatabaseException
+	public static <IN extends Entity, OUT> TypedQuery<OUT> createQuery(Database db, Class<IN> inputClass,
+			Class<OUT> outputClass, Mapper<IN> mapper, EntityManager em, QueryRule... rules) throws DatabaseException
 	{
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<OUT> cq = cb.createQuery(outputClass);
@@ -64,8 +61,7 @@ public class JPAQueryGeneratorUtil
 
 		int[] limitOffset = new int[2];
 		Arrays.fill(limitOffset, -1);
-		Predicate wherePredicate = createWhere(db, mapper, em, root, cq, cb,
-				limitOffset, rules);
+		Predicate wherePredicate = createWhere(db, mapper, em, root, cq, cb, limitOffset, rules);
 		if (wherePredicate != null)
 		{
 			cq.where(wherePredicate);
@@ -82,34 +78,33 @@ public class JPAQueryGeneratorUtil
 		return query;
 	}
 
-	public static <E extends Entity> TypedQuery<Long> createCount(Database db,
-			Class<E> entityClass, AbstractJpaMapper<E> abstractJpaMapper, EntityManager em,
-			QueryRule... rules) throws DatabaseException
+	public static <E extends Entity> TypedQuery<Long> createCount(Database db, Class<E> entityClass,
+			AbstractJpaMapper<E> abstractJpaMapper, EntityManager em, QueryRule... rules) throws DatabaseException
 	{
-		//remove any 'offset' from the query as this screws up count
+		// remove any 'offset' from the query as this screws up count
 		List<QueryRule> limitLess = new ArrayList<QueryRule>();
-		for(QueryRule r: rules)
+		for (QueryRule r : rules)
 		{
-			if(!Operator.OFFSET.equals(r.getOperator())) limitLess.add(r);
+			if (!Operator.OFFSET.equals(r.getOperator())) limitLess.add(r);
 		}
-		
-		return createQuery(db, entityClass, Long.class, abstractJpaMapper, em, limitLess.toArray(new QueryRule[limitLess.size()]));
+
+		return createQuery(db, entityClass, Long.class, abstractJpaMapper, em,
+				limitLess.toArray(new QueryRule[limitLess.size()]));
 	}
 
-	private static <IN extends Entity, OUT> Predicate createWhere(Database db,
-			Mapper<IN> mapper, EntityManager em, Root<IN> root, CriteriaQuery<OUT> cq,
-			CriteriaBuilder cb, int[] limitOffset, QueryRule... rul)
+	private static <IN extends Entity, OUT> Predicate createWhere(Database db, Mapper<IN> mapper, EntityManager em,
+			Root<IN> root, CriteriaQuery<OUT> cq, CriteriaBuilder cb, int[] limitOffset, QueryRule... rul)
 			throws DatabaseException
 	{
 		Map<String, Join<?, ?>> joinHash = new HashMap<String, Join<?, ?>>();
 		return _createWhere(db, mapper, em, root, cq, cb, limitOffset, joinHash, rul);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static <IN extends Entity, OUT> Predicate _createWhere(Database db,
-			Mapper<IN> mapper, EntityManager em, Root<IN> root, CriteriaQuery<OUT> cq,
-			CriteriaBuilder cb, int[] limitOffset, Map<String, Join<?, ?>> joinHash, QueryRule... rul)
-			throws DatabaseException
+	@SuppressWarnings(
+	{ "unchecked", "rawtypes" })
+	private static <IN extends Entity, OUT> Predicate _createWhere(Database db, Mapper<IN> mapper, EntityManager em,
+			Root<IN> root, CriteriaQuery<OUT> cq, CriteriaBuilder cb, int[] limitOffset,
+			Map<String, Join<?, ?>> joinHash, QueryRule... rul) throws DatabaseException
 	{
 		List<QueryRule> rules = Arrays.asList(rul);
 
@@ -117,8 +112,7 @@ public class JPAQueryGeneratorUtil
 		List<Order> orders = new ArrayList<Order>();
 
 		QueryRule prevRule = null;
-		
-		
+
 		forLoop: for (int i = 0; i < rules.size(); ++i)
 		{
 			QueryRule rule = rules.get(i);
@@ -127,20 +121,17 @@ public class JPAQueryGeneratorUtil
 				rule.setField(mapper.getTableFieldName(rule.getField()));
 
 				Operator operator = rule.getOperator();
-				if (operator == Operator.SORTASC
-						|| operator == Operator.SORTDESC)
+				if (operator == Operator.SORTASC || operator == Operator.SORTDESC)
 				{
-					rule.setField(mapper.getTableFieldName(rule.getValue()
-							.toString()));
+					rule.setField(mapper.getTableFieldName(rule.getValue().toString()));
 				}
 
 				String attributeName = rule.getJpaAttribute();
 
 				Predicate predicate = null;
 
-				
 				Expression<?> expression = _addJoin(rule, root, joinHash);
-					
+
 				Expression<?> lhs = null;
 				if (expression != null)
 				{
@@ -151,12 +142,11 @@ public class JPAQueryGeneratorUtil
 					lhs = root.get(attributeName);
 				}
 				Object rhs = rule.getValue();
-				
+
 				switch (operator)
 				{
 					case LAST:
-						throw new UnsupportedOperationException(
-								"Not supported yet.");
+						throw new UnsupportedOperationException("Not supported yet.");
 					case SORTASC:
 						orders.add(cb.asc(lhs));
 						break;
@@ -177,15 +167,11 @@ public class JPAQueryGeneratorUtil
 								{
 									try
 									{
-										predicate = cb.equal(
-												root.get(attributeName),
-												rule.getValue());
+										predicate = cb.equal(root.get(attributeName), rule.getValue());
 									}
 									catch (Exception ex)
 									{
-										LogFactory.getLog(
-												JPAQueryGeneratorUtil.class
-														.getName()).error(ex);
+										LogFactory.getLog(JPAQueryGeneratorUtil.class.getName()).error(ex);
 									}
 								}
 								else
@@ -194,22 +180,16 @@ public class JPAQueryGeneratorUtil
 									{
 										// it's a xref attribute which is joined
 										// to root
-										if (attributeName.contains(".") ||
-												root.get(attributeName)
-												.getJavaType().getName()
-												.equals("java.util.List")
-												|| root.get(attributeName)
-														.getJavaType()
-														.newInstance() instanceof Entity)
+										if (attributeName.contains(".")
+												|| root.get(attributeName).getJavaType().getName()
+														.equals("java.util.List")
+												|| root.get(attributeName).getJavaType().newInstance() instanceof Entity)
 										{
 											predicate = cb.equal(lhs, rhs);
 										}
 										else
 										{ // normal attribute
-//											predicate = cb.equal(
-//													root.get(attributeName),
-//													rule.getValue());
-											predicate = cb.equal(lhs,  rhs);
+											predicate = cb.equal(lhs, rhs);
 										}
 									}
 									catch (InstantiationException ex)
@@ -217,80 +197,56 @@ public class JPAQueryGeneratorUtil
 										// this is a hack, newInstance can not
 										// be called on inmutable object
 										// like Integer
-//										predicate = cb.equal(
-//												root.get(attributeName),
-//												rule.getValue());
-										predicate = cb.equal(lhs,  rhs);
+										predicate = cb.equal(lhs, rhs);
 									}
 									catch (IllegalAccessException ex)
 									{
-										LogFactory.getLog(
-												JPAQueryGeneratorUtil.class
-														.getName()).error(ex);
+										LogFactory.getLog(JPAQueryGeneratorUtil.class.getName()).error(ex);
 										throw new DatabaseException(ex);
 									}
 								}
 								break;
 							case NOT:
-//								predicate = cb.notEqual(
-//										root.get(attributeName),
-//										rule.getValue());
-								predicate = cb.notEqual(lhs,  rhs);
+								predicate = cb.notEqual(lhs, rhs);
 								break;
 							case LIKE:
-//								predicate = cb.like(
-//										root.get(attributeName)
-//												.as(String.class),
-//										(String) rule.getValue());
-								predicate = cb.like(lhs.as(String.class), (String) rhs);
+								if (lhs.getJavaType().getSimpleName().equals("String"))
+								{
+									predicate = cb.like(lhs.as(String.class), (String) rhs);
+								}
+								else
+								{
+									// TODO: What to do here?
+								}
 								break;
 							case LESS:
-//								predicate = cb.lessThan(
-//										(Expression) root.get(attributeName),
-//										(Comparable) rule.getValue());
 								predicate = cb.lessThan((Expression) lhs, (Comparable<Object>) rhs);
 								break;
 							case GREATER:
-//								predicate = cb.greaterThan(
-//										(Expression) root.get(attributeName),
-//										(Comparable) rule.getValue());
 								predicate = cb.greaterThan((Expression) lhs, (Comparable<Object>) rhs);
 								break;
 							case LESS_EQUAL:
-//								predicate = cb.lessThanOrEqualTo(
-//										(Expression) root.get(attributeName),
-//										(Comparable) rule.getValue());
 								predicate = cb.lessThanOrEqualTo((Expression) lhs, (Comparable<Object>) rhs);
 								break;
 							case GREATER_EQUAL:
-//								predicate = cb.greaterThanOrEqualTo(
-//										(Expression) root.get(attributeName),
-//										(Comparable) rule.getValue());
 								predicate = cb.greaterThanOrEqualTo((Expression) lhs, (Comparable<Object>) rhs);
 								break;
 							case NESTED:
 								QueryRule[] nestedrules = rule.getNestedRules();
-								_createWhere(db, mapper, em, root, cq, cb,
-										new int[2], joinHash, nestedrules);
+								predicate = _createWhere(db, mapper, em, root, cq, cb, new int[2], joinHash,
+										nestedrules);
 								break;
 							case SUBQUERY:
 								SubQueryRule sqr = (SubQueryRule) rule;
 
-								Subquery sq = cq.subquery(sqr
-										.getSubQueryResultClass());
-								Root<IN> sqFrom = sq.from(sqr
-										.getSubQueryFromClass());
+								Subquery sq = cq.subquery(sqr.getSubQueryResultClass());
+								Root<IN> sqFrom = sq.from(sqr.getSubQueryFromClass());
 
-								Mapper<IN> sqMapper = db.getMapper(sqr
-										.getSubQueryFromClass().getName());
+								Mapper<IN> sqMapper = db.getMapper(sqr.getSubQueryFromClass().getName());
 
-								Predicate where = _createWhere(db, sqMapper, em,
-										sqFrom, cq, cb, new int[2], joinHash,
+								Predicate where = _createWhere(db, sqMapper, em, sqFrom, cq, cb, new int[2], joinHash,
 										(QueryRule[]) sqr.getValue());
-								sq.select(
-										sqFrom.get(sqr
-												.getSubQueryAttributeJpa()))
-										.where(where);
+								sq.select(sqFrom.get(sqr.getSubQueryAttributeJpa())).where(where);
 
 								// the operator of subquery should be handled in
 								// the right way such that no code duplication
@@ -299,12 +255,9 @@ public class JPAQueryGeneratorUtil
 								// come)
 								String fieldForSubQuery = sqr.getJpaAttribute();
 
-								if (sqr.getSubQueryOperator().equals(
-										Operator.IN))
+								if (sqr.getSubQueryOperator().equals(Operator.IN))
 								{
-									predicate = cb.in(
-											root.get(fieldForSubQuery)).value(
-											sq);
+									predicate = cb.in(root.get(fieldForSubQuery)).value(sq);
 								}
 								else
 								{
@@ -317,15 +270,12 @@ public class JPAQueryGeneratorUtil
 								Object[] values = new Object[0];
 								if (rule.getValue() instanceof List)
 								{
-									values = ((List<?>) rule.getValue())
-											.toArray();
+									values = ((List<?>) rule.getValue()).toArray();
 								}
 								else
 								{
 									values = (Object[]) rule.getValue();
 								}
-//								Class attrClass = root.get(attributeName)
-//										.getJavaType();
 								Class<?> attrClass = null;
 								if (attributeName.contains("."))
 								{
@@ -339,15 +289,10 @@ public class JPAQueryGeneratorUtil
 								// AbstractEntity)
 								if (AbstractEntity.class.isAssignableFrom(attrClass))
 								{
-//									Field idField = getIdField(attrClass);
-//									predicate = root.get(attributeName)
-//											.get(idField.getName()).in(values);
 									predicate = root.get(attributeName).in(values);
 								}
 								else
 								{
-//									predicate = root.get(attributeName).in(
-//											values);
 									predicate = lhs.in(values);
 								}
 
@@ -358,28 +303,20 @@ public class JPAQueryGeneratorUtil
 						{
 							if (predicate != null)
 							{
-								if (prevRule != null
-										&& prevRule.getOperator().equals(
-												Operator.OR))
+								if (prevRule != null && prevRule.getOperator().equals(Operator.OR))
 								{
-									List<QueryRule> restOfQueryRules = rules
-											.subList(i, rules.size());
-									Predicate rightsPred = _createWhere(db,
-											mapper, em, root, cq, cb,
-											limitOffset, joinHash,
-											restOfQueryRules
-													.toArray(new QueryRule[1]));
+									List<QueryRule> restOfQueryRules = rules.subList(i, rules.size());
+									Predicate rightsPred = _createWhere(db, mapper, em, root, cq, cb, limitOffset,
+											joinHash, restOfQueryRules.toArray(new QueryRule[1]));
 									if (rightsPred != null)
 									{
-										whereClause = cb.or(whereClause,
-												rightsPred);
+										whereClause = cb.or(whereClause, rightsPred);
 									}
 									break forLoop;
 								}
 								else
 								{
-									whereClause = cb
-											.and(whereClause, predicate);
+									whereClause = cb.and(whereClause, predicate);
 								}
 							}
 						}
@@ -401,62 +338,48 @@ public class JPAQueryGeneratorUtil
 		// }
 		return whereClause;
 	}
-	
-	private static <E extends Entity> Expression<?> _addJoin(QueryRule rule, Root<E> root, Map<String, Join<?, ?>> joinHash) throws DatabaseException
+
+	private static <E extends Entity> Expression<?> _addJoin(QueryRule rule, Root<E> root,
+			Map<String, Join<?, ?>> joinHash) throws DatabaseException
 	{
 		try
 		{
 			String attributeName = rule.getJpaAttribute();
 
-			if (attributeName == null)
-				return null;
-			
-			if (rule.getValue() instanceof Entity)
-				return root.get(attributeName);
+			if (attributeName == null) return null;
 
-			if (attributeName.contains(".") ||
-					root.get(attributeName)
-					.getJavaType().getName()
-					.equals("java.util.List")
-					|| root.get(attributeName)
-							.getJavaType()
-							.newInstance() instanceof Entity)
+			if (rule.getValue() instanceof Entity) return root.get(attributeName);
+
+			if (attributeName.contains(".") || root.get(attributeName).getJavaType().getName().equals("java.util.List")
+					|| root.get(attributeName).getJavaType().newInstance() instanceof Entity)
 			{
 
-				Entity entity = root.getJavaType()
-						.newInstance();
-				String xrefAttribtename = entity
-						.getXrefIdFieldName(attributeName);
-	
+				Entity entity = root.getJavaType().newInstance();
+				String xrefAttribtename = entity.getXrefIdFieldName(attributeName);
+
 				String[] attributeNameSplit = StringUtils.split(attributeName, ".");
-				if (attributeNameSplit.length == 0) {
+				if (attributeNameSplit.length == 0)
+				{
 					return null;
 				}
-				else if(attributeNameSplit.length > 1) {
-					attributeName    = attributeNameSplit[0];
+				else if (attributeNameSplit.length > 1)
+				{
+					attributeName = attributeNameSplit[0];
 					xrefAttribtename = attributeNameSplit[1];
 				}
-	
+
 				Join<?, ?> join = null;
-	//			Set<Join<E, ?>> joins = root.getJoins();
-	//			for (Join tmp : joins.toArray(new Join[0]))
-	//			{
-	//				if (tmp.getAttribute().getName().equals(attributeName))
-	//				{
-	//					join = tmp;
-	//				}
-	//			}
-				if(joinHash.containsKey(attributeName)) {
+				if (joinHash.containsKey(attributeName))
+				{
 					join = joinHash.get(attributeName);
-				} else {
-					join = root.join(
-						attributeName,
-							JoinType.LEFT);
+				}
+				else
+				{
+					join = root.join(attributeName, JoinType.LEFT);
 					joinHash.put(attributeName, join);
 				}
-				Expression<?> attribute = join
-						.get(xrefAttribtename);
-				
+				Expression<?> attribute = join.get(xrefAttribtename);
+
 				return attribute;
 			}
 		}
@@ -468,9 +391,7 @@ public class JPAQueryGeneratorUtil
 		}
 		catch (IllegalAccessException ex)
 		{
-			LogFactory.getLog(
-					JPAQueryGeneratorUtil.class
-							.getName()).error(ex);
+			LogFactory.getLog(JPAQueryGeneratorUtil.class.getName()).error(ex);
 			throw new DatabaseException(ex);
 		}
 		return null;

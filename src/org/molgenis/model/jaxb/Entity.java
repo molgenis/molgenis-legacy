@@ -13,44 +13,43 @@ public class Entity
 {
 	@XmlAttribute
 	private String name;
-	
+
 	@XmlAttribute
 	private String label;
-	
-	//serializes attributes in reverse order of elements
+
+	// serializes attributes in reverse order of elements
 	@XmlElement
 	private String description;
-	
-	@XmlElement(name="field")
+
+	@XmlElement(name = "field")
 	private List<Field> fields = new ArrayList<Field>();
-	
-	@XmlElement(name="unique")
+
+	@XmlElement(name = "unique")
 	private List<Unique> uniques = new ArrayList<Unique>();
 
-	@XmlAttribute(name="extends")
+	@XmlAttribute(name = "extends")
 	private String _extends = null;
-	
-	@XmlAttribute(name="implements")
+
+	@XmlAttribute(name = "implements")
 	private String _implements = null;
-	
-	@XmlAttribute(name="decorator")
+
+	@XmlAttribute(name = "decorator")
 	private String _decorator = null;
-	
-	@XmlAttribute(name="abstract")
+
+	@XmlAttribute(name = "abstract")
 	private Boolean _abstract;
-	
-	//HELPER METHODS
+
+	// HELPER METHODS
 	public Field getField(String name)
 	{
-		for(Field f: fields)
+		for (Field f : fields)
 		{
-			if(f.getName().trim().equals(name.trim()))
-				return f;
+			if (f.getName().trim().equals(name.trim())) return f;
 		}
 		return null;
 	}
-	
-//GETTERS and SETTERS
+
+	// GETTERS and SETTERS
 	public String getName()
 	{
 		return name;
@@ -60,7 +59,7 @@ public class Entity
 	{
 		this.name = name;
 	}
-	
+
 	public String getLabel()
 	{
 		return label;
@@ -70,13 +69,15 @@ public class Entity
 	{
 		this.label = label;
 	}
-	
-	//added function addField for adding field to entity
-	public void addField(Field e){
+
+	// added function addField for adding field to entity
+	public void addField(Field e)
+	{
 		fields.add(e);
 	}
-	
-	public void removeField(int index){
+
+	public void removeField(int index)
+	{
 		fields.remove(index);
 	}
 
@@ -89,7 +90,7 @@ public class Entity
 	{
 		this.fields = fields;
 	}
-	
+
 	public List<Unique> getUniques()
 	{
 		return uniques;
@@ -139,7 +140,7 @@ public class Entity
 	{
 		this._implements = _implements;
 	}
-	
+
 	public String getDecorator()
 	{
 		return _decorator;

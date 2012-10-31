@@ -18,8 +18,6 @@ import org.molgenis.util.SimpleTree;
 
 // invengine
 
-
-
 /**
  * Definition of the base-class for objects in the database schema. This class
  * inherits from the tree, so it can hold multiple children and have convenient
@@ -34,11 +32,11 @@ public class DBSchema extends SimpleTree<DBSchema>
 	// variables
 	/** Used for serialization purposes */
 	private static final long serialVersionUID = -6239251669294203517L;
-	
+
 	private List<Module> modules = new ArrayList<Module>();
-	
+
 	private Model model;
-	
+
 	public Model getModel()
 	{
 		return model;
@@ -54,9 +52,10 @@ public class DBSchema extends SimpleTree<DBSchema>
 	 * The standard constructor, which links the object in the tree (with the
 	 * parent parameter).
 	 * 
-	 * @param name The name of the element.
-	 * @param parent The parent which will be used to link this object in the
-	 *            tree.
+	 * @param name
+	 *            The name of the element.
+	 * @param parent
+	 *            The parent which will be used to link this object in the tree.
 	 */
 	public DBSchema(String name, DBSchema parent, Model model)
 	{

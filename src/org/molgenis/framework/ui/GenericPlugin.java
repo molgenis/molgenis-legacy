@@ -26,7 +26,7 @@ import freemarker.template.Template;
 @Deprecated
 public class GenericPlugin extends PluginModel<Entity>
 {
-	//serialization id
+	// serialization id
 	private static final long serialVersionUID = 1L;
 	// wrapper of this template
 	private freemarker.template.Configuration cfg = null;
@@ -56,19 +56,16 @@ public class GenericPlugin extends PluginModel<Entity>
 		String action = request.getAction();
 		try
 		{
-			logger.debug("trying to use reflection to call "
-					+ this.getClass().getName() + "." + action);
-			Method m = this.getClass().getMethod(action, Database.class,
-					Tuple.class);
+			logger.debug("trying to use reflection to call " + this.getClass().getName() + "." + action);
+			Method m = this.getClass().getMethod(action, Database.class, Tuple.class);
 			m.invoke(this, db, request);
-			logger.debug("call of " + this.getClass().getName() + "(name="
-					+ this.getName() + ")." + action + " completed");
+			logger.debug("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
+					+ " completed");
 		}
 		catch (Exception e)
 		{
-			logger.error("call of " + this.getClass().getName() + "(name="
-					+ this.getName() + ")." + action + " failed: "
-					+ e.getMessage());
+			logger.error("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
+					+ " failed: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -76,12 +73,17 @@ public class GenericPlugin extends PluginModel<Entity>
 	@Override
 	public boolean isVisible()
 	{
-		if (this.getLogin().isAuthenticated()){
-			try {
-				if (this.getLogin().canRead(this)) {
+		if (this.getLogin().isAuthenticated())
+		{
+			try
+			{
+				if (this.getLogin().canRead(this))
+				{
 					return true;
 				}
-			} catch (DatabaseException e) {
+			}
+			catch (DatabaseException e)
+			{
 				e.printStackTrace();
 			}
 		}
@@ -93,7 +95,7 @@ public class GenericPlugin extends PluginModel<Entity>
 		logger.debug("trying to render " + templatePath);
 		try
 		{
-			//keep configuration in session so we can reuse it
+			// keep configuration in session so we can reuse it
 			if (cfg == null)
 			{
 				logger.debug("create freemarker config");
@@ -104,17 +106,15 @@ public class GenericPlugin extends PluginModel<Entity>
 				cfg.setObjectWrapper(wrapper);
 
 				// create template loader
-				ClassTemplateLoader loader1 = new ClassTemplateLoader(
-						getClass(), "");
-				ClassTemplateLoader loader2 = new ClassTemplateLoader(
-						getClass().getSuperclass(), "");
+				ClassTemplateLoader loader1 = new ClassTemplateLoader(getClass(), "");
+				ClassTemplateLoader loader2 = new ClassTemplateLoader(getClass().getSuperclass(), "");
 				TemplateLoader[] loaders = new TemplateLoader[]
 				{ loader1, loader2 };
 				MultiTemplateLoader mLoader = new MultiTemplateLoader(loaders);
 				cfg.setTemplateLoader(mLoader);
 				logger.debug("created freemarker config");
 			}
-			
+
 			// create template parameters
 			Map<String, Object> templateArgs = new TreeMap<String, Object>();
 			templateArgs.put("screen", this);
@@ -129,8 +129,7 @@ public class GenericPlugin extends PluginModel<Entity>
 		}
 		catch (Exception e)
 		{
-			logger.error("rendering of template " + templatePath + " failed:"
-					+ e.getMessage());
+			logger.error("rendering of template " + templatePath + " failed:" + e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -143,22 +142,22 @@ public class GenericPlugin extends PluginModel<Entity>
 		// this. Ouch!
 		return render(this.getViewTemplate());
 	}
-	
+
 	public boolean renderAsForm()
 	{
 		return this.isForm;
 	}
-	
+
 	public void clearMessage()
-    {
+	{
 		this.setMessages();
-    }
+	}
 
 	@Override
 	public void reset()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -171,6 +170,6 @@ public class GenericPlugin extends PluginModel<Entity>
 	public void reload(Database db)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 }

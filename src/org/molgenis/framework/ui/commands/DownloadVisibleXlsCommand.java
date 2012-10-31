@@ -22,8 +22,9 @@ import org.molgenis.util.XlsWriter;
 
 /**
  * This command downloads the records currently shown as csv.
+ * 
  * @author Morris Swertz
- *
+ * 
  * @param <E>
  */
 public class DownloadVisibleXlsCommand extends SimpleCommand
@@ -31,7 +32,7 @@ public class DownloadVisibleXlsCommand extends SimpleCommand
 	private static final long serialVersionUID = -6279819301321361448L;
 	public static final transient Logger logger = Logger.getLogger(DownloadVisibleXlsCommand.class);
 
-	public DownloadVisibleXlsCommand(String name, ScreenController<?>  parentScreen)
+	public DownloadVisibleXlsCommand(String name, ScreenController<?> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setDownload(true);
@@ -41,14 +42,15 @@ public class DownloadVisibleXlsCommand extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream xlsDownload) throws ParseException, DatabaseException,
-			Exception
+	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream xlsDownload) throws ParseException,
+			DatabaseException, Exception
 	{
 		FormModel<?> view = this.getFormScreen();
-		List<String> fieldsToExport = ((FormController<?>)this.getController()).getVisibleColumnNames();
+		List<String> fieldsToExport = ((FormController<?>) this.getController()).getVisibleColumnNames();
 		XlsWriter writer = new XlsWriter(xlsDownload, fieldsToExport);
 		writer.writeHeader();
-		for(Entity e: view.getRecords()) writer.writeRow(e);
+		for (Entity e : view.getRecords())
+			writer.writeRow(e);
 		writer.close();
 		return ScreenModel.Show.SHOW_MAIN;
 	}

@@ -49,7 +49,7 @@ public class MolgenisJqGridService implements MolgenisService
 
 			// Get the requested page. By default grid sets this to 1.
 			Integer page = req.getInt("page");
-			if(page == null || page < 1) page = 1;
+			if (page == null || page < 1) page = 1;
 
 			// get how many rows we want to have into the grid - rowNum
 			// parameter in the grid
@@ -60,7 +60,7 @@ public class MolgenisJqGridService implements MolgenisService
 			// parameter -
 			// after that the index from colModel
 			String sortIndex = req.getString("sidx");
-			
+
 			boolean sortAsc = "asc".equals(req.getString("sord")) ? true : false;
 
 			// sorting order - at first time sortorder
@@ -78,9 +78,9 @@ public class MolgenisJqGridService implements MolgenisService
 			// create a query on entity
 			Database db = req.getDatabase();
 			Query<?> q = db.query(entityClass);
-			
-			//search?
-			if(!req.isNull("filter") && !"".equals(req.getString("filter")))
+
+			// search?
+			if (!req.isNull("filter") && !"".equals(req.getString("filter")))
 			{
 				q.search(req.getString("filter").trim());
 			}
@@ -92,21 +92,22 @@ public class MolgenisJqGridService implements MolgenisService
 			int total_pages = 1;
 			if (recordCount > 0 && limit > 0)
 			{
-				total_pages = (int)(recordCount / limit) + 1;
+				total_pages = (int) (recordCount / limit) + 1;
 			}
-			
-			// if for some reasons the requested page is greater than the total 
-			// set the requested page to total page 
+
+			// if for some reasons the requested page is greater than the total
+			// set the requested page to total page
 			if (page > total_pages) page = total_pages;
 
 			// todo: implement filters
 			q.limit(limit);
-			q.offset(page*limit - limit);
-			
-			//sorting
-			if(sortAsc)	q.sortASC(sortIndex);
-			else q.sortDESC(sortIndex);
-			
+			q.offset(page * limit - limit);
+
+			// sorting
+			if (sortAsc) q.sortASC(sortIndex);
+			else
+				q.sortDESC(sortIndex);
+
 			List<? extends Entity> result = q.find();
 
 			// {

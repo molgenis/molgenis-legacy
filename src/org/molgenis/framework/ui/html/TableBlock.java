@@ -31,27 +31,26 @@ public class TableBlock
 		// make sure size is right
 		if (row + value.getRowspan() >= rowSize || col + value.getColspan() >= colSize)
 		{
-			this.resize(Math.max(row + value.getRowspan(), rowSize),
-					Math.max(col + value.getColspan(), colSize));
+			this.resize(Math.max(row + value.getRowspan(), rowSize), Math.max(col + value.getColspan(), colSize));
 		}
-		
+
 		// remove all cells affected
 		for (int i = row; i < row + value.getRowspan(); i++)
 		{
 			for (int j = col; j < col + value.getColspan(); j++)
 			{
-				//remove oldvalues
+				// remove oldvalues
 				TableCell oldValue = get(row, col);
 				if (oldValue != null)
 				{
-					logger.warn("removing table cell because overwriting: row = "
-							+ oldValue.getCol() + ", col=" + oldValue.getRow());
+					logger.warn("removing table cell because overwriting: row = " + oldValue.getCol() + ", col="
+							+ oldValue.getRow());
 					remove(oldValue);
 				}
 			}
 		}
-		
-		//set all cell references (incl spanning)
+
+		// set all cell references (incl spanning)
 		for (int i = row; i < row + value.getRowspan(); i++)
 		{
 			for (int j = col; j < col + value.getColspan(); j++)
@@ -68,14 +67,11 @@ public class TableBlock
 
 		if (oldValue != null)
 		{
-			for (int rowIndex = oldValue.getRow(); rowIndex < oldValue.getRow()
-					+ oldValue.getRowspan(); rowIndex++)
+			for (int rowIndex = oldValue.getRow(); rowIndex < oldValue.getRow() + oldValue.getRowspan(); rowIndex++)
 			{
-				for (int colIndex = oldValue.getCol(); colIndex < oldValue
-						.getCol() + oldValue.getColspan(); colIndex++)
+				for (int colIndex = oldValue.getCol(); colIndex < oldValue.getCol() + oldValue.getColspan(); colIndex++)
 				{
-					values[rowIndex][colIndex] = new TableCell(rowIndex,
-							colIndex, new CustomHtml(""));
+					values[rowIndex][colIndex] = new TableCell(rowIndex, colIndex, new CustomHtml(""));
 				}
 			}
 		}
@@ -84,9 +80,9 @@ public class TableBlock
 	}
 
 	public String renderRows()
-	{		
-		String result = "";
-		// iterate throught the rows and cols; render unless it is spanning
+	{
+		StringBuilder strBuilder = new StringBuilder();
+		// iterate through the rows and cols; render unless it is spanning
 		for (int row = 0; row < values.length; row++)
 		{
 			// only open tr if it is not complete in 'spanning'.
@@ -95,31 +91,28 @@ public class TableBlock
 			{
 				for (int col = 0; col < values[row].length; col++)
 				{
-					TableCell td = get(row,col);
+					TableCell td = get(row, col);
 					if (td != null && row == td.getRow() && col == td.getCol())
 					{
 						if (tr == false)
 						{
-							result += "\t\n<tr>";
+							strBuilder.append("\t\n<tr>");
 							tr = true;
 						}
 
 						// create the <td with optional colspan, rowspane
-						String colspan = td.getColspan() > 1 ? " colspan="
-								+ td.getColspan() : "";
-						String rowspan = td.getRowspan() > 1 ? " rowspan="
-								+ td.getRowspan() : "";
-						String value = td.getValue() != null ? td.getValue()
-								.render() : "";
-						result += "<td" + colspan + rowspan + ">" + value
-								+ "</td>";
+						String colspan = td.getColspan() > 1 ? " colspan=" + td.getColspan() : "";
+						String rowspan = td.getRowspan() > 1 ? " rowspan=" + td.getRowspan() : "";
+						String value = td.getValue() != null ? td.getValue().render() : "";
+						strBuilder.append("<td").append(colspan).append(rowspan).append('>');
+						strBuilder.append(value).append("</td>");
 					}
 				}
 			}
-			if (tr) result += "</tr>";
+			if (tr) strBuilder.append("</tr>");
 		}
 
-		return result;
+		return strBuilder.toString();
 	}
 
 	/** Helper method to resize the values array */
@@ -136,9 +129,9 @@ public class TableBlock
 			{
 				values[i] = (TableCell[]) resizeArray(values[i], cols);
 			}
-			for(int j = 0; j < values[i].length; j++)
+			for (int j = 0; j < values[i].length; j++)
 			{
-				if(values[i][j] == null) values[i][j] = new TableCell(i,j,new CustomHtml(""),1,1);
+				if (values[i][j] == null) values[i][j] = new TableCell(i, j, new CustomHtml(""), 1, 1);
 			}
 		}
 		this.rowSize = rows;
@@ -150,11 +143,9 @@ public class TableBlock
 	{
 		int oldSize = java.lang.reflect.Array.getLength(oldArray);
 		Class<?> elementType = oldArray.getClass().getComponentType();
-		Object newArray = java.lang.reflect.Array.newInstance(elementType,
-				newSize);
+		Object newArray = java.lang.reflect.Array.newInstance(elementType, newSize);
 		int preserveLength = Math.min(oldSize, newSize);
-		if (preserveLength > 0) System.arraycopy(oldArray, 0, newArray, 0,
-				preserveLength);
+		if (preserveLength > 0) System.arraycopy(oldArray, 0, newArray, 0, preserveLength);
 		return newArray;
 	}
 

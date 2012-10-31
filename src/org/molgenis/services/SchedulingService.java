@@ -19,7 +19,7 @@ public class SchedulingService
 	public void start() throws SchedulerException
 	{
 		SchedulerFactory sf = new StdSchedulerFactory();
-		this.scheduler      = sf.getScheduler();
+		this.scheduler = sf.getScheduler();
 		this.scheduler.start();
 	}
 
@@ -28,7 +28,8 @@ public class SchedulingService
 		this.scheduleOnce(this.scheduler, jobData, klazz);
 	}
 
-	public void scheduleOnce(Scheduler scheduler, HashMap<Object, Object> jobData, Class<?> klazz) throws SchedulerException
+	public void scheduleOnce(Scheduler scheduler, HashMap<Object, Object> jobData, Class<?> klazz)
+			throws SchedulerException
 	{
 		JobDetail jobDetail = new JobDetail();
 		jobDetail.setName("molgenis_" + UUID.randomUUID().toString());
@@ -36,14 +37,15 @@ public class SchedulingService
 		jobDetail.setJobClass(klazz);
 		jobDetail.setJobDataMap(new JobDataMap(jobData));
 
-		SimpleTrigger simpleTrigger = new SimpleTrigger("simpletrigger", Scheduler.DEFAULT_GROUP, new Date(), null, 0, 0L);
+		SimpleTrigger simpleTrigger = new SimpleTrigger("simpletrigger", Scheduler.DEFAULT_GROUP, new Date(), null, 0,
+				0L);
 
 		scheduler.scheduleJob(jobDetail, simpleTrigger);
 	}
 
 	public void shutdown() throws SchedulerException, InterruptedException
 	{
-		boolean waitForJobsToComplete = true ;
+		boolean waitForJobsToComplete = true;
 		this.scheduler.shutdown(waitForJobsToComplete);
 		Thread.sleep(1000);
 	}

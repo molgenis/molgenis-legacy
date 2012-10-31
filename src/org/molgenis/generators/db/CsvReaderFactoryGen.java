@@ -2,8 +2,10 @@ package org.molgenis.generators.db;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -24,28 +26,31 @@ public class CsvReaderFactoryGen extends Generator
 	{
 		return "Generates one CSVReader factory. Encapsulates CsvReaders to deal with the individual entities.";
 	}
-	
+
 	@Override
-	public void generate(Model model, MolgenisOptions options)
-			throws Exception
+	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
-		Template template = createTemplate( "/"+getClass().getSimpleName()+".java.ftl" );
+		Template template = createTemplate("/" + getClass().getSimpleName() + ".java.ftl");
 		Map<String, Object> templateArgs = createTemplateArguments(options);
-		
+
 		List<Entity> entityList = model.getEntities();
-		//this.sortEntitiesByXref(entityList,model); //side effect?
+		// this.sortEntitiesByXref(entityList,model); //side effect?
 
+		File target = new File(this.getSourcePath(options) + model.getName().replace(".", "/")
+				+ "/data/CsvReaderFactory.java");
+		boolean created = target.getParentFile().mkdirs();
+		if (!created && !target.getParentFile().exists())
+		{
+			throw new IOException("could not create " + target.getParentFile());
+		}
 
-		File target = new File( this.getSourcePath(options) + model.getName().replace(".", "/") + "/data/CsvReaderFactory.java" );
-		target.getParentFile().mkdirs();
-		
-		templateArgs.put("model", model );
-		templateArgs.put("entities",entityList);
+		templateArgs.put("model", model);
+		templateArgs.put("entities", entityList);
 		templateArgs.put("package", model.getName().toLowerCase() + ".data");
-		OutputStream targetOut = new FileOutputStream( target );
-		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
+		OutputStream targetOut = new FileOutputStream(target);
+		template.process(templateArgs, new OutputStreamWriter(targetOut, Charset.forName("UTF-8")));
 		targetOut.close();
-		
+
 		logger.info("generated " + target);
 	}
 

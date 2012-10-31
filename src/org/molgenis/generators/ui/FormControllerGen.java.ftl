@@ -24,22 +24,16 @@ package ${package};
 
 // jdk
 import java.util.Vector;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 // molgenis
-import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.db.QueryRule;
-
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FormController;
-import org.molgenis.framework.ui.FormModel.ParentFilter;
-import org.molgenis.framework.ui.html.*;
 
+import org.molgenis.framework.ui.html.*;
+import org.molgenis.framework.db.QueryRule.Operator;  
+import org.molgenis.framework.db.DatabaseException;
 
 ${imports(model, model.getEntity(entity), "")}
 ${imports(model, model.getEntity(entity), "csv", "CsvReader")}
@@ -69,6 +63,7 @@ public class ${JavaName(form.className)}FormController extends FormController<${
 		getModel().setLabel("${form.label}");
 		getModel().setLimit(${form.limit});
 		<#if form.header?exists>getModel().setHeader("${form.header}");</#if>
+		<#if form.description?exists>getModel().setDescription("${form.description}");</#if>
 
 		<#if form.sortby?exists>
 		//sort is a bit hacky awaiting redesign of the Form classes
@@ -97,7 +92,11 @@ public class ${JavaName(form.className)}FormController extends FormController<${
 		<#list superclasses(parent_form.getRecord()) as parent_entity>
 			<#if parent_entity.getName() == field.xrefEntityName>
 		//filter on <#if field.getType() == "mref">ANY </#if>subform_entity.${name(field)} == parentform_entity.${name(field.xrefField)}
-		getModel().getParentFilters().add(new ParentFilter("${parent_form.name}","${SqlName(field.xrefField)}",Arrays.asList("${csv(field.xrefLabelNames)}".split(",")),"${SqlName(name(field))}"));
+				<#if field.xrefEntity.primaryKey.name == SqlName(field.xrefField)>
+		getModel().getParentFilters().add(new org.molgenis.framework.ui.FormModel.ParentFilter("${parent_form.name}","${SqlName(field.xrefField)}",java.util.Arrays.asList("${csv(field.xrefLabelNames)}".split(",")),"${SqlName(name(field))}"));
+				<#else>
+		getModel().getParentFilters().add(new org.molgenis.framework.ui.FormModel.ParentFilter("${parent_form.name}","${SqlName(field.xrefField)}_${field.xrefEntity.primaryKey.name}",java.util.Arrays.asList("${csv(field.xrefLabelNames)}".split(",")),"${SqlName(name(field))}"));
+				</#if>
 			</#if>
 		</#list>
 	</#if>
@@ -110,7 +109,11 @@ public class ${JavaName(form.className)}FormController extends FormController<${
 		<#list superclasses(form.getRecord()) as subform_entity>
 			<#if subform_entity.getName() == field.xrefEntityName>
 		//filter on subform_entity.${name(field.xrefField)} == <#if field.getType() == "mref">ANY </#if> parentform_entity.${name(field)}
-		getModel().getParentFilters().add(new ParentFilter("${parent_form.name}","${SqlName(name(field))}",Arrays.asList("${csv(field.xrefLabelNames)}".split(",")),"${SqlName(field.xrefField)}"));		
+				<#if parent_form.getRecord().getPrimaryKey().getName() == SqlName(name(field))>
+		getModel().getParentFilters().add(new org.molgenis.framework.ui.FormModel.ParentFilter("${parent_form.name}","${SqlName(name(field))}",java.util.Arrays.asList("${csv(field.xrefLabelNames)}".split(",")),"${SqlName(field.xrefField)}"));		
+				<#else>
+		getModel().getParentFilters().add(new org.molgenis.framework.ui.FormModel.ParentFilter("${parent_form.name}","${SqlName(name(field))}_${parent_form.getRecord().getPrimaryKey().getName()}",java.util.Arrays.asList("${csv(field.xrefLabelNames)}".split(",")),"${SqlName(field.xrefField)}"));		
+				</#if>
 			</#if>
 		</#list>
 	</#if>
@@ -130,7 +133,7 @@ public class ${JavaName(form.className)}FormController extends FormController<${
 </#list>	
 
 <#if form.hideFields?size &gt; 0>
-		getModel().setUserHiddenColumns(Arrays.asList(new String[]{${csvQuotedEntity(entity, form.hideFields)}}));
+		getModel().setUserHiddenColumns(java.util.Arrays.asList(new String[]{${csvQuotedEntity(entity, form.hideFields)}}));
 </#if>	
 
 <#list form.getRecord().getAllFields() as field>
@@ -148,7 +151,7 @@ public class ${JavaName(form.className)}FormController extends FormController<${
 		form.setNewRecord(newrecord);
 		form.setReadonly(getModel().isReadonly());
 		form.setHiddenColumns(getModel().getUserHiddenColumns());
-		<#if form.compactView?size &gt; 0>form.setCompactView(Arrays.asList(new String[]{${csvQuoted(form.compactView)}}));</#if>
+		<#if form.compactView?size &gt; 0>form.setCompactView(java.util.Arrays.asList(new String[]{${csvQuoted(form.compactView)}}));</#if>
 		return form;
 	}
 	

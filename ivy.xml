@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Licensed to the Apache Software Foundation (ASF) under one or more contributor 
+	license agreements. See the NOTICE file distributed with this work for additional 
+	information regarding copyright ownership. The ASF licenses this file to 
+	you under the Apache License, Version 2.0 (the "License"); you may not use 
+	this file except in compliance with the License. You may obtain a copy of 
+	the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
+	by applicable law or agreed to in writing, software distributed under the 
+	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+	OF ANY KIND, either express or implied. See the License for the specific 
+	language governing permissions and limitations under the License. -->
+<ivy-module version="2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+	<info organisation="org.molgenis" module="molgenis"/>
+	<dependencies>
+		<!-- frameworks -->
+		<dependency org="log4j" name="log4j" rev="1.2.17" />
+		<dependency org="commons-logging" name="commons-logging"
+			rev="1.1.1" />
+		<dependency org="commons-lang" name="commons-lang" rev="2.4" />
+		<dependency org="commons-io" name="commons-io" rev="2.4" />
+		<dependency org="commons-fileupload" name="commons-fileupload"
+			rev="1.2.2" />
+		<dependency org="org.apache.commons" name="commons-email" rev="1.2"/>
+		<dependency org="org.freemarker" name="freemarker" rev="2.3.19" />
+		<dependency org="org.opensymphony.quartz" name="quartz"
+			rev="1.6.1" />
+
+		<!-- database -->
+		<dependency org="commons-dbcp" name="commons-dbcp" rev="1.4" />
+		<dependency org="org.hibernate" name="hibernate-entitymanager"
+			rev="3.5.6-Final" />
+		<dependency org="org.hibernate" name="hibernate-search"
+			rev="3.4.2.Final">
+			<exclude org="javax.jms" />
+		</dependency>
+
+		<!-- build and test -->
+		<dependency org="org.testng" name="testng" rev="6.4" />
+		<dependency org="org.apache.ant" name="ant" rev="1.8.4" />
+		<dependency org="ant" name="ant-apache-log4j" rev="1.6.5" />
+
+		<!-- files and systems -->
+		<dependency org="jexcelapi" name="jxl" rev="2.6" />
+		<dependency org="ch.ethz.ganymed" name="ganymed-ssh2" rev="build210" />
+		<dependency org="javatar" name="javatar" rev="2.5" />
+
+		<!-- xml, json, web services -->
+		<dependency org="com.google.code.gson" name="gson" rev="2.2.2" />
+		<dependency org="xerces" name="xerces" rev="2.4.0" />
+		<dependency org="org.apache.cxf" name="cxf-bundle-minimal"
+			rev="2.6.2" />
+		<dependency org="org.jboss.resteasy" name="tjws" rev="2.3.4.Final" />
+
+	</dependencies>
+</ivy-module>

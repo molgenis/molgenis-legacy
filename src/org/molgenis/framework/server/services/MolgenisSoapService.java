@@ -19,35 +19,34 @@ import org.molgenis.framework.server.MolgenisService;
  * 
  * NOT WORKING, seems to get stuck on:
  * 
- * Dec 6, 2011 10:59:16 PM org.apache.cxf.jaxrs.impl.WebApplicationExceptionMapper toResponse
- * WARNING: WebApplicationException has been caught : no cause is available
+ * Dec 6, 2011 10:59:16 PM
+ * org.apache.cxf.jaxrs.impl.WebApplicationExceptionMapper toResponse WARNING:
+ * WebApplicationException has been caught : no cause is available
  * 
  */
-public class MolgenisSoapService extends CXFNonSpringServlet implements
-		MolgenisService
+public class MolgenisSoapService extends CXFNonSpringServlet implements MolgenisService
 {
 	Logger logger = Logger.getLogger(MolgenisRapiService.class);
 	private static final long serialVersionUID = 1L;
 	private MolgenisContext mc;
 	private boolean cxfLoaded;
-	
+
 	protected Database freshDatabase = null;
 
 	public MolgenisSoapService(MolgenisContext mc) throws ServletException
 	{
 		this.mc = mc;
-		
+
 		super.init(mc.getServletConfig());
 
-//		Hashtable<String, Object> params = new Hashtable<String, Object>();
-//		params.put("jaxrs.serviceClasses", "app.servlet.SoapApi");
-//
-//		//ServletConfig sc = config;
-//		//super.init(sc);
+		// Hashtable<String, Object> params = new Hashtable<String, Object>();
+		// params.put("jaxrs.serviceClasses", "app.servlet.SoapApi");
+		//
+		// //ServletConfig sc = config;
+		// //super.init(sc);
 	}
 
-	public void handleRequest(MolgenisRequest request, MolgenisResponse response)
-			throws IOException
+	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws IOException
 	{
 		freshDatabase = request.getDatabase();
 
@@ -58,7 +57,7 @@ public class MolgenisSoapService extends CXFNonSpringServlet implements
 				super.loadBus(mc.getServletConfig());
 				Bus bus = this.getBus();
 				BusFactory.setDefaultBus(bus);
-				//FIXME: unhardcode path
+				// FIXME: unhardcode path
 				Endpoint.publish("/api/soap", this.getSoapImpl());
 				this.cxfLoaded = true;
 			}
@@ -82,7 +81,6 @@ public class MolgenisSoapService extends CXFNonSpringServlet implements
 	 */
 	public Object getSoapImpl() throws ServletException
 	{
-		throw new UnsupportedOperationException(
-				"Don't use this! Try the generated subclass 'SoapService' instead.");
+		throw new UnsupportedOperationException("Don't use this! Try the generated subclass 'SoapService' instead.");
 	}
 }

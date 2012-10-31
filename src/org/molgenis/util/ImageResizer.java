@@ -7,10 +7,14 @@ public interface ImageResizer
 	/**
 	 * Function to resize images
 	 * 
-	 * @param src image
-	 * @param dest image
-	 * @param destWidth new size
-	 * @param destHeight new size
+	 * @param src
+	 *            image
+	 * @param dest
+	 *            image
+	 * @param destWidth
+	 *            new size
+	 * @param destHeight
+	 *            new size
 	 * @return true if success
 	 * @throws Exception
 	 */

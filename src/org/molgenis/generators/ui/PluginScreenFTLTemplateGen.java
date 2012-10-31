@@ -2,8 +2,10 @@ package org.molgenis.generators.ui;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -45,54 +47,59 @@ public class PluginScreenFTLTemplateGen extends Generator
 
 				String fullKlazzName = plugin.getPluginType();
 				String packageName = fullKlazzName;
-				if (fullKlazzName.contains("."))
-					packageName = fullKlazzName.substring(0, fullKlazzName.lastIndexOf("."));
+				if (fullKlazzName.contains(".")) packageName = fullKlazzName.substring(0,
+						fullKlazzName.lastIndexOf("."));
 
 				String shortKlazzName = fullKlazzName;
-				if (fullKlazzName.contains("."))
-					shortKlazzName = fullKlazzName.substring(fullKlazzName.lastIndexOf(".") + 1);
+				if (fullKlazzName.contains(".")) shortKlazzName = fullKlazzName.substring(fullKlazzName
+						.lastIndexOf(".") + 1);
 
 				File targetFile = new File(this.getHandWrittenPath(options) + "/" + fullKlazzName.replace(".", "/")
 						+ ".ftl");
-				// only generate if the file doesn't exist AND plugin not already on classpath
+				// only generate if the file doesn't exist AND plugin not
+				// already on classpath
 				Class<?> c = null;
 				try
 				{
 					c = Class.forName(fullKlazzName);
-					//return;
-				} catch (ClassNotFoundException e)
-				{
-					logger.error("skipped plugin "+plugin.getName()+" as it is on the classpath");
+					// return;
 				}
-				logger.error("tested classforname on "+fullKlazzName+": "+c);
-			
-				
-				
+				catch (ClassNotFoundException e)
+				{
+					logger.error("skipped plugin " + plugin.getName() + " as it is on the classpath");
+				}
+				logger.error("tested classforname on " + fullKlazzName + ": " + c);
+
 				if (!targetFile.exists() && c == null)
 				{
 					File targetDir = new File(this.getHandWrittenPath(options) + "/" + packageName.replace(".", "/"));
-					targetDir.mkdirs();
-					
+					boolean created = targetDir.mkdirs();
+					if (!created && !targetDir.exists())
+					{
+						throw new IOException("could not create " + targetDir);
+					}
+
 					templateArgs.put("screen", plugin);
 					templateArgs.put("template", template.getName());
-					templateArgs.put("clazzName", shortKlazzName);					
-					templateArgs.put("macroName", fullKlazzName.replace(".", "_"));	
+					templateArgs.put("clazzName", shortKlazzName);
+					templateArgs.put("macroName", fullKlazzName.replace(".", "_"));
 					templateArgs.put("templatePath", targetFile.toString().replace("\\", "/"));
-					templateArgs.put("package", packageName);									
+					templateArgs.put("package", packageName);
 
 					OutputStream targetOut = new FileOutputStream(targetFile);
-					template.process(templateArgs, new OutputStreamWriter(targetOut));
+					template.process(templateArgs, new OutputStreamWriter(targetOut, Charset.forName("UTF-8")));
 					targetOut.close();
 
-					logger.info("generated " + targetFile.getAbsolutePath().substring(this.getHandWrittenPath(options).length()));
+					logger.info("generated "
+							+ targetFile.getAbsolutePath().substring(this.getHandWrittenPath(options).length()));
 				}
 				else
 				{
 					logger.warn("Skipped because exists: " + targetFile);
 				}
 			}
-			
-			//get children of this screen and generate those
+
+			// get children of this screen and generate those
 			generateForm(model, options, screen);
 		}
 	}

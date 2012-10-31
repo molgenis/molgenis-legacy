@@ -26,8 +26,7 @@ import org.molgenis.util.Tuple;
 public class AddBatchCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = -4067952586340535730L;
-	public static final transient Logger logger = Logger
-			.getLogger(AddBatchCommand.class);
+	public static final transient Logger logger = Logger.getLogger(AddBatchCommand.class);
 
 	public AddBatchCommand(String name, ScreenController<?> owner)
 	{
@@ -61,16 +60,14 @@ public class AddBatchCommand<E extends Entity> extends SimpleCommand
 	public List<HtmlInput<?>> getInputs() throws DatabaseException
 	{
 		// delegate to the formscreen
-		List<HtmlInput<?>> inputs = this.getFormScreen().getNewRecordForm()
-				.getInputs();
+		List<HtmlInput<?>> inputs = this.getFormScreen().getNewRecordForm().getInputs();
 
 		// remove not-null constraints
 		for (HtmlInput<?> i : inputs)
 			i.setNillable(true);
 
 		// add the textarea for csv
-		TextInput csvInput = new TextInput("__csvdata",
-				"put here your data in comma-separated format.");
+		TextInput csvInput = new TextInput("__csvdata", "put here your data in comma-separated format.");
 		csvInput.setLabel("CSV data");
 		csvInput.setTooltip("put here your data in comma-separated format.");
 		csvInput.setDescription("Put your CSV data here.");
@@ -80,8 +77,7 @@ public class AddBatchCommand<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request,
-			OutputStream downloadStream) throws Exception
+	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
 	{
 		logger.debug(this.getName());
 
@@ -91,27 +87,22 @@ public class AddBatchCommand<E extends Entity> extends SimpleCommand
 			ScreenMessage msg = null;
 			try
 			{
-				CsvToDatabase<? extends Entity> csvReader = this
-						.getFormScreen().getCsvReader();
+				CsvToDatabase<? extends Entity> csvReader = this.getFormScreen().getCsvReader();
 
-				int updatedRows = csvReader.importCsv(db, new CsvStringReader(
-						request.getString("__csvdata")), request,
+				int updatedRows = csvReader.importCsv(db, new CsvStringReader(request.getString("__csvdata")), request,
 						DatabaseAction.ADD);
 				// for (E entity : entities)
 				// logger.debug("parsed: " + entity);
 				// view.getDatabase().add(entities);
-				msg = new ScreenMessage("CSV UPLOAD SUCCESS: added "
-						+ updatedRows + " rows", null, true);
-				logger.debug("CSV UPLOAD SUCCESS: added " + updatedRows
-						+ " rows");
+				msg = new ScreenMessage("CSV UPLOAD SUCCESS: added " + updatedRows + " rows", null, true);
+				logger.debug("CSV UPLOAD SUCCESS: added " + updatedRows + " rows");
 				getFormScreen().getPager().resetFilters();
 				getFormScreen().getPager().last(db);
 			}
 			catch (Exception e)
 			{
 				e.printStackTrace();
-				msg = new ScreenMessage("CSV UPLOAD FAILED: " + e.getMessage(),
-						null, false);
+				msg = new ScreenMessage("CSV UPLOAD FAILED: " + e.getMessage(), null, false);
 				logger.error("CSV UPLOAD FAILED: " + e.getMessage());
 			}
 			getFormScreen().getMessages().add(msg);

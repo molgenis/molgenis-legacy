@@ -22,20 +22,17 @@ public abstract class OptionInput<E> extends HtmlInput<E>
 		super(name, value);
 	}
 
-	public OptionInput(String name, String label, E value,
-			Boolean nillable, Boolean readonly, String description,
-			List<String> options, List<String> option_labels)
-			throws HtmlInputException
+	public OptionInput(String name, String label, E value, Boolean nillable, Boolean readonly, String description,
+			List<String> options, List<String> option_labels) throws HtmlInputException
 	{
 		super(name, label, value, nillable, readonly, description);
 		this.setOptions(options, option_labels);
 	}
 
-	public void setOptions(List<String> options, List<String> optionLabels)
-			throws HtmlInputException
+	public void setOptions(List<String> options, List<String> optionLabels) throws HtmlInputException
 	{
-		if(options == null) throw new RuntimeException("parameter options=\"opt1,opt2,...\" is required");
-		
+		if (options == null) throw new RuntimeException("parameter options=\"opt1,opt2,...\" is required");
+
 		List<ValueLabel> valueLabels = new ArrayList<ValueLabel>();
 		if (optionLabels == null)
 		{
@@ -46,7 +43,7 @@ public abstract class OptionInput<E> extends HtmlInput<E>
 		{
 			if (options.size() != optionLabels.size()) throw new HtmlInputException(
 					"List(options) and List(option_labels) should be of same size");
-			for(int i = 0; i < options.size(); i++)
+			for (int i = 0; i < options.size(); i++)
 			{
 				valueLabels.add(new ValueLabel(options.get(i), optionLabels.get(i)));
 			}
@@ -65,8 +62,7 @@ public abstract class OptionInput<E> extends HtmlInput<E>
 	public void set(Tuple t) throws HtmlInputException
 	{
 		super.set(t);
-		this.setOptions((List<String>) t.getList(OPTIONS), (List<String>) t
-				.getList(OPTION_LABELS));
+		this.setOptions((List<String>) t.getList(OPTIONS), (List<String>) t.getList(OPTION_LABELS));
 	}
 
 	protected OptionInput()

@@ -112,9 +112,11 @@ public class CategoricalType extends FieldType
 	}
 
 	/**
-	 * @return For a categorical variable type, return the map of value->label pairs.
+	 * @return For a categorical variable type, return the map of value->label
+	 *         pairs.
 	 */
-	public Map<String, String> getCategoryMapping() {
+	public Map<String, String> getCategoryMapping()
+	{
 		return categoryMapping;
 	}
 }

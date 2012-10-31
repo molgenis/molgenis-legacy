@@ -1,9 +1,10 @@
 package org.molgenis.framework.ui.html;
 
-public class Newline  extends HtmlInput<String>
+public class Newline extends HtmlInput<String>
 {
-	
-	public Newline() {
+
+	public Newline()
+	{
 		this.setLabel("");
 	}
 

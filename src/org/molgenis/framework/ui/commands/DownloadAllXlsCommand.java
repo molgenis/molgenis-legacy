@@ -18,7 +18,7 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.XlsWriter;
 
-public class DownloadAllXlsCommand <E extends Entity> extends SimpleCommand
+public class DownloadAllXlsCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = -2682113764135477871L;
 	public static final transient Logger logger = Logger.getLogger(DownloadAllCommand.class);
@@ -38,12 +38,13 @@ public class DownloadAllXlsCommand <E extends Entity> extends SimpleCommand
 		logger.debug(this.getName());
 
 		FormModel<? extends Entity> model = this.getFormScreen();
-		FormController<?> controller = ((FormController<?>)this.getController());
-		
+		FormController<?> controller = ((FormController<?>) this.getController());
+
 		List<String> fieldsToExport = controller.getVisibleColumnNames();
-		
-		//TODO : remove entity name, capitals to small , and remove all _name fields
-		//we need to rewrite rules to accomodate the 'all'
+
+		// TODO : remove entity name, capitals to small , and remove all _name
+		// fields
+		// we need to rewrite rules to accomodate the 'all'
 		QueryRule[] rules;
 		try
 		{
@@ -55,12 +56,14 @@ public class DownloadAllXlsCommand <E extends Entity> extends SimpleCommand
 			e.printStackTrace();
 			throw new DatabaseException(e);
 		}
-		
+
 		// Comments from Despoina:
-		//TODO : the actual xls headers/formatting 
-		//TODO : this needs different call or TODO just an extra if in abstractMolgenisServlet for the different suffix (.xls) ?
-		
-		// This db.find() is rerouted by your Database implementation's find() to the one in the appropriate mapper
+		// TODO : the actual xls headers/formatting
+		// TODO : this needs different call or TODO just an extra if in
+		// abstractMolgenisServlet for the different suffix (.xls) ?
+
+		// This db.find() is rerouted by your Database implementation's find()
+		// to the one in the appropriate mapper
 		db.find(model.getController().getEntityClass(), new XlsWriter(xlsDownload), fieldsToExport, rules);
 
 		return ScreenModel.Show.SHOW_MAIN;
@@ -78,6 +81,5 @@ public class DownloadAllXlsCommand <E extends Entity> extends SimpleCommand
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 }

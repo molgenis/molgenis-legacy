@@ -2,8 +2,10 @@ package org.molgenis.generators.cpp;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -25,12 +27,13 @@ public class SourcePerEntityGen extends ForEachEntityGenerator
 	{
 		return "Generate CPP header files";
 	}
-	
+
 	@Override
-	public String getExtension(){
+	public String getExtension()
+	{
 		return ".cpp";
 	}
-	
+
 	@Override
 	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
@@ -41,21 +44,34 @@ public class SourcePerEntityGen extends ForEachEntityGenerator
 		for (Entity entity : model.getEntities())
 		{
 			// calculate package from its own package
-			String packageName = entity.getNamespace().toLowerCase() + this.getClass().getPackage().toString().substring(Generator.class.getPackage().toString().length());
-			File targetDir = new File((this.getSourcePath(options).endsWith("/")?this.getSourcePath(options):this.getSourcePath(options)+"/") + packageName.replace(".", "/").replace("/cpp", ""));
-			try{
-				File targetFile = new File(targetDir + "/" + GeneratorHelper.getJavaName(entity.getName()) + getExtension());
-				targetDir.mkdirs();
+			String packageName = entity.getNamespace().toLowerCase()
+					+ this.getClass().getPackage().toString()
+							.substring(Generator.class.getPackage().toString().length());
+			File targetDir = new File((this.getSourcePath(options).endsWith("/") ? this.getSourcePath(options)
+					: this.getSourcePath(options) + "/")
+					+ packageName.replace(".", "/").replace("/cpp", ""));
+			try
+			{
+				File targetFile = new File(targetDir + "/" + GeneratorHelper.getJavaName(entity.getName())
+						+ getExtension());
+				boolean created = targetDir.mkdirs();
+				if (!created && !targetDir.exists())
+				{
+					throw new IOException("could not create " + targetDir);
+				}
 				templateArgs.put("entity", entity);
 				templateArgs.put("model", model);
 				templateArgs.put("options", options);
 				templateArgs.put("template", template.getName());
-				templateArgs.put("file", targetDir.getCanonicalPath().replace("\\", "/") + "/" + GeneratorHelper.firstToUpper(entity.getName()) + getType() + getExtension());
+				templateArgs.put(
+						"file",
+						targetDir.getCanonicalPath().replace("\\", "/") + "/"
+								+ GeneratorHelper.firstToUpper(entity.getName()) + getType() + getExtension());
 				templateArgs.put("package", packageName);
-				
+
 				OutputStream targetOut = new FileOutputStream(targetFile);
 
-				template.process(templateArgs, new OutputStreamWriter(targetOut));
+				template.process(templateArgs, new OutputStreamWriter(targetOut, Charset.forName("UTF-8")));
 				targetOut.close();
 				logger.info("generated " + targetFile);
 			}
@@ -66,7 +82,7 @@ public class SourcePerEntityGen extends ForEachEntityGenerator
 			}
 		}
 	}
-	
+
 	@Override
 	public String getSourcePath(MolgenisOptions options)
 	{
