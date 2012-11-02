@@ -14,6 +14,7 @@ import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
+import jxl.write.biff.RowsExceededException;
 
 /**
  * Write values to an Excel file
@@ -77,6 +78,22 @@ public class XlsWriter implements TupleWriter
 			String header = headers.get(i);
 			Label l = new Label(i, 0, header, headerFormat);
 			sheet.addCell(l);
+		}
+	}
+
+	public void writeCell(int col, int row, String value) throws IOException
+	{
+		try
+		{
+			sheet.addCell(new Label(col, row, value));
+		}
+		catch (RowsExceededException e)
+		{
+			throw new IOException(e);
+		}
+		catch (WriteException e)
+		{
+			throw new IOException(e);
 		}
 	}
 
