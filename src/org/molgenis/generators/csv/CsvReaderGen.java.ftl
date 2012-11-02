@@ -34,6 +34,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.Database.DatabaseAction;
+import org.molgenis.framework.db.ResolveResult;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Tuple;
 
@@ -89,14 +90,15 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 			if(${name(entity)}List.size() == BATCH_SIZE)
 			{
 				//resolve foreign keys and copy those entities that could not be resolved to the missingRefs list
-				${name(entity)}sMissingRefs.addAll(resolveForeignKeys(db, ${name(entity)}List));
+				ResolveResult<${JavaName(entity)}> resolveResult = resolveForeignKeys(db, ${name(entity)}List);
+				${name(entity)}sMissingRefs.addAll(resolveResult.getUnresolved());
 				
 				<#if entity.getXrefLabels()?exists>
 				//update objects in the database using xref_label defined secondary key(s) '${csv(entity.getXrefLabels())}' defined in xref_label
-				db.update(${name(entity)}List,dbAction<#list entity.getXrefLabels() as label>, "${label}"</#list>);
+				db.update(resolveResult.getResolved(),dbAction<#list entity.getXrefLabels() as label>, "${label}"</#list>);
 				<#else>
 				//update objects in the database using primary key(<#list entity.getAllKeys()[0].fields as field><#if field_index != 0>,</#if>${field.name}</#list>)
-				db.update(${name(entity)}List,dbAction<#list entity.getAllKeys()[0].fields as field>, "${field.name}"</#list>);
+				db.update(resolveResult.getResolved(),dbAction<#list entity.getAllKeys()[0].fields as field>, "${field.name}"</#list>);
 				</#if>
 				
 				//clear for next batch						
@@ -111,30 +113,31 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 		if(!${name(entity)}List.isEmpty())
 		{
 			//resolve foreign keys, again keeping track of those entities that could not be solved
-			${name(entity)}sMissingRefs.addAll(resolveForeignKeys(db, ${name(entity)}List));
+			ResolveResult<${JavaName(entity)}> resolveResult = resolveForeignKeys(db, ${name(entity)}List);
+			${name(entity)}sMissingRefs.addAll(resolveResult.getUnresolved());
 			<#if entity.getXrefLabels()?exists>
 			//update objects in the database using xref_label defined secondary key(s) '${csv(entity.getXrefLabels())}' defined in xref_label
-			db.update(${name(entity)}List,dbAction<#list entity.getXrefLabels() as label>, "${label}"</#list>);
+			db.update(resolveResult.getResolved(),dbAction<#list entity.getXrefLabels() as label>, "${label}"</#list>);
 			<#else>
 			//update objects in the database using primary key(<#list entity.getAllKeys()[0].fields as field><#if field_index != 0>,</#if>${field.name}</#list>)
-			db.update(${name(entity)}List,dbAction<#list entity.getAllKeys()[0].fields as field>, "${field.name}"</#list>);
+			db.update(resolveResult.getResolved(),dbAction<#list entity.getAllKeys()[0].fields as field>, "${field.name}"</#list>);
 			</#if>
 		}
 		
 		//second import round, try to resolve FK's for entities again as they might have referred to entities in the imported list
-		List<${JavaName(entity)}> ${name(entity)}sStillMissingRefs = resolveForeignKeys(db, ${name(entity)}sMissingRefs);
+		ResolveResult<${JavaName(entity)}> resolveResult = resolveForeignKeys(db, ${name(entity)}List);
 		
 		//if there are still missing references, throw error and rollback
-		if(${name(entity)}sStillMissingRefs.size() > 0){
-			throw new Exception("Import of '${JavaName(entity)}' objects failed: attempting to resolve in-list references, but there are still ${JavaName(entity)}s referring to ${JavaName(entity)}s that are neither in the database nor in the list of to-be imported ${JavaName(entity)}s. (the first one being: "+${name(entity)}sStillMissingRefs.get(0)+")");
+		if(resolveResult.getUnresolved().size() > 0){
+			throw new Exception("Import of '${JavaName(entity)}' objects failed: attempting to resolve in-list references, but there are still ${JavaName(entity)}s referring to ${JavaName(entity)}s that are neither in the database nor in the list of to-be imported ${JavaName(entity)}s. (the first one being: " + resolveResult.getUnresolved().get(0)+")");
 		}
-		//else update the entities in the database with the found references and return total
+		//else add the rest of the entities to the  database and return total
 		else
 		{				
 			<#if entity.getXrefLabels()?exists>
-			db.update(${name(entity)}sMissingRefs,DatabaseAction.UPDATE<#list entity.getXrefLabels() as label>, "${label}"</#list>);
+			db.update(resolveResult.getResolved(),DatabaseAction.ADD<#list entity.getXrefLabels() as label>, "${label}"</#list>);
 			<#else>
-			db.update(${name(entity)}sMissingRefs,DatabaseAction.UPDATE<#list entity.getAllKeys()[0].fields as field>, "${field.name}"</#list>);
+			db.update(resolveResult.getResolved(),DatabaseAction.ADD<#list entity.getAllKeys()[0].fields as field>, "${field.name}"</#list>);
 			</#if>
 		
 			//output count
@@ -152,8 +155,11 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 	 * @param ${name(entity)}List 
 	 * @return the entities for which foreign keys cannot be resolved
 	 */
-	private List<${JavaName(entity)}> resolveForeignKeys(Database db, List<${JavaName(entity)}> ${name(entity)}List) throws Exception
+	private ResolveResult<${JavaName(entity)}> resolveForeignKeys(Database db, List<${JavaName(entity)}> ${name(entity)}List) throws Exception
 	{
+		//wrapper bean for resolved and unresolved entities, sorted out from ${name(entity)}List
+		ResolveResult<${JavaName(entity)}> resolveResult = new ResolveResult<${JavaName(entity)}>();
+	
 		//keep a list of ${entity.name} instances that miss a reference which might be resolvable later
 		List<${JavaName(entity)}> ${name(entity)}sMissingRefs = new ArrayList<${JavaName(entity)}>();
 	
@@ -305,7 +311,17 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 		${name(f)}Keymap.clear();
 		</#if></#list>
 		
-		return ${name(entity)}sMissingRefs;
+		List<${JavaName(entity)}> resolved = new ArrayList<${JavaName(entity)}>();
+		for(${JavaName(entity)} e : ${name(entity)}List)
+		{
+			if(!${name(entity)}sMissingRefs.contains(e)){
+				resolved.add(e);
+			}
+		}
+		resolveResult.setResolved(resolved);
+		resolveResult.setUnresolved(${name(entity)}sMissingRefs);
+		
+		return resolveResult;
 	}
 }
 
