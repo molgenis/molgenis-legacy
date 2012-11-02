@@ -131,13 +131,16 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 		if(resolveResult.getUnresolved().size() > 0){
 			throw new Exception("Import of '${JavaName(entity)}' objects failed: attempting to resolve in-list references, but there are still ${JavaName(entity)}s referring to ${JavaName(entity)}s that are neither in the database nor in the list of to-be imported ${JavaName(entity)}s. (the first one being: " + resolveResult.getUnresolved().get(0)+")");
 		}
-		//else add the rest of the entities to the  database and return total
+		//else add/update the rest of the entities and return total
+		//FIXME: this is now ADD_UPDATE_EXISTING because we try to import already imported entities?
+		//this function needs a thorough cleanup and a solid FK resolving strategy!! ie. disable FK's, import, and update all entities
+		//so that any dependency tree is imported in 2 steps instead of being able to only import 'one layer' of references, or using inefficient/dangerous N-tries approach
 		else
 		{				
 			<#if entity.getXrefLabels()?exists>
-			db.update(resolveResult.getResolved(),DatabaseAction.ADD<#list entity.getXrefLabels() as label>, "${label}"</#list>);
+			db.update(resolveResult.getResolved(),DatabaseAction.ADD_UPDATE_EXISTING<#list entity.getXrefLabels() as label>, "${label}"</#list>);
 			<#else>
-			db.update(resolveResult.getResolved(),DatabaseAction.ADD<#list entity.getAllKeys()[0].fields as field>, "${field.name}"</#list>);
+			db.update(resolveResult.getResolved(),DatabaseAction.ADD_UPDATE_EXISTING<#list entity.getAllKeys()[0].fields as field>, "${field.name}"</#list>);
 			</#if>
 		
 			//output count
