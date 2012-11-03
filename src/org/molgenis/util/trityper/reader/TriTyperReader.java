@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.molgenis.util.trityper.reader;
 
 import java.io.IOException;
@@ -28,8 +24,6 @@ public class TriTyperReader
 			data.load("/Users/joeri/Desktop/BrainsetTriTyper");
 			String[] snps = data.getSNPs();
 			SNPLoader loader = data.createSNPLoader();
-
-			Integer snpId = data.getSnpToSNPId().get("rs123456789");
 
 			String[] individuals = data.getIndividuals();
 
