@@ -5,59 +5,128 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.zip.DataFormatException;
 
 /**
- * CsvReader for delimited text files.
+ * CSV reader for <a href="http://tools.ietf.org/html/rfc4180">comma-separated
+ * value files</a>
  * 
  * @see org.molgenis.util.CsvReader#parse
  */
 public class CsvFileReader extends CsvBufferedReaderMultiline
 {
-	/** the File that is being read */
-	private File sourceFile;
+	private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
+	/** Input comma-separated value file */
+	private File file;
+	/** Input file encoding */
+	private Charset charset;
 
-	/** encodig */
-	private String encoding;
+	/**
+	 * Creates a CsvFileReader that uses the UTF-8 charset
+	 * 
+	 * @param file
+	 *            comma-separated values file
+	 * @throws IOException
+	 * @throws DataFormatException
+	 */
+	public CsvFileReader(File file) throws IOException
+	{
+		this(file, CHARSET_UTF8, true);
+	}
 
-	public CsvFileReader(File file, boolean hasHeader) throws IOException, DataFormatException
+	/**
+	 * Creates a CsvFileReader that uses the UTF-8 charset
+	 * 
+	 * @param file
+	 *            comma-separated values file
+	 * @param blockStart
+	 *            last line before header block starts
+	 * @throws IOException
+	 * @throws DataFormatException
+	 */
+	public CsvFileReader(File file, String blockStart) throws IOException
+	{
+		this(file, CHARSET_UTF8, true, blockStart);
+	}
+
+	/**
+	 * Creates a CsvFileReader that uses the UTF-8 charset
+	 * 
+	 * @param file
+	 *            comma-separated values file
+	 * @param hasHeader
+	 *            whether or not this file starts with a header
+	 * @throws IOException
+	 * @throws DataFormatException
+	 */
+	public CsvFileReader(File file, boolean hasHeader) throws IOException
+	{
+		this(file, CHARSET_UTF8, hasHeader);
+	}
+
+	/**
+	 * Creates a CsvFileReader that uses the given charset
+	 * 
+	 * @param file
+	 *            comma-separated values file
+	 * @param charset
+	 *            file encoding
+	 * @throws IOException
+	 * @throws DataFormatException
+	 */
+	public CsvFileReader(File file, Charset charset) throws IOException
+	{
+		this(file, charset, true);
+	}
+
+	/**
+	 * Creates a CsvFileReader that uses the given charset
+	 * 
+	 * @param file
+	 *            comma-separated values file
+	 * @param charset
+	 *            file encoding
+	 * @param hasHeader
+	 *            whether or not this file starts with a header
+	 * @throws IOException
+	 * @throws DataFormatException
+	 */
+	public CsvFileReader(File file, Charset charset, boolean hasHeader) throws IOException
+	{
+		this(file, charset, hasHeader, "");
+	}
+
+	/**
+	 * Creates a CsvFileReader that uses the given charset
+	 * 
+	 * @param file
+	 *            comma-separated values file
+	 * @param charset
+	 *            file encoding
+	 * @param hasHeader
+	 *            whether or not this file starts with a header
+	 * @param blockStart
+	 *            last line before header block starts
+	 * @throws IOException
+	 * @throws DataFormatException
+	 */
+	public CsvFileReader(File file, Charset charset, boolean hasHeader, String blockStart) throws IOException
 	{
 		super();
-		this.sourceFile = file;
+		if (file == null) throw new IllegalArgumentException("file is null");
+		this.file = file;
+		this.charset = charset;
 		this.hasHeader = hasHeader;
-		this.reset();
-	}
-
-	public CsvFileReader(File file) throws IOException, DataFormatException
-	{
-		super();
-		this.sourceFile = file;
-		this.reset();
-	}
-
-	public CsvFileReader(final File file, final String encoding) throws IOException, DataFormatException
-	{
-		super();
-		this.encoding = encoding;
-		this.sourceFile = file;
+		this.blockStart = blockStart;
 		this.reset();
 	}
 
 	@Override
-	public void reset() throws IOException, DataFormatException
+	public void reset() throws IOException
 	{
-		if (this.reader != null)
-		{
-			this.reader.close();
-		}
-		// create a fresh InputStream to read from, the old one is closed
-		if (this.encoding != null)
-		{
-			this.reader = new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile), encoding));
-		}
-		else
-		{
-			this.reader = new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile)));
-		}
+		if (this.reader != null) this.reader.close();
+		this.reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset));
+		super.reset();
 	}
 }

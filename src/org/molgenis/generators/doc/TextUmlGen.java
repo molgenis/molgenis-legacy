@@ -2,8 +2,10 @@ package org.molgenis.generators.doc;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +36,11 @@ public class TextUmlGen extends Generator
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 
 		File target = new File(this.getDocumentationPath(options) + "/textUML.txt");
-		target.getParentFile().mkdirs();
+		boolean created = target.getParentFile().mkdirs();
+		if (!created && !target.getParentFile().exists())
+		{
+			throw new IOException("could not create " + target.getParentFile());
+		}
 
 		List<Entity> entityList = model.getEntities();
 		List<Module> moduleList = model.getModules();
@@ -45,7 +51,7 @@ public class TextUmlGen extends Generator
 		templateArgs.put("entities", entityList);
 		templateArgs.put("modules", moduleList);
 		OutputStream targetOut = new FileOutputStream(target);
-		template.process(templateArgs, new OutputStreamWriter(targetOut));
+		template.process(templateArgs, new OutputStreamWriter(targetOut, Charset.forName("UTF-8")));
 		targetOut.close();
 
 		logger.info("generated " + target);

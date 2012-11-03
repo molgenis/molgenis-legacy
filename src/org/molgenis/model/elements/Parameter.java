@@ -176,7 +176,7 @@ public class Parameter implements Serializable
 
 		this.description = "";
 
-		if (this.label == null || this.label == "") this.label = this.name;
+		if (this.label == null || this.label.isEmpty()) this.label = this.name;
 
 		// varchar
 		this.varchar_length = LENGTH_NOT_SET;

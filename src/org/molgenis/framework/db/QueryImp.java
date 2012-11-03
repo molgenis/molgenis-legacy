@@ -191,12 +191,12 @@ public class QueryImp<E extends Entity> implements Query<E>
 	@Override
 	public String toString()
 	{
-		String result = "";
+		StringBuilder strBuilder = new StringBuilder();
 		for (QueryRule rule : this.getRules())
 		{
-			result += rule.toString();
+			strBuilder.append(rule.toString());
 		}
-		return result;
+		return strBuilder.toString();
 	}
 
 	public void addRules(List<QueryRule> addRules)

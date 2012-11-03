@@ -449,6 +449,7 @@ public class Field implements Serializable
 		return this.default_value;
 	}
 
+	// FIXME correct typo in method name (v --> f)
 	public void setDevaultValue(String value)
 	{
 		this.default_value = value;
@@ -476,18 +477,8 @@ public class Field implements Serializable
 	/**
      * 
      */
-	public void setEnumOptions(Vector<String> options) // throws Exception
+	public void setEnumOptions(Vector<String> options)
 	{
-		// if (this.type != Type.ENUM)
-		// {
-		// throw new Exception("Field is not a ENUM, so options cannot be
-		// set.");
-		// }
-		// if (options.size() == 0)
-		// {
-		// throw new Exception("Enum must have at least one option");
-		// }
-
 		this.enum_options = options;
 	}
 
@@ -546,6 +537,7 @@ public class Field implements Serializable
 	}
 
 	// xref access methods
+	// FIXME rename setXRefEntity to setXrefEntityName (R --> r, +Name)
 	public void setXRefEntity(String xref_entity)
 	{
 		this.xref_entity = xref_entity;
@@ -566,15 +558,9 @@ public class Field implements Serializable
 	 *             When this field is not of type Type.XREF_SINGLE or
 	 *             Type.XREF_MULTIPLE
 	 */
-	public void setXRefVariables(String entity, String field, List<String> labels) // throws
-	// Exception
+	// FIXME rename setXRefVariables to setXrefVariables
+	public void setXRefVariables(String entity, String field, List<String> labels)
 	{
-		// if (this.type != Type.XREF_SINGLE && this.type != Type.XREF_MULTIPLE)
-		// {
-		// throw new Exception("Field is not a XREF, so xref-variables cannot be
-		// set.");
-		// }
-
 		this.xref_entity = entity;
 		this.xref_field = field;
 		this.xref_labels = labels;
@@ -624,8 +610,7 @@ public class Field implements Serializable
 	 *             When this field is not of type Type.XREF_SINGLE or
 	 *             Type.XREF_MULTIPLE
 	 */
-	public Field getXrefField() throws MolgenisModelException // throws
-	// Exception
+	public Field getXrefField() throws MolgenisModelException
 	{
 		if (!(this.type instanceof XrefField) && !(this.type instanceof MrefField))
 		{
@@ -641,6 +626,7 @@ public class Field implements Serializable
 		return result;
 	}
 
+	// FIXME consistency: throw MolgenisModelException if type is not correct
 	public String getXrefFieldName()
 	{
 		return this.xref_field;
@@ -663,7 +649,7 @@ public class Field implements Serializable
 		List<String> label_names = new ArrayList<String>();
 		for (String label : this.getXrefLabelsTemp())
 		{
-			label_names.add(label.replace(".", "_").replace(this.getXrefEntity() + "_", ""));
+			label_names.add(label.replace(".", "_").replace(this.getXrefEntityName() + "_", ""));
 		}
 		return label_names;
 	}
@@ -772,11 +758,13 @@ public class Field implements Serializable
 			{
 				// match agains all known labels
 				Map<String, List<Field>> candidates = this.allPossibleXrefLabels();
-				for (String test : candidates.keySet())
+				for (Entry<String, List<Field>> entry : candidates.entrySet())
 				{
-					if (test.toLowerCase().equals(label.toLowerCase()))
+					String key = entry.getKey();
+					if (key.toLowerCase().equals(label.toLowerCase()))
 					{
-						result.add(candidates.get(test).get(candidates.get(test).size() - 1));
+						List<Field> value = entry.getValue();
+						result.add(value.get(value.size() - 1));
 					}
 				}
 
@@ -802,6 +790,7 @@ public class Field implements Serializable
 		return result;
 	}
 
+	// FIXME consistency: check if this is a xref field
 	public List<String> getXrefLabelsTemp() throws MolgenisModelException
 	{
 		if (xref_labels == null || xref_labels.size() == 0)
@@ -1140,6 +1129,7 @@ public class Field implements Serializable
 		this.entity = entity;
 	}
 
+	// FIXME rename to setXrefFieldName
 	public void setXrefField(String xrefField)
 	{
 		this.xref_field = xrefField;
@@ -1322,6 +1312,7 @@ public class Field implements Serializable
 		return this.tableName;
 	}
 
+	// FIXME database specific: delete method or move to utility class
 	public String getSqlName()
 	{
 		if (StringUtils.isNotEmpty(this.tableName))

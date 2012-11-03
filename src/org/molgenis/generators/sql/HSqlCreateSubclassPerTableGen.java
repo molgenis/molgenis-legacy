@@ -3,8 +3,10 @@ package org.molgenis.generators.sql;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.List;
@@ -47,7 +49,12 @@ public class HSqlCreateSubclassPerTableGen extends Generator
 
 		// Output file for debug
 		File target = new File(this.getSqlPath(options) + "/create_tables.sql");
-		target.getParentFile().mkdirs();
+		boolean created = target.getParentFile().mkdirs();
+		if (!created && !target.getParentFile().exists())
+		{
+			throw new IOException("could not create " + target.getParentFile());
+		}
+
 		OutputStream targetOut = new FileOutputStream(target);
 		List<Entity> sortedlist = model.getEntities();
 		sortedlist = MolgenisModel.sortEntitiesByDependency(sortedlist, model);
@@ -60,13 +67,13 @@ public class HSqlCreateSubclassPerTableGen extends Generator
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try
 		{
-			template.process(templateArgs, new OutputStreamWriter(out));
+			template.process(templateArgs, new OutputStreamWriter(out, Charset.forName("UTF-8")));
 			// Write to file for debug
 			targetOut.write(out.toByteArray());
 
 			// Update the Hsql database
 			stmt = conn.createStatement();
-			stmt.executeUpdate(out.toString());
+			stmt.executeUpdate(out.toString("UTF-8"));
 		}
 		catch (Exception e)
 		{

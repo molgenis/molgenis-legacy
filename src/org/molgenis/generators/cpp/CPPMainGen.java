@@ -2,8 +2,10 @@ package org.molgenis.generators.cpp;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -35,13 +37,17 @@ public class CPPMainGen extends ForEachEntityGenerator
 		List<Entity> entityList = model.getEntities();
 		MolgenisModel.sortEntitiesByDependency(entityList, model);
 		File target = new File(this.getCPPSourcePath(options) + "/main.cpp");
-		target.getParentFile().mkdirs();
+		boolean created = target.getParentFile().mkdirs();
+		if (!created && !target.getParentFile().exists())
+		{
+			throw new IOException("could not create " + target.getParentFile());
+		}
 
 		templateArgs.put("model", model);
 		templateArgs.put("entities", entityList);
 		templateArgs.put("UserHome", System.getProperty("user.dir").replace("\\", "/").toString());
 		OutputStream targetOut = new FileOutputStream(target);
-		template.process(templateArgs, new OutputStreamWriter(targetOut));
+		template.process(templateArgs, new OutputStreamWriter(targetOut, Charset.forName("UTF-8")));
 		targetOut.close();
 		logger.info("generated " + target);
 	}

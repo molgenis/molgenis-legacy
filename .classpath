@@ -85,7 +85,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/freemarker.jar" sourcepath="/Users/jorislops/.m2/repository/org/freemarker/freemarker/2.3.16/freemarker-2.3.16-sources.jar">
+	<classpathentry exported="true" kind="lib" path="lib/freemarker.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -445,7 +445,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/hibernate/hibernate-jpa-2.0-api-1.0.0.Final.jar" sourcepath="/Users/jorislops/.m2/repository/org/hibernate/javax/persistence/hibernate-jpa-2.0-api/1.0.0.Final/hibernate-jpa-2.0-api-1.0.0.Final-sources.jar">
+	<classpathentry exported="true" kind="lib" path="lib/hibernate/hibernate-jpa-2.0-api-1.0.0.Final.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -543,5 +543,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/ontocat-0.9.9.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mockito-all-1.9.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-email-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/findbugs-2.0.1/lib/annotations.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

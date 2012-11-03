@@ -108,14 +108,14 @@ public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
 	 */
 	public String getValue()
 	{
-		String result = "";
+		StringBuilder strBuilder = new StringBuilder();
 		for (Entity value : getObject())
 		{
-			if (result.toString().equals("")) result += value.getLabelValue();
+			if (strBuilder.length() == 0) strBuilder.append(value.getLabelValue());
 			else
-				result += ", " + value.getLabelValue();
+				strBuilder.append(", ").append(value.getLabelValue());
 		}
-		return result;
+		return strBuilder.toString();
 	}
 
 	@Override
@@ -147,14 +147,15 @@ public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
 	@Override
 	public String renderHidden()
 	{
-		String result = "";
+		StringBuilder strBuilder = new StringBuilder();
 
 		for (E object : this.getObject())
 		{
-			result += "<input name=\"" + this.getName() + "\" type=\"hidden\" value=\"" + object.getIdValue() + "\"/>";
+			strBuilder.append("<input name=\"").append(this.getName()).append("\" type=\"hidden\" value=\"");
+			strBuilder.append(object.getIdValue()).append("\"/>");
 		}
 
-		return result;
+		return strBuilder.toString();
 	}
 
 }

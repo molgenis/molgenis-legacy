@@ -100,7 +100,8 @@ public class Gpio
 	{
 		if (!destFile.exists())
 		{
-			destFile.createNewFile();
+			boolean exists = destFile.createNewFile();
+			if (exists) throw new IOException(destFile + " already exists");
 		}
 
 		FileChannel source = null;

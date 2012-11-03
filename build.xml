@@ -37,7 +37,8 @@
 	
 	<target name="compile">
 		<mkdir dir="${dir.classes}"/>
-		<javac srcdir="${dir.src}" destdir="${dir.classes}" nowarn="on" debug="true">
+		<javac srcdir="${dir.src}" destdir="${dir.classes}" debug="true" includeantruntime="false">
+			<compilerarg value="-Xlint"/>
 			<classpath refid="classpath" />
 		</javac>
 	</target>
@@ -61,7 +62,8 @@
 		</copy>
 		
 		<!-- compile the tests -->
-		<javac srcdir="${dir.test.src}" destdir="${dir.test.classes}" debug="true">
+		<javac srcdir="${dir.test.src}" destdir="${dir.test.classes}" debug="true" includeantruntime="false">
+			<compilerarg value="-Xlint"/>
 			<classpath refid="test.classpath" />
 		</javac>
 		
@@ -136,13 +138,29 @@
 	<!-- findbugs -->
 	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="classpath"/>
 	  
-	<target name="findbugs">
+	<target name="findbugs" depends="compile">
+		<mkdir dir="${dir.build}" />
 	   	<findbugs home="${findbugs.home}"
 	       	output="xml:withMessages" outputFile="${dir.build}/findbugs.xml"
 	       	jvmargs="-Xms1024M -Xmx1024M ">
 	      	<sourcePath path="${dir.src}" />
 	       	<class location="${dir.classes}" />
+	   		<auxclasspath>
+	   			<path refid="classpath" />
+			</auxclasspath>
 	   	</findbugs>
 	</target>
 	
+	<target name="findbugs-html" depends="compile">
+		<mkdir dir="${dir.build}" />
+	   	<findbugs home="${findbugs.home}"
+	       	output="html" outputFile="${dir.build}/findbugs.html"
+	       	jvmargs="-Xms1024M -Xmx1024M ">
+	      	<sourcePath path="${dir.src}" />
+	       	<class location="${dir.classes}" />
+	   		<auxclasspath>
+	   			<path refid="classpath" />
+			</auxclasspath>
+	   	</findbugs>
+	</target>
 </project>

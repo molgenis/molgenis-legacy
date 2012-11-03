@@ -12,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
@@ -105,9 +106,9 @@ public class SimpleTuple implements Tuple
 
 	public SimpleTuple(Map<String, Object> valueMap)
 	{
-		for (String key : valueMap.keySet())
+		for (Entry<String, Object> entry : valueMap.entrySet())
 		{
-			this.set(key, valueMap.get(key));
+			this.set(entry.getKey(), entry.getValue());
 		}
 	}
 
@@ -429,12 +430,15 @@ public class SimpleTuple implements Tuple
 		}
 		if (nonIUBpos.size() > 0)
 		{
-			String invalid = "there are " + nonIUBpos.size() + " non-IUB characters in your sequence.";
+			StringBuilder invalidBuilder = new StringBuilder();
+			invalidBuilder.append("there are ").append(nonIUBpos.size())
+					.append(" non-IUB characters in your sequence.");
 			for (Integer pos : nonIUBpos)
 			{
-				invalid += " '" + result.charAt(pos) + "' on position " + (pos + 1) + ".";
+				invalidBuilder.append(" '").append(result.charAt(pos)).append("' on position ");
+				invalidBuilder.append(pos + 1).append('.');
 			}
-			throw new ParseException(invalid, 0);
+			throw new ParseException(invalidBuilder.toString(), 0);
 		}
 		return result;
 	}

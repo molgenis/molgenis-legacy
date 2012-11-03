@@ -414,7 +414,7 @@ public class JDBCDatabase extends AbstractDatabase
 	@Override
 	public void dropTables() throws DatabaseException
 	{
-		this.executeSqlFile("/drop_tables.sql");
+		// this.executeSqlFile("/drop_tables.sql");
 	}
 
 	@Override

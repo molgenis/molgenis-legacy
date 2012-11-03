@@ -2,8 +2,10 @@ package org.molgenis.generators.ui;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -54,13 +56,17 @@ public class PluginControllerGen extends Generator
 				templateArgs.put("package", APP_DIR + ".ui");
 
 				File targetDir = new File(this.getSourcePath(options) + APP_DIR + "/ui/");
-				targetDir.mkdirs();
+				boolean created = targetDir.mkdirs();
+				if (!created && !targetDir.exists())
+				{
+					throw new IOException("could not create " + targetDir);
+				}
 
 				File targetFile = new File(targetDir + "/" + GeneratorHelper.getJavaName(screen.getClassName())
 						+ "Plugin.java");
 				OutputStream targetOut = new FileOutputStream(targetFile);
 
-				template.process(templateArgs, new OutputStreamWriter(targetOut));
+				template.process(templateArgs, new OutputStreamWriter(targetOut, Charset.forName("UTF-8")));
 				targetOut.close();
 
 				logger.info("generated " + targetFile.getAbsolutePath().substring(options.output_src.length()));
