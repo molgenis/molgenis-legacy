@@ -1,5 +1,6 @@
 package org.molgenis.framework.ui.html;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -129,6 +130,6 @@ public class JQueryTreeView<E> extends HtmlWidget
 	@Override
 	public String toHtml()
 	{
-		return "";
+		return toHtml(Collections.<String> emptyList());
 	}
 }
