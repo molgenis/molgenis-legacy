@@ -24,8 +24,6 @@ public class VcfReader
 
 	public VcfReader(File f) throws IOException, DataFormatException
 	{
-		reader = new CsvFileReader(f);
-
 		// iterate through file to find the last line with ##, that is the
 		// blockstart
 		String blockStart = null;
@@ -49,7 +47,7 @@ public class VcfReader
 		{
 			IOUtils.closeQuietly(br);
 		}
-		reader.setBlockStart(blockStart);
+		reader = new CsvFileReader(f, blockStart);
 	}
 
 	public List<VcfFilter> getFilters()
