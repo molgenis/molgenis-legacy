@@ -70,7 +70,7 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 	{
 		//cache for entities of which xrefs couldn't be resolved (e.g. if there is a self-refence)
 		//these entities can be updated with their xrefs in a second round when all entities are in the database
-		final List<${JavaName(entity)}> ${name(entity)}sMissingRefs = new ArrayList<${JavaName(entity)}>();
+		List<${JavaName(entity)}> ${name(entity)}sMissingRefs = new ArrayList<${JavaName(entity)}>();
 	
 		//cache for objects to be imported from file (in batch)
 		final List<${JavaName(entity)}> ${name(entity)}List = new ArrayList<${JavaName(entity)}>(BATCH_SIZE);
@@ -90,6 +90,7 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 			{
 				//resolve foreign keys and copy those entities that could not be resolved to the missingRefs list
 				${name(entity)}sMissingRefs.addAll(resolveForeignKeys(db, ${name(entity)}List));
+				${name(entity)}List.removeAll(${name(entity)}sMissingRefs);
 				
 				<#if entity.getXrefLabels()?exists>
 				//update objects in the database using xref_label defined secondary key(s) '${csv(entity.getXrefLabels())}' defined in xref_label
@@ -111,7 +112,9 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 		if(!${name(entity)}List.isEmpty())
 		{
 			//resolve foreign keys, again keeping track of those entities that could not be solved
-			${name(entity)}sMissingRefs.addAll(resolveForeignKeys(db, ${name(entity)}List));
+			${name(entity)}sMissingRefs = resolveForeignKeys(db, ${name(entity)}List);
+			${name(entity)}List.removeAll(${name(entity)}sMissingRefs);
+			
 			<#if entity.getXrefLabels()?exists>
 			//update objects in the database using xref_label defined secondary key(s) '${csv(entity.getXrefLabels())}' defined in xref_label
 			db.update(${name(entity)}List,dbAction<#list entity.getXrefLabels() as label>, "${label}"</#list>);
@@ -132,9 +135,9 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 		else
 		{				
 			<#if entity.getXrefLabels()?exists>
-			db.update(${name(entity)}sMissingRefs,DatabaseAction.UPDATE<#list entity.getXrefLabels() as label>, "${label}"</#list>);
+			db.update(${name(entity)}sMissingRefs,dbAction<#list entity.getXrefLabels() as label>, "${label}"</#list>);
 			<#else>
-			db.update(${name(entity)}sMissingRefs,DatabaseAction.UPDATE<#list entity.getAllKeys()[0].fields as field>, "${field.name}"</#list>);
+			db.update(${name(entity)}sMissingRefs,dbAction<#list entity.getAllKeys()[0].fields as field>, "${field.name}"</#list>);
 			</#if>
 		
 			//output count
