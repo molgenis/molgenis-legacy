@@ -151,7 +151,7 @@
 	   	</findbugs>
 	</target>
 	
-	<target name="findbugs-html" depends="compile">
+	<target name="findbugs.html" depends="compile">
 		<mkdir dir="${dir.build}" />
 	   	<findbugs home="${findbugs.home}"
 	       	output="html" outputFile="${dir.build}/findbugs.html"

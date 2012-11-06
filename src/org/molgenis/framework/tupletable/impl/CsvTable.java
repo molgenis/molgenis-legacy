@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.zip.DataFormatException;
 
+import org.apache.commons.io.IOUtils;
 import org.molgenis.framework.tupletable.AbstractTupleTable;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
@@ -82,9 +83,9 @@ public class CsvTable extends AbstractTupleTable
 	{
 		if (rowCount == -1)
 		{
+			LineNumberReader lineReader = new LineNumberReader(new InputStreamReader(countStream));
 			try
 			{
-				LineNumberReader lineReader = new LineNumberReader(new InputStreamReader(countStream));
 				String line = null;
 				while ((line = lineReader.readLine()) != null)
 				{
@@ -97,6 +98,10 @@ public class CsvTable extends AbstractTupleTable
 			catch (Exception e)
 			{
 				throw new TableException(e);
+			}
+			finally
+			{
+				IOUtils.closeQuietly(lineReader);
 			}
 		}
 		return rowCount;
