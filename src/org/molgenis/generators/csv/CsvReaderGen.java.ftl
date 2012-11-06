@@ -28,6 +28,7 @@ import java.util.TreeMap;
 <#break>
 </#if>
 </#list>
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.CsvToDatabase;
 import org.molgenis.framework.db.Database;
@@ -111,8 +112,10 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 		//add remaining elements to the database
 		if(!${name(entity)}List.isEmpty())
 		{
+			total.set(total.get() + ${name(entity)}List.size());
+			
 			//resolve foreign keys, again keeping track of those entities that could not be solved
-			${name(entity)}sMissingRefs = resolveForeignKeys(db, ${name(entity)}List);
+			${name(entity)}sMissingRefs.addAll(resolveForeignKeys(db, ${name(entity)}List));
 			${name(entity)}List.removeAll(${name(entity)}sMissingRefs);
 			
 			<#if entity.getXrefLabels()?exists>
@@ -124,28 +127,38 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 			</#if>
 		}
 		
-		//second import round, try to resolve FK's for entities again as they might have referred to entities in the imported list
-		List<${JavaName(entity)}> ${name(entity)}sStillMissingRefs = resolveForeignKeys(db, ${name(entity)}sMissingRefs);
-		
-		//if there are still missing references, throw error and rollback
-		if(${name(entity)}sStillMissingRefs.size() > 0){
-			throw new Exception("Import of '${JavaName(entity)}' objects failed: attempting to resolve in-list references, but there are still ${JavaName(entity)}s referring to ${JavaName(entity)}s that are neither in the database nor in the list of to-be imported ${JavaName(entity)}s. (the first one being: "+${name(entity)}sStillMissingRefs.get(0)+")");
-		}
-		//else update the entities in the database with the found references and return total
-		else
-		{				
+		//Try to resolve FK's for entities until all are resolved or we have more then 100 iterations
+		List<${JavaName(entity)}> ${name(entity)}s = new ArrayList<${JavaName(entity)}>(${name(entity)}sMissingRefs);
+
+		int iterationCount = 0;
+
+		do
+		{
+			${name(entity)}sMissingRefs = resolveForeignKeys(db, ${name(entity)}sMissingRefs);
+			@SuppressWarnings("unchecked")
+			List<${JavaName(entity)}> resolvable${name(entity)}s = new ArrayList<${JavaName(entity)}>(CollectionUtils.disjunction(${name(entity)}s,
+					${name(entity)}sMissingRefs));
+			${name(entity)}s.removeAll(resolvable${name(entity)}s);
+			
 			<#if entity.getXrefLabels()?exists>
-			db.update(${name(entity)}sMissingRefs,dbAction<#list entity.getXrefLabels() as label>, "${label}"</#list>);
+			db.update(resolvable${name(entity)}s,dbAction<#list entity.getXrefLabels() as label>, "${label}"</#list>);
 			<#else>
-			db.update(${name(entity)}sMissingRefs,dbAction<#list entity.getAllKeys()[0].fields as field>, "${field.name}"</#list>);
+			db.update(resolvable${name(entity)}s,dbAction<#list entity.getAllKeys()[0].fields as field>, "${field.name}"</#list>);
 			</#if>
-		
-			//output count
-			total.set(total.get() + ${name(entity)}List.size());
-			logger.info("imported "+total.get()+" ${name(entity)} from CSV"); 
-		
-			return total.get();
+
+			if (iterationCount++ > 100)
+			{
+				throw new Exception(
+						"Import of 'Individual' objects failed: attempting to resolve in-list references,"
+								+ "but after 100 iterations there are still Individuals referring to Individuals that are neither in the database nor in the list of to-be imported Individuals."
+								+ "Maybe there is a cyclic reference somewhere ?");
+			}
 		}
+		while (${name(entity)}sMissingRefs.size() > 0);
+
+		logger.info("imported " + total.get() + " ${name(entity)} from CSV");
+
+		return total.get();
 	}	
 	
 	/**
