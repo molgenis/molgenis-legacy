@@ -284,6 +284,7 @@
                         <configuration>
                             <sources>
                                 <source>src</source>
+                                <source>generated/test/java</source>
                             </sources>
                         </configuration>
                     </execution>
