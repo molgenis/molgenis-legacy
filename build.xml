@@ -67,9 +67,10 @@
 			<classpath refid="test.classpath" />
 		</javac>
 		
-		<testng  outputDir="${testng.report.dir}" haltOnFailure="true">
+		<testng outputDir="${testng.report.dir}" haltOnFailure="true">
 			<classpath location="${cb.instrument.dir}" />
 			<sysproperty key="net.sourceforge.cobertura.datafile" value="${cb.file}" />
+			<classpath location="${dir.src}" />
 			<classpath refid="cb.classpath" />
 			<classpath refid="test.classpath"/>
 			<classpath location="${dir.test.classes}" />
