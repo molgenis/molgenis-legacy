@@ -92,8 +92,6 @@ public abstract class ForEachEntityGenerator extends Generator
 						template.process(templateArgs, new OutputStreamWriter(targetOut, Charset.forName("UTF-8")));
 						targetOut.close();
 
-						// logger.info("generated " +
-						// targetFile.getAbsolutePath());
 						logger.info("generated " + targetFile);
 					}
 				}
