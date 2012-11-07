@@ -149,8 +149,8 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 			if (iterationCount++ > 100)
 			{
 				throw new Exception(
-						"Import of 'Individual' objects failed: attempting to resolve in-list references,"
-								+ "but after 100 iterations there are still Individuals referring to Individuals that are neither in the database nor in the list of to-be imported Individuals."
+						"Import of '${name(entity)}' objects failed: attempting to resolve in-list references,"
+								+ "but after 100 iterations there are still ${name(entity)}s referring to Individuals that are neither in the database nor in the list of to-be imported ${name(entity)}s."
 								+ "Maybe there is a cyclic reference somewhere ?");
 			}
 		}
