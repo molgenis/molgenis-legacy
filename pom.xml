@@ -145,6 +145,7 @@
 			<groupId>com.kenai.nbpwr</groupId>
 			<artifactId>edu-umd-cs-findbugs-annotations</artifactId>
 			<version>1.3.2-201002241900</version>
+			<scope>compile</scope>
 		</dependency>
 
         <!-- Testing -->
