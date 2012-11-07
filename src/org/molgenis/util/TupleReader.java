@@ -100,7 +100,7 @@ public interface TupleReader extends TupleIterable, Closeable
 	 * @throws DataFormatException
 	 * @throws IOException
 	 */
-	public void reset() throws IOException, DataFormatException;
+	public void reset() throws IOException;
 
 	/** ask whether the source of the reader is closed **/
 	public boolean isClosed();
