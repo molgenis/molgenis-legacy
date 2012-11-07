@@ -52,7 +52,6 @@ public abstract class GeneratorTestCase
 		DataTypeGen entityGenerator = new DataTypeGen();
 		entityGenerator.generate(MODEL, MODEL_OPTIONS);
 		LOG.debug("generated model entities");
-		System.out.println("generated model entities");
 
 		// compile model entities
 		List<String> compileList = new ArrayList<String>(entityList.size());
@@ -62,10 +61,6 @@ public abstract class GeneratorTestCase
 			String entityPath = entity.getModule().getName().replace('.', sep) + sep;
 			String generatedJavaFile = SRC_PATH + entityPath + entity.getName() + ".java";
 			compileList.add(generatedJavaFile);
-			// compile(generatedJavaFile, BUILD_PATH);
-			// LOG.debug("compiled model entity: " + generatedJavaFile);
-			// System.out.println("compiled model entity: " +
-			// generatedJavaFile);
 		}
 		compile(compileList, BUILD_PATH);
 	}
