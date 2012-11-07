@@ -63,7 +63,7 @@
 		</copy>
 		
 		<!-- compile the tests -->
-		<javac srcdir="${dir.test.src}" destdir="${dir.test.classes}" debug="true" includeantruntime="false">
+		<javac srcdir="${dir.test.src}:${dir.generated.test.src}" destdir="${dir.test.classes}" debug="true" includeantruntime="false">
 			<compilerarg value="-Xlint"/>
 			<classpath refid="test.classpath" />
 		</javac>
