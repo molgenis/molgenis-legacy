@@ -1,7 +1,5 @@
 
 /* File:        org.molgenis/model/Identifiable.java
- * Copyright:   GBIC 2000-2012, all rights reserved
- * Date:        November 7, 2012
  * Generator:   org.molgenis.generators.DataTypeGen 4.0.0-testing
  *
  * THIS FILE HAS BEEN GENERATED, PLEASE DO NOT EDIT!
