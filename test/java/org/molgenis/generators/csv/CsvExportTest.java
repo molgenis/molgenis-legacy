@@ -39,7 +39,7 @@ public class CsvExportTest extends GeneratorTestCase
 		String csvFeatures = FileUtils.readFileToString(
 				new File(System.getProperty("java.io.tmpdir") + "/feature.txt"), Charset.forName("UTF-8"));
 
-		String expected = "name\t__Type\tdataType\r\nfeature1\tFeature\tstring\r\nfeature2\tFeature\tboolean\r\n";
+		String expected = "name\t__Type\tdataType\nfeature1\tFeature\tstring\nfeature2\tFeature\tboolean\n";
 
 		Assert.assertEquals(csvFeatures, expected);
 	}
