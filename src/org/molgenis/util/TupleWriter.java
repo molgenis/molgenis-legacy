@@ -1,8 +1,10 @@
 package org.molgenis.util;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.List;
 
-public interface TupleWriter
+public interface TupleWriter extends Closeable
 {
 
 	/**
@@ -10,7 +12,7 @@ public interface TupleWriter
 	 * 
 	 * @throws Exception
 	 */
-	public void writeHeader() throws Exception;
+	public void writeHeader() throws IOException;
 
 	/**
 	 * Write a row to stream.
@@ -19,32 +21,23 @@ public interface TupleWriter
 	 *            Entity to be written.
 	 * @throws Exception
 	 */
-	public void writeRow(Entity e) throws Exception;
+	public void writeRow(Entity e) throws IOException;
 
 	/**
 	 * Write a row to stream.
 	 * 
 	 * @param t
 	 *            Tuple to be written.
+	 * @throws IOException
 	 */
-	public void writeRow(Tuple t);
+	public void writeRow(Tuple t) throws IOException;
 
-	public void writeValue(Object object);
+	public void writeValue(Object object) throws IOException;
 
 	public void setHeaders(List<String> fields);
 
-	public void writeEndOfLine();
+	public void writeEndOfLine() throws IOException;
 
-	/**
-	 * Finish up and close the exported file. For example, close the workbook
-	 * when writing to Excel, or the PrintWriter when writing to CSV. Could
-	 * close the wrapped OutputStream. The returned OutputStream is closed after
-	 * any download in AbstractMolgenisServlet.
-	 * 
-	 * @throws Exception
-	 */
-	public void close() throws Exception;
-
-	public void writeMatrix(List<String> rowNames, List<String> colNames, Object[][] elements);
+	public void writeMatrix(List<String> rowNames, List<String> colNames, Object[][] elements) throws IOException;
 
 }

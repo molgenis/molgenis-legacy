@@ -110,8 +110,6 @@ public class RestInterface
 				{
 
 					TupleWriter writer = new CsvWriter(out);
-					// CsvWriter writer = new CsvFileWriter( new
-					// File("c:/testout.txt") );
 					if (rulesList != null) db.find(getClassForName(entityName), writer,
 							rulesList.toArray(new QueryRule[rulesList.size()]));
 					else
