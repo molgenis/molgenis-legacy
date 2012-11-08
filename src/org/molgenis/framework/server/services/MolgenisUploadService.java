@@ -1,7 +1,6 @@
 package org.molgenis.framework.server.services;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -220,7 +219,7 @@ public class MolgenisUploadService implements MolgenisService
 		if (action.equals("ADD"))
 		{
 			File temp = File.createTempFile("molgenis", "tab");
-			TupleWriter writer = new CsvWriter(new PrintWriter(new BufferedWriter(new FileWriter(temp))));
+			TupleWriter writer = new CsvWriter(new FileWriter(temp));
 			if (req.getObject(INPUT_SILENT) != null && req.getBool(INPUT_SILENT) == true)
 			{
 				writer.close();

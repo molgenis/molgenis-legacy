@@ -19,9 +19,9 @@
 package ${package};
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,7 +84,7 @@ public class ${JavaName(entity)}ExcelReader
 		return headers;
 	}
 	
-	private boolean writeSheetToFile(Sheet sheet, File file) throws FileNotFoundException{
+	private boolean writeSheetToFile(Sheet sheet, File file) throws IOException{
 		List<String> headers = new ArrayList<String>();
 		Cell[] headerCells = sheet.getRow(0); //assume headers are on first line
 		if(headerCells.length == 0){
@@ -99,22 +99,31 @@ public class ${JavaName(entity)}ExcelReader
 				namelessHeaderLocations.add(i);
 			}
 		}
-		PrintWriter pw = new PrintWriter(file);
-		CsvWriter cw = new CsvWriter(pw, headers);
-		cw.setMissingValue("");
-		cw.writeHeader();
-		for(int rowIndex = 1; rowIndex < sheet.getRows(); rowIndex++){
-			Tuple t = new SimpleTuple();
-			int colIndex = 0;
-			for(Cell c : sheet.getRow(rowIndex)){
-				if(!namelessHeaderLocations.contains(colIndex) && colIndex < headers.size() && c.getContents() != null){
-					t.set(headers.get(colIndex), c.getContents());
+		CsvWriter cw = new CsvWriter(new FileOutputStream(file), Charset.forName("UTF-8"), headers);
+		try
+		{
+			cw.setMissingValue("");
+			cw.writeHeader();
+			for (int rowIndex = 1; rowIndex < sheet.getRows(); rowIndex++)
+			{
+				Tuple t = new SimpleTuple();
+				int colIndex = 0;
+				for (Cell c : sheet.getRow(rowIndex))
+				{
+					if (!namelessHeaderLocations.contains(colIndex) && colIndex < headers.size()
+							&& c.getContents() != null)
+					{
+						t.set(headers.get(colIndex), c.getContents());
+					}
+					colIndex++;
 				}
-				colIndex++;
+				cw.writeRow(t);
 			}
-			cw.writeRow(t);
 		}
-		cw.close();
+		finally
+		{
+			cw.close();
+		}
 		return true;
 	}
 }

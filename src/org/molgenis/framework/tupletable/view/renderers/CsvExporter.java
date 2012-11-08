@@ -1,5 +1,6 @@
 package org.molgenis.framework.tupletable.view.renderers;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class CsvExporter extends AbstractExporter
 	}
 
 	@Override
-	public void export(OutputStream os) throws TableException
+	public void export(OutputStream os) throws IOException, TableException
 	{
 		CsvWriter csv = new CsvWriter(os);
 

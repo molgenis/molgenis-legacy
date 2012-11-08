@@ -282,9 +282,17 @@ public class PlinkTest extends AbstractResourceTest
 	{
 		File newBim = new File(testBim.getAbsolutePath().replace(testBim.getName(), "new.bim"));
 		BimFileWriter w = new BimFileWriter(newBim);
-		w.writeAll(bimfd.getAllEntries());
-		boolean filesAreEqual = DirectoryCompare.compareFileContent(testBim, newBim);
-		assertTrue(filesAreEqual);
+		try
+		{
+			w.writeAll(bimfd.getAllEntries());
+			boolean filesAreEqual = DirectoryCompare.compareFileContent(testBim, newBim);
+			assertTrue(filesAreEqual);
+		}
+		finally
+		{
+			w.close();
+		}
+
 	}
 
 	@Test
@@ -292,9 +300,16 @@ public class PlinkTest extends AbstractResourceTest
 	{
 		File newMap = new File(testMap.getAbsolutePath().replace(testMap.getName(), "new.map"));
 		MapFileWriter w = new MapFileWriter(newMap);
-		w.writeAll(mapfd.getAllEntries());
-		boolean filesAreEqual = DirectoryCompare.compareFileContent(testMap, newMap);
-		assertTrue(filesAreEqual);
+		try
+		{
+			w.writeAll(mapfd.getAllEntries());
+			boolean filesAreEqual = DirectoryCompare.compareFileContent(testMap, newMap);
+			assertTrue(filesAreEqual);
+		}
+		finally
+		{
+			w.close();
+		}
 	}
 
 	@Test
@@ -302,9 +317,16 @@ public class PlinkTest extends AbstractResourceTest
 	{
 		File newPed = new File(testPed.getAbsolutePath().replace(testPed.getName(), "new.ped"));
 		PedFileWriter w = new PedFileWriter(newPed);
-		w.writeAll(pedfd.getAllEntries());
-		boolean filesAreEqual = DirectoryCompare.compareFileContent(testPed, newPed);
-		assertTrue(filesAreEqual);
+		try
+		{
+			w.writeAll(pedfd.getAllEntries());
+			boolean filesAreEqual = DirectoryCompare.compareFileContent(testPed, newPed);
+			assertTrue(filesAreEqual);
+		}
+		finally
+		{
+			w.close();
+		}
 	}
 
 	@Test
@@ -312,9 +334,16 @@ public class PlinkTest extends AbstractResourceTest
 	{
 		File newFam = new File(testFam.getAbsolutePath().replace(testFam.getName(), "new.fam"));
 		FamFileWriter w = new FamFileWriter(newFam);
-		w.writeAll(famfd.getAllEntries());
-		boolean filesAreEqual = DirectoryCompare.compareFileContent(testFam, newFam);
-		assertTrue(filesAreEqual);
+		try
+		{
+			w.writeAll(famfd.getAllEntries());
+			boolean filesAreEqual = DirectoryCompare.compareFileContent(testFam, newFam);
+			assertTrue(filesAreEqual);
+		}
+		finally
+		{
+			w.close();
+		}
 	}
 
 	@Test
@@ -322,9 +351,16 @@ public class PlinkTest extends AbstractResourceTest
 	{
 		File newTped = new File(testTped.getAbsolutePath().replace(testTped.getName(), "new.tped"));
 		TpedFileWriter w = new TpedFileWriter(newTped);
-		w.writeAll(tpedfd.getAllEntries());
-		boolean filesAreEqual = DirectoryCompare.compareFileContent(testTped, newTped);
-		assertTrue(filesAreEqual);
+		try
+		{
+			w.writeAll(tpedfd.getAllEntries());
+			boolean filesAreEqual = DirectoryCompare.compareFileContent(testTped, newTped);
+			assertTrue(filesAreEqual);
+		}
+		finally
+		{
+			w.close();
+		}
 	}
 
 	@AfterClass
@@ -336,21 +372,4 @@ public class PlinkTest extends AbstractResourceTest
 		mapfd.close();
 		tpedfd.close();
 	}
-
-	// private boolean stringArrEqual(String[] arr1, String[] arr2)
-	// {
-	// if (arr1.length != arr2.length)
-	// {
-	// return false;
-	// }
-	// for (int i = 0; i < arr1.length; i++)
-	// {
-	// if (!arr1[i].equals(arr2[i]))
-	// {
-	// return false;
-	// }
-	// }
-	// return true;
-	// }
-
 }
