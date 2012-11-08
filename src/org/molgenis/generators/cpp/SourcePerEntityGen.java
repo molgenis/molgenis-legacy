@@ -20,7 +20,7 @@ import freemarker.template.Template;
 
 public class SourcePerEntityGen extends ForEachEntityGenerator
 {
-	public static final transient Logger logger = Logger.getLogger(SourcePerEntityGen.class);
+	private static final Logger logger = Logger.getLogger(SourcePerEntityGen.class);
 
 	@Override
 	public String getDescription()

@@ -20,7 +20,7 @@ import freemarker.template.Template;
 
 public class CPPMainGen extends ForEachEntityGenerator
 {
-	public static final transient Logger logger = Logger.getLogger(CPPMainGen.class);
+	private static final Logger logger = Logger.getLogger(CPPMainGen.class);
 
 	@Override
 	public String getDescription()

@@ -30,7 +30,7 @@ import org.molgenis.util.Tuple;
 public class DownloadAllCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = -2682113764135477871L;
-	public static final transient Logger logger = Logger.getLogger(DownloadAllCommand.class);
+	private static final Logger logger = Logger.getLogger(DownloadAllCommand.class);
 
 	public DownloadAllCommand(String name, ScreenController<?> parentScreen)
 	{

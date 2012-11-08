@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
  */
 public class ResultSetTuple extends SimpleTuple
 {
-	private static final transient Logger logger = Logger.getLogger(ResultSetTuple.class);
+	private static final Logger logger = Logger.getLogger(ResultSetTuple.class);
 
 	/** JDBC Resultset wrapped by this Tuple. */
 	private ResultSet resultset;

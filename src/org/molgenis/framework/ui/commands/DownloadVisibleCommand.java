@@ -29,7 +29,7 @@ import org.molgenis.util.Tuple;
 public class DownloadVisibleCommand extends SimpleCommand
 {
 	private static final long serialVersionUID = -6279819301321361448L;
-	public static final transient Logger logger = Logger.getLogger(DownloadVisibleCommand.class);
+	private static final Logger logger = Logger.getLogger(DownloadVisibleCommand.class);
 
 	public DownloadVisibleCommand(String name, ScreenController<?> parentScreen)
 	{

@@ -56,7 +56,7 @@ public class TestDatabase
 {
 	private static int total = 10;
 	private static Database db;
-	public static final transient Logger logger = Logger.getLogger(TestDatabase.class);
+	private static final Logger logger = Logger.getLogger(TestDatabase.class);
 	DateFormat dateFormat = new SimpleDateFormat(SimpleTuple.DATEFORMAT, Locale.US);
 	DateFormat dateTimeFormat = new SimpleDateFormat(SimpleTuple.DATETIMEFORMAT, Locale.US);	 
 

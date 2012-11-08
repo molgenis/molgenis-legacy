@@ -44,7 +44,7 @@ import ${entity.namespace}.csv.${JavaName(entity)}CsvReader;
  */
 public class ${JavaName(entity)}ExcelReader
 {
-	public static final transient Logger logger = Logger.getLogger(${JavaName(entity)}ExcelReader.class);
+	private static final Logger logger = Logger.getLogger(${JavaName(entity)}ExcelReader.class);
 			
 	/**
 	 * Imports ${JavaName(entity)} from a workbook sheet.

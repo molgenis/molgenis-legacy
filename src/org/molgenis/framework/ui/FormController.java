@@ -48,7 +48,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 {
 	// member variables
 	/** */
-	private static final transient Logger logger = Logger.getLogger(FormController.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(FormController.class);
 
 	/** Helper object that takes care of database paging */
 	protected DatabasePager<E> pager;

@@ -21,7 +21,7 @@ import freemarker.template.Template;
 
 public class FormControllerGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(FormControllerGen.class);
+	private static final Logger logger = Logger.getLogger(FormControllerGen.class);
 
 	@Override
 	public String getDescription()
