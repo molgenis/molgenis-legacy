@@ -20,7 +20,7 @@ import freemarker.template.Template;
 
 public class ImportWizardExcelPrognosisGen extends MySqlCreateClassPerTableGen
 {
-	public static final transient Logger logger = Logger.getLogger(ImportWizardExcelPrognosisGen.class);
+	private static final Logger logger = Logger.getLogger(ImportWizardExcelPrognosisGen.class);
 
 	@Override
 	public String getDescription()

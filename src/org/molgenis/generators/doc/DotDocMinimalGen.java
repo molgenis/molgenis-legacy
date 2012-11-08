@@ -21,7 +21,7 @@ import freemarker.template.TemplateException;
 
 public class DotDocMinimalGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(DotDocMinimalGen.class);
+	private static final Logger logger = Logger.getLogger(DotDocMinimalGen.class);
 
 	// need to add input and output file
 	public static final String GRAPHVIZ_COMMAND_WINDOWS = "dot";

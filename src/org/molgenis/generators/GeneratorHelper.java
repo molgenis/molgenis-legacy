@@ -29,7 +29,7 @@ import org.molgenis.util.Tuple;
 
 public class GeneratorHelper
 {
-	private static final transient Logger logger = Logger.getLogger(GeneratorHelper.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(GeneratorHelper.class.getSimpleName());
 	MolgenisOptions options;
 	MolgenisFieldTypes typeRegistry;
 

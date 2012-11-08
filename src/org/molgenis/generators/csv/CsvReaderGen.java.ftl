@@ -45,7 +45,7 @@ ${imports(model, entity, "")}
  */
 public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entity)}>
 {
-	public static final transient Logger logger = Logger.getLogger(${JavaName(entity)}CsvReader.class);
+	private static final Logger logger = Logger.getLogger(${JavaName(entity)}CsvReader.class);
 	
 	<#assign has_xrefs=false />
 	<#list allFields(entity) as f><#if (f.type == 'xref' || f.type == 'mref') && f.getXrefLabelNames()[0] != f.xrefFieldName><#assign has_xrefs=true>

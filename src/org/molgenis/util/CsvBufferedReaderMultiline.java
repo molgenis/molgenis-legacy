@@ -19,14 +19,14 @@ import org.apache.log4j.Logger;
 public abstract class CsvBufferedReaderMultiline extends AbstractTupleReader implements CsvReader, TupleIterable
 {
 	/** default separators */
-	public static char[] separators =
+	private static final char[] separators =
 	{ ',', '\t', ';', ' ' };
 
 	/** Wrapper around the resource that is read */
 	protected BufferedReader reader = null;
 
 	/** for log messages */
-	private static final transient Logger logger = Logger.getLogger(CsvFileReader.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(CsvFileReader.class.getSimpleName());
 
 	/** character for escaping " */
 	private char quoteEscape = '"';
