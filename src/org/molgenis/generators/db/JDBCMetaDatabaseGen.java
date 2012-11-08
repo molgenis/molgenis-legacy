@@ -20,7 +20,7 @@ import freemarker.template.Template;
 
 public class JDBCMetaDatabaseGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(JDBCMetaDatabaseGen.class);
+	private static final Logger logger = Logger.getLogger(JDBCMetaDatabaseGen.class);
 
 	@Override
 	public String getDescription()

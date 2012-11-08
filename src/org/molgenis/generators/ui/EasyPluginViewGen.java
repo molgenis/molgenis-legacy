@@ -19,7 +19,7 @@ import freemarker.template.Template;
 
 public class EasyPluginViewGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(EasyPluginViewGen.class);
+	private static final Logger logger = Logger.getLogger(EasyPluginViewGen.class);
 
 	@Override
 	public String getDescription()

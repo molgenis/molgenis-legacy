@@ -1,10 +1,12 @@
 package org.molgenis.util;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.RandomAccessFile;
+import java.nio.charset.Charset;
 
 import org.apache.commons.io.IOUtils;
 
@@ -25,7 +27,8 @@ public class TextFileUtils
 	 */
 	public static int getNumberOfLines(File inFile) throws IOException
 	{
-		LineNumberReader lnr = new LineNumberReader(new FileReader(inFile));
+		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(inFile),
+				Charset.forName("UTF-8")));
 		try
 		{
 			lnr.skip(Long.MAX_VALUE);
@@ -49,16 +52,22 @@ public class TextFileUtils
 	public static boolean fileEndsWithNewlineChar(File inFile) throws Exception
 	{
 		RandomAccessFile raf = new RandomAccessFile(inFile, "r");
-		raf.seek(raf.length() - 1);
-		char c = (char) raf.readByte();
-		raf.close();
-		if (c == '\n' || c == '\r')
+		try
 		{
-			return true;
+			raf.seek(raf.length() - 1);
+			char c = (char) raf.readByte();
+			if (c == '\n' || c == '\r')
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
-		else
+		finally
 		{
-			return false;
+			raf.close();
 		}
 	}
 

@@ -36,7 +36,7 @@ public abstract class SimpleScreenModel implements ScreenModel, Serializable
 	// member variables
 	private static final long serialVersionUID = 3764151203967037515L;
 	/** Logger */
-	protected final transient Logger logger = Logger.getLogger(this.getClass().getSimpleName());
+	protected static final Logger logger = Logger.getLogger(SimpleScreenModel.class);
 	/**
 	 * constant parameter name for screen target controller (to be used when
 	 * rendering actions)

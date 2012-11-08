@@ -21,7 +21,7 @@ import freemarker.template.Template;
 
 public class SoapApiGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(SoapApiGen.class);
+	private static final Logger logger = Logger.getLogger(SoapApiGen.class);
 
 	@Override
 	public String getDescription()

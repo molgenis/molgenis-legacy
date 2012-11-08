@@ -30,7 +30,7 @@ import org.molgenis.util.XlsWriter;
 public class DownloadVisibleXlsCommand extends SimpleCommand
 {
 	private static final long serialVersionUID = -6279819301321361448L;
-	public static final transient Logger logger = Logger.getLogger(DownloadVisibleXlsCommand.class);
+	private static final Logger logger = Logger.getLogger(DownloadVisibleXlsCommand.class);
 
 	public DownloadVisibleXlsCommand(String name, ScreenController<?> parentScreen)
 	{

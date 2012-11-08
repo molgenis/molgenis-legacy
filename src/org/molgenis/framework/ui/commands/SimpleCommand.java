@@ -22,10 +22,6 @@ public abstract class SimpleCommand extends SimpleScreenModel implements ScreenC
 {
 	private static final long serialVersionUID = -3289941539731301135L;
 
-	/** Logger */
-	// private static final transient Logger logger =
-	// Logger.getLogger(SimpleCommand.class.getSimpleName());
-
 	/** Internal name of this command (unique within the screen) */
 	private String name;
 

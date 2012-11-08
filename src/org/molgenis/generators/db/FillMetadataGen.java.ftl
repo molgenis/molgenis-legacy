@@ -26,7 +26,7 @@ import org.molgenis.framework.security.Login;
 import org.molgenis.framework.security.SimpleLogin;
 
 public class FillMetadata {
-	protected static final transient Logger logger = Logger.getLogger(FillMetadata.class);
+	protected static final Logger logger = Logger.getLogger(FillMetadata.class);
 <#if !metaData>
 	public static void fillMetadata(Database db) throws Exception {
 		logger.info("fillMetadata is Empty!");

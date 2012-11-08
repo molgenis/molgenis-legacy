@@ -1,13 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.molgenis.util.trityper.reader;
+
+import java.nio.charset.Charset;
 
 /**
  * 
  * @author harmjan
  */
+@edu.umd.cs.findbugs.annotations.SuppressWarnings(value =
+{ "EI_EXPOSE_REP", "EI_EXPOSE_REP2" }, justification = "Not accessed by untrusted code")
 public class SNP
 {
 	private byte chr;
@@ -118,11 +118,11 @@ public class SNP
 						System.out.println("ERROR!!!: Number of different alleles for SNP\t" + name
 								+ "\t is more than two!");
 						System.out.println("Allele 1:\t" + alleles[0] + " / " + new String(new byte[]
-						{ alleles[0] }));
+						{ alleles[0] }, Charset.forName("UTF-8")));
 						System.out.println("Allele 2:\t" + alleles[1] + " / " + new String(new byte[]
-						{ alleles[1] }));
+						{ alleles[1] }, Charset.forName("UTF-8")));
 						System.out.println("Allele 3:\t" + alleles[2] + " / " + new String(new byte[]
-						{ alleles[2] }));
+						{ alleles[2] }, Charset.forName("UTF-8")));
 						break;
 					}
 				}

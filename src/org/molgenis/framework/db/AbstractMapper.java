@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.molgenis.framework.db.jdbc.AbstractJDBCMapper;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.TupleReader;
@@ -23,7 +22,7 @@ public abstract class AbstractMapper<E extends Entity> implements Mapper<E>
 	public static final int BATCH_SIZE = 500;
 
 	/** log messages */
-	private static transient final Logger logger = Logger.getLogger(AbstractJDBCMapper.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(AbstractMapper.class);
 
 	public AbstractMapper(Database database)
 	{

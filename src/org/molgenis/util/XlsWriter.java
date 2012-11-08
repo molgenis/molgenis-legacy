@@ -14,6 +14,7 @@ import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
+import jxl.write.biff.RowsExceededException;
 
 /**
  * Write values to an Excel file
@@ -69,14 +70,41 @@ public class XlsWriter implements TupleWriter
 	}
 
 	@Override
-	public void writeHeader() throws Exception
+	public void writeHeader() throws IOException
 	{
 		// Add and store headers
-		for (int i = 0; i < headers.size(); i++)
+		try
 		{
-			String header = headers.get(i);
-			Label l = new Label(i, 0, header, headerFormat);
-			sheet.addCell(l);
+			for (int i = 0; i < headers.size(); i++)
+			{
+				String header = headers.get(i);
+				Label l = new Label(i, 0, header, headerFormat);
+				sheet.addCell(l);
+			}
+		}
+		catch (RowsExceededException e)
+		{
+			throw new IOException(e);
+		}
+		catch (WriteException e)
+		{
+			throw new IOException(e);
+		}
+	}
+
+	public void writeCell(int col, int row, String value) throws IOException
+	{
+		try
+		{
+			sheet.addCell(new Label(col, row, value));
+		}
+		catch (RowsExceededException e)
+		{
+			throw new IOException(e);
+		}
+		catch (WriteException e)
+		{
+			throw new IOException(e);
 		}
 	}
 
@@ -94,11 +122,18 @@ public class XlsWriter implements TupleWriter
 	}
 
 	@Override
-	public void close() throws Exception
+	public void close() throws IOException
 	{
 		// close the excel file; no writing allowed anymore
 		workbook.write();
-		workbook.close();
+		try
+		{
+			workbook.close();
+		}
+		catch (WriteException e)
+		{
+			throw new IOException(e);
+		}
 	}
 
 	/**
@@ -115,7 +150,7 @@ public class XlsWriter implements TupleWriter
 	}
 
 	@Override
-	public void writeRow(Entity e) throws Exception
+	public void writeRow(Entity e) throws IOException
 	{
 		for (int i = 0; i < headers.size(); i++)
 		{
@@ -140,7 +175,7 @@ public class XlsWriter implements TupleWriter
 						}
 						else
 						{
-							throw new Exception("List contains null value(s)");
+							throw new IOException("List contains null value(s)");
 						}
 					}
 
@@ -152,7 +187,18 @@ public class XlsWriter implements TupleWriter
 
 			}
 			Label l = new Label(i, rowIndex, contentsBuilder.toString(), cellFormat);
-			sheet.addCell(l);
+			try
+			{
+				sheet.addCell(l);
+			}
+			catch (RowsExceededException e1)
+			{
+				throw new IOException(e1);
+			}
+			catch (WriteException e1)
+			{
+				throw new IOException(e1);
+			}
 		}
 		rowIndex++;
 	}
