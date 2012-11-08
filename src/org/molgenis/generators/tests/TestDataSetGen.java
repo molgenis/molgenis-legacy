@@ -20,7 +20,7 @@ import freemarker.template.Template;
 
 public class TestDataSetGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(TestDataSetGen.class);
+	private static final Logger logger = Logger.getLogger(TestDataSetGen.class);
 
 	@Override
 	public String getDescription()

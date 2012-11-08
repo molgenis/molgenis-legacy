@@ -11,7 +11,7 @@ public abstract class AbstractTupleReader implements TupleReader
 {
 
 	/** for log messages */
-	protected static final transient Logger logger = Logger.getLogger(CsvFileReader.class.getSimpleName());
+	protected static final Logger logger = Logger.getLogger(CsvFileReader.class.getSimpleName());
 	/**
 	 * a matching String that indicates where the Csv starts; empty means first
 	 * line

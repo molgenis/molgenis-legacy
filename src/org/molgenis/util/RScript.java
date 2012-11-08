@@ -29,7 +29,7 @@ public class RScript
 	public static String R_COMMAND = "R CMD BATCH --vanilla --slave";
 
 	/** logger */
-	private static final transient Logger logger = Logger.getLogger(RScript.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(RScript.class.getSimpleName());
 
 	/** buffer containing the script */
 	private StringBuffer script = new StringBuffer();

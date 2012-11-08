@@ -26,7 +26,7 @@ import org.molgenis.util.TupleWriter;
  */
 public class RestInterface
 {
-	private static final transient Logger logger = Logger.getLogger(RestInterface.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(RestInterface.class);
 
 	/**
 	 * Handle use of the REST api URL pattern /rest/find/[select]?[filter] and

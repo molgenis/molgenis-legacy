@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
  */
 public class ImageMagickResizer implements ImageResizer
 {
-	private static final transient Logger logger = Logger.getLogger(ImageMagickResizer.class);
+	private static final Logger logger = Logger.getLogger(ImageMagickResizer.class);
 
 	// assumes the command 'convert' is on classpath
 	public static final String IMAGEMAGICK_COMMAND = "C:/Program Files/ImageMagick-6.5.4-Q16/convert";

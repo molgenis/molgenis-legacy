@@ -57,7 +57,7 @@ import org.apache.log4j.Logger;
 
 public class InstallCert
 {
-	private static final transient Logger logger = Logger.getLogger(InstallCert.class);
+	private static final Logger logger = Logger.getLogger(InstallCert.class);
 
 	public static void main(String[] args) throws Exception
 	{

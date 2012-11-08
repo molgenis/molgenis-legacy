@@ -1511,5 +1511,5 @@ public class MolgenisModelParser
 		return xml;
 	}
 
-	private static final transient Logger logger = Logger.getLogger(MolgenisModelParser.class.getName());
+	private static final Logger logger = Logger.getLogger(MolgenisModelParser.class.getName());
 }

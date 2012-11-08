@@ -17,7 +17,7 @@ import freemarker.template.Template;
 
 public class RestDocGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(RestDocGen.class);
+	private static final Logger logger = Logger.getLogger(RestDocGen.class);
 
 	@Override
 	public String getDescription()

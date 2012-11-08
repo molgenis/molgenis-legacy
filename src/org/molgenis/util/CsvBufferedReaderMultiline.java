@@ -26,7 +26,7 @@ public abstract class CsvBufferedReaderMultiline extends AbstractTupleReader imp
 	protected BufferedReader reader = null;
 
 	/** for log messages */
-	private static final transient Logger logger = Logger.getLogger(CsvFileReader.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(CsvFileReader.class.getSimpleName());
 
 	/** character for escaping " */
 	private char quoteEscape = '"';

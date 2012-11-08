@@ -20,7 +20,7 @@ import freemarker.template.Template;
 
 public class TestDatabaseGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(TestDatabaseGen.class);
+	private static final Logger logger = Logger.getLogger(TestDatabaseGen.class);
 
 	@Override
 	public String getDescription()

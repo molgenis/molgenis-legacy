@@ -21,7 +21,7 @@ import freemarker.template.Template;
 
 public class TextUmlGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(TextUmlGen.class);
+	private static final Logger logger = Logger.getLogger(TextUmlGen.class);
 
 	@Override
 	public String getDescription()

@@ -17,7 +17,7 @@ import freemarker.template.Template;
 
 public class TableDocGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(TableDocGen.class);
+	private static final Logger logger = Logger.getLogger(TableDocGen.class);
 
 	@Override
 	public String getDescription()
