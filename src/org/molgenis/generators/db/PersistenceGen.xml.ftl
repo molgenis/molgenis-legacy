@@ -11,11 +11,17 @@
 	</#if>
 </#list>
 	    <properties>
-	      <property name="javax.persistence.jdbc.url" value="${options.dbUri}?autoReconnect=true"/>
-	      <property name="javax.persistence.jdbc.password" value="${options.dbPassword}"/>
-	      <property name="javax.persistence.jdbc.driver" value="${options.dbDriver}"/>
-	      <property name="javax.persistence.jdbc.user" value="${options.dbUser}"/>
+          <property name="javax.persistence.jdbc.url" value="${options.dbUri}"/>
+          <property name="javax.persistence.jdbc.password" value="${options.dbPassword}"/>
+          <property name="javax.persistence.jdbc.driver" value="${options.dbDriver}"/>
+          <property name="javax.persistence.jdbc.user" value="${options.dbUser}"/>
           <property name="javax.persistence.validation.mode" value="none"/>    
+          <property name="hibernate.c3p0.min_size" value="5"/>
+          <property name="hibernate.c3p0.max_size" value="200"/>
+          <property name="hibernate.c3p0.max_statements" value="200"/>
+<!-- 
+          <property name="hibernate.connection.datasource" value="java:/comp/env/jdbc/molgenisdb"/>
+-->
           <property name="hibernate.dialect" value="org.hibernate.dialect.${options.hibernateDialect}"/>
           <property name="hibernate.show_sql" value="false"/>
           <property name="hibernate.format_sql" value="false"/>
@@ -27,7 +33,10 @@
           <property name="hibernate.order_updates" value="true"/>
           <property name="hibernate.cache.use_query_cache" value="false"/>
           <property name="hibernate.cache.use_second_level_cache" value="false"/>
+          <property name="hibernate.search.default.directory_provider" value="org.hibernate.search.store.RAMDirectoryProvider"/>
+<!--
           <property name="hibernate.search.default.directory_provider" value="filesystem"/>
+-->
           <property name="hibernate.search.default.indexBase" value="${options.hibernateSearchIndexBase}"/>
           
           <!--

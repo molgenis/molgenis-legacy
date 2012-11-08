@@ -12,7 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.molgenis.framework.db.Database;
-import org.molgenis.util.HandleException;
+import org.molgenis.util.ExceptionHandler;
 
 public class JpaUtil
 {
@@ -143,7 +143,7 @@ public class JpaUtil
 		}
 		catch (Exception e)
 		{
-			HandleException.handle(e, logger);
+			ExceptionHandler.handle(e, logger);
 		}
 		finally
 		{

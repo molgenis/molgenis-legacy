@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.BasicConfigurator;
@@ -804,12 +805,18 @@ public class Molgenis
 			try
 			{
 				BufferedReader in = new BufferedReader(new FileReader(create_tables_file));
-				String line;
-				while ((line = in.readLine()) != null)
+				try
 				{
-					create_tables_sqlBuilder.append(line).append('\n');
+					String line;
+					while ((line = in.readLine()) != null)
+					{
+						create_tables_sqlBuilder.append(line).append('\n');
+					}
 				}
-				in.close();
+				finally
+				{
+					IOUtils.closeQuietly(in);
+				}
 			}
 			catch (IOException e)
 			{

@@ -21,7 +21,7 @@ import org.molgenis.util.Tuple;
 public class ViewListViewCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = -5921987163907171740L;
-	public static final transient Logger logger = Logger.getLogger(ViewListViewCommand.class);
+	private static final Logger logger = Logger.getLogger(ViewListViewCommand.class);
 
 	public ViewListViewCommand(String name, ScreenController<?> parentScreen)
 	{

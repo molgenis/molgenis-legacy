@@ -20,7 +20,7 @@ import freemarker.template.Template;
 
 public class CopyMemoryToDatabaseGen extends MySqlCreateClassPerTableGen
 {
-	public static final transient Logger logger = Logger.getLogger(CopyMemoryToDatabaseGen.class);
+	private static final Logger logger = Logger.getLogger(CopyMemoryToDatabaseGen.class);
 
 	@Override
 	public String getDescription()

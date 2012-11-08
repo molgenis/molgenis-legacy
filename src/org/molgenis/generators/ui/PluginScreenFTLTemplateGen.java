@@ -19,7 +19,7 @@ import freemarker.template.Template;
 
 public class PluginScreenFTLTemplateGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(PluginScreenFTLTemplateGen.class);
+	private static final Logger logger = Logger.getLogger(PluginScreenFTLTemplateGen.class);
 
 	@Override
 	public String getDescription()

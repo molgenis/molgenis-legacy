@@ -20,7 +20,7 @@ import freemarker.template.Template;
 
 public class FileFormatDocGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(FileFormatDocGen.class);
+	private static final Logger logger = Logger.getLogger(FileFormatDocGen.class);
 
 	@Override
 	public String getDescription()

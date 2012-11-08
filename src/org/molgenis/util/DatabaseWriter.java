@@ -1,15 +1,17 @@
 package org.molgenis.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.AbstractMapper;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 
 /** Tuple writer that translates tuples into rows in a Database */
 public class DatabaseWriter implements TupleWriter
 {
-	public final int BATCH_SIZE = AbstractMapper.BATCH_SIZE;
+	public static final int BATCH_SIZE = AbstractMapper.BATCH_SIZE;
 	private final Database db;
 	private final Class<? extends Entity> entityClass;
 	private final List<Entity> batch = new ArrayList<Entity>();
@@ -21,21 +23,27 @@ public class DatabaseWriter implements TupleWriter
 	}
 
 	@Override
-	public void writeHeader() throws Exception
+	public void writeHeader() throws IOException
 	{
-		// NA
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeRow(Entity e) throws Exception
+	public void writeRow(Entity e) throws IOException
 	{
 		if (e.getClass().equals(entityClass)) batch.add(e);
 
 		if (batch.size() >= BATCH_SIZE)
 		{
-			db.add(batch);
+			try
+			{
+				db.add(batch);
+			}
+			catch (DatabaseException e1)
+			{
+				throw new IOException(e1);
+			}
 			batch.clear();
-			;
 		}
 	}
 
@@ -76,11 +84,18 @@ public class DatabaseWriter implements TupleWriter
 	}
 
 	@Override
-	public void close() throws Exception
+	public void close() throws IOException
 	{
 		if (batch.size() > 0)
 		{
-			db.add(batch);
+			try
+			{
+				db.add(batch);
+			}
+			catch (DatabaseException e)
+			{
+				throw new IOException(e);
+			}
 			batch.clear();
 		}
 

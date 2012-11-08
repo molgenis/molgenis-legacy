@@ -1,5 +1,6 @@
 package org.molgenis.framework.tupletable.view.renderers;
 
+import java.io.IOException;
 import java.io.OutputStream;
 
 import org.molgenis.framework.tupletable.TableException;
@@ -15,5 +16,5 @@ public abstract class AbstractExporter
 		this.tupleTable = tupleTable;
 	}
 
-	public abstract void export(OutputStream os) throws TableException;
+	public abstract void export(OutputStream os) throws IOException, TableException;
 }

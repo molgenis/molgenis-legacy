@@ -17,7 +17,7 @@ import freemarker.template.Template;
 
 public class RApiGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(RApiGen.class);
+	private static final Logger logger = Logger.getLogger(RApiGen.class);
 
 	public String getDescription()
 	{

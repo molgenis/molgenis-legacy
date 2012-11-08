@@ -231,7 +231,7 @@ public class SimpleTuple implements Tuple
 
 	public Integer getInt(int column)
 	{
-		if (getObject(column) == null || getString(column).equals("")) return null;
+		if (getObject(column) == null || getString(column).isEmpty()) return null;
 		try
 		{
 			return Integer.valueOf(getString(column));
@@ -245,7 +245,7 @@ public class SimpleTuple implements Tuple
 
 	public Integer getInt(String column)
 	{
-		if (getObject(column) == null || getString(column).equals("")) return null;
+		if (getObject(column) == null || getString(column).isEmpty()) return null;
 		try
 		{
 			return Integer.valueOf(getString(column));
@@ -268,7 +268,7 @@ public class SimpleTuple implements Tuple
 
 	public Long getLong(int column)
 	{
-		if (getObject(column) == null || getString(column).equals("")) return null;
+		if (getObject(column) == null || getString(column).isEmpty()) return null;
 		try
 		{
 			return Long.valueOf(getString(column));
@@ -282,7 +282,7 @@ public class SimpleTuple implements Tuple
 
 	public Long getLong(String column)
 	{
-		if (getObject(column) == null || getString(column).equals("")) return null;
+		if (getObject(column) == null || getString(column).isEmpty()) return null;
 		try
 		{
 			return Long.valueOf(getString(column));
@@ -307,23 +307,25 @@ public class SimpleTuple implements Tuple
 
 	}
 
+	@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "Could be null under some circumstances")
 	public Boolean getBoolean(int column)
 	{
-		if (getObject(column) == null || getString(column).equals("")) return null;
+		if (getObject(column) == null || getString(column).isEmpty()) return null;
 		return Boolean.valueOf(getString(column).toLowerCase().equals("true") || getString(column).trim().equals("1")
 				|| getString(column).trim().equalsIgnoreCase("on"));
 	}
 
+	@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "Could be null under some circumstances")
 	public Boolean getBoolean(String column)
 	{
-		if (getObject(column) == null || getString(column).equals("")) return null;
+		if (getObject(column) == null || getString(column).isEmpty()) return null;
 		return Boolean.valueOf(getString(column).toLowerCase().equals("true") || getString(column).trim().equals("1")
 				|| getString(column).trim().equalsIgnoreCase("on"));
 	}
 
 	public Double getDecimal(int column)
 	{
-		if (getObject(column) == null || getString(column).equals("")) return null;
+		if (getObject(column) == null || getString(column).isEmpty()) return null;
 		try
 		{
 			return Double.valueOf(getString(column));
@@ -337,7 +339,7 @@ public class SimpleTuple implements Tuple
 
 	public Double getDecimal(String column)
 	{
-		if (getObject(column) == null || getString(column).equals("")) return null;
+		if (getObject(column) == null || getString(column).isEmpty()) return null;
 		try
 		{
 			return new Double(getString(column));
@@ -449,21 +451,23 @@ public class SimpleTuple implements Tuple
 		return getObject(column).toString().trim();
 	}
 
+	@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "Could be null under some circumstances")
 	public Boolean getBool(int column)
 	{
-		if (getObject(column) == null || getString(column).equals("")) return null;
+		if (getObject(column) == null || getString(column).isEmpty()) return null;
 		return getBoolean(column);
 	}
 
+	@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "Could be null under some circumstances")
 	public Boolean getBool(String column)
 	{
-		if (getObject(column) == null || getString(column).equals("")) return null;
+		if (getObject(column) == null || getString(column).isEmpty()) return null;
 		return getBoolean(column);
 	}
 
 	public java.sql.Date getDate(int column) throws ParseException
 	{
-		if (this.getObject(column) == null || this.getString(column).equals("")) return null;
+		if (this.getObject(column) == null || this.getString(column).isEmpty()) return null;
 		if (this.getObject(column) instanceof java.sql.Date) return (java.sql.Date) this.getObject(column);
 		if (this.getObject(column) instanceof java.sql.Timestamp) return (java.sql.Date) this.getObject(column);
 		if (this.getObject(column) instanceof java.util.Date) return new java.sql.Date(
@@ -500,7 +504,7 @@ public class SimpleTuple implements Tuple
 
 	public java.sql.Date getDate(String column) throws ParseException
 	{
-		if (this.getObject(column) == null || this.getString(column).equals("")) return null;
+		if (this.getObject(column) == null || this.getString(column).isEmpty()) return null;
 		if (this.getObject(column) instanceof java.sql.Date) return (java.sql.Date) this.getObject(column);
 		if (this.getObject(column) instanceof java.sql.Timestamp) return (java.sql.Date) this.getObject(column);
 		if (this.getObject(column) instanceof java.util.Date) return new java.sql.Date(
@@ -583,7 +587,7 @@ public class SimpleTuple implements Tuple
 
 	public Timestamp getTimestamp(String column) throws ParseException
 	{
-		if (this.getObject(column) == null || this.getString(column).equals("")) return null;
+		if (this.getObject(column) == null || this.getString(column).isEmpty()) return null;
 		if (this.getObject(column) instanceof java.sql.Timestamp) return (java.sql.Timestamp) this.getObject(column);
 		try
 		{
@@ -627,7 +631,7 @@ public class SimpleTuple implements Tuple
 
 	public Timestamp getTimestamp(int column) throws ParseException
 	{
-		if (this.getObject(column) == null || this.getString(column).equals("")) return null;
+		if (this.getObject(column) == null || this.getString(column).isEmpty()) return null;
 		if (this.getObject(column) instanceof java.sql.Timestamp) return (java.sql.Timestamp) this.getObject(column);
 		try
 		{
