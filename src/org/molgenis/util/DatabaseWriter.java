@@ -11,7 +11,7 @@ import org.molgenis.framework.db.DatabaseException;
 /** Tuple writer that translates tuples into rows in a Database */
 public class DatabaseWriter implements TupleWriter
 {
-	public final int BATCH_SIZE = AbstractMapper.BATCH_SIZE;
+	public static final int BATCH_SIZE = AbstractMapper.BATCH_SIZE;
 	private final Database db;
 	private final Class<? extends Entity> entityClass;
 	private final List<Entity> batch = new ArrayList<Entity>();
