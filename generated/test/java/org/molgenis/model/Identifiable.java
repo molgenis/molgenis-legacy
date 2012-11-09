@@ -10,7 +10,6 @@ package org.molgenis.model;
 
 /**
  * Identifiable: .
- * @version November 7, 2012 
  * @author MOLGENIS generator
  */
 public interface Identifiable extends  org.molgenis.model.Autoid
