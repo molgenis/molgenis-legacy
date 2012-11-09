@@ -10,7 +10,6 @@ package org.molgenis.model;
 
 /**
  * Autoid: .
- * @version November 7, 2012 
  * @author MOLGENIS generator
  */
 public interface Autoid extends org.molgenis.util.Entity
