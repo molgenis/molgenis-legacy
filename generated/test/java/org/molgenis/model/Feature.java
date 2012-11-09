@@ -10,7 +10,6 @@ package org.molgenis.model;
 
 /**
  * Feature: .
- * @version November 7, 2012 
  * @author MOLGENIS generator
  */
 @javax.persistence.Entity
