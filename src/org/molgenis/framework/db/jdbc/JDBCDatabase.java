@@ -48,7 +48,7 @@ import org.molgenis.framework.db.ExampleData;
 public class JDBCDatabase extends AbstractDatabase
 {
 	/** Logger for this database */
-	private static final transient Logger logger = Logger.getLogger(JDBCDatabase.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(JDBCDatabase.class);
 
 	/**
 	 * Construct a JDBCDatabase using this connection alone. There is no

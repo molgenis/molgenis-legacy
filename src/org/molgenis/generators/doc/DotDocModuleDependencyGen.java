@@ -23,7 +23,7 @@ import freemarker.template.TemplateException;
 
 public class DotDocModuleDependencyGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(DotDocModuleDependencyGen.class);
+	private static final Logger logger = Logger.getLogger(DotDocModuleDependencyGen.class);
 
 	// need to add input and output file
 	public static final String GRAPHVIZ_COMMAND_WINDOWS = "dot";

@@ -26,7 +26,7 @@ import org.molgenis.util.Tuple;
 public class AddBatchCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = -4067952586340535730L;
-	public static final transient Logger logger = Logger.getLogger(AddBatchCommand.class);
+	private static final Logger logger = Logger.getLogger(AddBatchCommand.class);
 
 	public AddBatchCommand(String name, ScreenController<?> owner)
 	{

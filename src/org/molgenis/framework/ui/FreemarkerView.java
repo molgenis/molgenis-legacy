@@ -40,7 +40,7 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 	// wrapper of this template
 	private freemarker.template.Configuration conf = null;
 	private String templatePath;
-	private transient Logger logger = Logger.getLogger(FreemarkerView.class);
+	private static final Logger logger = Logger.getLogger(FreemarkerView.class);
 	private Map<String, Object> arguments = new LinkedHashMap<String, Object>();
 
 	public FreemarkerView(String templatePath, ScreenModel model)

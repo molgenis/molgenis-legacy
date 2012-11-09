@@ -20,7 +20,7 @@ import freemarker.template.Template;
 
 public class PSqlCreateSubclassPerTableGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(PSqlCreateSubclassPerTableGen.class);
+	private static final Logger logger = Logger.getLogger(PSqlCreateSubclassPerTableGen.class);
 
 	@Override
 	public String getDescription()

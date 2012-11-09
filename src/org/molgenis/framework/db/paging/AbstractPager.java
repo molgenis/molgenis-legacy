@@ -60,7 +60,7 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 	private List<QueryRule> filters = new ArrayList<QueryRule>();
 
 	/** Logger **/
-	private final static transient Logger logger = Logger.getLogger(AbstractPager.class.getSimpleName());
+	private final static Logger logger = Logger.getLogger(AbstractPager.class);
 
 	/**
 	 * @param entityClass

@@ -164,7 +164,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	public static final String ACTION_DOWNLOAD = "download";
 
 	// PROPERTIES (default initialization is done in reset!)
-	private static final transient Logger logger = Logger.getLogger(FormModel.class);
+	private static final Logger logger = Logger.getLogger(FormModel.class);
 
 	/** List of actions of this screen */
 	private Map<String, ScreenCommand> commands = new LinkedHashMap<String, ScreenCommand>();

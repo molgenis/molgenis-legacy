@@ -21,7 +21,7 @@ import freemarker.template.Template;
 
 public class MolgenisSoapServiceGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(MolgenisSoapServiceGen.class);
+	private static final Logger logger = Logger.getLogger(MolgenisSoapServiceGen.class);
 
 	@Override
 	public String getDescription()

@@ -18,7 +18,7 @@ import freemarker.template.Template;
 
 public class FillMetadataTablesGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(FillMetadataTablesGen.class);
+	private static final Logger logger = Logger.getLogger(FillMetadataTablesGen.class);
 
 	@Override
 	public String getDescription()
