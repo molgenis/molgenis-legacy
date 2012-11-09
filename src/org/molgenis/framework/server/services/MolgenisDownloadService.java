@@ -85,21 +85,42 @@ public class MolgenisDownloadService implements MolgenisService
 					showAvailableDownloads(out, db, req);
 					out.println("</body></html>");
 				}
-				else if (req.getRequest().getQueryString() != null
-						&& req.getRequest().getQueryString().equals("__showQueryDialogue=true"))
-				{
-					out.println("<html><body>");
-					out.println(authStatus.getPrintMe());
-					if (req.getDatabase().getLogin().isAuthenticated())
-					{
-						out.println(MolgenisServiceAuthenticationHelper.displayLogoutForm());
-					}
-					showFilterableDownload(out, entityName, db);
-					out.println("</body></html>");
-				}
 				else
 				{
-					executeQuery(out, req, db, entityName);
+					// Check if this entity exists and is downloadable
+					List<org.molgenis.model.elements.Entity> downloadableEntities = getDownloadableEntities(db);
+					boolean found = false;
+					for (int i = 0; i < downloadableEntities.size() && !found; i++)
+					{
+						String name = downloadableEntities.get(i).getName();
+						if ((name != null) && name.equals(entityName))
+						{
+							found = true;
+						}
+					}
+
+					if (!found)
+					{
+						res.getResponse().sendError(404);// NOT FOUND
+						return;
+					}
+
+					if (req.getRequest().getQueryString() != null
+							&& req.getRequest().getQueryString().equals("__showQueryDialogue=true"))
+					{
+						out.println("<html><body>");
+						out.println(authStatus.getPrintMe());
+						if (req.getDatabase().getLogin().isAuthenticated())
+						{
+							out.println(MolgenisServiceAuthenticationHelper.displayLogoutForm());
+						}
+						showFilterableDownload(out, entityName, db);
+						out.println("</body></html>");
+					}
+					else
+					{
+						executeQuery(out, req, db, entityName);
+					}
 				}
 			}
 		}
@@ -165,7 +186,7 @@ public class MolgenisDownloadService implements MolgenisService
 		out.println("You can download these data:<br>");
 		out.println("<table>");
 
-		for (org.molgenis.model.elements.Entity eClass : db.getMetaData().getEntities(false, false))
+		for (org.molgenis.model.elements.Entity eClass : getDownloadableEntities(db))
 		{
 			String name = eClass.getName();
 			Class<? extends Entity> klazz = db.getClassForName(name);
@@ -185,6 +206,11 @@ public class MolgenisDownloadService implements MolgenisService
 			}
 		}
 		out.println("</table>");
+	}
+
+	private List<org.molgenis.model.elements.Entity> getDownloadableEntities(Database db) throws DatabaseException
+	{
+		return db.getMetaData().getEntities(false, false);
 	}
 
 	private List<QueryRule> createQueryRules(MolgenisRequest req, Class<? extends Entity> klazz) throws Exception

@@ -17,7 +17,6 @@ package ${package};
 
 /**
  * ${Name(entity)}: ${entity.description}.
- * @version ${date} 
  * @author MOLGENIS generator
  */
 <#if entity.abstract>
