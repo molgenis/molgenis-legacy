@@ -22,7 +22,7 @@ import org.molgenis.util.Tuple;
 
 public class MenuController extends SimpleScreenController<MenuModel>
 {
-	private static final transient Logger logger = Logger.getLogger(MenuController.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(MenuController.class);
 	private static final long serialVersionUID = -7579424157884595183L;
 
 	public MenuController(String name, ScreenController<?> parent)

@@ -31,7 +31,7 @@ import org.molgenis.util.XlsWriter;
 public class DownloadSelectedXlsCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = 3619865367653131342L;
-	public static final transient Logger logger = Logger.getLogger(DownloadSelectedXlsCommand.class);
+	private static final Logger logger = Logger.getLogger(DownloadSelectedXlsCommand.class);
 
 	public DownloadSelectedXlsCommand(String name, ScreenController<?> parentScreen)
 	{

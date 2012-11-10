@@ -6,7 +6,7 @@ import org.molgenis.generators.ui.PluginControllerGen;
 
 public class JpaEntityListenerGen extends ForEachEntityGenerator
 {
-	public static final transient Logger logger = Logger.getLogger(PluginControllerGen.class);
+	private static final Logger logger = Logger.getLogger(PluginControllerGen.class);
 
 	public JpaEntityListenerGen()
 	{

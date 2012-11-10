@@ -20,7 +20,7 @@ import freemarker.template.Template;
 
 public class CsvImportGen extends MySqlCreateClassPerTableGen
 {
-	public static final transient Logger logger = Logger.getLogger(CsvImportGen.class);
+	private static final Logger logger = Logger.getLogger(CsvImportGen.class);
 
 	@Override
 	public String getDescription()

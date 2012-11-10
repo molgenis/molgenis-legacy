@@ -34,7 +34,7 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends 
 	private MODEL model;
 
 	/** */
-	protected final transient Logger logger = Logger.getLogger(this.getClass());
+	protected static final Logger logger = Logger.getLogger(SimpleScreenController.class);
 	/** */
 	static final long serialVersionUID = 5286068849305140609L;
 	/** Determines which of the subscreens should be shown */

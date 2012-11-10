@@ -23,6 +23,12 @@ public abstract class Generator
 
 	public abstract void generate(Model model, MolgenisOptions options) throws Exception;
 
+	// TODO make abstract (not practical to do at the moment) 
+	public void generate(Model model, MolgenisOptions options, String generatedPath) throws Exception
+	{
+		throw new UnsupportedOperationException();
+	}
+
 	/**
 	 * Create a template for the generators to use.
 	 * 
@@ -145,9 +151,6 @@ public abstract class Generator
 	{
 		return ".java";
 	}
-
-	// private static transient final Logger logger =
-	// Logger.getLogger(Generator.class.getSimpleName());
 
 	public abstract String getDescription();
 }

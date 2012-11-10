@@ -5,7 +5,7 @@ import org.molgenis.generators.ForEachEntityGenerator;
 
 public class JpaMapperGen extends ForEachEntityGenerator
 {
-	public static final transient Logger logger = Logger.getLogger(JpaMapperGen.class);
+	private static final Logger logger = Logger.getLogger(JpaMapperGen.class);
 
 	@Override
 	public String getDescription()

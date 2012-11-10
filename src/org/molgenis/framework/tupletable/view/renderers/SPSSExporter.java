@@ -32,7 +32,7 @@ public class SPSSExporter extends CsvExporter
 		// SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 	}
 
-	public void export(OutputStream csvOs, OutputStream spssOs, String csvFileName) throws TableException
+	public void export(OutputStream csvOs, OutputStream spssOs, String csvFileName) throws IOException, TableException
 	{
 		super.export(csvOs);
 		writeSPSFile(spssOs, csvFileName);

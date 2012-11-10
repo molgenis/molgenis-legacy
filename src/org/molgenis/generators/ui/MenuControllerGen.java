@@ -20,7 +20,7 @@ import freemarker.template.Template;
 
 public class MenuControllerGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(MenuControllerGen.class);
+	private static final Logger logger = Logger.getLogger(MenuControllerGen.class);
 
 	@Override
 	public String getDescription()

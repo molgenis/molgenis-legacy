@@ -17,7 +17,7 @@ import freemarker.template.Template;
 
 public class DatabaseFactoryGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(DatabaseFactoryGen.class);
+	private static final Logger logger = Logger.getLogger(DatabaseFactoryGen.class);
 
 	@Override
 	public String getDescription()

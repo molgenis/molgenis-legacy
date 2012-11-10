@@ -21,7 +21,7 @@ import freemarker.template.Template;
 
 public class RdfApiGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(RdfApiGen.class);
+	private static final Logger logger = Logger.getLogger(RdfApiGen.class);
 
 	@Override
 	public String getDescription()

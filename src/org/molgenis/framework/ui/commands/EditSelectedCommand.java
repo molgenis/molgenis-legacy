@@ -28,7 +28,7 @@ import org.molgenis.util.Tuple;
 public class EditSelectedCommand extends SimpleCommand
 {
 	private static final long serialVersionUID = -2996595009523144519L;
-	public static final transient Logger logger = Logger.getLogger(EditSelectedCommand.class);
+	private static final Logger logger = Logger.getLogger(EditSelectedCommand.class);
 	private List<?> selectedIds = new ArrayList<Object>();
 
 	public EditSelectedCommand(String name, ScreenController<?> parentScreen)

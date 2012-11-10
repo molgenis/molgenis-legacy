@@ -21,7 +21,7 @@ import freemarker.template.Template;
 
 public class EntityModelDocGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(EntityModelDocGen.class);
+	private static final Logger logger = Logger.getLogger(EntityModelDocGen.class);
 
 	@Override
 	public String getDescription()

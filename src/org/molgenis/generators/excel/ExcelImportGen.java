@@ -20,7 +20,7 @@ import freemarker.template.Template;
 
 public class ExcelImportGen extends MySqlCreateClassPerTableGen
 {
-	public static final transient Logger logger = Logger.getLogger(ExcelImportGen.class);
+	private static final Logger logger = Logger.getLogger(ExcelImportGen.class);
 
 	@Override
 	public String getDescription()
