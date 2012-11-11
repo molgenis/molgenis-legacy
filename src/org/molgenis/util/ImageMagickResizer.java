@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 import org.apache.log4j.Logger;
 
@@ -21,7 +22,7 @@ import org.apache.log4j.Logger;
  */
 public class ImageMagickResizer implements ImageResizer
 {
-	private static final transient Logger logger = Logger.getLogger(ImageMagickResizer.class);
+	private static final Logger logger = Logger.getLogger(ImageMagickResizer.class);
 
 	// assumes the command 'convert' is on classpath
 	public static final String IMAGEMAGICK_COMMAND = "C:/Program Files/ImageMagick-6.5.4-Q16/convert";
@@ -75,7 +76,7 @@ public class ImageMagickResizer implements ImageResizer
 	private String streamToString(InputStream inputStream) throws IOException
 	{
 		StringBuffer fileContents = new StringBuffer();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
 		String line;
 		while ((line = reader.readLine()) != null)
 		{

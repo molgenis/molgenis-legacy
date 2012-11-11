@@ -163,4 +163,35 @@ public class CsvFileReaderTest
 			file0.delete();
 		}
 	}
+
+	@Test
+	public void testBlockStart() throws Exception
+	{
+		File file0 = File.createTempFile("CsvFileReaderTest_file0", null);
+		try
+		{
+			FileUtils.write(file0,
+					"##bla1\n##bla2\n##bla3\nHeader1\tHeader2\nRow1Col1\tRow1Col2\nRow2Col1\tRow2Col2\n",
+					Charset.forName("UTF-8"));
+
+			CsvFileReader reader = new CsvFileReader(file0, "##bla3");
+
+			try
+			{
+				// test columnnames
+				List<String> columnNames = reader.columnnames;
+				assertEquals(2, columnNames.size());
+				assertEquals("Header1", columnNames.get(0));
+				assertEquals("Header2", columnNames.get(1));
+			}
+			finally
+			{
+				IOUtils.closeQuietly(reader);
+			}
+		}
+		finally
+		{
+			file0.delete();
+		}
+	}
 }

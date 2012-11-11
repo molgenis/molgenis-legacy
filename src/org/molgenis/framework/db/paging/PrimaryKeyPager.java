@@ -27,7 +27,7 @@ public class PrimaryKeyPager<E extends Entity> extends AbstractPager<E>
 {
 	private static final long serialVersionUID = 1707494068232123242L;
 
-	private static final transient Logger logger = Logger.getLogger(PrimaryKeyPager.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(PrimaryKeyPager.class);
 
 	/**
 	 * Constructor.

@@ -6,6 +6,7 @@
 	<property name="dir.classes" value="${dir.build}/classes" />
 	<property name="dir.javadoc" value="${dir.build}/javadoc" />
 	<property name="dir.test.src" value="test/java" />
+	<property name="dir.generated.test.src" value="generated/test/java" />
 	<property name="dir.test.resources" value="test/resources" />
 	<property name="dir.test.classes" value="${dir.build}/test/classes" />
 	<property name="testng.report.dir" value="${dir.build}/test/output" />
@@ -62,14 +63,16 @@
 		</copy>
 		
 		<!-- compile the tests -->
-		<javac srcdir="${dir.test.src}" destdir="${dir.test.classes}" debug="true" includeantruntime="false">
+		<javac srcdir="${dir.test.src}:${dir.generated.test.src}" destdir="${dir.test.classes}" debug="true" includeantruntime="false">
 			<compilerarg value="-Xlint"/>
 			<classpath refid="test.classpath" />
 		</javac>
 		
-		<testng  outputDir="${testng.report.dir}" haltOnFailure="true">
+		<testng outputDir="${testng.report.dir}" haltOnFailure="true">
 			<classpath location="${cb.instrument.dir}" />
 			<sysproperty key="net.sourceforge.cobertura.datafile" value="${cb.file}" />
+			<classpath location="${dir.src}" />
+			<classpath location="${dir.generated.test.src}" />
 			<classpath refid="cb.classpath" />
 			<classpath refid="test.classpath"/>
 			<classpath location="${dir.test.classes}" />
@@ -151,7 +154,7 @@
 	   	</findbugs>
 	</target>
 	
-	<target name="findbugs-html" depends="compile">
+	<target name="findbugs.html" depends="compile">
 		<mkdir dir="${dir.build}" />
 	   	<findbugs home="${findbugs.home}"
 	       	output="html" outputFile="${dir.build}/findbugs.html"

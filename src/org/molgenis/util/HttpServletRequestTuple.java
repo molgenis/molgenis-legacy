@@ -32,7 +32,7 @@ public class HttpServletRequestTuple extends SimpleTuple
 	private String previousFieldName = "";
 
 	/** errors are logged. */
-	private static final transient Logger logger = Logger.getLogger(HttpServletRequestTuple.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(HttpServletRequestTuple.class.getSimpleName());
 
 	public HttpServletRequestTuple(HttpServletRequest request) throws Exception
 	{

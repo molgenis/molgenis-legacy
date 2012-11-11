@@ -11,7 +11,7 @@ public abstract class AbstractTupleReader implements TupleReader
 {
 
 	/** for log messages */
-	protected static final transient Logger logger = Logger.getLogger(CsvFileReader.class.getSimpleName());
+	protected static final Logger logger = Logger.getLogger(CsvFileReader.class.getSimpleName());
 	/**
 	 * a matching String that indicates where the Csv starts; empty means first
 	 * line
@@ -28,8 +28,6 @@ public abstract class AbstractTupleReader implements TupleReader
 	protected List<String> columnnames;
 	/** guessed separator */
 	protected char separator = 0;
-	/** boolean indicating the parser is working */
-	protected boolean isParsing = false;
 	/** boolean indicating that the resource parsed has headers... */
 	protected boolean hasHeader = true;
 

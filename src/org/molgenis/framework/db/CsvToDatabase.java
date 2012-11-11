@@ -7,20 +7,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import freemarker.log.Logger;
-
 /** will be moved to generic solution */
 
 public abstract class CsvToDatabase<E extends Entity>
 {
 	protected static int BATCH_SIZE = 10000;
-	protected transient final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
+	protected static final Logger logger = Logger.getLogger(CsvToDatabase.class);
 
 	/**
 	 * wrapper to use int inside anonymous classes (requires final, so cannot

@@ -35,7 +35,7 @@ import org.molgenis.util.TupleWriter;
 public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMapper<E>
 {
 	/** log messages */
-	public static transient final Logger logger = Logger.getLogger(AbstractJDBCMapper.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(AbstractJDBCMapper.class);
 
 	public AbstractJDBCMapper(Database database)
 	{

@@ -52,7 +52,7 @@ import org.molgenis.util.Tuple;
  */
 public class JDBCModelExtractor
 {
-	public static transient final Logger logger = Logger.getLogger("JDBCModelExtractor");
+	private static final Logger logger = Logger.getLogger("JDBCModelExtractor");
 
 	public static void main(String[] args) throws Exception
 	{

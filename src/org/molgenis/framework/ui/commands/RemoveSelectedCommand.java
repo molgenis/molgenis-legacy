@@ -23,7 +23,7 @@ import org.molgenis.util.Tuple;
 public class RemoveSelectedCommand extends SimpleCommand
 {
 	private static final long serialVersionUID = 4730493886936446817L;
-	public static final transient Logger logger = Logger.getLogger(RemoveSelectedCommand.class);
+	private static final Logger logger = Logger.getLogger(RemoveSelectedCommand.class);
 
 	public RemoveSelectedCommand(String name, ScreenController<?> parentScreen)
 	{

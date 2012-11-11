@@ -34,7 +34,7 @@ public class Entity extends DBSchema implements Record
 	/** Convenience variable for retrieving the primary key from the keys */
 	public static final int PRIMARY_KEY = 0;
 
-	private static final transient Logger logger = Logger.getLogger(Entity.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(Entity.class.getSimpleName());
 	// member variables
 	/** namespace, e.g. used for package name */
 	private String namespace;

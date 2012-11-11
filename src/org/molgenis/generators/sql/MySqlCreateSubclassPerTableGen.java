@@ -20,7 +20,7 @@ import freemarker.template.Template;
 
 public class MySqlCreateSubclassPerTableGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(MySqlCreateSubclassPerTableGen.class);
+	private static final Logger logger = Logger.getLogger(MySqlCreateSubclassPerTableGen.class);
 
 	@Override
 	public String getDescription()

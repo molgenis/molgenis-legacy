@@ -20,7 +20,7 @@ import freemarker.template.Template;
 
 public class OracleCreateSubclassPerTableGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(OracleCreateSubclassPerTableGen.class);
+	private static final Logger logger = Logger.getLogger(OracleCreateSubclassPerTableGen.class);
 
 	@Override
 	public String getDescription()

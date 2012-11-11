@@ -3,6 +3,7 @@
 	<classpathentry kind="src" path="test/resources"/>
 	<classpathentry kind="src" path="test/java"/>
 	<classpathentry excluding="org/molgenis/framework/ui/res/lib/" kind="src" path="src"/>
+	<classpathentry kind="src" path="generated/test/java"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="lib/ant-apache-log4j.jar">
@@ -544,5 +545,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/mockito-all-1.9.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-email-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/findbugs-2.0.1/lib/annotations.jar"/>
+	<classpathentry kind="lib" path="lib/spring-test-3.1.2.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-core-3.1.2.RELEASE.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

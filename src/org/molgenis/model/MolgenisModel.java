@@ -17,7 +17,7 @@ import org.molgenis.model.elements.Model;
 
 public class MolgenisModel
 {
-	private static final transient Logger logger = Logger.getLogger(MolgenisModel.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(MolgenisModel.class.getSimpleName());
 
 	public static Model parse(MolgenisOptions options) throws Exception
 	{
