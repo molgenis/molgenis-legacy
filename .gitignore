@@ -6,7 +6,6 @@ build/
 target/
 tmp/
 
-<<<<<<< HEAD
 *.class
 *,so
 *,si
