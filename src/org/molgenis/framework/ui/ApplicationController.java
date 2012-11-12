@@ -166,6 +166,7 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 	/**
 	 * Convenience method that delegates the refresh to its ScreenController.
 	 */
+	@Override
 	public void reload(Database db)
 	{
 		for (ScreenController<?> s : this.getChildren())
@@ -247,6 +248,7 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 		return Show.SHOW_MAIN;
 	}
 
+	@Override
 	public EmailService getEmailService()
 	{
 		return emailService;
@@ -292,6 +294,7 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 	 * @return
 	 * @throws Exception
 	 */
+	@Override
 	public Database getDatabase()
 	{
 		throw new UnsupportedOperationException("getDatabase must be implemented for use");
@@ -307,6 +310,7 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 		this.galaxyUrl = galaxyUrl;
 	}
 
+	@Override
 	@Deprecated
 	// why is this here?
 	public String getCustomHtmlHeaders()

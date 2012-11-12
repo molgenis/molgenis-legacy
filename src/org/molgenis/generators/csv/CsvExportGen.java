@@ -54,6 +54,7 @@ public class CsvExportGen extends MySqlCreateClassPerTableGen
 		logger.info("generated " + target);
 	}
 
+	@Override
 	public void generate(Model model, MolgenisOptions options, String target) throws Exception
 	{
 		Template template = createTemplate(this.getClass().getSimpleName() + ".java.ftl");

@@ -763,6 +763,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		return showColumns;
 	}
 
+	@Override
 	public ScreenView getView()
 	{
 		return new FreemarkerView("FormView.ftl", getModel());

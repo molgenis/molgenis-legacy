@@ -60,6 +60,7 @@ public abstract class AbstractEntity implements Entity, Serializable
 		return result;
 	}
 
+	@Override
 	public void set(String name, Object value) throws Exception
 	{
 		// inefficient
@@ -68,11 +69,13 @@ public abstract class AbstractEntity implements Entity, Serializable
 		this.set(t, false);
 	}
 
+	@Override
 	public void set(Tuple values) throws Exception
 	{
 		this.set(values, true);
 	}
 
+	@Override
 	public Tuple getValues()
 	{
 		Tuple t = new SimpleTuple();
@@ -83,6 +86,7 @@ public abstract class AbstractEntity implements Entity, Serializable
 		return t;
 	}
 
+	@Override
 	public String getValues(String sep)
 	{
 		StringWriter out = new StringWriter();
@@ -102,11 +106,13 @@ public abstract class AbstractEntity implements Entity, Serializable
 		return out.toString();
 	}
 
+	@Override
 	public void setReadonly(boolean readonly)
 	{
 		this.readonly = readonly;
 	}
 
+	@Override
 	public boolean isReadonly()
 	{
 		return readonly;
@@ -178,6 +184,7 @@ public abstract class AbstractEntity implements Entity, Serializable
 		}
 	}
 
+	@Override
 	public String getLabelValue()
 	{
 		StringBuilder resultBuilder = new StringBuilder();

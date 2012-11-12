@@ -22,6 +22,7 @@ public class Author
 		return String.format("%s, %s", LastName, Initials);
 	}
 
+	@Override
 	public String toString()
 	{
 		return String.format("author: lastname=%s, forename=%s, initials=%s", LastName, ForeName, Initials);

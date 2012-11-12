@@ -33,6 +33,7 @@ public class Menu extends UISchema
 			this.tag = tag;
 		}
 
+		@Override
 		public String toString()
 		{
 			return this.tag;
@@ -82,6 +83,7 @@ public class Menu extends UISchema
 		this.position = position;
 	}
 
+	@Override
 	public String toString()
 	{
 		return String.format("Menu(name=%s, group=%s)", getName(), getGroup());
@@ -91,6 +93,7 @@ public class Menu extends UISchema
 	/**
 	 * 
 	 */
+	@Override
 	public Type getType()
 	{
 		return Type.MENU;

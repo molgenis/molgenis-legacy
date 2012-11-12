@@ -112,11 +112,13 @@ public interface Entity
 	/**
 	 * @deprecated This method will be removed because it is too specific.
 	 */
+	@Deprecated
 	public String getValues(String sep);
 
 	/**
 	 * @deprecated This method will be removed because it is too specific.
 	 */
+	@Deprecated
 	public String getFields(String sep);
 
 	/**

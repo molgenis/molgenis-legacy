@@ -18,6 +18,7 @@ public class RSIterator implements Iterator<Tuple>
 		this.entities = rs;
 	}
 
+	@Override
 	public Tuple next()
 	{
 		try
@@ -35,6 +36,7 @@ public class RSIterator implements Iterator<Tuple>
 		}
 	}
 
+	@Override
 	public boolean hasNext()
 	{
 		try

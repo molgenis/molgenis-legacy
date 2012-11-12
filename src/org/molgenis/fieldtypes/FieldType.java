@@ -152,6 +152,7 @@ public abstract class FieldType
 	/**
 	 * The string value of this type, e.g. 'int' or 'xref'.
 	 */
+	@Override
 	public String toString()
 	{
 		return this.getClass().getSimpleName().replace("Field", "").toLowerCase();
