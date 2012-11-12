@@ -1,6 +1,7 @@
 package org.molgenis;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -796,7 +798,8 @@ public class Molgenis
 			data_src.setUrl(options.db_uri);
 
 			conn = data_src.getConnection();
-			String create_tables_file = options.output_sql + File.separator + "create_tables.sql";
+			String create_tables_file_str = options.output_sql + File.separator + "create_tables.sql";
+			InputStream create_tables_file = new ByteArrayInputStream(create_tables_file_str.getBytes("UTF-8"));  
 			logger.debug("using file " + create_tables_file);
 			// String create_tables_file = "generated" + File.separator + "sql"
 			// + File.separator + "create_tables.sql";
@@ -805,7 +808,8 @@ public class Molgenis
 			StringBuilder create_tables_sqlBuilder = new StringBuilder();
 			try
 			{
-				BufferedReader in = new BufferedReader(new FileReader(create_tables_file));
+				BufferedReader in = new BufferedReader(new InputStreamReader(create_tables_file));
+				
 				try
 				{
 					String line;
