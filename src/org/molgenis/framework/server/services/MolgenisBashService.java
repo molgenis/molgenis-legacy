@@ -31,6 +31,7 @@ public class MolgenisBashService implements MolgenisService
 	 * @param response
 	 * @throws IOException
 	 */
+	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws IOException
 	{
 

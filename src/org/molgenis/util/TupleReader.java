@@ -9,6 +9,7 @@ import java.util.zip.DataFormatException;
 public interface TupleReader extends TupleIterable, Closeable
 {
 	/** Iterate through available tuples */
+	@Override
 	public Iterator<Tuple> iterator();
 
 	/**

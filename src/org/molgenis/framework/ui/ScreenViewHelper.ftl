@@ -27,14 +27,10 @@
 		<script src="generated-res/scripts/menu.js" type="text/javascript" language="javascript"></script>			
 		<script src="generated-res/scripts/recoverscroll.js" type="text/javascript" language="javascript"></script>	
 		<script src="generated-res/scripts/overlib.js" type="text/javascript" language="javascript"></script>
-		
-		<!--link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
-  		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
-  		<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script-->
   		
-  		<link href="generated-res/lib/jquery/css/smoothness/jquery-ui-1.8.7.custom.css" rel="stylesheet" type="text/css">
-  		<script src="generated-res/lib/jquery/js/jquery-1.6.1.min.js" type="text/javascript"></script>
-  		<script src="generated-res/lib/jquery/js/jquery-ui-1.8.7.custom.min.js" type="text/javascript"></script>
+  		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+  		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
+  		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/themes/base/jquery-ui.css">
 
   		<link rel="stylesheet" style="text/css" type="text/css" href="generated-res/css/molgenis_jquery_icons.css">
   		<script src="generated-res/lib/jquery-plugins/validate.js" type="text/javascript"></script>

@@ -371,6 +371,7 @@ public class Parameter implements Serializable
 	 * 
 	 * @return The string-representation.
 	 */
+	@Override
 	public String toString()
 	{
 		String str = "Parameter(";
@@ -402,6 +403,7 @@ public class Parameter implements Serializable
 	 * @return True if this object is the same as the obj argument, false
 	 *         otherwise.
 	 */
+	@Override
 	public boolean equals(Object obj)
 	{
 		if (obj != null && obj instanceof Parameter)
@@ -418,6 +420,7 @@ public class Parameter implements Serializable
 	 * 
 	 * @return The hash-value for this field.
 	 */
+	@Override
 	public int hashCode()
 	{
 		return this.name.hashCode();

@@ -19,6 +19,7 @@ public class RApiGen extends Generator
 {
 	private static final Logger logger = Logger.getLogger(RApiGen.class);
 
+	@Override
 	public String getDescription()
 	{
 		return "Generates a R file that sources all R files.";

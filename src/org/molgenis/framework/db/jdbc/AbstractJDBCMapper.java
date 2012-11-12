@@ -155,11 +155,13 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 	/**
 	 * Translate object field name to table fieldname
 	 */
+	@Override
 	public abstract String getTableFieldName(String fieldName);
 
 	/**
 	 * Retrieve the type of the field
 	 */
+	@Override
 	public abstract FieldType getFieldType(String fieldName);
 
 	/**
@@ -192,6 +194,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 	 */
 	protected abstract QueryRule rewriteMrefRule(Database db, QueryRule user_rule) throws DatabaseException;
 
+	@Override
 	public int count(QueryRule... rules) throws DatabaseException
 	{
 		try
@@ -209,6 +212,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 		}
 	}
 
+	@Override
 	public List<E> find(QueryRule... rules) throws DatabaseException
 	{
 		try

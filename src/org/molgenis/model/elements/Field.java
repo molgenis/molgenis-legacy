@@ -68,6 +68,7 @@ public class Field implements Serializable
 
 		/**
          */
+		@Override
 		public String toString()
 		{
 			return "XRefLabel: " + String.format(format, fields.toArray());
@@ -905,6 +906,7 @@ public class Field implements Serializable
 	 * 
 	 * @return The string-representation.
 	 */
+	@Override
 	public String toString()
 	{
 		String str = "Field(";
@@ -969,6 +971,7 @@ public class Field implements Serializable
 	 * @return True if this object is the same as the obj argument, false
 	 *         otherwise.
 	 */
+	@Override
 	public boolean equals(Object obj)
 	{
 		if (obj != null && obj instanceof Field)
@@ -985,6 +988,7 @@ public class Field implements Serializable
 	 * 
 	 * @return The hash-value for this field.
 	 */
+	@Override
 	public int hashCode()
 	{
 		return this.name.hashCode();

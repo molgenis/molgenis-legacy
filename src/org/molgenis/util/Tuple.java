@@ -393,6 +393,7 @@ public interface Tuple
 	 * 
 	 * @return print of this Tuple.
 	 */
+	@Override
 	public String toString();
 
 	/**

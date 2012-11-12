@@ -78,11 +78,13 @@ public class FileField extends FieldType
 		return "Ljava/lang/String;";
 	}
 
+	@Override
 	public Class<?> getJavaType()
 	{
 		return File.class;
 	}
 
+	@Override
 	public File getTypedValue(String value) throws ParseException
 	{
 		File file = new File(value);
@@ -96,6 +98,7 @@ public class FileField extends FieldType
 		}
 	}
 
+	@Override
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.FILE;

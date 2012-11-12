@@ -83,7 +83,7 @@ public class CompareCSV
 				String[] array1 = contents.get(1).get(i);
 				if (!Arrays.equals(array0, array1))
 				{
-					LOG.debug(String.format("files content is not equal: %n row: %s \n row: %s",
+					LOG.debug(String.format("files content is not equal: %n row: %s %n row: %s",
 							Arrays.toString(array0), Arrays.toString(array1))
 							+ " " + file0.getPath() + " " + file1.getPath());
 					return false;

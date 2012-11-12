@@ -89,16 +89,19 @@ public class DatetimeField extends FieldType
 		return "Ljava/util/Date;";
 	}
 
+	@Override
 	public Class<?> getJavaType()
 	{
 		return Date.class;
 	}
 
+	@Override
 	public Date getTypedValue(String value) throws ParseException
 	{
 		return new SimpleDateFormat("yyyy.MM.dd G HH:mm:ss").parse(value);
 	}
 
+	@Override
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.DATE_TIME;
