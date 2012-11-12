@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
