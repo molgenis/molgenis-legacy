@@ -83,6 +83,7 @@ public class SimpleTree<T extends Tree> implements Tree<T>, Serializable
 		treeElements.put(name, (T) this);
 	}
 
+	@Override
 	public final String getName()
 	{
 		return this.name;
@@ -107,11 +108,13 @@ public class SimpleTree<T extends Tree> implements Tree<T>, Serializable
 
 	}
 
+	@Override
 	public T get(String name)
 	{
 		return treeElements.get(name);
 	}
 
+	@Override
 	public final T getParent()
 	{
 		if (parentName != null) return treeElements.get(parentName);
@@ -119,6 +122,7 @@ public class SimpleTree<T extends Tree> implements Tree<T>, Serializable
 			return null;
 	}
 
+	@Override
 	public void setParent(T parent)
 	{
 		// does the parent already contain an element with my name
@@ -154,6 +158,7 @@ public class SimpleTree<T extends Tree> implements Tree<T>, Serializable
 		parentName = parent.getName();
 	}
 
+	@Override
 	public T getRoot()
 	{
 		if (parentName == null)
@@ -166,12 +171,14 @@ public class SimpleTree<T extends Tree> implements Tree<T>, Serializable
 		}
 	}
 
+	@Override
 	public final List<T> getAllChildren()
 	{
 		return this.getAllChildren(false);
 	}
 
 	/** sort in order of dependency */
+	@Override
 	public final List<T> getAllChildren(boolean includeSelf)
 	{
 		ArrayList<T> all_children = new ArrayList<T>();
@@ -184,6 +191,7 @@ public class SimpleTree<T extends Tree> implements Tree<T>, Serializable
 		return all_children;
 	}
 
+	@Override
 	public Vector<T> getChildren()
 	{
 		Vector<T> children = new Vector<T>();
@@ -197,6 +205,7 @@ public class SimpleTree<T extends Tree> implements Tree<T>, Serializable
 		return children;
 	}
 
+	@Override
 	public T getChild(String name)
 	{
 		T child = treeElements.get(name);
@@ -216,6 +225,7 @@ public class SimpleTree<T extends Tree> implements Tree<T>, Serializable
 		return toString(includeSubTree, 0);
 	}
 
+	@Override
 	public String toString(boolean includeSubTree, int level)
 	{
 		StringBuilder strBuilder = new StringBuilder(toString());
@@ -237,32 +247,38 @@ public class SimpleTree<T extends Tree> implements Tree<T>, Serializable
 		return strBuilder.toString();
 	}
 
+	@Override
 	public Object getValue()
 	{
 		return value;
 	}
 
+	@Override
 	public void setValue(Object value)
 	{
 		this.value = value;
 	}
 
+	@Override
 	public Map<String, T> getTreeElements()
 	{
 		return this.treeElements;
 	}
 
+	@Override
 	public String toString()
 	{
 		return getClass().getSimpleName() + "(name='" + getName() + "')";
 	}
 
+	@Override
 	public boolean hasChildren()
 	{
 		if (this.getChildren().isEmpty()) return false;
 		return true;
 	}
 
+	@Override
 	public boolean hasParent()
 	{
 		if (this.getParent() == null) return false;
@@ -275,6 +291,7 @@ public class SimpleTree<T extends Tree> implements Tree<T>, Serializable
 		return value.toString();
 	}
 
+	@Override
 	public String getPath(String separator)
 	{
 		if (this.getParent() != null) return this.getParent().getPath(separator) + separator + this.getName();

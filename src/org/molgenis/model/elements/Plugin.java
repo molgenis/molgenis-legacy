@@ -29,6 +29,7 @@ public class Plugin extends UISchema
 			this.tag = tag;
 		}
 
+		@Override
 		public String toString()
 		{
 			return this.tag;
@@ -61,6 +62,7 @@ public class Plugin extends UISchema
 	/**
 	 * 
 	 */
+	@Override
 	public Type getType()
 	{
 		return Type.PLUGIN;
@@ -107,6 +109,7 @@ public class Plugin extends UISchema
 		this.readonly = readonly;
 	}
 
+	@Override
 	public String toString()
 	{
 		if (getRecord() != null)

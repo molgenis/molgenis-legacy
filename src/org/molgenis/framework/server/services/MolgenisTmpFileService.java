@@ -35,6 +35,7 @@ public class MolgenisTmpFileService implements MolgenisService
 		this.mc = mc;
 	}
 
+	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws IOException
 	{
 		String url = request.getRequest().getRequestURI();

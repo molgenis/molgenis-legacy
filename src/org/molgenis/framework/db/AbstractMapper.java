@@ -38,6 +38,7 @@ public abstract class AbstractMapper<E extends Entity> implements Mapper<E>
 	/**
 	 * helper method create a new instance of E
 	 */
+	@Override
 	public abstract E create();
 
 	/**
@@ -48,6 +49,7 @@ public abstract class AbstractMapper<E extends Entity> implements Mapper<E>
 	 *            of the list
 	 * @return list
 	 */
+	@Override
 	public abstract List<E> createList(int size);
 
 	/**
@@ -97,6 +99,7 @@ public abstract class AbstractMapper<E extends Entity> implements Mapper<E>
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
+	@Override
 	public abstract void resolveForeignKeys(List<E> entities) throws DatabaseException, ParseException;
 
 	/**
@@ -137,6 +140,7 @@ public abstract class AbstractMapper<E extends Entity> implements Mapper<E>
 		return add(entities);
 	}
 
+	@Override
 	public int add(List<E> entities) throws DatabaseException
 	{
 		// count rows updated

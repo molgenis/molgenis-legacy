@@ -84,11 +84,13 @@ public class AddCommand2<E extends Entity> extends SimpleCommand
 		return ScreenModel.Show.SHOW_MAIN;
 	}
 
+	@Override
 	public Vector<ScreenMessage> getMessages()
 	{
 		return messages;
 	}
 
+	@Override
 	public void setMessages(Vector<ScreenMessage> messages)
 	{
 		this.messages = messages;

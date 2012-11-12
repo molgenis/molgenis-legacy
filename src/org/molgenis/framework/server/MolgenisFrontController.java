@@ -62,6 +62,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements Mol
 	public abstract void createLogin(MolgenisRequest request) throws Exception;
 
 	// the one and only service() used in the molgenis app
+	@Override
 	public void service(HttpServletRequest request, HttpServletResponse response)
 	{
 		try

@@ -23,6 +23,7 @@ public class MedlineCitation
 
 	public List<Author> authors = new ArrayList<Author>();
 
+	@Override
 	public String toString()
 	{
 		StringBuilder strBuilder = new StringBuilder();
