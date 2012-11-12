@@ -107,6 +107,7 @@ public class MolgenisCleanTmpDirServiceQuartz implements MolgenisService
 
 class CleanTmpDirJob implements Job
 {
+	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException
 	{
 		@SuppressWarnings("unchecked")

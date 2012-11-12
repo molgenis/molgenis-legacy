@@ -39,6 +39,7 @@ public class MolgenisRapiService implements MolgenisService
 	 * @param response
 	 * @throws IOException
 	 */
+	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws IOException
 	{
 		// as used in /molgenis/src/org/molgenis/generators/R/RApiGen.R.ftl,

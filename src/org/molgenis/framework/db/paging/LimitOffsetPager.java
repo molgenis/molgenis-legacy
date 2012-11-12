@@ -41,6 +41,7 @@ public class LimitOffsetPager<E extends Entity> extends AbstractPager<E>
 	 * 
 	 * @throws ParseException
 	 */
+	@Override
 	public void refresh(Database db) throws DatabaseException
 	{
 		// don't use getters and setters here, or everything refreshes like

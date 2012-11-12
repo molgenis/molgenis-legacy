@@ -25,6 +25,7 @@ public abstract class AsyncMolgenisFrontController extends MolgenisFrontControll
 	protected AsyncMolgenisContext context;
 
 	// the one and only service() used in the molgenis app
+	@Override
 	public void service(HttpServletRequest request, HttpServletResponse response)
 	{
 		try

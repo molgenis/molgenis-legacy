@@ -70,6 +70,7 @@ public class MolgenisRequest extends HttpServletRequestTuple
 	 * Special toString for MolgenisRequest Will break off large values, and
 	 * hide passwords
 	 */
+	@Override
 	public String toString()
 	{
 		if (this.getNrColumns() == 0) return "NONE";

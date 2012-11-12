@@ -77,6 +77,7 @@ public class HyperlinkField extends FieldType
 		return "Ljava/lang/String;";
 	}
 
+	@Override
 	public Class<?> getJavaType()
 	{
 		return String.class;
@@ -88,6 +89,7 @@ public class HyperlinkField extends FieldType
 		return value;
 	}
 
+	@Override
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.HYPERLINK;

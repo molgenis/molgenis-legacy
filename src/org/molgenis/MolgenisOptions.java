@@ -476,6 +476,7 @@ public class MolgenisOptions implements Serializable
 		}
 	}
 
+	@Override
 	public String toString()
 	{
 		try

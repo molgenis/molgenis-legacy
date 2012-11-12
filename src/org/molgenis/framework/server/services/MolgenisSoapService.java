@@ -46,6 +46,7 @@ public class MolgenisSoapService extends CXFNonSpringServlet implements Molgenis
 		// //super.init(sc);
 	}
 
+	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws IOException
 	{
 		freshDatabase = request.getDatabase();

@@ -53,6 +53,7 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 		delegate(request.getAction(), db, request, null);
 	}
 
+	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
 	{
 		final HttpServletRequest realRequest = ((MolgenisRequest) request).getRequest();
@@ -195,11 +196,13 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 			this.messages.add(m);
 	}
 
+	@Override
 	public void setSuccess(String message)
 	{
 		this.setMessages(new ScreenMessage(message, true));
 	}
 
+	@Override
 	public void setError(String message)
 	{
 		this.setMessages(new ScreenMessage(message, false));

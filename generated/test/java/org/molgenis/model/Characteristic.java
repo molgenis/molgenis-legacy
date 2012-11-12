@@ -157,6 +157,7 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
 	 * Get the id.
 	 * @return id.
 	 */
+	@Override
 	public Integer getId()
 	{
 		return this.id;
@@ -167,6 +168,7 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
 	 * Set the id.
 	 * @param id
 	 */
+	@Override
 	public void setId( Integer id)
 	{
 		this.id = id;
@@ -178,6 +180,7 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
 	 * Get the Identifier.
 	 * @return identifier.
 	 */
+	@Override
 	public String getIdentifier()
 	{
 		return this.identifier;
@@ -193,6 +196,7 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
 	 * Set the Identifier.
 	 * @param identifier
 	 */
+	@Override
 	public void setIdentifier( String identifier)
 	{
 		
@@ -205,6 +209,7 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
 	 * Get the assign name.
 	 * @return name.
 	 */
+	@Override
 	public String getName()
 	{
 		return this.name;
@@ -220,6 +225,7 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
 	 * Set the assign name.
 	 * @param name
 	 */
+	@Override
 	public void setName( String name)
 	{
 		
@@ -232,6 +238,7 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
 	 * Get the Subtypes have to be set to allow searching.
 	 * @return __Type.
 	 */
+	@Override
 	public String get__Type()
 	{
 		return this.__Type;
@@ -247,6 +254,7 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
 	 * Set the Subtypes have to be set to allow searching.
 	 * @param __Type
 	 */
+	@Override
 	public void set__Type( String __Type)
 	{
 		
@@ -257,6 +265,7 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
 	/**
 	 * Get tha label for enum __Type.
 	 */
+	@Override
 	public String get__TypeLabel()
 	{
 		return this.__Type_label;
@@ -265,6 +274,7 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
 	/**
 	 * __Type is enum. This method returns all available enum options.
 	 */
+	@Override
 	public java.util.List<org.molgenis.util.ValueLabel> get__TypeOptions()
 	{
 		return __Type_options;
@@ -302,6 +312,7 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
 	/**
 	 * Generic getter. Get the property by using the name.
 	 */
+	@Override
 	public Object get(String name)
 	{
 		name = name.toLowerCase();
@@ -320,6 +331,7 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
 		return "";
 	}	
 	
+	@Override
 	public void validate() throws org.molgenis.framework.db.DatabaseException
 	{
 		if(this.getId() == null) throw new org.molgenis.framework.db.DatabaseException("required field id is null");
@@ -331,6 +343,7 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
 	
 	
 	//@Implements
+	@Override
 	public void set( org.molgenis.util.Tuple tuple, boolean strict )  throws Exception
 	{
 		//optimization :-(
@@ -394,6 +407,7 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
 	/**
 	 * Get the names of all public properties of Characteristic.
 	 */
+	@Override
 	public java.util.Vector<String> getFields(boolean skipAutoIds)
 	{
 		java.util.Vector<String> fields = new java.util.Vector<String>();
@@ -416,6 +430,7 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
 		return fields;
 	}	
 
+	@Override
 	public java.util.Vector<String> getFields()
 	{
 		return getFields(false);
@@ -437,6 +452,7 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
 		return result;
 	}
 
+	@Override
 	@Deprecated
 	public String getFields(String sep)
 	{
@@ -456,7 +472,8 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
 	}		
 	
 	
-    public String getXrefIdFieldName(String fieldName) {
+    @Override
+	public String getXrefIdFieldName(String fieldName) {
         
         return null;
     }	
@@ -499,6 +516,7 @@ public class Characteristic extends org.molgenis.util.AbstractEntity implements 
   	
 
 
+	@Override
 	@Deprecated
 	public String getValues(String sep)
 	{

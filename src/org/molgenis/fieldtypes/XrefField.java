@@ -57,6 +57,7 @@ public class XrefField extends FieldType
 		return getFieldType(f.getXrefField()).getHsqlType();
 	}
 
+	@Override
 	public String getXsdType() throws MolgenisModelException
 	{
 		return getFieldType(f.getXrefField()).getXsdType();
@@ -107,6 +108,7 @@ public class XrefField extends FieldType
 		throw new UnsupportedOperationException("Xref conversion not supported.");
 	}
 
+	@Override
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.XREF;

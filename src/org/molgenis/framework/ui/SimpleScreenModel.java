@@ -79,11 +79,13 @@ public abstract class SimpleScreenModel implements ScreenModel, Serializable
 	/**
 	 * Reset all model properties to default.
 	 */
+	@Override
 	public void reset()
 	{
 
 	}
 
+	@Override
 	public String render() throws HtmlInputException
 	{
 		String result = this.getController().render();
@@ -94,6 +96,7 @@ public abstract class SimpleScreenModel implements ScreenModel, Serializable
 	/**
 	 * Readonly name, inherited from controller
 	 */
+	@Override
 	public String getName()
 	{
 		return this.getController().getName();
@@ -118,6 +121,7 @@ public abstract class SimpleScreenModel implements ScreenModel, Serializable
 	/**
 	 * Set the pretty label to show on screen.
 	 */
+	@Override
 	public void setLabel(String label)
 	{
 		this.label = label;
@@ -126,6 +130,7 @@ public abstract class SimpleScreenModel implements ScreenModel, Serializable
 	/**
 	 * @return Pretty label to show on screen
 	 */
+	@Override
 	public String getLabel()
 	{
 		return label;
@@ -136,6 +141,7 @@ public abstract class SimpleScreenModel implements ScreenModel, Serializable
 	 * methods of the screen. (while the ScreenModel intself only contains
 	 * state).
 	 */
+	@Override
 	public ScreenController<? extends ScreenModel> getController()
 	{
 		return controller;
@@ -254,11 +260,13 @@ public abstract class SimpleScreenModel implements ScreenModel, Serializable
 	 * 
 	 * @param messages
 	 */
+	@Override
 	public void setMessages(Vector<ScreenMessage> messages)
 	{
 		this.messages = messages;
 	}
 
+	@Override
 	public void setMessages(ScreenMessage... messages)
 	{
 		this.messages = new Vector<ScreenMessage>(Arrays.asList(messages));
@@ -267,6 +275,7 @@ public abstract class SimpleScreenModel implements ScreenModel, Serializable
 	/**
 	 * @return Messages to inform the user of state changes and succes.
 	 */
+	@Override
 	public Vector<ScreenMessage> getMessages()
 	{
 		return this.messages;
@@ -304,6 +313,7 @@ public abstract class SimpleScreenModel implements ScreenModel, Serializable
 		return result;
 	}
 
+	@Override
 	public boolean isVisible()
 	{
 		return visible;
@@ -315,12 +325,14 @@ public abstract class SimpleScreenModel implements ScreenModel, Serializable
 	}
 
 	/** Shorthand for setMessages(new ScreenMessage("success message",true)); */
+	@Override
 	public void setSuccess(String message)
 	{
 		this.setMessages(new ScreenMessage(message, true));
 	}
 
 	/** Shorthand for setMessages(new ScreenMessage("succes message",false)); */
+	@Override
 	public void setError(String message)
 	{
 		this.setMessages(new ScreenMessage(message, false));
