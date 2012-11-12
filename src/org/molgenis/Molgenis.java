@@ -207,10 +207,10 @@ public class Molgenis
 
 		this.options = options;
 
-		if (generatorsToUse != null && generatorsToUse.length > 0)
-		{
-			this.options.delete_generated_folder = false;
-		}
+		// if (generatorsToUse != null && generatorsToUse.length > 0)
+		// {
+		// this.options.delete_generated_folder = false;
+		// }
 
 		Logger.getLogger("freemarker.cache").setLevel(Level.INFO);
 		logger.info("\nMOLGENIS version " + org.molgenis.Version.convertToString());
@@ -583,7 +583,8 @@ public class Molgenis
 		if (generatedFolder.exists() && options.delete_generated_folder)
 		{
 			logger.info("removing previous generated folder " + generatedFolder);
-			deleteContentOfDirectory(generatedFolder);
+			deleteContentOfDirectory(new File(options.output_src));
+			deleteContentOfDirectory(new File(options.output_sql));
 		}
 
 		List<Thread> threads = new ArrayList<Thread>();
