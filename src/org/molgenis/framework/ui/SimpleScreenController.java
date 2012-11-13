@@ -60,6 +60,7 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends 
 	 * 
 	 * @throws Exception
 	 */
+	@Override
 	public abstract void reload(Database db) throws Exception;
 
 	/**
@@ -130,11 +131,13 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends 
 		}
 	}
 
+	@Override
 	public ApplicationController getApplicationController()
 	{
 		return (ApplicationController) this.getRoot();
 	}
 
+	@Override
 	public MODEL getModel()
 	{
 		return model;
@@ -219,6 +222,7 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends 
 		return null;
 	}
 
+	@Override
 	public String render() throws HtmlInputException
 	{
 		String result = this.getView().render();

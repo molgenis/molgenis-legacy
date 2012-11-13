@@ -376,16 +376,8 @@ var molgenis_required = new Array(${required});
 			<img class="edit_button" src="generated-res/img/editview.gif" title="edit record" alt="edit${offset}" onClick="setInput('${screen.name}_form','_self','','${screen.name}','editview','iframe'); document.forms.${screen.name}_form.__offset.value='${offset?string.computer}'; document.forms.${screen.name}_form.submit();">${readonly}</label>
 		</#if>
 	</td>
-		<#list record.inputs as input>
-			<#if input.getName()?lower_case == screen.getIdField()?lower_case>			
-	<td><input type="checkbox" name="massUpdate" value="${input.getHtmlValue()}">
-				<#if readonly == "*">
-	<input type="hidden" name="massUpdate_readonly" value="${input.getHtmlValue()}">
-				</#if>
-	</td>
-			</#if>
-		</#list>
-	
+		
+		<td><input type="checkbox" name="massUpdate<#if record.entity.readonly>_readonly</#if>" value="${record.entity.idValue}"></td>
 		<#list record.inputs as input>
 				<#if input.isHidden()>
 				<#else>

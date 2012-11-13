@@ -5,6 +5,7 @@ public enum Icon
 {
 	SEARCH;
 
+	@Override
 	public String toString()
 	{
 		return this.name().toLowerCase();

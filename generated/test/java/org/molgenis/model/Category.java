@@ -93,6 +93,7 @@ public class Category extends org.molgenis.util.AbstractEntity implements org.mo
 	 * Get the id.
 	 * @return id.
 	 */
+	@Override
 	public Integer getId()
 	{
 		return this.id;
@@ -103,6 +104,7 @@ public class Category extends org.molgenis.util.AbstractEntity implements org.mo
 	 * Set the id.
 	 * @param id
 	 */
+	@Override
 	public void setId( Integer id)
 	{
 		this.id = id;
@@ -193,6 +195,7 @@ public class Category extends org.molgenis.util.AbstractEntity implements org.mo
 	/**
 	 * Generic getter. Get the property by using the name.
 	 */
+	@Override
 	public Object get(String name)
 	{
 		name = name.toLowerCase();
@@ -207,6 +210,7 @@ public class Category extends org.molgenis.util.AbstractEntity implements org.mo
 		return "";
 	}	
 	
+	@Override
 	public void validate() throws org.molgenis.framework.db.DatabaseException
 	{
 		if(this.getId() == null) throw new org.molgenis.framework.db.DatabaseException("required field id is null");
@@ -216,6 +220,7 @@ public class Category extends org.molgenis.util.AbstractEntity implements org.mo
 	
 	
 	//@Implements
+	@Override
 	public void set( org.molgenis.util.Tuple tuple, boolean strict )  throws Exception
 	{
 		//optimization :-(
@@ -270,6 +275,7 @@ public class Category extends org.molgenis.util.AbstractEntity implements org.mo
 	/**
 	 * Get the names of all public properties of Category.
 	 */
+	@Override
 	public java.util.Vector<String> getFields(boolean skipAutoIds)
 	{
 		java.util.Vector<String> fields = new java.util.Vector<String>();
@@ -284,6 +290,7 @@ public class Category extends org.molgenis.util.AbstractEntity implements org.mo
 		return fields;
 	}	
 
+	@Override
 	public java.util.Vector<String> getFields()
 	{
 		return getFields(false);
@@ -305,6 +312,7 @@ public class Category extends org.molgenis.util.AbstractEntity implements org.mo
 		return result;
 	}
 
+	@Override
 	@Deprecated
 	public String getFields(String sep)
 	{
@@ -321,7 +329,8 @@ public class Category extends org.molgenis.util.AbstractEntity implements org.mo
 	}		
 	
 	
-    public String getXrefIdFieldName(String fieldName) {
+    @Override
+	public String getXrefIdFieldName(String fieldName) {
         if (fieldName.equalsIgnoreCase("feature")) {
             return "id";
         }
@@ -358,6 +367,7 @@ public class Category extends org.molgenis.util.AbstractEntity implements org.mo
   	
 
 
+	@Override
 	@Deprecated
 	public String getValues(String sep)
 	{

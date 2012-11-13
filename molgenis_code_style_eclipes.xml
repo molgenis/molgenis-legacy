@@ -73,7 +73,7 @@
 			value="16" />
 		<setting
 			id="org.eclipse.jdt.core.formatter.alignment_for_conditional_expression"
-			value="80" />
+			value="120" />
 		<setting
 			id="org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_for"
 			value="insert" />

@@ -136,6 +136,7 @@ public class GenericPlugin extends PluginModel<Entity>
 		return null;
 	}
 
+	@Override
 	public String render()
 	{
 		// ouch: because we use superclass during generation we solve it like

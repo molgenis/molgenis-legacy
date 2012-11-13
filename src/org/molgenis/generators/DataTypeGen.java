@@ -14,6 +14,7 @@ public class DataTypeGen extends ForEachEntityGenerator
 		return "Generates classes for each entity (simple 'bean's or 'pojo's).";
 	}
 
+	@Override
 	public String getType()
 	{
 		return "";

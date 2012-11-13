@@ -92,6 +92,7 @@ public interface Tree<T> extends Serializable
 	 * 
 	 * @return a string describing the tree.
 	 */
+	@Override
 	public String toString();
 
 	/**

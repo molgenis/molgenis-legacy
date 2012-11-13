@@ -28,6 +28,7 @@ public class ResourceServlet extends HttpServlet
 	/**
 	 * Get a resource from the jar and copy it the the response.
 	 */
+	@Override
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		String resourcePath = request.getRequestURI().substring(request.getContextPath().length() + 1);

@@ -14,7 +14,9 @@ package org.molgenis.model;
  */
 public interface Identifiable extends  org.molgenis.model.Autoid
 {
+	@Override
 	public Integer getId();
+	@Override
 	public void setId(Integer id);
 	public String getIdentifier();
 	public void setIdentifier(String identifier);
