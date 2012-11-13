@@ -93,6 +93,7 @@ public class UnknownField extends FieldType
 		throw new UnsupportedOperationException("Attempted conversion of unknown type, value " + value);
 	}
 
+	@Override
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.UNKNOWN;

@@ -12,9 +12,9 @@ import org.molgenis.util.Entity;
 /**
  * Page through the entities in a Database.
  * <p>
- * Very usefull if one doesn't want to retrieve all data at once into memory.
+ * Very useful if one doesn't want to retrieve all data at once into memory.
  * Instead, one can just iterate through the data while leaving the bulk of data
- * savely and efficiently on disk. The DatabasePager takes care of (re)querying
+ * safely and efficiently on disk. The DatabasePager takes care of (re)querying
  * the Database.
  * <p>
  * TODO: add a method to go to a certain page.
@@ -181,6 +181,13 @@ public interface DatabasePager<E extends Entity> extends Serializable
 	 * DatabasePager (effectively removing all user defined filters).
 	 */
 	public void resetFilters();
+
+	/**
+	 * Reset the filters to the given filters
+	 * 
+	 * @param filters
+	 */
+	public void resetFilters(List<QueryRule> filters);
 
 	/**
 	 * Retrieve the current number of entities in the database, after filtering.

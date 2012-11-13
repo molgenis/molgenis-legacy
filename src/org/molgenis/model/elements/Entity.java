@@ -154,6 +154,7 @@ public class Entity extends DBSchema implements Record
 	 * 
 	 * @return The label of the entity.
 	 */
+	@Override
 	public String getLabel()
 	{
 		if (label == null) return getName();
@@ -243,6 +244,7 @@ public class Entity extends DBSchema implements Record
 	/**
 	 * 
 	 */
+	@Override
 	public boolean hasXRefs()
 	{
 		for (Field f : fields)
@@ -284,6 +286,7 @@ public class Entity extends DBSchema implements Record
 	 * 
 	 * @return List with the parents
 	 */
+	@Override
 	public Vector<String> getParents()
 	{
 		return parents;
@@ -497,6 +500,7 @@ public class Entity extends DBSchema implements Record
 	 * @return All the fields associated with this entity.
 	 * @throws MolgenisModelException
 	 */
+	@Override
 	public List<Field> getFields() throws MolgenisModelException
 	{
 		return getFields(false, false, true);
@@ -1339,6 +1343,7 @@ public class Entity extends DBSchema implements Record
 	 * 
 	 * @return The string-representation.
 	 */
+	@Override
 	public String toString()
 	{
 		StringBuilder strBuilder = new StringBuilder("Entity(");
@@ -1362,6 +1367,7 @@ public class Entity extends DBSchema implements Record
 	 * @return True if this object is the same as the obj argument, false
 	 *         otherwise.
 	 */
+	@Override
 	public boolean equals(Object obj)
 	{
 		if (obj != null && obj instanceof Entity)
@@ -1378,6 +1384,7 @@ public class Entity extends DBSchema implements Record
 	 * 
 	 * @return The hash-value for this field.
 	 */
+	@Override
 	public int hashCode()
 	{
 		return getName().hashCode();
@@ -1532,6 +1539,7 @@ public class Entity extends DBSchema implements Record
 		this.xrefLabels = xrefLabels;
 	}
 
+	@Override
 	public Model getModel()
 	{
 		return this.getRoot().getModel();

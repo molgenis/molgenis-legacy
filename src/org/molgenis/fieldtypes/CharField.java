@@ -85,11 +85,13 @@ public class CharField extends FieldType
 		return String.class;
 	}
 
+	@Override
 	public String getTypedValue(String value) throws ParseException
 	{
 		return value;
 	}
 
+	@Override
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.CHAR;

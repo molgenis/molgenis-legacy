@@ -112,11 +112,13 @@ public class SimpleTuple implements Tuple
 		}
 	}
 
+	@Override
 	public int getNrColumns()
 	{
 		return values.size();
 	}
 
+	@Override
 	public List<String> getFieldNames()
 	{
 		// return a copy of the keys
@@ -128,6 +130,7 @@ public class SimpleTuple implements Tuple
 	 * 
 	 * @return
 	 */
+	@Override
 	@Deprecated
 	public List<String> getFields()
 	{
@@ -155,6 +158,7 @@ public class SimpleTuple implements Tuple
 		}
 	}
 
+	@Override
 	public Object getObject(int column)
 	{
 		try
@@ -167,6 +171,7 @@ public class SimpleTuple implements Tuple
 		}
 	}
 
+	@Override
 	public Object getObject(String column)
 	{
 		String lowerCase = column.toLowerCase().trim();
@@ -177,6 +182,7 @@ public class SimpleTuple implements Tuple
 		return null;
 	}
 
+	@Override
 	public void set(int column, Object value)
 	{
 		// update existing
@@ -191,6 +197,7 @@ public class SimpleTuple implements Tuple
 		}
 	}
 
+	@Override
 	public void set(String column, Object value)
 	{
 		if (column == null)
@@ -213,6 +220,7 @@ public class SimpleTuple implements Tuple
 		}
 	}
 
+	@Override
 	public void set(Object[] values)
 	{
 		for (int i = 0; i < values.length; i++)
@@ -221,6 +229,7 @@ public class SimpleTuple implements Tuple
 		}
 	}
 
+	@Override
 	public <E> void set(List<E> values)
 	{
 		for (int i = 0; i < values.size(); i++)
@@ -229,6 +238,7 @@ public class SimpleTuple implements Tuple
 		}
 	}
 
+	@Override
 	public Integer getInt(int column)
 	{
 		if (getObject(column) == null || getString(column).isEmpty()) return null;
@@ -243,6 +253,7 @@ public class SimpleTuple implements Tuple
 		}
 	}
 
+	@Override
 	public Integer getInt(String column)
 	{
 		if (getObject(column) == null || getString(column).isEmpty()) return null;
@@ -257,6 +268,7 @@ public class SimpleTuple implements Tuple
 		}
 	}
 
+	@Override
 	public Integer getOnoff(String column)
 	{
 		if (getObject(column) == null) return 0;
@@ -266,6 +278,7 @@ public class SimpleTuple implements Tuple
 		return 0;
 	}
 
+	@Override
 	public Long getLong(int column)
 	{
 		if (getObject(column) == null || getString(column).isEmpty()) return null;
@@ -280,6 +293,7 @@ public class SimpleTuple implements Tuple
 		}
 	}
 
+	@Override
 	public Long getLong(String column)
 	{
 		if (getObject(column) == null || getString(column).isEmpty()) return null;
@@ -307,6 +321,7 @@ public class SimpleTuple implements Tuple
 
 	}
 
+	@Override
 	@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "Could be null under some circumstances")
 	public Boolean getBoolean(int column)
 	{
@@ -315,6 +330,7 @@ public class SimpleTuple implements Tuple
 				|| getString(column).trim().equalsIgnoreCase("on"));
 	}
 
+	@Override
 	@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "Could be null under some circumstances")
 	public Boolean getBoolean(String column)
 	{
@@ -323,6 +339,7 @@ public class SimpleTuple implements Tuple
 				|| getString(column).trim().equalsIgnoreCase("on"));
 	}
 
+	@Override
 	public Double getDecimal(int column)
 	{
 		if (getObject(column) == null || getString(column).isEmpty()) return null;
@@ -337,6 +354,7 @@ public class SimpleTuple implements Tuple
 		}
 	}
 
+	@Override
 	public Double getDecimal(String column)
 	{
 		if (getObject(column) == null || getString(column).isEmpty()) return null;
@@ -351,6 +369,7 @@ public class SimpleTuple implements Tuple
 		}
 	}
 
+	@Override
 	public String getString(int column)
 	{
 		if (getObject(column) == null) return null; // MySql allows not-null
@@ -363,6 +382,7 @@ public class SimpleTuple implements Tuple
 	 * Using the IUB codes for nucleotides
 	 * http://www.tigr.org/tdb/CMR/IUBcodes.html
 	 */
+	@Override
 	public String getNSequence(String column) throws ParseException
 	{
 		if (getObject(column) == null) return null; // MySql allows not-null
@@ -445,12 +465,14 @@ public class SimpleTuple implements Tuple
 		return result;
 	}
 
+	@Override
 	public String getString(String column)
 	{
 		if (getObject(column) == null) return null;
 		return getObject(column).toString().trim();
 	}
 
+	@Override
 	@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "Could be null under some circumstances")
 	public Boolean getBool(int column)
 	{
@@ -458,6 +480,7 @@ public class SimpleTuple implements Tuple
 		return getBoolean(column);
 	}
 
+	@Override
 	@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "Could be null under some circumstances")
 	public Boolean getBool(String column)
 	{
@@ -465,6 +488,7 @@ public class SimpleTuple implements Tuple
 		return getBoolean(column);
 	}
 
+	@Override
 	public java.sql.Date getDate(int column) throws ParseException
 	{
 		if (this.getObject(column) == null || this.getString(column).isEmpty()) return null;
@@ -502,6 +526,7 @@ public class SimpleTuple implements Tuple
 		}
 	}
 
+	@Override
 	public java.sql.Date getDate(String column) throws ParseException
 	{
 		if (this.getObject(column) == null || this.getString(column).isEmpty()) return null;
@@ -540,16 +565,19 @@ public class SimpleTuple implements Tuple
 		}
 	}
 
+	@Override
 	public Double getDouble(int column)
 	{
 		return getDecimal(column);
 	}
 
+	@Override
 	public Double getDouble(String column)
 	{
 		return getDecimal(column);
 	}
 
+	@Override
 	public String toString()
 	{
 		if (this.getNrColumns() == 0) return "EMPTY TUPLE";
@@ -573,18 +601,21 @@ public class SimpleTuple implements Tuple
 		return resultBuilder.toString();
 	}
 
+	@Override
 	public File getFile(String string)
 	{
 		if (!isNull(string)) return (File) getObject(string);
 		return null;
 	}
 
+	@Override
 	public File getFile(int column)
 	{
 		if (!isNull(column)) return (File) getObject(column);
 		return null;
 	}
 
+	@Override
 	public Timestamp getTimestamp(String column) throws ParseException
 	{
 		if (this.getObject(column) == null || this.getString(column).isEmpty()) return null;
@@ -629,6 +660,7 @@ public class SimpleTuple implements Tuple
 		}
 	}
 
+	@Override
 	public Timestamp getTimestamp(int column) throws ParseException
 	{
 		if (this.getObject(column) == null || this.getString(column).isEmpty()) return null;
@@ -674,16 +706,19 @@ public class SimpleTuple implements Tuple
 		}
 	}
 
+	@Override
 	public List<?> getList(String column)
 	{
 		return this.getList(column, null);
 	}
 
+	@Override
 	public Set<Object> getSet(String column)
 	{
 		return new LinkedHashSet<Object>(this.getList(column, null));
 	}
 
+	@Override
 	public Set<Object> getSet(String column, String sep)
 	{
 		return new LinkedHashSet<Object>(this.getList(column, sep));
@@ -782,6 +817,7 @@ public class SimpleTuple implements Tuple
 		return null;
 	}
 
+	@Override
 	public String getAction()
 	{
 		return this.getString("__action");

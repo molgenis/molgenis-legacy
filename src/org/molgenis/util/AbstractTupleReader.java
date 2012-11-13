@@ -31,31 +31,37 @@ public abstract class AbstractTupleReader implements TupleReader
 	/** boolean indicating that the resource parsed has headers... */
 	protected boolean hasHeader = true;
 
+	@Override
 	public String getBlockEnd()
 	{
 		return blockEnd;
 	}
 
+	@Override
 	public void setBlockEnd(String blockEnd)
 	{
 		this.blockEnd = blockEnd;
 	}
 
+	@Override
 	public String getBlockStart()
 	{
 		return blockStart;
 	}
 
+	@Override
 	public void setBlockStart(String blockStart)
 	{
 		this.blockStart = blockStart;
 	}
 
+	@Override
 	public void setMissingValues(String missingValue)
 	{
 		this.missingValueIndicator = missingValue;
 	}
 
+	@Override
 	public String getMissingValues()
 	{
 		return this.missingValueIndicator;
@@ -67,6 +73,7 @@ public abstract class AbstractTupleReader implements TupleReader
 		this.columnnames = fields;
 	}
 
+	@Override
 	public void renameField(String from, String to) throws Exception
 	{
 		if ((from != null && from.equals(to)) || (from == null && to == null)) return;
@@ -84,6 +91,7 @@ public abstract class AbstractTupleReader implements TupleReader
 
 	}
 
+	@Override
 	public List<String> rownames() throws IOException, DataFormatException
 	{
 		List<String> rownames = new ArrayList<String>();

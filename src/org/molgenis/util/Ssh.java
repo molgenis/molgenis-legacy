@@ -100,6 +100,7 @@ public class Ssh
 			// try to use keyboard interactive
 			conn.authenticateWithKeyboardInteractive(username, new InteractiveCallback()
 			{
+				@Override
 				public String[] replyToChallenge(String name, String instruction, int numPrompts, String[] prompt,
 						boolean[] echo) throws Exception
 				{

@@ -151,6 +151,7 @@ public abstract class CsvBufferedReaderMultiline extends AbstractTupleReader imp
 	}
 
 	/** This method gets next tuple, if available */
+	@Override
 	public Tuple next()
 	{
 		try
@@ -231,6 +232,7 @@ public abstract class CsvBufferedReaderMultiline extends AbstractTupleReader imp
 		return result.toString();
 	}
 
+	@Override
 	public void close() throws IOException
 	{
 		this.reader.close();
@@ -423,12 +425,14 @@ public abstract class CsvBufferedReaderMultiline extends AbstractTupleReader imp
 	}
 
 	// @Override
+	@Override
 	public void setMissingValues(String missingValue)
 	{
 		this.missingValueIndicator = missingValue;
 	}
 
 	// @Override
+	@Override
 	public String getMissingValues()
 	{
 		return this.missingValueIndicator;
@@ -447,6 +451,7 @@ public abstract class CsvBufferedReaderMultiline extends AbstractTupleReader imp
 
 	}
 
+	@Override
 	public void renameField(String from, String to) throws Exception
 	{
 		List<String> colnames = this.colnames();
