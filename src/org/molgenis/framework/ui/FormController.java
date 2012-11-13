@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -282,7 +283,6 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		QueryRule queryRule = null;
 		for (Field field : getAllFields(db))
 		{
-			if (field.isAuto()) continue;
 			if (field.getName().equals(fieldName))
 			{
 				fieldName = getSearchField(fieldName);
@@ -301,7 +301,6 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		List<QueryRule> queryRules = new ArrayList<QueryRule>();
 		for (Field field : getAllFields(db))
 		{
-			if (field.isAuto()) continue;
 			String fieldName = getSearchField(field.getName());
 			if (!queryRules.isEmpty()) queryRules.add(new QueryRule(Operator.OR));
 			queryRules.add(new QueryRule(fieldName, operator, value));
@@ -309,11 +308,25 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		return queryRules != null ? new QueryRule(queryRules) : null;
 	}
 
+	/**
+	 * returns all non-system, non-hidden fields for this entity
+	 * 
+	 * @param db
+	 * @return
+	 * @throws DatabaseException
+	 * @throws MolgenisModelException
+	 */
 	private Vector<Field> getAllFields(Database db) throws DatabaseException, MolgenisModelException
 	{
 		String simpleName = this.getEntityClass().getSimpleName();
 		org.molgenis.model.elements.Entity entity = db.getMetaData().getEntity(simpleName);
-		return entity.getAllFields();
+		Vector<Field> allFields = entity.getAllFields();
+		for (Iterator<Field> it = entity.getAllFields().iterator(); it.hasNext();)
+		{
+			Field field = it.next();
+			if (field.isSystem() || field.isHidden()) it.remove();
+		}
+		return allFields;
 	}
 
 	private String toFieldName(String entityUnderscoreFieldName)
