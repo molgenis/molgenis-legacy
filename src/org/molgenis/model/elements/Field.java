@@ -424,6 +424,7 @@ public class Field implements Serializable
 	 * 
 	 * @return Whether this field is a xref.
 	 */
+	// FIXME rename to isXref
 	public boolean isXRef()
 	{
 		return type instanceof XrefField || type instanceof MrefField;
@@ -434,6 +435,7 @@ public class Field implements Serializable
 	 * 
 	 * @return Whether this field is a mref.
 	 */
+	// FIXME rename to isMref
 	public boolean isMRef()
 	{
 		return type instanceof MrefField;
