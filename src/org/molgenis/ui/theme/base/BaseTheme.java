@@ -27,6 +27,7 @@ public class BaseTheme implements Theme
 	
 	/** Convert the model into the layout 
 	 * @throws RenderException */
+	@Override
 	@SuppressWarnings(
 	{ "unchecked", "rawtypes" })
 	public <E extends MolgenisComponent> String render(E e) throws RenderException

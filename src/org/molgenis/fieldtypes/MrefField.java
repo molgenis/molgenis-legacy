@@ -124,6 +124,7 @@ public class MrefField extends FieldType
 		return "Ljava/util/List;";
 	}
 
+	@Override
 	public Class<?> getJavaType()
 	{
 		return java.util.List.class;
@@ -135,6 +136,7 @@ public class MrefField extends FieldType
 		throw new UnsupportedOperationException("Conversion of MRef not supported.");
 	}
 
+	@Override
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.MREF;

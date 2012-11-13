@@ -154,6 +154,7 @@ public class Tree extends UISchema
 	/**
 	 * 
 	 */
+	@Override
 	public Type getType()
 	{
 		return Type.TREE;

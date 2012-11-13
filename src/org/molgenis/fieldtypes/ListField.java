@@ -56,6 +56,7 @@ public class ListField extends FieldType
 		return "LIST CANNOT BE IN SQL";
 	}
 
+	@Override
 	public String getXsdType()
 	{
 		return "";
@@ -88,16 +89,19 @@ public class ListField extends FieldType
 		return "Ljava/util/List;";
 	}
 
+	@Override
 	public Class<?> getJavaType()
 	{
 		return java.util.List.class;
 	}
 
+	@Override
 	public java.util.List<?> getTypedValue(String value) throws ParseException
 	{
 		return Arrays.asList(StringUtils.split(value, ","));
 	}
 
+	@Override
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.LIST;

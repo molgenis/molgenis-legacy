@@ -32,6 +32,7 @@ public class SimpleEmailService implements EmailService
 	 * 
 	 * @see org.molgenis.util.email.EmailService#getSmtpFromAddress()
 	 */
+	@Override
 	public String getSmtpFromAddress()
 	{
 		return smtpFromAddress;
@@ -49,6 +50,7 @@ public class SimpleEmailService implements EmailService
 	 * @see
 	 * org.molgenis.util.email.EmailService#setSmtpFromAddress(java.lang.String)
 	 */
+	@Override
 	public void setSmtpFromAddress(String smtpFromAddress)
 	{
 		this.smtpFromAddress = smtpFromAddress;
@@ -60,6 +62,7 @@ public class SimpleEmailService implements EmailService
 	private String smtpAu = null;
 	private String smtpProtocol = "smtps";
 
+	@Override
 	public boolean email(String subject, String body, String toEmail, boolean deObf) throws EmailException
 	{
 		return email(subject, body, toEmail, deObf, "MOLGENIS user activation");
@@ -75,6 +78,7 @@ public class SimpleEmailService implements EmailService
 	 * @return
 	 * @throws EmailException
 	 */
+	@Override
 	public boolean email(String subject, String body, String toEmail, boolean deObf, String sender)
 			throws EmailException
 	{
@@ -109,6 +113,7 @@ public class SimpleEmailService implements EmailService
 		}
 	}
 	
+	@Override
 	public boolean email(String subject, String body, String toEmail, String fileAttachment, boolean deObf) throws EmailException
 	{
 		try
@@ -153,6 +158,7 @@ public class SimpleEmailService implements EmailService
 	}
 	
 
+	@Override
 	public boolean email(String subject, String body, String toEmail, String fileAttachment,
 			ByteArrayOutputStream outputStream, boolean deObf) throws EmailException
 	{
@@ -160,6 +166,7 @@ public class SimpleEmailService implements EmailService
 		return email(subject, body, toEmail, fileAttachment, outputStream, deObf, sender);
 	}
 
+	@Override
 	public boolean email(String subject, String body, String toEmail, String fileAttachment,
 			ByteArrayOutputStream outputStream, boolean deObf, String sender) throws EmailException
 	{
@@ -224,6 +231,7 @@ public class SimpleEmailService implements EmailService
 	 * @see org.molgenis.util.email.EmailService#email(java.lang.String,
 	 * java.lang.String, java.lang.String)
 	 */
+	@Override
 	public boolean email(String subject, String body, String toEmail) throws EmailException
 	{
 		return email(subject, body, toEmail, false);
@@ -249,6 +257,7 @@ public class SimpleEmailService implements EmailService
 	 * 
 	 * @see org.molgenis.util.email.EmailService#getSmtpHostName()
 	 */
+	@Override
 	public String getSmtpHostname()
 	{
 		return smtpHostname;
@@ -278,6 +287,7 @@ public class SimpleEmailService implements EmailService
 	 * @see
 	 * org.molgenis.util.email.EmailService#setSmtpHostName(java.lang.String)
 	 */
+	@Override
 	public void setSmtpHostname(String smtpHostName)
 	{
 		this.smtpHostname = smtpHostName;
@@ -303,6 +313,7 @@ public class SimpleEmailService implements EmailService
 	 * 
 	 * @see org.molgenis.util.email.EmailService#getSmtpHostPort()
 	 */
+	@Override
 	public Integer getSmtpPort()
 	{
 		return smtpPort;
@@ -332,6 +343,7 @@ public class SimpleEmailService implements EmailService
 	 * @see
 	 * org.molgenis.util.email.EmailService#setSmtpHostPort(java.lang.Integer)
 	 */
+	@Override
 	public void setSmtpPort(Integer smtpPort)
 	{
 		this.smtpPort = smtpPort;
@@ -357,6 +369,7 @@ public class SimpleEmailService implements EmailService
 	 * 
 	 * @see org.molgenis.util.email.EmailService#getSmtpAuthUser()
 	 */
+	@Override
 	public String getSmtpUser()
 	{
 		return smtpUser;
@@ -386,6 +399,7 @@ public class SimpleEmailService implements EmailService
 	 * @see
 	 * org.molgenis.util.email.EmailService#setSmtpAuthUser(java.lang.String)
 	 */
+	@Override
 	public void setSmtpUser(String smtpUser)
 	{
 		this.smtpUser = smtpUser;
@@ -411,6 +425,7 @@ public class SimpleEmailService implements EmailService
 	 * 
 	 * @see org.molgenis.util.email.EmailService#getSmtpAuthPassword()
 	 */
+	@Override
 	public String getSmtpAu()
 	{
 		return smtpAu;
@@ -442,6 +457,7 @@ public class SimpleEmailService implements EmailService
 	 * org.molgenis.util.email.EmailService#setSmtpAuthPassword(java.lang.String
 	 * )
 	 */
+	@Override
 	public void setSmtpAu(String smtpAu)
 	{
 		this.smtpAu = smtpAu;
@@ -467,6 +483,7 @@ public class SimpleEmailService implements EmailService
 	 * 
 	 * @see org.molgenis.util.email.EmailService#getSmtpProtocol()
 	 */
+	@Override
 	public String getSmtpProtocol()
 	{
 		return smtpProtocol;
@@ -496,6 +513,7 @@ public class SimpleEmailService implements EmailService
 	 * @see
 	 * org.molgenis.util.email.EmailService#setSmtpProtocol(java.lang.String)
 	 */
+	@Override
 	public void setSmtpProtocol(String smtpProtocol)
 	{
 		this.smtpProtocol = smtpProtocol;

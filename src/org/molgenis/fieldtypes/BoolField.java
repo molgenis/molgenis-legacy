@@ -75,16 +75,19 @@ public class BoolField extends FieldType
 		return "Ljava/lang/Boolean;";
 	}
 
+	@Override
 	public Class<?> getJavaType()
 	{
 		return Boolean.class;
 	}
 
+	@Override
 	public Boolean getTypedValue(String value)
 	{
 		return Boolean.parseBoolean(value);
 	}
 
+	@Override
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.BOOL;

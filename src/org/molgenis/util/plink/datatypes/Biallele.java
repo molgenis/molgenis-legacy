@@ -36,6 +36,7 @@ public class Biallele
 		return allele2;
 	}
 
+	@Override
 	public String toString()
 	{
 		return allele1 + " " + allele2;

@@ -30,6 +30,7 @@ public class SimpleLogin implements Login
 	{
 	}
 
+	@Override
 	public void logout(Database db)
 	{
 	}
