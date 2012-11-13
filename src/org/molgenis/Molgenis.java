@@ -8,7 +8,9 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -797,16 +799,15 @@ public class Molgenis
 			data_src.setUrl(options.db_uri);
 
 			conn = data_src.getConnection();
-			String create_tables_file = options.output_sql + File.separator + "create_tables.sql";
-			logger.debug("using file " + create_tables_file);
-			// String create_tables_file = "generated" + File.separator + "sql"
-			// + File.separator + "create_tables.sql";
+			String create_tables_file_str = options.output_sql + File.separator + "create_tables.sql";
 
 			// READ THE FILE
 			StringBuilder create_tables_sqlBuilder = new StringBuilder();
 			try
 			{
-				BufferedReader in = new BufferedReader(new FileReader(create_tables_file));
+				BufferedReader in = new BufferedReader(new InputStreamReader(
+						new FileInputStream(create_tables_file_str), Charset.forName("UTF-8")));
+
 				try
 				{
 					String line;

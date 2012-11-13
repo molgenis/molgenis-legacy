@@ -12,7 +12,6 @@
 
 package org.molgenis.framework.ui;
 
-// jdk
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -54,11 +53,6 @@ import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-/**
- * 
- * 
- * @param
- */
 public class FormModel<E extends Entity> extends SimpleScreenModel
 {
 	/**
@@ -148,6 +142,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 
 		public final String tag;
 
+		@Override
 		public String toString()
 		{
 			return tag;
@@ -217,9 +212,6 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	/** columns that are invisible to the user */
 	private List<String> systemHiddenColumns = new Vector<String>();
 	protected List<String> userHiddenColumns = new Vector<String>();
-
-	/** Helper object that takes care of database paging */
-	// private DatabasePager<E> pager;
 
 	/** Here the currently selected is are stored */
 	private List<?> selectedIds;
@@ -863,23 +855,6 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		return true;
 	}
 
-	/**
-	 * Override getChildren to only return selected elements.
-	 */
-	// @Override
-	// // FIXME: this may be problematic?
-	// public Vector<ScreenModel<?>> getChildren()
-	// {
-	// if (viewMode.equals(Mode.EDIT_VIEW))
-	// {
-	// return super.getChildren();
-	// }
-	// else
-	// {
-	// return new Vector<ScreenModel<?>>(); // empty set.
-	// }
-	// }
-
 	@Deprecated
 	public File getDownloadFile(Database db, Tuple requestTuple)
 	{
@@ -953,9 +928,8 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	public void setCurrentCommand(ScreenCommand currentCommand)
 	{
 		this.currentCommand = currentCommand;
-	};
+	}
 
-	@SuppressWarnings("unchecked")
 	public DatabasePager<E> getPager()
 	{
 		return ((FormController<E>) getController()).getPager();
@@ -987,12 +961,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		return null;
 	}
 
-	//
-	// public void setCurrent(E current)
-	// {
-	// this.current = current;
-	// }
-
+	@Override
 	public FormController<E> getController()
 	{
 		return (FormController<E>) super.getController();
