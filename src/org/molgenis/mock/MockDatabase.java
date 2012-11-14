@@ -1,6 +1,7 @@
 package org.molgenis.mock;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.util.List;
 
@@ -264,7 +265,7 @@ public class MockDatabase implements Database
 	}
 
 	@Override
-	public void close() throws DatabaseException
+	public void close() throws IOException
 	{
 		// TODO Auto-generated method stub
 
