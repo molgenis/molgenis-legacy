@@ -22,6 +22,8 @@ public class VcfReader
 	private static List<String> normalHeaders = Arrays.asList(new String[]
 	{ "#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", "" });
 
+	private static List<String> Infofields = new ArrayList<String>();
+
 	public VcfReader(File f) throws IOException, DataFormatException
 	{
 		// iterate through file to find the last line with ##, that is the
@@ -38,6 +40,14 @@ public class VcfReader
 				{
 					fileHeaders.add(strLine);
 					blockStart = strLine;
+
+					if (strLine.startsWith("##INFO=<"))
+					{
+						String[] tmp = strLine.substring(11, 30).split(",");
+						System.out.println(tmp[0]);
+
+						if (!Infofields.contains(tmp[0])) Infofields.add(tmp[0]);
+					}
 				}
 				else
 					break;
@@ -197,5 +207,10 @@ public class VcfReader
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	public List<String> getInfoFields()
+	{
+		return Infofields;
 	}
 }
