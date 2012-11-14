@@ -228,7 +228,7 @@ public class Field
 								return UNKNOWN;
 							}
 						}
-						catch (Exception e)
+						catch (IllegalAccessException e)
 						{
 						}
 					}

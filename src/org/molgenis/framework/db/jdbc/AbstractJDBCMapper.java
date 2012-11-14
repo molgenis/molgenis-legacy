@@ -21,6 +21,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -453,7 +454,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 							where_clause.append(")");
 
 						}
-						catch (Exception e)
+						catch (MolgenisModelException e)
 						{
 							throw new DatabaseException(e);
 						}

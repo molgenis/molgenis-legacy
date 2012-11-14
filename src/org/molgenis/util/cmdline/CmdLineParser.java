@@ -339,7 +339,7 @@ public class CmdLineParser
 					break;
 			}
 		}
-		catch (Exception ex)
+		catch (IllegalAccessException ex)
 		{
 			throw new CmdLineException("Bad cast when trying to read options:\n" + ex.toString());
 		}
@@ -436,7 +436,7 @@ public class CmdLineParser
 					System.out.print(" ");
 				System.out.println(field.get(options));
 			}
-			catch (Exception e)
+			catch (IllegalAccessException e)
 			{
 				System.out.println("[failed]");
 			}
@@ -592,7 +592,7 @@ public class CmdLineParser
 					if (opt.param().equals("password")) value = "xxxxxx";
 					value_padding = Math.max(value_padding, value.length());
 				}
-				catch (Exception e)
+				catch (IllegalAccessException e)
 				{
 					throw new CmdLineException("faulty option field " + fields[i]);
 				}
