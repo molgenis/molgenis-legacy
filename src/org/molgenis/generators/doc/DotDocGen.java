@@ -163,7 +163,13 @@ public class DotDocGen extends Generator
 			logger.debug("Data model image was generated succesfully.\nOutput:\n" + result);
 
 		}
-		catch (Exception e)
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			logger.error("Generation of graphical documentation failed: return code " + e.getMessage()
+					+ ". Install GraphViz and put dot.exe on your path.");
+		}
+		catch (InterruptedException e)
 		{
 			e.printStackTrace();
 			logger.error("Generation of graphical documentation failed: return code " + e.getMessage()
