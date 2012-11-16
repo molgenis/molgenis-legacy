@@ -9,6 +9,7 @@ import org.molgenis.model.elements.Field;
 public class JQGridColModel
 {
 	private String name;
+	private String label;
 	private String index;
 	private int width = 100;
 	private String stype;
@@ -44,6 +45,7 @@ public class JQGridColModel
 	{
 		this.name = f.getSqlName();
 		this.index = f.getSqlName();
+		this.label = f.getLabel();
 		this.title = name;
 		this.path = title;
 		this.editable = true;
