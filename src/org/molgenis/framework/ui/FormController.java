@@ -305,7 +305,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 			if (!queryRules.isEmpty()) queryRules.add(new QueryRule(Operator.OR));
 			queryRules.add(new QueryRule(fieldName, operator, value));
 		}
-		return queryRules != null ? new QueryRule(queryRules) : null;
+		return !queryRules.isEmpty() ? new QueryRule(queryRules) : null;
 	}
 
 	/**
