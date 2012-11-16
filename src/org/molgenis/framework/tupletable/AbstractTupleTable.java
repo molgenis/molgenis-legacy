@@ -1,6 +1,7 @@
 package org.molgenis.framework.tupletable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -8,6 +9,9 @@ import java.util.Map;
 
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 
 public abstract class AbstractTupleTable implements TupleTable
 {
@@ -72,25 +76,27 @@ public abstract class AbstractTupleTable implements TupleTable
 	}
 
 	@Override
-	public List<String> getHiddenColumnNames()
+	public List<Field> getHiddenColumns()
 	{
-		List<String> hiddenColumns = new ArrayList<String>();
 		try
 		{
-			for (Field column : getAllColumns())
+			Collection<Field> hiddenColumns = Collections2.filter(getAllColumns(), new Predicate<Field>()
 			{
-				if (column.isHidden())
+				@Override
+				public boolean apply(Field f)
 				{
-					hiddenColumns.add(column.getName());
+					return f.isHidden();
 				}
-			}
+
+			});
+
+			return new ArrayList<Field>(hiddenColumns);
 		}
 		catch (TableException e)
 		{
 			throw new RuntimeException(e);
 		}
 
-		return hiddenColumns;
 	}
 
 	protected List<Field> getVisibleColumns() throws TableException
