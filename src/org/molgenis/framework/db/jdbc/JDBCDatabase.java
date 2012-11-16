@@ -262,7 +262,7 @@ public class JDBCDatabase extends AbstractDatabase
 	}
 
 	@Override
-	public void close() throws DatabaseException
+	public void close() throws IOException
 	{
 		closeConnection();
 	}
