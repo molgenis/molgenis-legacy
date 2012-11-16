@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -433,7 +434,10 @@ public class JDBCDatabase extends AbstractDatabase
 			StringBuilder create_tables_sqlBuilder = new StringBuilder();
 
 			InputStream fis = this.getClass().getResourceAsStream(filename);
-			BufferedReader in = new BufferedReader(new InputStreamReader(fis));
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(fis));
+			BufferedReader in = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
+
 			String line;
 			while ((line = in.readLine()) != null)
 			{
