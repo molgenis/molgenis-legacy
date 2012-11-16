@@ -794,8 +794,6 @@ public class MolgenisModelValidator
 							field.setAuto(pkeyField.isAuto());
 							field.setNillable(pkeyField.isNillable());
 							field.setReadonly(pkeyField.isReadOnly());
-
-							field.setSystem(true);
 							field.setXRefVariables(iface.getName(), pkeyField.getName(), null);
 							field.setHidden(true);
 
@@ -1200,7 +1198,6 @@ public class MolgenisModelValidator
 							Field copy = new Field(f);
 							copy.setEntity(e);
 							copy.setAuto(f.isAuto());
-							copy.setSystem(true);
 							e.addField(copy);
 
 							logger.warn(aKey.toString() + " cannot be enforced on " + e.getName() + ", copying "
