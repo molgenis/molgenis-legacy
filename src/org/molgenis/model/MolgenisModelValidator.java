@@ -278,7 +278,8 @@ public class MolgenisModelValidator
 					Field type_field = new Field(e, new EnumField(), Field.TYPE_FIELD, Field.TYPE_FIELD, true, false,
 							true, null);
 					type_field.setDescription("Subtypes have to be set to allow searching");
-					type_field.setSystem(true);
+					// FIXME should be true, but breaks existing apps
+					// type_field.setSystem(true);
 					type_field.setHidden(true);
 					e.addField(0, type_field);
 				}
