@@ -31,6 +31,7 @@ public class ServeConfig implements ServletConfig
 	// Methods from ServletConfig.
 
 	// / Returns the context for the servlet.
+	@Override
 	public ServletContext getServletContext()
 	{
 		return context;
@@ -38,6 +39,7 @@ public class ServeConfig implements ServletConfig
 
 	// / Gets an initialization parameter of the servlet.
 	// @param name the parameter name
+	@Override
 	public String getInitParameter(String name)
 	{
 		// This server supports servlet init params. :)
@@ -47,6 +49,7 @@ public class ServeConfig implements ServletConfig
 
 	// / Gets the names of the initialization parameters of the servlet.
 	// @param name the parameter name
+	@Override
 	public Enumeration<String> getInitParameterNames()
 	{
 		// This server does:) support servlet init params.
@@ -55,6 +58,7 @@ public class ServeConfig implements ServletConfig
 	}
 
 	// 2.2
+	@Override
 	public String getServletName()
 	{
 		return servletName;

@@ -80,16 +80,19 @@ public class DecimalField extends FieldType
 		return "double";
 	}
 
+	@Override
 	public Class<?> getJavaType()
 	{
 		return Date.class;
 	}
 
+	@Override
 	public Double getTypedValue(String value) throws ParseException
 	{
 		return Double.parseDouble(value);
 	}
 
+	@Override
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.DECIMAL;

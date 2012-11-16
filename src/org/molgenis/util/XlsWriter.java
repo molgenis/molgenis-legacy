@@ -144,6 +144,7 @@ public class XlsWriter implements TupleWriter
 	 * @param colNames
 	 * @param elements
 	 */
+	@Override
 	public void writeMatrix(List<String> rowNames, List<String> colNames, Object[][] elements)
 	{
 

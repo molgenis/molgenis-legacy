@@ -40,6 +40,7 @@ public class View extends DBSchema implements Record
 	}
 
 	// @Override
+	@Override
 	public String getLabel()
 	{
 		return label;
@@ -61,6 +62,7 @@ public class View extends DBSchema implements Record
 	}
 
 	// @Override
+	@Override
 	public List<Field> getFields() throws MolgenisModelException
 	{
 		// retrieve the root
@@ -93,6 +95,7 @@ public class View extends DBSchema implements Record
 	}
 
 	// @Override
+	@Override
 	public boolean hasXRefs()
 	{
 		// retrieve the root
@@ -108,6 +111,7 @@ public class View extends DBSchema implements Record
 	}
 
 	// @Override
+	@Override
 	public Vector<String> getParents()
 	{
 		return new Vector<String>();

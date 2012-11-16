@@ -21,6 +21,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -155,11 +156,13 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 	/**
 	 * Translate object field name to table fieldname
 	 */
+	@Override
 	public abstract String getTableFieldName(String fieldName);
 
 	/**
 	 * Retrieve the type of the field
 	 */
+	@Override
 	public abstract FieldType getFieldType(String fieldName);
 
 	/**
@@ -192,6 +195,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 	 */
 	protected abstract QueryRule rewriteMrefRule(Database db, QueryRule user_rule) throws DatabaseException;
 
+	@Override
 	public int count(QueryRule... rules) throws DatabaseException
 	{
 		try
@@ -209,6 +213,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 		}
 	}
 
+	@Override
 	public List<E> find(QueryRule... rules) throws DatabaseException
 	{
 		try
@@ -449,7 +454,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 							where_clause.append(")");
 
 						}
-						catch (Exception e)
+						catch (MolgenisModelException e)
 						{
 							throw new DatabaseException(e);
 						}

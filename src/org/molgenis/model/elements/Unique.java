@@ -122,6 +122,7 @@ public class Unique implements Serializable
 	}
 
 	// Object overloads
+	@Override
 	public String toString()
 	{
 		StringBuilder strBuilder = new StringBuilder("Unique(");
@@ -143,6 +144,7 @@ public class Unique implements Serializable
 	 * @return True if this object is the same as the obj argument, false
 	 *         otherwise.
 	 */
+	@Override
 	public boolean equals(Object obj)
 	{
 		if (obj != null && obj.getClass() == Unique.class)

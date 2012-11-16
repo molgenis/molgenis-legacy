@@ -10,6 +10,7 @@ public class ExcelReaderGen extends ForEachEntityGenerator
 		return "Generates ExcelReaders for each entity";
 	}
 
+	@Override
 	public Boolean skipSystem()
 	{
 		return false;

@@ -112,6 +112,7 @@ public class VcfRecord
 	}
 
 	// just for testing
+	@Override
 	public String toString()
 	{
 		StringBuilder infoBuilder = new StringBuilder().append('[');

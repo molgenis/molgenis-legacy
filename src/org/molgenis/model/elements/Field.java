@@ -68,6 +68,7 @@ public class Field implements Serializable
 
 		/**
          */
+		@Override
 		public String toString()
 		{
 			return "XRefLabel: " + String.format(format, fields.toArray());
@@ -423,6 +424,7 @@ public class Field implements Serializable
 	 * 
 	 * @return Whether this field is a xref.
 	 */
+	// FIXME rename to isXref
 	public boolean isXRef()
 	{
 		return type instanceof XrefField || type instanceof MrefField;
@@ -433,6 +435,7 @@ public class Field implements Serializable
 	 * 
 	 * @return Whether this field is a mref.
 	 */
+	// FIXME rename to isMref
 	public boolean isMRef()
 	{
 		return type instanceof MrefField;
@@ -905,6 +908,7 @@ public class Field implements Serializable
 	 * 
 	 * @return The string-representation.
 	 */
+	@Override
 	public String toString()
 	{
 		String str = "Field(";
@@ -969,6 +973,7 @@ public class Field implements Serializable
 	 * @return True if this object is the same as the obj argument, false
 	 *         otherwise.
 	 */
+	@Override
 	public boolean equals(Object obj)
 	{
 		if (obj != null && obj instanceof Field)
@@ -985,6 +990,7 @@ public class Field implements Serializable
 	 * 
 	 * @return The hash-value for this field.
 	 */
+	@Override
 	public int hashCode()
 	{
 		return this.name.hashCode();

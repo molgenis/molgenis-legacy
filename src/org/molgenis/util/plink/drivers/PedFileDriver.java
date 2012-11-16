@@ -148,6 +148,7 @@ public class PedFileDriver extends AbstractFileDriver
 	 * 
 	 * @throws IOException
 	 */
+	@Override
 	public void close() throws IOException
 	{
 		this.reader.close();

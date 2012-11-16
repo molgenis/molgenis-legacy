@@ -40,6 +40,7 @@ public class MolgenisRestService extends CXFNonSpringJaxrsServlet implements Mol
 		restParams.put("jaxrs.serviceClasses", "app.servlet.RestApi");
 	}
 
+	@Override
 	public void handleRequest(MolgenisRequest r, MolgenisResponse response) throws IOException
 	{
 		try

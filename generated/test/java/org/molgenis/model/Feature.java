@@ -176,6 +176,7 @@ public class Feature extends org.molgenis.model.Characteristic
 	/**
 	 * Generic getter. Get the property by using the name.
 	 */
+	@Override
 	public Object get(String name)
 	{
 		name = name.toLowerCase();
@@ -198,6 +199,7 @@ public class Feature extends org.molgenis.model.Characteristic
 		return "";
 	}	
 	
+	@Override
 	public void validate() throws org.molgenis.framework.db.DatabaseException
 	{
 		if(this.getId() == null) throw new org.molgenis.framework.db.DatabaseException("required field id is null");
@@ -210,6 +212,7 @@ public class Feature extends org.molgenis.model.Characteristic
 	
 	
 	//@Implements
+	@Override
 	public void set( org.molgenis.util.Tuple tuple, boolean strict )  throws Exception
 	{
 		//optimization :-(
@@ -262,6 +265,7 @@ public class Feature extends org.molgenis.model.Characteristic
 		return this.toString(false);
 	}
 	
+	@Override
 	public String toString(boolean verbose)
 	{
 		String result = "Feature(";
@@ -279,6 +283,7 @@ public class Feature extends org.molgenis.model.Characteristic
 	/**
 	 * Get the names of all public properties of Feature.
 	 */
+	@Override
 	public java.util.Vector<String> getFields(boolean skipAutoIds)
 	{
 		java.util.Vector<String> fields = new java.util.Vector<String>();
@@ -304,6 +309,7 @@ public class Feature extends org.molgenis.model.Characteristic
 		return fields;
 	}	
 
+	@Override
 	public java.util.Vector<String> getFields()
 	{
 		return getFields(false);
@@ -325,6 +331,7 @@ public class Feature extends org.molgenis.model.Characteristic
 		return result;
 	}
 
+	@Override
 	@Deprecated
 	public String getFields(String sep)
 	{
@@ -345,7 +352,8 @@ public class Feature extends org.molgenis.model.Characteristic
 	}		
 	
 	
-    public String getXrefIdFieldName(String fieldName) {
+    @Override
+	public String getXrefIdFieldName(String fieldName) {
         
         return null;
     }	
@@ -381,6 +389,7 @@ public class Feature extends org.molgenis.model.Characteristic
   	
 
 
+	@Override
 	@Deprecated
 	public String getValues(String sep)
 	{
