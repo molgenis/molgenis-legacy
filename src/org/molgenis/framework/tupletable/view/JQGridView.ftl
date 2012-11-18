@@ -1,28 +1,6 @@
-<script src="jqGrid/grid.locale-en.js" type="text/javascript"></script>
-<script src="jqGrid/jquery.jqGrid.min.js" type="text/javascript"></script>
-<script src="jqGrid/jquery.jqGrid.src.js" type="text/javascript"></script>
-<script src="jqGrid/jquery.json-2.3.min.js" type="text/javascript"></script>
-<script src="jqGrid/grid.common.js" type="text/javascript"></script>
-<script src="jqGrid/grid.formedit.js" type="text/javascript"></script>
-<script src="jqGrid/jqDnR.js" type="text/javascript"></script>
-<script src="jqGrid/jqModal.js" type="text/javascript"></script>
-<script src="jqGrid/jqGridCustomjavascript.js" type="text/javascript"></script>
-
-
 <script src="jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js" type="text/javascript"></script>
-<script src="jquery/development-bundle/ui/jquery.ui.dialog.js" type="text/javascript"></script>
-<script src="jquery/development-bundle/ui/jquery.ui.datepicker.js" type="text/javascript"></script>
-
-<link rel="stylesheet" type="text/css" media="screen" href="jquery/development-bundle/themes/smoothness/jquery-ui-1.8.7.custom.css">
-<link rel="stylesheet" type="text/css" media="screen" href="jqGrid/ui.jqgrid.css">
-<link rel="stylesheet" type="text/css" media="screen" href="jqGrid/ui.multiselect.css">
-<link rel="stylesheet" type="text/css" media="screen" href="res/css/editableJQGrid.css">
-
-<link href="dynatree-1.2.0/src/skin/ui.dynatree.css" rel="stylesheet" type="text/css" id="skinSheet">
-<script src="dynatree-1.2.0/src/jquery.dynatree.js" type="text/javascript"></script>
-
 <script type="text/javascript">
-  
+
    
 $.fn.extend({
     molgenisGrid: function(options) { 
@@ -100,10 +78,6 @@ $.fn.extend({
        				grid = $('#' + options.tableId, container).jqGrid(config).jqGrid('navGrid', config.pager, config.settings, editRecordConfig, addRecordConfig, deleteRecordConfig, config.searchOptions);
        			
        				addColumnRemoveButtons(config);
-       				
-       				grid.bind('jqGridAddEditBeforeShowForm', function(e, form, oper) {
-       					
-					});
 					
        				//Put the columnpager in the grid toolbar
        				var toolbar = $('#t_' + options.tableId);
@@ -120,8 +94,8 @@ $.fn.extend({
 						$('#hiddenColumnsDropdown').find('option').remove();//Remove all options
 					
 						//Add hidden columns as options
-						$.each(config.hiddenColumns, function(index, column) {
-							$('#hiddenColumnsDropdown').append(new Option(column));
+						$.each(config.hiddenColumns, function(index, col) {
+							$('#hiddenColumnsDropdown').append(new Option(col.label, col.name));
 						});
 					
 						//Button to add a hidden column (next to dropdown)
