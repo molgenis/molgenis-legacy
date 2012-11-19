@@ -178,7 +178,20 @@ public class ${JavaName(form.className)}FormController extends FormController<${
 </#list>	
 		return fieldName;
 	}	
-	
+
+	@Override	
+	public String getField(String searchFieldName)
+	{
+<#list form.getRecord().getAllFields() as field>
+	<#if field.type="xref" || field.type="mref">
+		<#list field.xrefLabelNames?reverse as label>
+		if(searchFieldName.equals("${field.name}_${label}")) return "${field.name}";
+		</#list>
+	</#if>
+</#list>	
+		return searchFieldName;
+	}
+		
 	@Override
 	public void resetCompactView()
 	{
