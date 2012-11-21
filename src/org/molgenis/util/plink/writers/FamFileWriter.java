@@ -1,26 +1,64 @@
 package org.molgenis.util.plink.writers;
 
-import java.io.Closeable;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.io.OutputStreamWriter;
 
-import org.molgenis.util.CsvFileWriter;
+import org.molgenis.util.plink.PlinkFileParser;
 import org.molgenis.util.plink.datatypes.FamEntry;
 
 /**
  * Write MAP file entries to a selected location.
  */
-public class FamFileWriter implements Closeable
+public class FamFileWriter implements PlinkFileParser
 {
-	private CsvFileWriter writer;
+	private BufferedWriter writer;
+	private char separator;
 
-	public FamFileWriter(File famFile) throws Exception
+	public FamFileWriter(File famFile) throws IOException
 	{
-		writer = new CsvFileWriter(famFile);
-		writer.setHeaders(Arrays.asList(FamEntry.famHeader()));
-		writer.setSeparator(' ');
+		this(famFile, DEFAULT_FIELD_SEPARATOR);
+	}
+
+	public FamFileWriter(File famFile, char separator) throws IOException
+	{
+		if (famFile == null) throw new IllegalArgumentException("file is null");
+		this.writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(famFile), FILE_ENCODING));
+		this.separator = separator;
+	}
+
+	/**
+	 * Write a single entry.
+	 * 
+	 * @throws IOException
+	 */
+	public void write(FamEntry fam) throws IOException
+	{
+		writer.write(fam.getFamily());
+		writer.write(separator);
+		writer.write(fam.getIndividual());
+		writer.write(separator);
+		writer.write(fam.getFather());
+		writer.write(separator);
+		writer.write(fam.getMother());
+		writer.write(separator);
+		writer.write(Byte.toString(fam.getSex()));
+		writer.write(separator);
+		writer.write(Double.toString(fam.getPhenotype()));
+		writer.write(LINE_SEPARATOR);
+	}
+
+	/**
+	 * Write multiple entries in order.
+	 * 
+	 * @throws IOException
+	 */
+	public void write(Iterable<FamEntry> fams) throws IOException
+	{
+		for (FamEntry fam : fams)
+			write(fam);
 	}
 
 	/**
@@ -31,49 +69,6 @@ public class FamFileWriter implements Closeable
 	@Override
 	public void close() throws IOException
 	{
-		writer.close();
-	}
-
-	/**
-	 * Write a single entry.
-	 * 
-	 * @throws IOException
-	 */
-	public void writeSingle(FamEntry fam) throws IOException
-	{
-		writer.writeRow(FamEntry.famToTuple(fam));
-	}
-
-	/**
-	 * Write multiple entries in order.
-	 * 
-	 * @throws IOException
-	 */
-	public void writeMulti(List<FamEntry> fams) throws IOException
-	{
-		for (FamEntry fam : fams)
-		{
-			writer.writeRow(FamEntry.famToTuple(fam));
-		}
-	}
-
-	/**
-	 * Write all entries and close the writer.
-	 * 
-	 * @throws IOException
-	 */
-	public void writeAll(List<FamEntry> fams) throws IOException
-	{
-		try
-		{
-			for (FamEntry fam : fams)
-			{
-				writer.writeRow(FamEntry.famToTuple(fam));
-			}
-		}
-		finally
-		{
-			writer.close();
-		}
+		if (writer != null) writer.close();
 	}
 }
