@@ -332,7 +332,6 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	private String toFieldName(String entityUnderscoreFieldName)
 	{
 		String simpleName = this.getEntityClass().getSimpleName();
-		System.out.println(entityUnderscoreFieldName + " - " + simpleName);
 		return entityUnderscoreFieldName.substring(simpleName.length() + 1);
 	}
 
@@ -654,4 +653,12 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	 * showing that in the UI).
 	 */
 	public abstract String getSearchField(String fieldName);
+
+	/**
+	 * Returns fields name for the given search field name
+	 * 
+	 * @param searchFieldName
+	 * @return
+	 */
+	public abstract String getField(String searchFieldName);
 }

@@ -72,12 +72,12 @@ public class CachingPedFileDriver extends PedFileDriver
 					filtered.add(entry);
 				}
 				else if (filter.getField().equals("Sex")
-						&& new Byte(entry.getSex()).toString().equals(filter.getValue()))
+						&& Byte.valueOf(entry.getSex()).toString().equals(filter.getValue()))
 				{
 					filtered.add(entry);
 				}
 				else if (filter.getField().equals("Phenotype")
-						&& new Double(entry.getPhenotype()).toString().equals(filter.getValue()))
+						&& Double.valueOf(entry.getPhenotype()).toString().equals(filter.getValue()))
 				{
 					filtered.add(entry);
 				}
