@@ -1,10 +1,17 @@
 package org.molgenis.util.plink.drivers;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.TextFileUtils;
+import org.molgenis.util.plink.PlinkFileParser;
 import org.molgenis.util.plink.datatypes.MapEntry;
 
 /**
@@ -13,8 +20,12 @@ import org.molgenis.util.plink.datatypes.MapEntry;
  * chromosome, SNP, cM, base-position. See:
  * http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#map
  */
-public class MapFileDriver extends AbstractFileDriver
+public class MapFileDriver implements PlinkFileParser
 {
+	private BufferedReader reader;
+	private File file;
+	private char separator;
+	private long nrElements;
 
 	/**
 	 * Construct a MapFileDriver on this file
@@ -22,29 +33,17 @@ public class MapFileDriver extends AbstractFileDriver
 	 * @param mapFile
 	 * @throws Exception
 	 */
-	public MapFileDriver(File mapFile) throws Exception
+	public MapFileDriver(File mapFile)
 	{
-		super(mapFile);
-		validate();
+		this(mapFile, DEFAULT_FIELD_SEPARATOR);
 	}
 
-	/**
-	 * Validates the map file. For now it only validates if the file has exactly
-	 * 4 columns
-	 * 
-	 * @throws Exception
-	 */
-	public void validate() throws Exception
+	public MapFileDriver(File mapFile, char separator)
 	{
-		reader.reset();
-
-		Tuple tuple = reader.next();
-		if (tuple.size() != 4)
-		{
-			throw new Exception("Incorrect map file format. Map file must contain 4 columns");
-		}
-
-		reader.reset();
+		if (mapFile == null) throw new IllegalArgumentException("file is null");
+		this.file = mapFile;
+		this.separator = separator;
+		this.nrElements = -1l;
 	}
 
 	/**
@@ -57,28 +56,16 @@ public class MapFileDriver extends AbstractFileDriver
 	 * @return
 	 * @throws Exception
 	 */
-	public List<MapEntry> getEntries(final long from, final long to) throws Exception
+	public List<MapEntry> getEntries(final long from, final long to) throws IOException
 	{
-		reader.reset();
+		reset();
 
-		final ArrayList<MapEntry> result = new ArrayList<MapEntry>();
-		int line_number = 0;
-		for (Tuple tuple : reader)
-		{
-			line_number++;
+		List<MapEntry> entryList = new ArrayList<MapEntry>();
+		String line;
+		for (int i = 0; (line = reader.readLine()) != null && i < to; ++i)
+			if (i >= from) entryList.add(parseEntry(line));
 
-			if (line_number - 1 >= from && line_number - 1 < to)
-			{
-				for (int objIndex = 0; objIndex < 4; objIndex++)
-				{
-					if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number, objIndex));
-				}
-				MapEntry me = new MapEntry(tuple.getString(0), tuple.getString(1), tuple.getDouble(2), tuple.getLong(3));
-				result.add(me);
-			}
-		}
-
-		return result;
+		return entryList;
 	}
 
 	/**
@@ -87,23 +74,58 @@ public class MapFileDriver extends AbstractFileDriver
 	 * @return
 	 * @throws Exception
 	 */
-	public List<MapEntry> getAllEntries() throws Exception
+	public List<MapEntry> getAllEntries() throws IOException
 	{
-		reader.reset();
-		final ArrayList<MapEntry> result = new ArrayList<MapEntry>();
-		int line_number = 0;
-		for (Tuple tuple : reader)
-		{
-			line_number++;
-			for (int objIndex = 0; objIndex < 4; objIndex++)
-			{
-				if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number, objIndex));
-			}
-			MapEntry me = new MapEntry(tuple.getString(0), tuple.getString(1), tuple.getDouble(2), tuple.getLong(3));
-			result.add(me);
-		}
+		reset();
 
-		return result;
+		List<MapEntry> entryList = new ArrayList<MapEntry>();
+		String line;
+		while ((line = reader.readLine()) != null)
+			entryList.add(parseEntry(line));
+
+		return entryList;
 	}
 
+	private MapEntry parseEntry(String line) throws IOException
+	{
+		StringTokenizer strTokenizer = new StringTokenizer(line, this.separator + "");
+		try
+		{
+			String chromosome = strTokenizer.nextToken();
+			String snp = strTokenizer.nextToken();
+			double cM = Double.parseDouble(strTokenizer.nextToken());
+			long bpPos = Long.parseLong(strTokenizer.nextToken());
+			return new MapEntry(chromosome, snp, cM, bpPos);
+		}
+		catch (NoSuchElementException e)
+		{
+			throw new IOException("error in line: " + line, e);
+		}
+		catch (IndexOutOfBoundsException e)
+		{
+			throw new IOException("error in line: " + line, e);
+		}
+		catch (NumberFormatException e)
+		{
+			throw new IOException("error in line: " + line, e);
+		}
+	}
+
+	public long getNrOfElements() throws IOException
+	{
+		if (nrElements == -1) nrElements = TextFileUtils.getNumberOfNonEmptyLines(file, FILE_ENCODING);
+		return nrElements;
+	}
+
+	@Override
+	public void close() throws IOException
+	{
+		if (this.reader != null) this.reader.close();
+	}
+
+	public void reset() throws IOException
+	{
+		if (this.reader != null) close();
+		this.reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), FILE_ENCODING));
+	}
 }
