@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.fieldtypes.EnumField;
@@ -626,11 +627,7 @@ public class MolgenisModelValidator
 							if (!xref_label_name.equals(xref_field_name)
 									&& !field.allPossibleXrefLabels().keySet().contains(xref_label_name))
 							{
-								String validLabels = "";
-								for (String label : field.allPossibleXrefLabels().keySet())
-								{
-									validLabels += label + ", ";
-								}
+								String validLabels = StringUtils.join(field.allPossibleXrefLabels().keySet(), ',');
 								throw new MolgenisModelException("xref label '" + xref_label_name + "' for "
 										+ entityname + "." + fieldname
 										+ " is not part a secondary key. Valid labels are " + validLabels

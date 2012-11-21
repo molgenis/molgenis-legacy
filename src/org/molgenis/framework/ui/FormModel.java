@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -529,36 +528,28 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	 */
 	public Vector<String> getFilters() throws DatabaseException
 	{
+		if (this.getUserRules() == null || this.getUserRules().isEmpty()) return new Vector<String>();
+
 		Vector<String> filters = new Vector<String>();
-		Map<String, String> nameLabelMap = new TreeMap<String, String>();
-
-		for (HtmlInput input : this.getNewRecordForm().getInputs())
-		{
-			// getSearchFields maps xref and mref field to their label
-			String fieldName = getController().getSearchField(input.getName());
-			nameLabelMap.put(fieldName, input.getLabel());
-		}
-
 		for (QueryRule rule : this.getUserRules())
 		{
-			String field = rule.getField();
 			String label = "";
-			if (field != null)
+			if (rule.getField() != null)
 			{
-				if (field.equals("all"))
+				label = getField(rule.getField());
+			}
+			else
+			{
+				// assume that this rule has nested rule
+				QueryRule[] nestedRules = rule.getNestedRules();
+				if (nestedRules != null && nestedRules.length > 0)
 				{
 					label = "Any field";
-				}
-				else
-				{
-					label = nameLabelMap.get(field);
+					rule = nestedRules[0];
 				}
 			}
-
 			filters.add(label + " " + rule.getOperator().toString() + " " + rule.getValue());
-
 		}
-
 		return filters;
 	}
 
@@ -989,5 +980,10 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	public String getSearchField(String fieldName)
 	{
 		return this.getController().getSearchField(fieldName);
+	}
+
+	public String getField(String searchFieldName)
+	{
+		return this.getController().getField(searchFieldName);
 	}
 }
