@@ -8,8 +8,6 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
 /**
  * Delimited writer to write {@link org.molgenis.util.Tuple Tuple} or
  * {@link org.molgenis.util.Entity Entity} objects to a print stream.
@@ -18,33 +16,23 @@ import org.apache.commons.lang.StringEscapeUtils;
  * tab-delimited-values (TAB) file.
  * <p>
  */
-public class CsvWriter implements TupleWriter
+public class CsvWriter implements CsvParser, TupleWriter
 {
-	private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
-
-	private static final char DEFAULT_SEPARATOR = '\t';
-	private static final char DEFAULT_LIST_SEPARATOR = '|';
-	private static final String DEFAULT_LINE_SEPARATOR = "\n";
-
-	/** writer the output is written to */
 	private Writer writer;
-	/** column separator (default: \t) */
-	private char separator = DEFAULT_SEPARATOR;
-	/** line separator (default: \n) */
-	private String lineSeparator = DEFAULT_LINE_SEPARATOR;
-	/** list value separator (default: |) */
-	private char listSeparator = DEFAULT_LIST_SEPARATOR;
-	/**
-	 * value to use for missing/null values such as "NULL" or "NA", default
-	 * write nothing
-	 */
-	private String missingValue;
-	/** headers to be written out */
+	/** column separator */
+	private char separator;
+	/** line separator */
+	private String lineSeparator;
+	/** column headers */
 	private List<String> headers;
+	/** default output value for null values (e.g. NA or NULL) */
+	private String missingValue;
+	/** list separator */
+	private char listSeparator;
 
 	public CsvWriter(OutputStream os)
 	{
-		this(os, CHARSET_UTF8);
+		this(os, CSV_DEFAULT_CHARSET);
 	}
 
 	public CsvWriter(OutputStream os, Charset charset)
@@ -54,7 +42,7 @@ public class CsvWriter implements TupleWriter
 
 	public CsvWriter(OutputStream os, char separator)
 	{
-		this(os, CHARSET_UTF8, separator);
+		this(os, CSV_DEFAULT_CHARSET, separator);
 	}
 
 	public CsvWriter(OutputStream os, Charset charset, char separator)
@@ -64,7 +52,7 @@ public class CsvWriter implements TupleWriter
 
 	public CsvWriter(OutputStream os, List<String> headers)
 	{
-		this(os, CHARSET_UTF8, headers);
+		this(os, CSV_DEFAULT_CHARSET, headers);
 	}
 
 	public CsvWriter(OutputStream os, Charset charset, List<String> headers)
@@ -74,7 +62,7 @@ public class CsvWriter implements TupleWriter
 
 	public CsvWriter(OutputStream os, char separator, List<String> headers)
 	{
-		this(os, CHARSET_UTF8, separator, headers);
+		this(os, CSV_DEFAULT_CHARSET, separator, headers);
 	}
 
 	public CsvWriter(OutputStream os, Charset charset, char separator, List<String> headers)
@@ -84,7 +72,7 @@ public class CsvWriter implements TupleWriter
 
 	public CsvWriter(Writer writer)
 	{
-		this(writer, DEFAULT_SEPARATOR);
+		this(writer, CSV_DEFAULT_SEPARATOR);
 	}
 
 	public CsvWriter(Writer writer, char separator)
@@ -94,7 +82,7 @@ public class CsvWriter implements TupleWriter
 
 	public CsvWriter(Writer writer, List<String> headers)
 	{
-		this(writer, DEFAULT_SEPARATOR, headers);
+		this(writer, CSV_DEFAULT_SEPARATOR, headers);
 	}
 
 	public CsvWriter(Writer writer, char separator, List<String> headers)
@@ -103,6 +91,8 @@ public class CsvWriter implements TupleWriter
 		this.writer = new BufferedWriter(writer);
 		this.separator = separator;
 		this.headers = headers;
+		this.lineSeparator = CSV_DEFAULT_LINE_SEPARATOR;
+		this.listSeparator = ListEscapeUtils.DEFAULT_SEPARATOR;
 	}
 
 	@Override
@@ -169,33 +159,20 @@ public class CsvWriter implements TupleWriter
 	@Override
 	public void writeValue(Object obj) throws IOException
 	{
+		String value = null;
 		if (obj == null)
 		{
-			if (this.missingValue != null) this.writer.write(this.missingValue);
+			if (this.missingValue != null) value = this.missingValue;
 		}
 		else if (obj instanceof List<?>)
 		{
-			List<?> list = (List<?>) obj;
-			final int size = list.size();
-			for (int i = 0; i < size; ++i)
-			{
-				// FIXME list separator in list values not escaped
-				if (i > 0) this.writer.write(this.listSeparator);
-				Object value = list.get(i);
-				if (value != null)
-				{
-					StringEscapeUtils.escapeCsv(this.writer, value.toString());
-				}
-				else if (this.missingValue != null)
-				{
-					this.writer.write(this.missingValue);
-				}
-			}
+			value = ListEscapeUtils.toString((List<?>) obj, listSeparator);
 		}
 		else
 		{
-			this.writer.write(StringEscapeUtils.escapeCsv(obj.toString()));
+			value = obj.toString();
 		}
+		if (value != null) this.writer.write(escapeCsv(value));
 	}
 
 	public void writeSeparator() throws IOException
@@ -207,6 +184,33 @@ public class CsvWriter implements TupleWriter
 	public void writeEndOfLine() throws IOException
 	{
 		this.writer.write(this.lineSeparator);
+	}
+
+	private String escapeCsv(String value)
+	{
+		if (value.isEmpty()) return value;
+		if (doEscapeCsv(value)) return CSV_DEFAULT_QUOTE_CHARACTER + value + CSV_DEFAULT_QUOTE_CHARACTER;
+		else
+			return value;
+	}
+
+	private boolean doEscapeCsv(String value)
+	{
+		boolean doEscape = false;
+		final int length = value.length();
+		for (int i = 0; i < length && !doEscape; ++i)
+		{
+			char c = value.charAt(i);
+			if (c == this.separator) doEscape = true;
+			else if (c == CSV_DEFAULT_QUOTE_CHARACTER) doEscape = true;
+			else if (c == this.lineSeparator.charAt(0))
+			{
+				final int lineLength = this.lineSeparator.length();
+				if (lineLength == 1) doEscape = true;
+				else if (lineLength == 2 && i + 1 < length && value.charAt(i + 1) == this.lineSeparator.charAt(1)) doEscape = true;
+			}
+		}
+		return doEscape;
 	}
 
 	public String getMissingValue()
@@ -229,16 +233,6 @@ public class CsvWriter implements TupleWriter
 		this.separator = separator;
 	}
 
-	public char getListSeparator()
-	{
-		return listSeparator;
-	}
-
-	public void setListSeparator(char listSeparator)
-	{
-		this.listSeparator = listSeparator;
-	}
-
 	@Override
 	public void setHeaders(List<String> headers)
 	{
@@ -255,9 +249,24 @@ public class CsvWriter implements TupleWriter
 		return lineSeparator;
 	}
 
+	/**
+	 * Valid line separators: \r \n \r\n
+	 * 
+	 * @param lineSeparator
+	 */
 	public void setLineSeparator(String lineSeparator)
 	{
 		this.lineSeparator = lineSeparator;
+	}
+
+	public char getListSeparator()
+	{
+		return listSeparator;
+	}
+
+	public void setListSeparator(char listSeparator)
+	{
+		this.listSeparator = listSeparator;
 	}
 
 	@Override

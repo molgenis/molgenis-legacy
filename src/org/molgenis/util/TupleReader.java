@@ -15,9 +15,7 @@ public interface TupleReader extends TupleIterable, Closeable
 	/**
 	 * The values of the first row.
 	 * 
-	 * @return columnnames list as long as each datarow. If necessary an
-	 *         artificial first column is added named
-	 *         {@link CsvFileReader#ROWNAME_COLUMN}
+	 * @return columnnames list as long as each datarow.
 	 * @throws Exception
 	 */
 	public List<String> colnames() throws Exception;
