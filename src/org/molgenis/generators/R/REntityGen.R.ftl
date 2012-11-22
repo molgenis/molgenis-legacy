@@ -98,7 +98,7 @@ find.${RName(entity)} <- function(
     } 
     </#if></#list>  	   
     
-	result <- MOLGENIS.find( "${entity.namespace}.${JavaName(entity)}", mget(ls(),environment()), .verbose=.verbose)
+	result <- MOLGENIS.find( "${JavaName(entity)}", mget(ls(),environment()), .verbose=.verbose)
 	<#if skey_fields?size &gt; 0>
 	#use secondary key as rownames
 	#rownames(result)<-result$${RName(skey_fields?first)}
