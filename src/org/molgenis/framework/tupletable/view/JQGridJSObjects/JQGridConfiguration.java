@@ -35,11 +35,11 @@ public class JQGridConfiguration
 	private List<JQGridColModel> colModel = new ArrayList<JQGridColModel>();
 
 	/** current limit = number of rows to show */
-	private int rowNum = 10;
+	private int rowNum = 20;
 
 	/** choices of alternative rowNum values */
 	private Integer[] rowList = new Integer[]
-	{ 10, 20, 30 };
+	{ 20, 30, 40 };
 
 	/** indicates whether we want to show total records from query in page bar */
 	private boolean viewrecords = true;
@@ -56,7 +56,7 @@ public class JQGridConfiguration
 	private String sortorder = "desc";
 
 	/** default height */
-	private String height = "232px";
+	private String height = "466px";
 
 	/** the total column count **/
 	private int totalColumnCount;
