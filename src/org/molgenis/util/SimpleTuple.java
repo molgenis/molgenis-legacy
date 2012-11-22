@@ -7,6 +7,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -14,7 +15,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
 
@@ -707,88 +707,58 @@ public class SimpleTuple implements Tuple
 	}
 
 	@Override
-	public List<?> getList(String column)
-	{
-		return this.getList(column, null);
-	}
-
-	@Override
 	public Set<Object> getSet(String column)
 	{
-		return new LinkedHashSet<Object>(this.getList(column, null));
+		return new LinkedHashSet<Object>(this.getList(column, ListEscapeUtils.DEFAULT_SEPARATOR));
 	}
 
 	@Override
-	public Set<Object> getSet(String column, String sep)
+	public Set<Object> getSet(String column, char sep)
 	{
 		return new LinkedHashSet<Object>(this.getList(column, sep));
 	}
 
 	@Override
-	public List<?> getList(String column, String separator)
+	public List<?> getList(String column)
 	{
-		String sep = separator;
-		if (this.getObject(column) == null)
-		{
-			return null;
-		}
-		else if (this.getObject(column) instanceof List<?>)
-		{
-			return (List<?>) this.getObject(column);
-		}
-		else if (this.getObject(column) instanceof String)
-		{
-			List<Object> result = new ArrayList<Object>();
-			if (sep == null) sep = ",";
-			StringTokenizer tokenizer = new StringTokenizer((String) this.getObject(column), sep);
-			while (tokenizer.hasMoreElements())
-			{
-				result.add(tokenizer.nextToken().trim());
-			}
-			return result;
-		}
-		else
-		{
-			List<Object> result = new ArrayList<Object>();
-			result.add(this.getObject(column));
-			return result;
-		}
+		return this.getList(column, ListEscapeUtils.DEFAULT_SEPARATOR);
+	}
+
+	@Override
+	public List<?> getList(String column, char sep)
+	{
+		return toList(this.getObject(column), sep);
 	}
 
 	@Override
 	public List<?> getList(int column)
 	{
-		return this.getList(column, null);
+		return this.getList(column, ListEscapeUtils.DEFAULT_SEPARATOR);
 	}
 
 	@Override
-	public List<?> getList(int column, String separator)
+	public List<?> getList(int column, char sep)
 	{
-		String sep = separator;
-		if (this.getObject(column) == null)
+		return toList(this.getObject(column), sep);
+	}
+
+	private List<?> toList(Object obj, char sep)
+	{
+		if (obj == null)
 		{
 			return null;
 		}
-		else if (this.getObject(column) instanceof List<?>)
+		else if (obj instanceof List<?>)
 		{
-			return (List<?>) this.getObject(column);
+			return (List<?>) obj;
 		}
-		else if (this.getObject(column) instanceof String)
+		else if (obj instanceof String)
 		{
-			List<Object> result = new ArrayList<Object>();
-			if (sep == null) sep = ",";
-			StringTokenizer tokenizer = new StringTokenizer((String) this.getObject(column), sep);
-			while (tokenizer.hasMoreElements())
-			{
-				result.add(tokenizer.nextToken().trim());
-			}
-			return result;
+			return ListEscapeUtils.toList((String) obj, sep, ListEscapeUtils.DEFAULT_ESCAPE_CHAR);
 		}
 		else
 		{
-			List<Object> result = new ArrayList<Object>();
-			result.add(this.getObject(column));
-			return result;
+			return Collections.singletonList(obj);
 		}
 	}
 
