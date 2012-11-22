@@ -144,6 +144,9 @@ $.fn.extend({
 						$('.last_columnpager', container).addClass('ui-state-disabled');
 					}	
 					
+					//Remove titlebar
+					$('.ui-jqgrid-titlebar').remove();
+					
 					//Paging controls, bit of a hack but bootstrap and jqGrid bit each other a bit
     				$('input[type=text].ui-pg-input').css({"width" : "20px"});
     				$('.ui-pg-selbox').css({"height" : "23px", "width" : "200px"});

@@ -197,7 +197,11 @@ public abstract class CsvBufferedReaderMultiline extends AbstractTupleReader imp
 			}
 
 			// next is null
-			if (reader != null) reader.close();
+			if ((reader != null) && !isClosed())
+			{
+				reader.close();
+			}
+
 			return null;
 		}
 		catch (Exception e)
