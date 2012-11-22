@@ -1,10 +1,17 @@
 package org.molgenis.util.plink.drivers;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.TextFileUtils;
+import org.molgenis.util.plink.PlinkFileParser;
 import org.molgenis.util.plink.datatypes.Biallele;
 import org.molgenis.util.plink.datatypes.BimEntry;
 
@@ -15,17 +22,30 @@ import org.molgenis.util.plink.datatypes.BimEntry;
  * 
  * Content of a BIM file: chromosome, SNP, cM, base-position, allele 1, allele 2
  */
-public class BimFileDriver extends AbstractFileDriver
+public class BimFileDriver implements PlinkFileParser
 {
+	private BufferedReader reader;
+	private File file;
+	private char separator;
+	private long nrElements;
+
 	/**
 	 * Construct a BimFileDriver on this file
 	 * 
 	 * @param bimFile
 	 * @throws Exception
 	 */
-	public BimFileDriver(File bimFile) throws Exception
+	public BimFileDriver(File bimFile)
 	{
-		super(bimFile);
+		this(bimFile, DEFAULT_FIELD_SEPARATOR);
+	}
+
+	public BimFileDriver(File bimFile, char separator)
+	{
+		if (bimFile == null) throw new IllegalArgumentException("file is null");
+		this.file = bimFile;
+		this.separator = separator;
+		this.nrElements = -1l;
 	}
 
 	/**
@@ -38,27 +58,16 @@ public class BimFileDriver extends AbstractFileDriver
 	 * @return
 	 * @throws Exception
 	 */
-	public List<BimEntry> getEntries(final long from, final long to) throws Exception
+	public List<BimEntry> getEntries(final long from, final long to) throws IOException
 	{
-		reader.reset();
-		final ArrayList<BimEntry> result = new ArrayList<BimEntry>();
-		int line_number = 0;
-		for (Tuple tuple : reader)
-		{
-			line_number++;
+		reset();
 
-			if (line_number - 1 >= from && line_number - 1 < to)
-			{
-				for (int objIndex = 0; objIndex < 6; objIndex++)
-				{
-					if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number, objIndex));
-				}
-				BimEntry be = new BimEntry(tuple.getString(0), tuple.getString(1), tuple.getDouble(2),
-						tuple.getLong(3), new Biallele(tuple.getString(4), tuple.getString(5)));
-				result.add(be);
-			}
-		}
-		return result;
+		List<BimEntry> entryList = new ArrayList<BimEntry>();
+		String line;
+		for (int i = 0; (line = reader.readLine()) != null && i < to; ++i)
+			if (i >= from) entryList.add(parseEntry(line));
+
+		return entryList;
 	}
 
 	/**
@@ -67,24 +76,60 @@ public class BimFileDriver extends AbstractFileDriver
 	 * @return
 	 * @throws Exception
 	 */
-	public List<BimEntry> getAllEntries() throws Exception
+	public List<BimEntry> getAllEntries() throws IOException
 	{
-		reader.reset();
-		final ArrayList<BimEntry> result = new ArrayList<BimEntry>();
-		int line_number = 0;
-		for (Tuple tuple : reader)
-		{
-			line_number++;
-			for (int objIndex = 0; objIndex < 6; objIndex++)
-			{
-				if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number, objIndex));
-			}
-			BimEntry be = new BimEntry(tuple.getString(0), tuple.getString(1), tuple.getDouble(2), tuple.getLong(3),
-					new Biallele(tuple.getString(4), tuple.getString(5)));
-			result.add(be);
-		}
+		reset();
 
-		return result;
+		List<BimEntry> entryList = new ArrayList<BimEntry>();
+		String line;
+		while ((line = reader.readLine()) != null)
+			entryList.add(parseEntry(line));
+
+		return entryList;
 	}
 
+	private BimEntry parseEntry(String line) throws IOException
+	{
+		StringTokenizer strTokenizer = new StringTokenizer(line, this.separator + "");
+		try
+		{
+			String chromosome = strTokenizer.nextToken();
+			String snp = strTokenizer.nextToken();
+			double cM = Double.parseDouble(strTokenizer.nextToken());
+			long bpPos = Long.parseLong(strTokenizer.nextToken());
+			char allelle1 = strTokenizer.nextToken().charAt(0);
+			char allelle2 = strTokenizer.nextToken().charAt(0);
+			return new BimEntry(chromosome, snp, cM, bpPos, Biallele.create(allelle1, allelle2));
+		}
+		catch (NoSuchElementException e)
+		{
+			throw new IOException("error in line: " + line, e);
+		}
+		catch (IndexOutOfBoundsException e)
+		{
+			throw new IOException("error in line: " + line, e);
+		}
+		catch (NumberFormatException e)
+		{
+			throw new IOException("error in line: " + line, e);
+		}
+	}
+
+	public long getNrOfElements() throws IOException
+	{
+		if (nrElements == -1) nrElements = TextFileUtils.getNumberOfNonEmptyLines(file, FILE_ENCODING);
+		return nrElements;
+	}
+
+	@Override
+	public void close() throws IOException
+	{
+		if (this.reader != null) this.reader.close();
+	}
+
+	public void reset() throws IOException
+	{
+		if (this.reader != null) close();
+		this.reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), FILE_ENCODING));
+	}
 }
