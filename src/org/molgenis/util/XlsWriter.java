@@ -155,39 +155,14 @@ public class XlsWriter implements TupleWriter
 	{
 		for (int i = 0; i < headers.size(); i++)
 		{
-			StringBuilder contentsBuilder = new StringBuilder();
-
+			String contents;
 			Object fieldValue = e.get(headers.get(i));
-			if (fieldValue != null)
-			{
+			if (fieldValue == null) contents = "";
+			else if (fieldValue instanceof List<?>) contents = ListEscapeUtils.toString((List<?>) fieldValue);
+			else
+				contents = fieldValue.toString();
 
-				if (fieldValue instanceof List<?>)
-				{
-					List<?> list = (List<?>) fieldValue;
-					for (int j = 0; j < list.size(); j++)
-					{
-						if (j != 0)
-						{
-							contentsBuilder.append(',');
-						}
-						if (list.get(j) != null)
-						{
-							contentsBuilder.append(list.get(j).toString());
-						}
-						else
-						{
-							throw new IOException("List contains null value(s)");
-						}
-					}
-
-				}
-				else
-				{
-					contentsBuilder.append(fieldValue.toString());
-				}
-
-			}
-			Label l = new Label(i, rowIndex, contentsBuilder.toString(), cellFormat);
+			Label l = new Label(i, rowIndex, contents, cellFormat);
 			try
 			{
 				sheet.addCell(l);

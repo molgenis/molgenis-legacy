@@ -1,5 +1,6 @@
 package org.molgenis.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -123,5 +124,22 @@ public class TextFileUtils
 
 		return terminatorSequence.length();
 
+	}
+
+	public static int getNumberOfNonEmptyLines(File file, Charset charset) throws IOException
+	{
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset));
+		try
+		{
+			int count = 0;
+			String line;
+			while ((line = reader.readLine()) != null)
+				if (!line.isEmpty()) ++count;
+			return count;
+		}
+		finally
+		{
+			reader.close();
+		}
 	}
 }

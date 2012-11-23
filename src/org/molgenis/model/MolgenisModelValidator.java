@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.fieldtypes.EnumField;
@@ -278,7 +279,8 @@ public class MolgenisModelValidator
 					Field type_field = new Field(e, new EnumField(), Field.TYPE_FIELD, Field.TYPE_FIELD, true, false,
 							true, null);
 					type_field.setDescription("Subtypes have to be set to allow searching");
-					type_field.setSystem(true);
+					// FIXME should be true, but breaks existing apps
+					// type_field.setSystem(true);
 					type_field.setHidden(true);
 					e.addField(0, type_field);
 				}
@@ -625,11 +627,7 @@ public class MolgenisModelValidator
 							if (!xref_label_name.equals(xref_field_name)
 									&& !field.allPossibleXrefLabels().keySet().contains(xref_label_name))
 							{
-								String validLabels = "";
-								for (String label : field.allPossibleXrefLabels().keySet())
-								{
-									validLabels += label + ", ";
-								}
+								String validLabels = StringUtils.join(field.allPossibleXrefLabels().keySet(), ',');
 								throw new MolgenisModelException("xref label '" + xref_label_name + "' for "
 										+ entityname + "." + fieldname
 										+ " is not part a secondary key. Valid labels are " + validLabels
@@ -794,8 +792,6 @@ public class MolgenisModelValidator
 							field.setAuto(pkeyField.isAuto());
 							field.setNillable(pkeyField.isNillable());
 							field.setReadonly(pkeyField.isReadOnly());
-
-							field.setSystem(true);
 							field.setXRefVariables(iface.getName(), pkeyField.getName(), null);
 							field.setHidden(true);
 
@@ -1200,7 +1196,6 @@ public class MolgenisModelValidator
 							Field copy = new Field(f);
 							copy.setEntity(e);
 							copy.setAuto(f.isAuto());
-							copy.setSystem(true);
 							e.addField(copy);
 
 							logger.warn(aKey.toString() + " cannot be enforced on " + e.getName() + ", copying "

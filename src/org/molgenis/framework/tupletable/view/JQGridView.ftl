@@ -1,28 +1,6 @@
-<script src="jqGrid/grid.locale-en.js" type="text/javascript"></script>
-<script src="jqGrid/jquery.jqGrid.min.js" type="text/javascript"></script>
-<script src="jqGrid/jquery.jqGrid.src.js" type="text/javascript"></script>
-<script src="jqGrid/jquery.json-2.3.min.js" type="text/javascript"></script>
-<script src="jqGrid/grid.common.js" type="text/javascript"></script>
-<script src="jqGrid/grid.formedit.js" type="text/javascript"></script>
-<script src="jqGrid/jqDnR.js" type="text/javascript"></script>
-<script src="jqGrid/jqModal.js" type="text/javascript"></script>
-<script src="jqGrid/jqGridCustomjavascript.js" type="text/javascript"></script>
-
-
 <script src="jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js" type="text/javascript"></script>
-<script src="jquery/development-bundle/ui/jquery.ui.dialog.js" type="text/javascript"></script>
-<script src="jquery/development-bundle/ui/jquery.ui.datepicker.js" type="text/javascript"></script>
-
-<link rel="stylesheet" type="text/css" media="screen" href="jquery/development-bundle/themes/smoothness/jquery-ui-1.8.7.custom.css">
-<link rel="stylesheet" type="text/css" media="screen" href="jqGrid/ui.jqgrid.css">
-<link rel="stylesheet" type="text/css" media="screen" href="jqGrid/ui.multiselect.css">
-<link rel="stylesheet" type="text/css" media="screen" href="res/css/editableJQGrid.css">
-
-<link href="dynatree-1.2.0/src/skin/ui.dynatree.css" rel="stylesheet" type="text/css" id="skinSheet">
-<script src="dynatree-1.2.0/src/jquery.dynatree.js" type="text/javascript"></script>
-
 <script type="text/javascript">
-  
+
    
 $.fn.extend({
     molgenisGrid: function(options) { 
@@ -100,10 +78,6 @@ $.fn.extend({
        				grid = $('#' + options.tableId, container).jqGrid(config).jqGrid('navGrid', config.pager, config.settings, editRecordConfig, addRecordConfig, deleteRecordConfig, config.searchOptions);
        			
        				addColumnRemoveButtons(config);
-       				
-       				grid.bind('jqGridAddEditBeforeShowForm', function(e, form, oper) {
-       					
-					});
 					
        				//Put the columnpager in the grid toolbar
        				var toolbar = $('#t_' + options.tableId);
@@ -120,17 +94,16 @@ $.fn.extend({
 						$('#hiddenColumnsDropdown').find('option').remove();//Remove all options
 					
 						//Add hidden columns as options
-						$.each(config.hiddenColumns, function(index, column) {
-							$('#hiddenColumnsDropdown').append(new Option(column));
+						$.each(config.hiddenColumns, function(index, col) {
+							$('#hiddenColumnsDropdown').append(new Option(col.label, col.name));
 						});
 					
 						//Button to add a hidden column (next to dropdown)
-						$('#addColumn').button({icons: { primary: 'ui-icon-circle-plus' },text: false, label: 'Show column'})
-										.click(function (e) {
-											var selectedColumn = $('#hiddenColumnsDropdown').val();
-											reloadGrid('SHOW_COLUMN&column=' + selectedColumn, true);
-											return false;
-										});
+						$('#addColumn').click(function (e) {
+							var selectedColumn = $('#hiddenColumnsDropdown').val();
+							reloadGrid('SHOW_COLUMN&column=' + selectedColumn, true);
+							return false;
+						});
 					}
 					
         			//Add the columnpaging info
@@ -170,6 +143,14 @@ $.fn.extend({
 						$('.next_columnpager', container).addClass('ui-state-disabled');
 						$('.last_columnpager', container).addClass('ui-state-disabled');
 					}	
+					
+					//Remove titlebar
+					$('.ui-jqgrid-titlebar').remove();
+					
+					//Paging controls, bit of a hack but bootstrap and jqGrid bit each other a bit
+    				$('input[type=text].ui-pg-input').css({"width" : "20px"});
+    				$('.ui-pg-selbox').css({"height" : "23px", "width" : "200px"});
+    				$('.ui-jqgrid-pager').css({"height" : "27px"});
        			});	
        		} 
        		
@@ -179,11 +160,7 @@ $.fn.extend({
     				.each(function (index) {
     				
     					if (!config.firstColumnFixed || index > 0) {
-        					$('<button>').css({"width" : "16px", "height": "16px", "position" : "absolute", "top" : "50%", "margin-top" : "-8px","left" : "100%", "margin-left" : "-18px" }).appendTo(this).button({
-            					icons: { primary: "ui-icon-circle-close" },
-            					text: false,
-            					label: 'Hide column'
-        					}).click(function (e) {
+        					var btn = $('<button class="btn">').css({"width" : "16px", "height": "16px", "position" : "absolute", "top" : "50%", "margin-top" : "-8px","left" : "100%", "margin-left" : "-28px" }).appendTo(this).click(function (e) {
         			 			var idPrefix = "jqgh_" + grid[0].id + "_";
                 				var thId = $(e.target).closest('div.ui-jqgrid-sortable')[0].id;
                 		
@@ -194,8 +171,10 @@ $.fn.extend({
                 			
                 					return false;
             					}
-
+								
        						});
+       						$('<i class="icon-remove">').css({"width" : "20px", "height": "16px", "position" : "absolute", "top" : "50%", "margin-top" : "-7px","left" : "100%", "margin-left" : "-18px" }).appendTo(btn);
+       						
        					}
     			});
        				
@@ -280,8 +259,8 @@ $(document).ready(function() {
 				<tr>
     				<td align="left">
     					<div id="hiddenColumnsEditor">
-    						<select id="hiddenColumnsDropdown" role="listbox" class="ui-pg-selbox ui-widget-content ui-corner-all" style="width:200px;float:left;"></select>
-							<button id="addColumn" style="float:left;height:18px;margin-left:4px"></button>
+    						<select id="hiddenColumnsDropdown" role="listbox" class="ui-pg-selbox ui-widget-content ui-corner-all" style="float:left"></select>
+							<button id="addColumn" class="btn" style="float:left;height:23px;margin-left:4px"><i class="icon-plus"></i></button>
 						</div>
     				</td>
     				<td align="center" style="width:200px">
@@ -295,7 +274,7 @@ $(document).ready(function() {
                         				<span class="ui-icon ui-icon-seek-prev"></span>
                     				</td>
                     				<td dir="ltr" style="font-size:10px" align="center">
-										Columns <input class="colpager-input ui-pg-input" type="text" role="textbox" value="1" maxlength="7" size="1" /> of <span class="total-column-pages"></span>
+										Columns <input class="colpager-input ui-pg-input" type="text" role="textbox" value="1" maxlength="7" size="1"/> of <span class="total-column-pages"></span>
 									</td>
                     				<td class="next_columnpager hoverable ui-pg-button ui-corner-all" style="cursor: default;">
                         				<span class="ui-icon ui-icon-seek-next"></span>

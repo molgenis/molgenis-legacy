@@ -31,18 +31,15 @@ public class JQGridConfiguration
 	/** id of pager diff (== toolbar at bottom) */
 	private final String pager;
 
-	/** labels of the columns */
-	private List<String> colNames = new ArrayList<String>();
-
 	/** definitions of the columns */
 	private List<JQGridColModel> colModel = new ArrayList<JQGridColModel>();
 
 	/** current limit = number of rows to show */
-	private int rowNum = 10;
+	private int rowNum = 20;
 
 	/** choices of alternative rowNum values */
 	private Integer[] rowList = new Integer[]
-	{ 10, 20, 30 };
+	{ 20, 30, 40 };
 
 	/** indicates whether we want to show total records from query in page bar */
 	private boolean viewrecords = true;
@@ -59,7 +56,7 @@ public class JQGridConfiguration
 	private String sortorder = "desc";
 
 	/** default height */
-	private String height = "232px";
+	private String height = "466px";
 
 	/** the total column count **/
 	private int totalColumnCount;
@@ -70,8 +67,8 @@ public class JQGridConfiguration
 	/** the current coliumn limit, so the nr of visible columns **/
 	private int colLimit;
 
-	/** list of hidden column names **/
-	private List<String> hiddenColumns;
+	/** list of hidden columns **/
+	private List<JQGridColModel> hiddenColumns = new ArrayList<JQGridColModel>();
 
 	/** Wether the first column is 'fixed', must always be visible **/
 	private boolean firstColumnFixed;
@@ -119,8 +116,6 @@ public class JQGridConfiguration
 		jsonReader.put("repeatitems", false);
 		jsonReader.put("id", idField);
 
-		this.hiddenColumns = tupleTable.getHiddenColumnNames();
-
 		if (tupleTable instanceof FilterableTupleTable)
 		{
 			// sortable = true;
@@ -138,6 +133,12 @@ public class JQGridConfiguration
 		for (final Field f : tupleTable.getColumns())
 		{
 			colModel.add(new JQGridColModel(f));
+		}
+
+		// Set hidden columns, for in dropdown
+		for (Field f : tupleTable.getHiddenColumns())
+		{
+			hiddenColumns.add(new JQGridColModel(f));
 		}
 	}
 

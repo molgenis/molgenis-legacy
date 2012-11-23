@@ -199,6 +199,40 @@ public class CsvWriterTest
 	}
 
 	@Test
+	public void writeValue_String_escaping() throws IOException
+	{
+		StringWriter strWriter = new StringWriter();
+		CsvWriter csvWriter = new CsvWriter(strWriter);
+		csvWriter.setSeparator(',');
+		try
+		{
+			csvWriter.writeValue("s1,s2");
+		}
+		finally
+		{
+			csvWriter.close();
+		}
+		assertEquals("\"s1,s2\"", strWriter.toString());
+	}
+
+	@Test
+	public void writeValue_String_escaping2() throws IOException
+	{
+		StringWriter strWriter = new StringWriter();
+		CsvWriter csvWriter = new CsvWriter(strWriter);
+		csvWriter.setSeparator('\t');
+		try
+		{
+			csvWriter.writeValue("s1,s2");
+		}
+		finally
+		{
+			csvWriter.close();
+		}
+		assertEquals("s1,s2", strWriter.toString());
+	}
+
+	@Test
 	public void writeValue_List() throws IOException
 	{
 		StringWriter strWriter = new StringWriter();
@@ -211,7 +245,7 @@ public class CsvWriterTest
 		{
 			csvWriter.close();
 		}
-		assertEquals("s1|s2|s3", strWriter.toString());
+		assertEquals("s1,s2,s3", strWriter.toString());
 	}
 
 	@Test
@@ -219,7 +253,6 @@ public class CsvWriterTest
 	{
 		StringWriter strWriter = new StringWriter();
 		CsvWriter csvWriter = new CsvWriter(strWriter);
-		csvWriter.setListSeparator('/');
 		try
 		{
 			csvWriter.writeValue(Arrays.asList("s1", "s2", "s3"));
@@ -228,6 +261,23 @@ public class CsvWriterTest
 		{
 			csvWriter.close();
 		}
-		assertEquals("s1/s2/s3", strWriter.toString());
+		assertEquals("s1,s2,s3", strWriter.toString());
+	}
+
+	@Test
+	public void writeValue_List_escaping() throws IOException
+	{
+		StringWriter strWriter = new StringWriter();
+		CsvWriter csvWriter = new CsvWriter(strWriter);
+		csvWriter.setSeparator('\t');
+		try
+		{
+			csvWriter.writeValue(Arrays.asList("s1a\ts1b", "s2", "s3"));
+		}
+		finally
+		{
+			csvWriter.close();
+		}
+		assertEquals("\"s1a\ts1b,s2,s3\"", strWriter.toString());
 	}
 }
