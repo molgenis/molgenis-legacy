@@ -71,7 +71,7 @@ public class HtmlForm extends HtmlWidget
 	}
 
 	@Override
-	public HtmlInput setReadonly(boolean readonly)
+	public HtmlInput<String> setReadonly(boolean readonly)
 	{
 		this.readonly = readonly;
 		return this;
