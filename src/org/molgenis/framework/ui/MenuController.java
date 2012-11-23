@@ -32,6 +32,7 @@ public class MenuController extends SimpleScreenController<MenuModel>
 		this.getModel().setLabel(name);
 	}
 
+	@Override
 	public ScreenView getView()
 	{
 		return new FreemarkerView("MenuView.ftl", this.getModel());
@@ -86,6 +87,7 @@ public class MenuController extends SimpleScreenController<MenuModel>
 		}
 	}
 
+	@Override
 	public MenuModel getModel()
 	{
 		return super.getModel();
@@ -105,6 +107,7 @@ public class MenuController extends SimpleScreenController<MenuModel>
 		return null;
 	}
 
+	@Override
 	public String getCustomHtmlHeaders()
 	{
 		StringBuilder strBuilder = new StringBuilder("<!--custom html headers: ").append(this.getName()).append("-->");

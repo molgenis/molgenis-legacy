@@ -47,6 +47,7 @@ public class NsequenceInput extends TextInput
 		return newvalueBuilder.toString();
 	}
 
+	@Override
 	public String getHtmlValue()
 	{
 		return "<span class=\"seqQual\">" + this.getValue().replace("\n", "<br>") + "</span>";

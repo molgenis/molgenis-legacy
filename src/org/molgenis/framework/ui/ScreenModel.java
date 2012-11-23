@@ -89,6 +89,7 @@ public interface ScreenModel extends Serializable
 			this.TAG = name;
 		}
 
+		@Override
 		public String toString()
 		{
 			return this.TAG;

@@ -11,7 +11,6 @@ import java.net.URL;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.molgenis.framework.server.FrontControllerAuthenticator;
 import org.molgenis.framework.server.FrontControllerAuthenticator.LoginStatus;
 import org.molgenis.framework.server.FrontControllerAuthenticator.LogoutStatus;
@@ -23,13 +22,8 @@ import org.molgenis.framework.server.MolgenisServiceAuthenticationHelper;
 
 public class MolgenisRapiService implements MolgenisService
 {
-	Logger logger = Logger.getLogger(MolgenisRapiService.class);
-
-	private MolgenisContext mc;
-
 	public MolgenisRapiService(MolgenisContext mc)
 	{
-		this.mc = mc;
 	}
 
 	/**

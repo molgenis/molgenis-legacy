@@ -316,7 +316,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	}
 
 	/** Synonym to toHtml */
-	@SuppressWarnings("deprecation")
+	@Override
 	public String render(Tuple params) throws ParseException, HtmlInputException
 	{
 		return this.toHtml(params);
@@ -451,6 +451,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 		this.collapse = collapse;
 	}
 
+	@Override
 	public String toString()
 	{
 		return this.toHtml();
