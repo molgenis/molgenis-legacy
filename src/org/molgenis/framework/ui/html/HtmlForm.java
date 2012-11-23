@@ -64,11 +64,13 @@ public class HtmlForm extends HtmlWidget
 		this.inputs = inputs;
 	}
 
+	@Override
 	public boolean isReadonly()
 	{
 		return readonly;
 	}
 
+	@Override
 	public HtmlInput setReadonly(boolean readonly)
 	{
 		this.readonly = readonly;

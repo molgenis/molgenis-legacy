@@ -668,11 +668,13 @@ public abstract class AbstractDatabase implements Database
 		return fileSource;
 	}
 
+	@Override
 	public Login getLogin()
 	{
 		return login;
 	}
 
+	@Override
 	public void setLogin(Login login)
 	{
 		this.login = login;
@@ -807,6 +809,7 @@ public abstract class AbstractDatabase implements Database
 		return find(entityClass, new QueryRule(Operator.SEARCH, searchString));
 	}
 
+	@Override
 	public <E extends Entity> List<? extends Entity> load(Class<E> superClass, List<E> entities)
 			throws DatabaseException
 	{

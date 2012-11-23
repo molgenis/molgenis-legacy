@@ -26,6 +26,7 @@ public abstract class PluginModel<E extends Entity> extends SimpleScreenControll
 		this.setLabel(this.getName().substring(this.getName().lastIndexOf("_") + 1));
 	}
 
+	@Override
 	public ScreenView getView()
 	{
 		throw new UnsupportedOperationException();
@@ -46,6 +47,7 @@ public abstract class PluginModel<E extends Entity> extends SimpleScreenControll
 
 	}
 
+	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException,
 			Exception
 	{
@@ -152,6 +154,7 @@ public abstract class PluginModel<E extends Entity> extends SimpleScreenControll
 	 * give the template the same name. E.g. if the PluginScreen is
 	 * myplugins.MyPlugin then the template could be myplugins/MyPlugin.ftl.
 	 */
+	@Override
 	public abstract String getViewTemplate();
 
 	/**
@@ -189,12 +192,14 @@ public abstract class PluginModel<E extends Entity> extends SimpleScreenControll
 	}
 
 	/** Shorthand for setMessages(new ScreenMessage("success message",true)); */
+	@Override
 	public void setSuccess(String message)
 	{
 		this.setMessages(new ScreenMessage(message, true));
 	}
 
 	/** Shorthand for setMessages(new ScreenMessage("succes message",false)); */
+	@Override
 	public void setError(String message)
 	{
 		this.setMessages(new ScreenMessage(message, false));

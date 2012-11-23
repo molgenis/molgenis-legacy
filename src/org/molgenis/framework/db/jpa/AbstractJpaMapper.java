@@ -52,6 +52,7 @@ public abstract class AbstractJpaMapper<E extends Entity> extends AbstractMapper
 
 	private final static Logger logger = Logger.getLogger(AbstractJpaMapper.class);
 
+	@Override
 	public int count(QueryRule... rules) throws DatabaseException
 	{
 		TypedQuery<Long> query = JPAQueryGeneratorUtil.createCount(getDatabase(), getEntityClass(), this, getDatabase()
@@ -68,6 +69,7 @@ public abstract class AbstractJpaMapper<E extends Entity> extends AbstractMapper
 		return query.getResultList();
 	}
 
+	@Override
 	public E findById(Object id)
 	{
 		return getDatabase().getEntityManager().find(getEntityClass(), id);

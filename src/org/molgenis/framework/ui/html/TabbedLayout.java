@@ -20,6 +20,7 @@ public class TabbedLayout extends MultipanelLayout
 		super.add(new HyperlinkInput(name, hyperlink));
 	}
 
+	@Override
 	public String render()
 	{
 		Map<String, HtmlElement> elements = this.getElements();

@@ -81,6 +81,7 @@ public class XrefInput<E extends Entity> extends AbstractRefInput<E>
 		return new XrefInput(params).render();
 	}
 
+	@Override
 	public void set(Tuple t) throws HtmlInputException
 	{
 		super.set(t);

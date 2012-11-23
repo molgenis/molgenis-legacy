@@ -87,6 +87,7 @@ public class FileInput extends HtmlInput<Object>
 	/**
 	 * {@inheritDoc}. Extended to show download button.
 	 */
+	@Override
 	public String getValue()
 	{
 		if (!super.getValue().isEmpty()) return super.getValue()
