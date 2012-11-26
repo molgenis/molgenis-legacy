@@ -1,5 +1,6 @@
 package org.molgenis.framework.db.jpa;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
@@ -178,15 +179,15 @@ public class JpaDatabase extends AbstractDatabase
 	}
 
 	@Override
-	public void close() throws DatabaseException
+	public void close() throws IOException
 	{
 		try
 		{
 			em.close();
 		}
-		catch (Exception e)
+		catch (IllegalStateException e)
 		{
-			throw new DatabaseException(e);
+			throw new IOException(e);
 		}
 	}
 

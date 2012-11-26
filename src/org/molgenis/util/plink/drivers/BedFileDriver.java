@@ -45,39 +45,44 @@ public class BedFileDriver
 	public BedFileDriver(File bedFile) throws Exception
 	{
 		RandomAccessFile raf = new RandomAccessFile(bedFile, "r");
-		this.bedFile = bedFile;
-
-		byte mn1 = raf.readByte();
-		byte mn2 = raf.readByte();
-
-		if (mn1 == 108 && mn2 == 27) // tested, bit code 01101100 00011011
+		try
 		{
-			// System.out.println("Plink magic number valid");
-		}
-		else
-		{
-			throw new Exception("Invalid Plink magic number");
-		}
+			this.bedFile = bedFile;
 
-		byte bmode = raf.readByte();
+			byte mn1 = raf.readByte();
+			byte mn2 = raf.readByte();
 
-		if (bmode == 1) // tested, bit code 00000001
-		{
-			// System.out.println("mode 1: SNP-major");
-		}
-		else if (bmode == 0) // assumed... bit code 00000000
-		{
-			// System.out.println("mode 0: individual-major");
-		}
-		else
-		{
-			throw new Exception("Mode not recognized: " + bmode);
-		}
+			if (mn1 == 108 && mn2 == 27) // tested, bit code 01101100 00011011
+			{
+				// System.out.println("Plink magic number valid");
+			}
+			else
+			{
+				throw new Exception("Invalid Plink magic number");
+			}
 
-		this.mode = bmode;
-		this.nrOfElements = (raf.length() - 3) * 4;
+			byte bmode = raf.readByte();
 
-		raf.close();
+			if (bmode == 1) // tested, bit code 00000001
+			{
+				// System.out.println("mode 1: SNP-major");
+			}
+			else if (bmode == 0) // assumed... bit code 00000000
+			{
+				// System.out.println("mode 0: individual-major");
+			}
+			else
+			{
+				throw new Exception("Mode not recognized: " + bmode);
+			}
+
+			this.mode = bmode;
+			this.nrOfElements = (raf.length() - 3) * 4;
+		}
+		finally
+		{
+			raf.close();
+		}
 	}
 
 	/**

@@ -25,7 +25,7 @@ public interface TupleTable extends Iterable<Tuple>
 
 	public void showColumn(String columnName);
 
-	public List<String> getHiddenColumnNames();
+	public List<Field> getHiddenColumns();
 
 	/** Wether the first column is 'fixed', must always be visible **/
 	public void setFirstColumnFixed(boolean firstColumnFixed);

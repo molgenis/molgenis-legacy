@@ -57,7 +57,7 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 	{
 		Vector<String> headers = new Vector<String>();
 <#list entity.allFields as field>
-	<#if !field.system>
+	<#if !field.system && !field.hidden>
 		headers.add("${field.getLabel()}");
 	</#if>
 </#list>

@@ -187,9 +187,9 @@ public class EditableTableDecorator implements FilterableTupleTable
 	}
 
 	@Override
-	public List<String> getHiddenColumnNames()
+	public List<Field> getHiddenColumns()
 	{
-		return decoratedTable.getHiddenColumnNames();
+		return decoratedTable.getHiddenColumns();
 	}
 
 	@Override

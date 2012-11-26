@@ -234,7 +234,7 @@ public class JQGridView extends HtmlWidget
 					{
 						residue = 1;
 					}
-					final int totalPages = (int) Math.ceil(rowCount / (double) postData.getRows()) + residue;
+					final int totalPages = (int) Math.floor(rowCount / (double) postData.getRows()) + residue;
 
 					// update page
 					postData.setPage(Math.min(postData.getPage(), totalPages));

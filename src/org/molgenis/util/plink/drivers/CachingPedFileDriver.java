@@ -1,6 +1,7 @@
 package org.molgenis.util.plink.drivers;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,41 +11,54 @@ import org.molgenis.util.plink.datatypes.PedEntry;
 
 public class CachingPedFileDriver extends PedFileDriver
 {
-	private List<PedEntry> cache;
 	private List<PedEntry> entries;
+	private List<PedEntry> filteredEntries;
 
-	public CachingPedFileDriver(File pedFile) throws Exception
+	public CachingPedFileDriver(File pedFile)
 	{
-		super(pedFile);
-		this.cache = super.getAllEntries();
-		this.entries = new ArrayList<PedEntry>(cache);
+		super(pedFile, DEFAULT_FIELD_SEPARATOR);
 	}
 
-	public void setFilters(List<QueryRule> rules, List<String> snpNames)
+	public CachingPedFileDriver(File pedFile, char separator)
 	{
-		this.entries = new ArrayList<PedEntry>(cache);
+		super(pedFile, separator);
+	}
+
+	public void setFilters(List<QueryRule> rules, List<String> snpNames) throws IOException
+	{
+		// lazy initialization
+		if (entries == null) entries = super.getAllEntries();
+		this.filteredEntries = new ArrayList<PedEntry>(entries);
 
 		for (QueryRule rule : rules)
 		{
-			entries = filter(entries, rule, snpNames);
+			filteredEntries = filter(filteredEntries, rule, snpNames);
 		}
-
-		nrOfElements = entries.size();
 	}
 
 	@Override
-	public List<PedEntry> getAllEntries() throws Exception
+	public List<PedEntry> getAllEntries() throws IOException
 	{
-		return entries;
+		if (filteredEntries != null) return filteredEntries;
+		else
+		{
+			if (entries == null) entries = super.getAllEntries();
+			return entries;
+		}
 	}
 
 	@Override
-	public List<PedEntry> getEntries(long from, long to) throws Exception
+	public List<PedEntry> getEntries(long from, long to) throws IOException
 	{
 		return getAllEntries().subList((int) from, (int) to);
 	}
 
-	/** for now only simple single queries are implemented **/
+	@Override
+	public long getNrOfElements() throws IOException
+	{
+		return getAllEntries().size();
+	}
+
 	private List<PedEntry> filter(List<PedEntry> entries, QueryRule filter, List<String> snpNames)
 	{
 		List<PedEntry> filtered = new ArrayList<PedEntry>();
@@ -72,19 +86,20 @@ public class CachingPedFileDriver extends PedFileDriver
 					filtered.add(entry);
 				}
 				else if (filter.getField().equals("Sex")
-						&& new Byte(entry.getSex()).toString().equals(filter.getValue()))
+						&& Byte.valueOf(entry.getSex()).toString().equals(filter.getValue()))
 				{
 					filtered.add(entry);
 				}
 				else if (filter.getField().equals("Phenotype")
-						&& new Double(entry.getPhenotype()).toString().equals(filter.getValue()))
+						&& Double.valueOf(entry.getPhenotype()).toString().equals(filter.getValue()))
 				{
 					filtered.add(entry);
 				}
 				else
 				{
 					boolean found = false;
-					for (int i = 0; i < snpNames.size() && !found; i++)
+					int size = snpNames.size();
+					for (int i = 0; i < size && !found; i++)
 					{
 						if (snpNames.get(i).equals(filter.getField())
 								&& entry.getBialleles().get(i).toString().equals(filter.getValue()))
