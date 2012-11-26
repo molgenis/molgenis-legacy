@@ -135,6 +135,7 @@ public class DateInput extends HtmlInput<Date>
 	}
 
 	// tohtml
+	@Override
 	public String toHtml()
 	{
 		if (uiToolkit == UiToolkit.JQUERY)
@@ -198,6 +199,7 @@ public class DateInput extends HtmlInput<Date>
 		return result;
 	}
 
+	@Override
 	public String getValue()
 	{
 		return this.getValue("MMMM d, yyyy");

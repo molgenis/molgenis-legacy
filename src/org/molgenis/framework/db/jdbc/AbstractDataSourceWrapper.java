@@ -13,6 +13,7 @@ public abstract class AbstractDataSourceWrapper implements DataSourceWrapper
 {
 	private static final Logger logger = Logger.getLogger(AbstractDataSourceWrapper.class);
 
+	@Override
 	public Connection getConnection() throws NamingException, SQLException
 	{
 		return this.getDataSource().getConnection();

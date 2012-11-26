@@ -150,6 +150,7 @@ public class ResultSetTuple extends SimpleTuple
 	/**
 	 * @deprecated Unsupported operation for a JDBCTuple
 	 */
+	@Deprecated
 	@Override
 	public void set(String columnName, Object value)
 	{
@@ -160,6 +161,7 @@ public class ResultSetTuple extends SimpleTuple
 	/**
 	 * @deprecated Unsupported operation for a JDBCTuple
 	 */
+	@Deprecated
 	@Override
 	public void set(int columnIndex, Object value)
 	{
@@ -171,6 +173,7 @@ public class ResultSetTuple extends SimpleTuple
 	/**
 	 * @deprecated Unsupported operation for a JDBCTuple
 	 */
+	@Deprecated
 	@Override
 	public void set(Object[] values)
 	{
@@ -421,6 +424,7 @@ public class ResultSetTuple extends SimpleTuple
 	/**
 	 * @deprecated Unsupported operation for a JDBCTuple
 	 */
+	@Deprecated
 	@Override
 	public List<?> getList(String columnName)
 	{
@@ -431,6 +435,7 @@ public class ResultSetTuple extends SimpleTuple
 	/**
 	 * @deprecated Unsupported operation for a JDBCTuple
 	 */
+	@Deprecated
 	@Override
 	public List<?> getList(int columnIndex)
 	{

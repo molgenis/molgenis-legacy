@@ -90,6 +90,7 @@ public class ScreenMessage
 	 * 
 	 * @return The string representation of this message.
 	 */
+	@Override
 	public String toString()
 	{
 		return getText() + ":" + (isSuccess() ? "success" : "failed");
