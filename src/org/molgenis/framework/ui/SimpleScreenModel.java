@@ -232,7 +232,7 @@ public abstract class SimpleScreenModel implements ScreenModel, Serializable
 
 		// put the command in the menu
 		menubar.get(command.getMenu()).addCommand(command);
-		this.logger.debug("added action " + command.getName());
+		logger.debug("added action " + command.getName());
 	}
 
 	public ScreenCommand getCommand(String commandID)

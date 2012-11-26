@@ -48,6 +48,7 @@ public class OnoffInput extends HtmlInput<Boolean>
 	/**
 	 * 
 	 */
+	@Override
 	public String toHtml()
 	{
 		if (this.isHidden())
@@ -65,6 +66,7 @@ public class OnoffInput extends HtmlInput<Boolean>
 		return html;
 	}
 
+	@Override
 	public String getHtmlValue()
 	{
 		String value = (getObject() != null && getObject().equals(true)) ? "yes" : "no";

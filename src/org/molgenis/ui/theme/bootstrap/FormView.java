@@ -33,7 +33,7 @@ public class FormView implements TwoStepView<Form>
 	private String renderDefault(Form element, Theme theme) throws RenderException
 	{
 		StringBuilder strBuilder = new StringBuilder();
-		for (MolgenisComponent c : element.getComponents())
+		for (MolgenisComponent<?> c : element.getComponents())
 		{
 			strBuilder.append(theme.render(c));
 		}

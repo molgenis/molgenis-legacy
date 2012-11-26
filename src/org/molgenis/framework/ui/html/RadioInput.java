@@ -43,6 +43,7 @@ public class RadioInput extends OptionInput<String>
 		super(t);
 	}
 
+	@Override
 	public String toHtml()
 	{
 		if (this.isHidden())
