@@ -16,7 +16,6 @@ import java.util.zip.DataFormatException;
  */
 public class CsvFileReader extends CsvBufferedReaderMultiline
 {
-	private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
 	/** Input comma-separated value file */
 	private File file;
 	/** Input file encoding */
@@ -32,7 +31,7 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	 */
 	public CsvFileReader(File file) throws IOException
 	{
-		this(file, CHARSET_UTF8, true);
+		this(file, CSV_DEFAULT_CHARSET, true);
 	}
 
 	/**
@@ -47,7 +46,7 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	 */
 	public CsvFileReader(File file, String blockStart) throws IOException
 	{
-		this(file, CHARSET_UTF8, true, blockStart);
+		this(file, CSV_DEFAULT_CHARSET, true, blockStart);
 	}
 
 	/**
@@ -62,7 +61,7 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	 */
 	public CsvFileReader(File file, boolean hasHeader) throws IOException
 	{
-		this(file, CHARSET_UTF8, hasHeader);
+		this(file, CSV_DEFAULT_CHARSET, hasHeader);
 	}
 
 	/**
