@@ -16,6 +16,7 @@ public class EditSelectedInput extends HtmlInput<Object>
 		this.input = input;
 	}
 
+	@Override
 	public String getLabel()
 	{
 		return input.getLabel();

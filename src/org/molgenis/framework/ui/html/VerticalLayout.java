@@ -2,6 +2,7 @@ package org.molgenis.framework.ui.html;
 
 public class VerticalLayout extends FlowLayout
 {
+	@Override
 	public String render()
 	{
 		StringBuilder strBuilder = new StringBuilder();

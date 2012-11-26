@@ -257,9 +257,6 @@ public interface Query<E extends Entity>
 	/** Retrieve array of current QueryRules in this query */
 	public QueryRule[] getRules();
 
-	/** Pretty print the query rules */
-	public String toString();
-
 	/** Add rules to the query */
 	public void addRules(QueryRule... addRules);
 

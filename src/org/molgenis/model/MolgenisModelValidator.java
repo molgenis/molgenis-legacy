@@ -720,7 +720,6 @@ public class MolgenisModelValidator
 				if (entity.getAllKeys().size() < 2)
 				{
 					// check references
-					boolean ref = false;
 					for (Entity otherEntity : model.getEntities())
 					{
 						for (Field f : otherEntity.getAllFields())

@@ -54,6 +54,7 @@ public class DownloadAllXlsCommand<E extends Entity> extends SimpleCommand
 		return ScreenModel.Show.SHOW_MAIN;
 	}
 
+	@Override
 	public List<ActionInput> getActions()
 	{
 		// TODO Auto-generated method stub
