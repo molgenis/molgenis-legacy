@@ -71,6 +71,7 @@ public class CodeInput extends StringInput
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
 	public String getCustomHtmlHeaders()
 	{
 		// borrow style from mce
@@ -118,6 +119,7 @@ public class CodeInput extends StringInput
 		return this.parser.getCssPath();
 	}
 
+	@Override
 	public String toHtml()
 	{
 		Map<String, Object> parameters = new TreeMap<String, Object>();

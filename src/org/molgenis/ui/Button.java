@@ -5,7 +5,7 @@ package org.molgenis.ui;
  * 
  * TODO: also support other events such as hyperlinks, free javascript?
  */
-public class Button extends MolgenisComponent
+public class Button extends MolgenisComponent<Button>
 {
 	private Icon icon;
 	private String action;

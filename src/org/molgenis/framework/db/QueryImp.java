@@ -86,6 +86,7 @@ public class QueryImp<E extends Entity> implements Query<E>
 		return this;
 	}
 
+	@Override
 	public Query<E> subQuery(SubQueryRule subQueryRule)
 	{
 		rules.add(subQueryRule);
@@ -326,6 +327,7 @@ public class QueryImp<E extends Entity> implements Query<E>
 		return this;
 	}
 
+	@Override
 	public void removeRule(QueryRule ruleToBeRemoved)
 	{
 		try

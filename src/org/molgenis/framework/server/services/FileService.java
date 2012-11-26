@@ -24,13 +24,8 @@ import Acme.Serve.FileServlet;
 
 public class FileService extends FileServlet implements MolgenisService
 {
-
-	private MolgenisContext mc;
-
 	public FileService(MolgenisContext mc) throws ServletException
 	{
-		this.mc = mc;
-
 		// needed to pass MIME type mapping from webserver to servlet!
 		super.init(new ServeConfig(mc.getServletContext(), null, "/"));
 	}
@@ -49,7 +44,5 @@ public class FileService extends FileServlet implements MolgenisService
 		{
 			throw new IOException(e);
 		}
-
 	}
-
 }
