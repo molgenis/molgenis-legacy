@@ -1088,8 +1088,8 @@ public class MolgenisModelParser
 			String name = element.getAttribute("name").trim();
 			String namespace = model.getName();
 			String label = element.getAttribute("label");
-
 			String group = element.getAttribute("group");
+			String groupRead = element.getAttribute("groupRead");
 
 			// check required properties
 			if ((name == null || name.isEmpty()) && !element.getTagName().equals("form"))
@@ -1106,13 +1106,26 @@ public class MolgenisModelParser
 				group = null; // TODO: Discuss with Erik/Morris/Robert!
 			}
 
+			if (groupRead.isEmpty())
+			{
+				groupRead = null; // TODO: Discuss with Erik/Morris/Robert!
+			}
+
 			// add this element to the meta-model
 			if (element.getTagName().equals("menu"))
 			{
 				Menu menu = new Menu(name, parent);
 				menu.setLabel(label);
 				menu.setGroup(group);
+				menu.setGroupRead(groupRead);
 				menu.setNamespace(namespace);
+
+				if (group != null && groupRead != null && group.equals(groupRead))
+				{
+					throw new MolgenisModelException(
+							"You cannot assign both read/write and read rights on a single menu");
+				}
+
 				if (element.getAttribute("position") == null || !element.getAttribute("position").isEmpty())
 				{
 					menu.setPosition(Menu.Position.getPosition(element.getAttribute("position")));
@@ -1129,6 +1142,13 @@ public class MolgenisModelParser
 				Form form = new Form(name, parent);
 				form.setLabel(label);
 				form.setGroup(group);
+				form.setGroupRead(groupRead);
+
+				if (group != null && groupRead != null && group.equals(groupRead))
+				{
+					throw new MolgenisModelException(
+							"You cannot assign both read/write and read rights on a single form");
+				}
 
 				/** Optional custom header for the selected form screen */
 				String header = element.getAttribute("header");
@@ -1312,6 +1332,14 @@ public class MolgenisModelParser
 						element.getAttribute("idfield"), element.getAttribute("labelfield"));
 				tree.setLabel(label);
 				tree.setGroup(group);
+				tree.setGroupRead(groupRead);
+
+				if (group != null && groupRead != null && group.equals(groupRead))
+				{
+					throw new MolgenisModelException(
+							"You cannot assign both read/write and read rights on a single tree");
+				}
+
 				tree.setNamespace(namespace);
 				new_parent = tree;
 
@@ -1342,6 +1370,14 @@ public class MolgenisModelParser
 				Plugin plugin = new Plugin(name, parent, element.getAttribute("type"));
 				plugin.setLabel(label);
 				plugin.setGroup(group);
+				plugin.setGroupRead(groupRead);
+
+				if (group != null && groupRead != null && group.equals(groupRead))
+				{
+					throw new MolgenisModelException(
+							"You cannot assign both read/write and read rights on a single plugin");
+				}
+
 				plugin.setNamespace(namespace);
 				new_parent = plugin;
 
