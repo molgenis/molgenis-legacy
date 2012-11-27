@@ -20,7 +20,7 @@ import freemarker.template.Template;
 
 public class ObjectModelDocGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(ObjectModelDocGen.class);
+	private static final Logger logger = Logger.getLogger(ObjectModelDocGen.class);
 
 	@Override
 	public String getDescription()

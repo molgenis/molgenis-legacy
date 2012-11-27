@@ -20,10 +20,8 @@ import org.molgenis.util.Tuple;
  * 
  * @param <E>
  */
-
 public class GalaxyCommand extends SimpleCommand
 {
-
 	public GalaxyCommand(String name, ScreenController<?> parentController)
 	{
 		super(name, parentController);
@@ -35,11 +33,8 @@ public class GalaxyCommand extends SimpleCommand
 		{
 			this.setLabel("Send Selected to Galaxy");
 		}
-		// this.setLabel("Send to Galaxy");
 		this.setIcon("generated-res/img/upload2galaxy.png");
 		this.setMenu("File");
-		// this.setDialog(false);
-
 	}
 
 	// TODO: Get proper UID.
@@ -103,58 +98,12 @@ public class GalaxyCommand extends SimpleCommand
 	}
 
 	@Override
-	// public ScreenModel.Show handleRequest(Database db, Tuple request,
-	// PrintWriter downloadStream) {
 	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream)
 	{
 		logger.debug("galaxy button clicked: " + this.getController().getApplicationController().getGalaxyUrl());
 		appLoc = ((MolgenisRequest) request).getAppLocation();
 		return ScreenModel.Show.SHOW_MAIN;
 	}
-
-	// @SuppressWarnings("unchecked")
-	// @Override
-	//
-	// public ScreenModel.Show handleRequest(Database db, Tuple request,
-	// PrintWriter csvDownload)
-	// throws ParseException, DatabaseException, IOException {
-	//
-	// public ScreenModel.Show handleRequest(Database db, Tuple request,
-	// OutputStream downloadStream)
-	// {
-	// logger.debug("galaxy button clicked: "+this.getController().getApplicationController().getGalaxyUrl());
-	// logger.error(this.getName());
-	//
-	// FormModel<?> view = this.getFormScreen();
-	//
-	// Object ids = request.getList(FormModel.INPUT_SELECTED);
-	// List<Object> records = new ArrayList<Object>();
-	//
-	// if (ids != null)
-	// {
-	// if (ids instanceof List)
-	// {
-	// records = (List<Object>) ids;
-	// }
-	// else
-	// records.add(ids);
-	// }
-	//
-	// if (records.size() == 0)
-	// {
-	// csvDownload.println("No records selected.");
-	// return ScreenModel.Show.SHOW_MAIN;
-	// }
-	//
-	// List<String> fieldsToExport =
-	// ((FormController<?>)this.getController()).getVisibleColumnNames();
-	//
-	// // watch out, the "IN" operator expects an Object[]
-	// db.find(view.getController().getEntityClass(), new
-	// CsvWriter(csvDownload), fieldsToExport,
-	// new QueryRule("id", Operator.IN, records));
-	// return ScreenModel.Show.SHOW_MAIN;
-	// }
 
 	@Override
 	public boolean isVisible()
@@ -167,5 +116,4 @@ public class GalaxyCommand extends SimpleCommand
 		}
 		return false;
 	}
-
 }

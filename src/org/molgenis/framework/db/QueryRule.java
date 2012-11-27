@@ -363,8 +363,8 @@ public class QueryRule
 		}
 		else
 		{
-			strBuilder.append(this.getField() == null ? "" : (this.getField() + " "));
-			strBuilder.append(this.getOperator()).append(value == null ? "" : " '" + value + "'");
+			strBuilder.append(this.getField() == null ? " " : (this.getField() + " "));
+			strBuilder.append(this.getOperator()).append(value == null ? " " : " '" + value + "'");
 		}
 		return strBuilder.toString();
 	}

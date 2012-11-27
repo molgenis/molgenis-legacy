@@ -36,6 +36,7 @@ public class PythonDataTypeGen extends ForEachEntityGenerator
 		return "Generates Python classes for each entity.";
 	}
 
+	@Override
 	public String getType()
 	{
 		return "";

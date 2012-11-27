@@ -1,62 +1,70 @@
 package org.molgenis.util.plink.writers;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.util.List;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
-import org.molgenis.util.CsvFileWriter;
+import org.molgenis.util.plink.PlinkFileParser;
 import org.molgenis.util.plink.datatypes.MapEntry;
 
 /**
  * Write MAP file entries to a selected location.
  */
-public class MapFileWriter
+public class MapFileWriter implements PlinkFileParser
 {
-	private CsvFileWriter writer;
+	private BufferedWriter writer;
+	private char separator;
 
-	public MapFileWriter(File mapFile) throws Exception
+	public MapFileWriter(File mapFile) throws IOException
 	{
-		writer = new CsvFileWriter(mapFile);
-		writer.setHeaders(MapEntry.mapHeader());
-		writer.setSeparator(" ");
+		this(mapFile, DEFAULT_FIELD_SEPARATOR);
 	}
 
-	/**
-	 * Close the underlying writer.
-	 */
-	public void close()
+	public MapFileWriter(File mapFile, char separator) throws IOException
 	{
-		writer.close();
+		if (mapFile == null) throw new IllegalArgumentException("file is null");
+		this.writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mapFile), FILE_ENCODING));
+		this.separator = separator;
 	}
 
 	/**
 	 * Write a single entry.
+	 * 
+	 * @throws IOException
 	 */
-	public void writeSingle(MapEntry map)
+	public void write(MapEntry map) throws IOException
 	{
-		writer.writeRow(MapEntry.mapToTuple(map));
+		writer.write(map.getChromosome());
+		writer.write(separator);
+		writer.write(map.getSNP());
+		writer.write(separator);
+		writer.write(Double.toString(map.getcM()));
+		writer.write(separator);
+		writer.write(Long.toString(map.getBpPos()));
+		writer.write(LINE_SEPARATOR);
 	}
 
 	/**
 	 * Write multiple entries in order.
+	 * 
+	 * @throws IOException
 	 */
-	public void writeMulti(List<MapEntry> maps)
+	public void write(Iterable<MapEntry> maps) throws IOException
 	{
 		for (MapEntry map : maps)
-		{
-			writer.writeRow(MapEntry.mapToTuple(map));
-		}
+			write(map);
 	}
 
 	/**
-	 * Write all entries and close the writer.
+	 * Close the underlying writer.
+	 * 
+	 * @throws IOException
 	 */
-	public void writeAll(List<MapEntry> maps)
+	@Override
+	public void close() throws IOException
 	{
-		for (MapEntry map : maps)
-		{
-			writer.writeRow(MapEntry.mapToTuple(map));
-		}
-		writer.close();
+		if (writer != null) writer.close();
 	}
-
 }

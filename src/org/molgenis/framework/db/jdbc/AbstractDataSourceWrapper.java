@@ -11,8 +11,9 @@ import org.apache.log4j.Logger;
 
 public abstract class AbstractDataSourceWrapper implements DataSourceWrapper
 {
-	private static transient final Logger logger = Logger.getLogger(AbstractDataSourceWrapper.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(AbstractDataSourceWrapper.class);
 
+	@Override
 	public Connection getConnection() throws NamingException, SQLException
 	{
 		return this.getDataSource().getConnection();

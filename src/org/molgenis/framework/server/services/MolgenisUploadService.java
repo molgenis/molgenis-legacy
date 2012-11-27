@@ -1,7 +1,6 @@
 package org.molgenis.framework.server.services;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -31,7 +30,7 @@ import org.molgenis.util.TupleWriter;
 
 public class MolgenisUploadService implements MolgenisService
 {
-	Logger logger = Logger.getLogger(MolgenisDownloadService.class);
+	private static final Logger logger = Logger.getLogger(MolgenisDownloadService.class);
 
 	/** the name of the datatype input */
 	public static final String INPUT_DATATYPE = "data_type_input";
@@ -46,11 +45,8 @@ public class MolgenisUploadService implements MolgenisService
 	/** indicating wether uploads should return added data */
 	public static final String INPUT_SILENT = "data_silent";
 
-	// private MolgenisContext mc;
-
 	public MolgenisUploadService(MolgenisContext mc)
 	{
-		// this.mc = mc;
 	}
 
 	@Override
@@ -220,7 +216,7 @@ public class MolgenisUploadService implements MolgenisService
 		if (action.equals("ADD"))
 		{
 			File temp = File.createTempFile("molgenis", "tab");
-			TupleWriter writer = new CsvWriter(new PrintWriter(new BufferedWriter(new FileWriter(temp))));
+			TupleWriter writer = new CsvWriter(new FileWriter(temp));
 			if (req.getObject(INPUT_SILENT) != null && req.getBool(INPUT_SILENT) == true)
 			{
 				writer.close();

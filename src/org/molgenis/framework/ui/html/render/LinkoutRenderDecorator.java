@@ -28,6 +28,7 @@ public class LinkoutRenderDecorator implements RenderDecorator
 		mypatterns.put("(http|https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", "");
 	}
 
+	@Override
 	public String render(String in)
 	{
 		String out = in;

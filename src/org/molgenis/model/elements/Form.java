@@ -36,6 +36,7 @@ public class Form extends UISchema
 	/**
 	 * 
 	 */
+	@Override
 	public Type getType()
 	{
 		return Type.FORM;
@@ -393,6 +394,7 @@ public class Form extends UISchema
 		this.compactView = compactFields;
 	}
 
+	@Override
 	public String toString()
 	{
 		StringBuilder commandsBuilder = new StringBuilder();

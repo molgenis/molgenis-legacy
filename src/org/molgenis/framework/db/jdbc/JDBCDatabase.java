@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -48,7 +49,7 @@ import org.molgenis.framework.db.ExampleData;
 public class JDBCDatabase extends AbstractDatabase
 {
 	/** Logger for this database */
-	private static final transient Logger logger = Logger.getLogger(JDBCDatabase.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(JDBCDatabase.class);
 
 	/**
 	 * Construct a JDBCDatabase using this connection alone. There is no
@@ -213,7 +214,7 @@ public class JDBCDatabase extends AbstractDatabase
 		return inTransaction;
 	}
 
-	// @Override
+	@Override
 	public void commitTx() throws DatabaseException
 	{
 		try
@@ -261,7 +262,7 @@ public class JDBCDatabase extends AbstractDatabase
 	}
 
 	@Override
-	public void close() throws DatabaseException
+	public void close() throws IOException
 	{
 		closeConnection();
 	}
@@ -292,6 +293,7 @@ public class JDBCDatabase extends AbstractDatabase
 	}
 
 	/** open the connection (if not already) */
+	@Override
 	public Connection getConnection() throws DatabaseException
 	{
 		if (source == null)
@@ -395,8 +397,7 @@ public class JDBCDatabase extends AbstractDatabase
 	@Override
 	public void flush()
 	{
-		// TODO Auto-generated method stub
-
+		// noop
 	}
 
 	@Override
@@ -433,27 +434,23 @@ public class JDBCDatabase extends AbstractDatabase
 			StringBuilder create_tables_sqlBuilder = new StringBuilder();
 
 			InputStream fis = this.getClass().getResourceAsStream(filename);
-			BufferedReader in = new BufferedReader(new InputStreamReader(fis));
-			String line;
-			while ((line = in.readLine()) != null)
+			BufferedReader in = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
+			try
 			{
-				create_tables_sqlBuilder.append(line).append('\n');
+				String line;
+				while ((line = in.readLine()) != null)
+				{
+					create_tables_sqlBuilder.append(line).append('\n');
+				}
 			}
-			in.close();
-
+			finally
+			{
+				in.close();
+			}
 			stmt = conn.createStatement();
-			int i = 0;
 			for (String command : create_tables_sqlBuilder.toString().split(";"))
 			{
-				if (command.trim().length() > 0)
-				{
-					stmt.executeUpdate(command + ";");
-					if (i++ % 10 == 0)
-					{
-						// System.out.print(".");
-					}
-
-				}
+				if (command.trim().length() > 0) stmt.executeUpdate(command + ";");
 			}
 		}
 		catch (Exception e)

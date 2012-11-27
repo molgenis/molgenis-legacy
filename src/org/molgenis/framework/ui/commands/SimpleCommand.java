@@ -22,10 +22,6 @@ public abstract class SimpleCommand extends SimpleScreenModel implements ScreenC
 {
 	private static final long serialVersionUID = -3289941539731301135L;
 
-	/** Logger */
-	// private static final transient Logger logger =
-	// Logger.getLogger(SimpleCommand.class.getSimpleName());
-
 	/** Internal name of this command (unique within the screen) */
 	private String name;
 
@@ -75,6 +71,7 @@ public abstract class SimpleCommand extends SimpleScreenModel implements ScreenC
 	/**
 	 * Get the javascript needed. If not provided it will be auto-generated.
 	 */
+	@Override
 	public String getJavaScriptAction()
 	{
 		if (onClickJavascript == null)
@@ -149,6 +146,7 @@ public abstract class SimpleCommand extends SimpleScreenModel implements ScreenC
 	 * 
 	 * @throws DatabaseException
 	 */
+	@Override
 	public abstract List<HtmlInput<?>> getInputs() throws DatabaseException;
 
 	// GETTERS AND SETTERS BELOW
@@ -283,6 +281,7 @@ public abstract class SimpleCommand extends SimpleScreenModel implements ScreenC
 	/**
 	 * Default view name = 'SimpleCommand'
 	 */
+	@Override
 	public String getMacro()
 	{
 		return ScreenCommand.class.getSimpleName();

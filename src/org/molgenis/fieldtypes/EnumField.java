@@ -89,6 +89,7 @@ public class EnumField extends FieldType
 		throw new UnsupportedOperationException("Unable to cast enum type");
 	}
 
+	@Override
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.ENUM;

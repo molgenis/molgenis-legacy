@@ -16,7 +16,7 @@ import org.molgenis.services.pubmed.PubmedArticleSet;
 
 public class PubmedService
 {
-	private static final transient Logger logger = Logger.getLogger(PubmedService.class);
+	private static final Logger logger = Logger.getLogger(PubmedService.class);
 
 	public List<PubmedArticle> searchPubmedArticles(String term) throws MalformedURLException, JAXBException,
 			IOException

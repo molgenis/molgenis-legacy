@@ -5,6 +5,7 @@ import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.FileUtils;
@@ -161,6 +162,21 @@ public class TextFileUtilsTest
 		{
 			FileUtils.write(file0, "a\r\nb\r\n", Charset.forName("UTF-8"));
 			assertEquals(1, TextFileUtils.getAmountOfNewlinesAtFileEnd(file0));
+		}
+		finally
+		{
+			file0.delete();
+		}
+	}
+
+	@Test
+	public void testGetNumberOfNonEmptyLines() throws IOException
+	{
+		File file0 = File.createTempFile("TextFileUtilsTest_file0", null);
+		try
+		{
+			FileUtils.write(file0, "\nabc\n\ndef\nghi\n\n\n", Charset.forName("UTF-8"));
+			assertEquals(3, TextFileUtils.getNumberOfNonEmptyLines(file0, Charset.forName("UTF-8")));
 		}
 		finally
 		{

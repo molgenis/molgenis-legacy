@@ -25,7 +25,7 @@ import org.molgenis.util.Entity;
 public class LimitOffsetPager<E extends Entity> extends AbstractPager<E>
 {
 	private static final long serialVersionUID = -1859965580920588085L;
-	private static transient final Logger logger = Logger.getLogger(LimitOffsetPager.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(LimitOffsetPager.class);
 
 	public LimitOffsetPager(Class<E> entityClass, String defaultOrderByField) throws DatabaseException
 	{
@@ -41,6 +41,7 @@ public class LimitOffsetPager<E extends Entity> extends AbstractPager<E>
 	 * 
 	 * @throws ParseException
 	 */
+	@Override
 	public void refresh(Database db) throws DatabaseException
 	{
 		// don't use getters and setters here, or everything refreshes like

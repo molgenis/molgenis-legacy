@@ -27,7 +27,7 @@ public class PrimaryKeyPager<E extends Entity> extends AbstractPager<E>
 {
 	private static final long serialVersionUID = 1707494068232123242L;
 
-	private static final transient Logger logger = Logger.getLogger(PrimaryKeyPager.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(PrimaryKeyPager.class);
 
 	/**
 	 * Constructor.
@@ -63,6 +63,7 @@ public class PrimaryKeyPager<E extends Entity> extends AbstractPager<E>
 	 * that at least the primary key is used to sort the data in the database
 	 * underlying the paging.
 	 */
+	@Override
 	public void refresh(Database db) throws DatabaseException
 	{
 		// don't use getters and setters!!! these will call refresh resulting in

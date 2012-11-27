@@ -29,7 +29,7 @@ import freemarker.template.Template;
  */
 public abstract class ForEachMatrixGenerator extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(ForEachMatrixGenerator.class);
+	private static final Logger logger = Logger.getLogger(ForEachMatrixGenerator.class);
 
 	// private boolean includeAbstract = false;
 

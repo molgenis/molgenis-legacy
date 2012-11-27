@@ -48,12 +48,14 @@ public interface ScreenCommand extends Serializable, ScreenModel
 	/**
 	 * @return descriptive label of this command
 	 */
+	@Override
 	public String getLabel();
 
 	/**
 	 * @param label
 	 *            descriptive label of this command
 	 */
+	@Override
 	public void setLabel(String label);
 
 	/**
@@ -86,6 +88,7 @@ public interface ScreenCommand extends Serializable, ScreenModel
 	/**
 	 * @return unique action name of this command (unique within one screen)
 	 */
+	@Override
 	public String getName();
 
 	/**
@@ -109,6 +112,7 @@ public interface ScreenCommand extends Serializable, ScreenModel
 	/**
 	 * @return The screen this command is a part of
 	 */
+	@Override
 	public ScreenController<?> getController();
 
 	/**
@@ -120,6 +124,7 @@ public interface ScreenCommand extends Serializable, ScreenModel
 	 * @param screen
 	 *            The screen this command belongs to
 	 */
+	@Override
 	public void setController(ScreenController<? extends ScreenModel> screen);
 
 	/**
@@ -257,11 +262,13 @@ public interface ScreenCommand extends Serializable, ScreenModel
 	 * @return false if this command should be hidden. For example because the
 	 *         menu option is only available if particular rights are met.
 	 */
+	@Override
 	public boolean isVisible();
 
 	/**
 	 * Render this command plugin.
 	 */
+	@Override
 	public String render();
 
 }

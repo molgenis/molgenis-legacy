@@ -37,11 +37,13 @@ public class ApplicationModel extends SimpleScreenModel
 		this.show = show;
 	}
 
+	@Override
 	public String getCustomHtmlHeaders()
 	{
 		return this.getController().getCustomHtmlHeaders();
 	}
 
+	@Override
 	public String getCustomHtmlBodyOnLoad()
 	{
 		return this.getController().getCustomHtmlBodyOnLoad();

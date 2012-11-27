@@ -1,6 +1,7 @@
 package org.molgenis.util;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,8 +15,10 @@ public class CompareCSV
 
 	private static final Logger LOG = Logger.getLogger(CompareCSV.class);
 
-	static class StringArrayComperator implements Comparator<String[]>
+	private static class StringArrayComperator implements Comparator<String[]>, Serializable
 	{
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public int compare(final String[] o1, final String[] o2)
 		{
@@ -80,7 +83,7 @@ public class CompareCSV
 				String[] array1 = contents.get(1).get(i);
 				if (!Arrays.equals(array0, array1))
 				{
-					LOG.debug(String.format("files content is not equal: \n row: %s \n row: %s",
+					LOG.debug(String.format("files content is not equal: %n row: %s %n row: %s",
 							Arrays.toString(array0), Arrays.toString(array1))
 							+ " " + file0.getPath() + " " + file1.getPath());
 					return false;

@@ -20,7 +20,7 @@ import freemarker.template.Template;
 
 public class JDBCDatabaseGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(JDBCDatabaseGen.class);
+	private static final Logger logger = Logger.getLogger(JDBCDatabaseGen.class);
 
 	@Override
 	public String getDescription()

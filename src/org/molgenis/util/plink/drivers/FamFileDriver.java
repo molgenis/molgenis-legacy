@@ -1,10 +1,17 @@
 package org.molgenis.util.plink.drivers;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.TextFileUtils;
+import org.molgenis.util.plink.PlinkFileParser;
 import org.molgenis.util.plink.datatypes.FamEntry;
 
 /**
@@ -14,17 +21,30 @@ import org.molgenis.util.plink.datatypes.FamEntry;
  * Content of a FAM file: Family ID Individual ID Paternal ID Maternal ID Sex
  * (1=male; 2=female; other=unknown) Phenotype
  */
-public class FamFileDriver extends AbstractFileDriver
+public class FamFileDriver implements PlinkFileParser
 {
+	private BufferedReader reader;
+	private File file;
+	private char separator;
+	private long nrElements;
+
 	/**
 	 * Construct a FamFileDriver on this file
 	 * 
-	 * @param bimFile
+	 * @param famFile
 	 * @throws Exception
 	 */
-	public FamFileDriver(File famFile) throws Exception
+	public FamFileDriver(File famFile)
 	{
-		super(famFile);
+		this(famFile, DEFAULT_FIELD_SEPARATOR);
+	}
+
+	public FamFileDriver(File famFile, char separator)
+	{
+		if (famFile == null) throw new IllegalArgumentException("file is null");
+		this.file = famFile;
+		this.separator = separator;
+		this.nrElements = -1l;
 	}
 
 	/**
@@ -33,23 +53,16 @@ public class FamFileDriver extends AbstractFileDriver
 	 * @return
 	 * @throws Exception
 	 */
-	public List<FamEntry> getAllEntries() throws Exception
+	public List<FamEntry> getAllEntries() throws IOException
 	{
-		reader.reset();
-		final ArrayList<FamEntry> result = new ArrayList<FamEntry>();
-		int line_number = 0;
-		for (Tuple tuple : reader)
-		{
-			line_number++;
-			for (int objIndex = 0; objIndex < 6; objIndex++)
-			{
-				if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number, objIndex));
-			}
-			FamEntry fe = new FamEntry(tuple.getString(0), tuple.getString(1), tuple.getString(2), tuple.getString(3),
-					tuple.getInt(4).byteValue(), tuple.getDouble(5));
-			result.add(fe);
-		}
-		return result;
+		reset();
+
+		List<FamEntry> entryList = new ArrayList<FamEntry>();
+		String line;
+		while ((line = reader.readLine()) != null)
+			entryList.add(parseEntry(line));
+
+		return entryList;
 	}
 
 	/**
@@ -62,26 +75,60 @@ public class FamFileDriver extends AbstractFileDriver
 	 * @return
 	 * @throws Exception
 	 */
-	public List<FamEntry> getEntries(final long from, final long to) throws Exception
+	public List<FamEntry> getEntries(final long from, final long to) throws IOException
 	{
-		reader.reset();
-		final ArrayList<FamEntry> result = new ArrayList<FamEntry>();
-		int line_number = 0;
-		for (Tuple tuple : reader)
-		{
-			line_number++;
+		reset();
 
-			if (line_number - 1 >= from && line_number - 1 < to)
-			{
-				for (int objIndex = 0; objIndex < 6; objIndex++)
-				{
-					if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number, objIndex));
-				}
-				FamEntry fe = new FamEntry(tuple.getString(0), tuple.getString(1), tuple.getString(2),
-						tuple.getString(3), tuple.getInt(4).byteValue(), tuple.getDouble(5));
-				result.add(fe);
-			}
+		List<FamEntry> entryList = new ArrayList<FamEntry>();
+		String line;
+		for (int i = 0; (line = reader.readLine()) != null && i < to; ++i)
+			if (i >= from) entryList.add(parseEntry(line));
+
+		return entryList;
+	}
+
+	private FamEntry parseEntry(String line) throws IOException
+	{
+		StringTokenizer strTokenizer = new StringTokenizer(line, this.separator + "");
+		try
+		{
+			String family = strTokenizer.nextToken();
+			String individual = strTokenizer.nextToken();
+			String father = strTokenizer.nextToken();
+			String mother = strTokenizer.nextToken();
+			byte sex = Byte.parseByte(strTokenizer.nextToken());
+			double phenotype = Double.parseDouble(strTokenizer.nextToken());
+			return new FamEntry(family, individual, father, mother, sex, phenotype);
 		}
-		return result;
+		catch (NoSuchElementException e)
+		{
+			throw new IOException("error in line: " + line, e);
+		}
+		catch (IndexOutOfBoundsException e)
+		{
+			throw new IOException("error in line: " + line, e);
+		}
+		catch (NumberFormatException e)
+		{
+			throw new IOException("error in line: " + line, e);
+		}
+	}
+
+	public long getNrOfElements() throws IOException
+	{
+		if (nrElements == -1) nrElements = TextFileUtils.getNumberOfNonEmptyLines(file, FILE_ENCODING);
+		return nrElements;
+	}
+
+	@Override
+	public void close() throws IOException
+	{
+		if (this.reader != null) this.reader.close();
+	}
+
+	public void reset() throws IOException
+	{
+		if (this.reader != null) close();
+		this.reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), FILE_ENCODING));
 	}
 }

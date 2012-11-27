@@ -12,13 +12,11 @@
 
 package org.molgenis.framework.ui;
 
-// jdk
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -54,11 +52,6 @@ import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-/**
- * 
- * 
- * @param
- */
 public class FormModel<E extends Entity> extends SimpleScreenModel
 {
 	/**
@@ -148,6 +141,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 
 		public final String tag;
 
+		@Override
 		public String toString()
 		{
 			return tag;
@@ -164,7 +158,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	public static final String ACTION_DOWNLOAD = "download";
 
 	// PROPERTIES (default initialization is done in reset!)
-	private static final transient Logger logger = Logger.getLogger(FormModel.class);
+	private static final Logger logger = Logger.getLogger(FormModel.class);
 
 	/** List of actions of this screen */
 	private Map<String, ScreenCommand> commands = new LinkedHashMap<String, ScreenCommand>();
@@ -218,9 +212,6 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	private List<String> systemHiddenColumns = new Vector<String>();
 	protected List<String> userHiddenColumns = new Vector<String>();
 
-	/** Helper object that takes care of database paging */
-	// private DatabasePager<E> pager;
-
 	/** Here the currently selected is are stored */
 	private List<?> selectedIds;
 	/** Filter of parent form filtering */
@@ -268,25 +259,25 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		super.addCommand(new DownloadVisibleCommand("download_txt_visible", this.getController()));
 
 		// TXT file: Download Selected
-		super.addCommand(new DownloadSelectedCommand("download_txt_selected", this.getController()));
+		super.addCommand(new DownloadSelectedCommand<E>("download_txt_selected", this.getController()));
 
 		// TXT file: Download all
-		super.addCommand(new DownloadAllCommand("download_txt_all", this.getController()));
+		super.addCommand(new DownloadAllCommand<E>("download_txt_all", this.getController()));
 
 		// XLS file: Download visible
 		super.addCommand(new DownloadVisibleXlsCommand("download_xls_visible", this.getController()));
 
 		// XLS file: Download Selected
-		super.addCommand(new DownloadSelectedXlsCommand("download_xls_selected", this.getController()));
+		super.addCommand(new DownloadSelectedXlsCommand<E>("download_xls_selected", this.getController()));
 
 		// XLS file: Download all
-		super.addCommand(new DownloadAllXlsCommand("download_xls_all", this.getController()));
+		super.addCommand(new DownloadAllXlsCommand<E>("download_xls_all", this.getController()));
 
 		// File: Add batch
-		super.addCommand(new AddBatchCommand("upload_csv", this.getController()));
+		super.addCommand(new AddBatchCommand<E>("upload_csv", this.getController()));
 
 		// File: Add batch
-		super.addCommand(new AddCsvFileCommand("upload_csvfile", this.getController()));
+		super.addCommand(new AddCsvFileCommand<E>("upload_csvfile", this.getController()));
 
 		// Sending data to a Galaxy server.
 		// Note: We do not send the actual data.
@@ -302,7 +293,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 
 		// EDIT MENU
 		// EDIT: Add new record
-		super.addCommand(new AddCommand("edit_new", this.getController()));
+		super.addCommand(new AddCommand<E>("edit_new", this.getController()));
 
 		// EDIT: Update selected
 		super.addCommand(new EditSelectedCommand("edit_update_selected", this.getController()));
@@ -318,29 +309,29 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 
 		// v3.setToolbar(true);
 		super.addCommand(new ViewEditViewCommand("editview", this.getController()));
-		super.addCommand(new ViewListViewCommand("listview", this.getController()));
+		super.addCommand(new ViewListViewCommand<E>("listview", this.getController()));
 
-		ChangeListLimitCommand view_5 = new ChangeListLimitCommand("view_5show5", this.getController());
+		ChangeListLimitCommand<E> view_5 = new ChangeListLimitCommand<E>("view_5show5", this.getController());
 		view_5.setLimit(5);
 		super.addCommand(view_5);
 
-		ChangeListLimitCommand view_10 = new ChangeListLimitCommand("view_6show10", this.getController());
+		ChangeListLimitCommand<E> view_10 = new ChangeListLimitCommand<E>("view_6show10", this.getController());
 		view_5.setLimit(10);
 		super.addCommand(view_10);
 
-		ChangeListLimitCommand view_20 = new ChangeListLimitCommand("view_7show20", this.getController());
+		ChangeListLimitCommand<E> view_20 = new ChangeListLimitCommand<E>("view_7show20", this.getController());
 		view_20.setLimit(20);
 		super.addCommand(view_20);
 
-		ChangeListLimitCommand view_50 = new ChangeListLimitCommand("view_8show50", this.getController());
+		ChangeListLimitCommand<E> view_50 = new ChangeListLimitCommand<E>("view_8show50", this.getController());
 		view_50.setLimit(50);
 		super.addCommand(view_50);
 
-		ChangeListLimitCommand view_100 = new ChangeListLimitCommand("view_9show100", this.getController());
+		ChangeListLimitCommand<E> view_100 = new ChangeListLimitCommand<E>("view_9show100", this.getController());
 		view_100.setLimit(100);
 		super.addCommand(view_100);
 
-		ChangeListLimitCommand view_500 = new ChangeListLimitCommand("view_10show500", this.getController());
+		ChangeListLimitCommand<E> view_500 = new ChangeListLimitCommand<E>("view_10show500", this.getController());
 		view_500.setLimit(500);
 		super.addCommand(view_500);
 
@@ -481,7 +472,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	public Vector<String> getHeaders()
 	{
 		Vector<String> headers = new Vector<String>();
-		for (HtmlInput input : getController().getInputs(this.create(), true).getInputs())
+		for (HtmlInput<?> input : getController().getInputs(this.create(), true).getInputs())
 		{
 			headers.add(input.getLabel());
 		}
@@ -537,36 +528,28 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	 */
 	public Vector<String> getFilters() throws DatabaseException
 	{
+		if (this.getUserRules() == null || this.getUserRules().isEmpty()) return new Vector<String>();
+
 		Vector<String> filters = new Vector<String>();
-		Map<String, String> nameLabelMap = new TreeMap<String, String>();
-
-		for (HtmlInput input : this.getNewRecordForm().getInputs())
-		{
-			// getSearchFields maps xref and mref field to their label
-			String fieldName = getController().getSearchField(input.getName());
-			nameLabelMap.put(fieldName, input.getLabel());
-		}
-
 		for (QueryRule rule : this.getUserRules())
 		{
-			String field = rule.getField();
 			String label = "";
-			if (field != null)
+			if (rule.getField() != null)
 			{
-				if (field.equals("all"))
+				label = getField(rule.getField());
+			}
+			else
+			{
+				// assume that this rule has nested rule
+				QueryRule[] nestedRules = rule.getNestedRules();
+				if (nestedRules != null && nestedRules.length > 0)
 				{
 					label = "Any field";
-				}
-				else
-				{
-					label = nameLabelMap.get(field);
+					rule = nestedRules[0];
 				}
 			}
-
 			filters.add(label + " " + rule.getOperator().toString() + " " + rule.getValue());
-
 		}
-
 		return filters;
 	}
 
@@ -863,23 +846,6 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		return true;
 	}
 
-	/**
-	 * Override getChildren to only return selected elements.
-	 */
-	// @Override
-	// // FIXME: this may be problematic?
-	// public Vector<ScreenModel<?>> getChildren()
-	// {
-	// if (viewMode.equals(Mode.EDIT_VIEW))
-	// {
-	// return super.getChildren();
-	// }
-	// else
-	// {
-	// return new Vector<ScreenModel<?>>(); // empty set.
-	// }
-	// }
-
 	@Deprecated
 	public File getDownloadFile(Database db, Tuple requestTuple)
 	{
@@ -953,9 +919,8 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	public void setCurrentCommand(ScreenCommand currentCommand)
 	{
 		this.currentCommand = currentCommand;
-	};
+	}
 
-	@SuppressWarnings("unchecked")
 	public DatabasePager<E> getPager()
 	{
 		return ((FormController<E>) getController()).getPager();
@@ -987,12 +952,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		return null;
 	}
 
-	//
-	// public void setCurrent(E current)
-	// {
-	// this.current = current;
-	// }
-
+	@Override
 	public FormController<E> getController()
 	{
 		return (FormController<E>) super.getController();
@@ -1020,5 +980,10 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	public String getSearchField(String fieldName)
 	{
 		return this.getController().getSearchField(fieldName);
+	}
+
+	public String getField(String searchFieldName)
+	{
+		return this.getController().getField(searchFieldName);
 	}
 }

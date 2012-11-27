@@ -21,7 +21,7 @@ import freemarker.template.TemplateException;
 
 public class DotDocGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(DotDocGen.class);
+	private static final Logger logger = Logger.getLogger(DotDocGen.class);
 
 	// need to add input and output file
 	public final static String GRAPHVIZ_COMMAND_WINDOWS = "dot";
@@ -163,7 +163,13 @@ public class DotDocGen extends Generator
 			logger.debug("Data model image was generated succesfully.\nOutput:\n" + result);
 
 		}
-		catch (Exception e)
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			logger.error("Generation of graphical documentation failed: return code " + e.getMessage()
+					+ ". Install GraphViz and put dot.exe on your path.");
+		}
+		catch (InterruptedException e)
 		{
 			e.printStackTrace();
 			logger.error("Generation of graphical documentation failed: return code " + e.getMessage()

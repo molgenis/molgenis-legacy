@@ -3,9 +3,9 @@ package org.molgenis.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Form extends MolgenisComponent
+public class Form extends MolgenisComponent<Form>
 {
-	List<MolgenisComponent> components = new ArrayList<MolgenisComponent>();
+	List<MolgenisComponent<?>> components = new ArrayList<MolgenisComponent<?>>();
 
 	String legend;
 
@@ -27,7 +27,7 @@ public class Form extends MolgenisComponent
 		this.type = type;
 	}
 
-	public Form add(MolgenisComponent component)
+	public Form add(MolgenisComponent<?> component)
 	{
 		assert component != null;
 		this.components.add(component);
@@ -35,7 +35,7 @@ public class Form extends MolgenisComponent
 		return this;
 	}
 
-	public List<MolgenisComponent> getComponents()
+	public List<MolgenisComponent<?>> getComponents()
 	{
 		return components;
 	}

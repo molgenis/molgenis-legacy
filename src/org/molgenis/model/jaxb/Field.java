@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Field
 {
-	private static final transient Logger logger = Logger.getLogger(Field.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(Field.class.getSimpleName());
 
 	// jaxb orders properties in reverse order :-s
 	@XmlAttribute(name = "mref_remoteid")
@@ -152,6 +152,7 @@ public class Field
 			this.format_type = format_type;
 		}
 
+		@Override
 		public String toString()
 		{
 			return this.tag;
@@ -227,7 +228,7 @@ public class Field
 								return UNKNOWN;
 							}
 						}
-						catch (Exception e)
+						catch (IllegalAccessException e)
 						{
 						}
 					}

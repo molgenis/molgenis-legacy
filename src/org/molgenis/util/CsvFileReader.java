@@ -16,7 +16,6 @@ import java.util.zip.DataFormatException;
  */
 public class CsvFileReader extends CsvBufferedReaderMultiline
 {
-	private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
 	/** Input comma-separated value file */
 	private File file;
 	/** Input file encoding */
@@ -32,7 +31,22 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	 */
 	public CsvFileReader(File file) throws IOException
 	{
-		this(file, CHARSET_UTF8, true);
+		this(file, CSV_DEFAULT_CHARSET, true);
+	}
+
+	/**
+	 * Creates a CsvFileReader that uses the UTF-8 charset
+	 * 
+	 * @param file
+	 *            comma-separated values file
+	 * @param blockStart
+	 *            last line before header block starts
+	 * @throws IOException
+	 * @throws DataFormatException
+	 */
+	public CsvFileReader(File file, String blockStart) throws IOException
+	{
+		this(file, CSV_DEFAULT_CHARSET, true, blockStart);
 	}
 
 	/**
@@ -47,7 +61,7 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	 */
 	public CsvFileReader(File file, boolean hasHeader) throws IOException
 	{
-		this(file, CHARSET_UTF8, hasHeader);
+		this(file, CSV_DEFAULT_CHARSET, hasHeader);
 	}
 
 	/**
@@ -79,11 +93,31 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	 */
 	public CsvFileReader(File file, Charset charset, boolean hasHeader) throws IOException
 	{
+		this(file, charset, hasHeader, "");
+	}
+
+	/**
+	 * Creates a CsvFileReader that uses the given charset
+	 * 
+	 * @param file
+	 *            comma-separated values file
+	 * @param charset
+	 *            file encoding
+	 * @param hasHeader
+	 *            whether or not this file starts with a header
+	 * @param blockStart
+	 *            last line before header block starts
+	 * @throws IOException
+	 * @throws DataFormatException
+	 */
+	public CsvFileReader(File file, Charset charset, boolean hasHeader, String blockStart) throws IOException
+	{
 		super();
 		if (file == null) throw new IllegalArgumentException("file is null");
 		this.file = file;
 		this.charset = charset;
 		this.hasHeader = hasHeader;
+		this.blockStart = blockStart;
 		this.reset();
 	}
 

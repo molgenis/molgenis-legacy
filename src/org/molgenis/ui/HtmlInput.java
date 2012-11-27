@@ -14,7 +14,7 @@ import org.molgenis.util.Tuple;
  * 
  * 
  */
-public abstract class HtmlInput<T extends HtmlInput<T, E>, E> extends MolgenisComponent
+public abstract class HtmlInput<T extends HtmlInput<T, E>, E> extends MolgenisComponent<HtmlInput<T, E>>
 {
 	// STRING CONSTANTS
 	/** String constants for property name 'name' */

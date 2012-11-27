@@ -111,8 +111,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 
 	public HtmlInput(String name, String label, E value)
 	{
-		assert (name != null);
-		assert (label != null);
+		if (name == null) throw new IllegalArgumentException("name is null");
 		this.setId(name.replace(" ", ""));
 		this.setName(name.replace(" ", ""));
 		this.setLabel(label);
@@ -191,8 +190,6 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 
 	public HtmlInput<E> setLabel(String label)
 	{
-		// assert (label != null); fails web tests due to label -> null
-		// constructors, so allow it
 		this.label = label;
 		return this;
 	}
@@ -319,7 +316,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	}
 
 	/** Synonym to toHtml */
-	@SuppressWarnings("deprecation")
+	@Override
 	public String render(Tuple params) throws ParseException, HtmlInputException
 	{
 		return this.toHtml(params);
@@ -454,6 +451,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 		this.collapse = collapse;
 	}
 
+	@Override
 	public String toString()
 	{
 		return this.toHtml();

@@ -56,8 +56,10 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 	public Vector<String> getHeaders()
 	{
 		Vector<String> headers = new Vector<String>();
-<#list entity.getAllFields() as field>
+<#list entity.allFields as field>
+	<#if !field.system && !field.hidden>
 		headers.add("${field.getLabel()}");
+	</#if>
 </#list>
 		return headers;
 	}	
@@ -66,8 +68,9 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 	public List<HtmlInput<?>> getInputs()
 	{	
 		List<HtmlInput<?>> inputs = new ArrayList<HtmlInput<?>>();			
-<#list allFields(entity) as field>
-	<#assign inputtype = Name(field.getType().toString())>
+<#list entity.allFields as field>
+	<#if !field.system>
+		<#assign inputtype = Name(field.getType().toString())>
 		//${JavaName(field)}: ${field}
 		{
 		    <#if field.type == "xref">
@@ -152,6 +155,7 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 
 			inputs.add(input);
 		}
+	</#if>
 </#list>	
 
 		return inputs;

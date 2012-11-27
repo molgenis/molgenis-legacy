@@ -323,7 +323,7 @@ public interface Tuple
 	 * @return List<?> for the column value. If the value is NULL then the value
 	 *         is null.
 	 */
-	public List<?> getList(int columnIndex, String sep);
+	public List<?> getList(int columnIndex, char sep);
 
 	/**
 	 * Retrieves the value of the designated column as List<?>. If the the value
@@ -348,7 +348,7 @@ public interface Tuple
 	 * @return List<?> for the column value. If the value is NULL then the value
 	 *         is null.
 	 */
-	public List<?> getList(String columnName, String sep);
+	public List<?> getList(String columnName, char sep);
 
 	/**
 	 * Retrieves the value of the designated column as Set<Object>
@@ -365,7 +365,7 @@ public interface Tuple
 	 * @param string
 	 * @return
 	 */
-	public Set<Object> getSet(String columnName, String sep);
+	public Set<Object> getSet(String columnName, char sep);
 
 	/**
 	 * Retrieves the value of the designated column as File
@@ -393,6 +393,7 @@ public interface Tuple
 	 * 
 	 * @return print of this Tuple.
 	 */
+	@Override
 	public String toString();
 
 	/**

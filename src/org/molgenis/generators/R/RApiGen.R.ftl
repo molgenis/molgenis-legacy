@@ -150,7 +150,7 @@ MOLGENIS.find<-function( entityName, conditions, .verbose=T )
         stop( "arg1: You should provide an entityName (e.g. \"Experiment\")" )
     }
     #todo: use post instead of get
-    uri <- paste( app_location, findAPIlocation, entityName, sep="" )
+    uri <- paste( app_location, findAPIlocation, "/", entityName, sep="" )
  
     ##log
     # cat("retrieving using uri",uri,"\n")

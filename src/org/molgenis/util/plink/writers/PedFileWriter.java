@@ -1,63 +1,82 @@
 package org.molgenis.util.plink.writers;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.util.List;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
-import org.molgenis.util.CsvFileWriter;
+import org.molgenis.util.plink.PlinkFileParser;
+import org.molgenis.util.plink.datatypes.Biallele;
 import org.molgenis.util.plink.datatypes.PedEntry;
 
 /**
  * Write MAP file entries to a selected location.
  */
-public class PedFileWriter
+public class PedFileWriter implements PlinkFileParser
 {
-	private CsvFileWriter writer;
+	private BufferedWriter writer;
+	private char separator;
 
-	public PedFileWriter(File pedFile) throws Exception
+	public PedFileWriter(File pedFile) throws IOException
 	{
-		writer = new CsvFileWriter(pedFile);
-		writer.setHeaders(PedEntry.pedHeader());
-		writer.setSeparator(" ");
-		writer.setListSeparator(" ");
+		this(pedFile, DEFAULT_FIELD_SEPARATOR);
 	}
 
-	/**
-	 * Close the underlying writer.
-	 */
-	public void close()
+	public PedFileWriter(File pedFile, char separator) throws IOException
 	{
-		writer.close();
+		if (pedFile == null) throw new IllegalArgumentException("ped file is null");
+		this.writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(pedFile), FILE_ENCODING));
+		this.separator = separator;
 	}
 
 	/**
 	 * Write a single entry.
+	 * 
+	 * @throws IOException
 	 */
-	public void writeSingle(PedEntry ped)
+	public void write(PedEntry ped) throws IOException
 	{
-		writer.writeRow(PedEntry.pedToTuple(ped));
+		writer.write(ped.getFamily());
+		writer.write(separator);
+		writer.write(ped.getIndividual());
+		writer.write(separator);
+		writer.write(ped.getFather());
+		writer.write(separator);
+		writer.write(ped.getMother());
+		writer.write(separator);
+		writer.write(Byte.toString(ped.getSex()));
+		writer.write(separator);
+		writer.write(Double.toString(ped.getPhenotype()));
+		for (Biallele biallele : ped.getBialleles())
+		{
+			writer.write(separator);
+			writer.write(biallele.getAllele1());
+			writer.write(separator);
+			writer.write(biallele.getAllele2());
+		}
+		writer.write(LINE_SEPARATOR);
 	}
 
 	/**
 	 * Write multiple entries in order.
+	 * 
+	 * @throws IOException
 	 */
-	public void writeMulti(List<PedEntry> peds)
+	public void write(Iterable<PedEntry> peds) throws IOException
 	{
 		for (PedEntry ped : peds)
-		{
-			writer.writeRow(PedEntry.pedToTuple(ped));
-		}
+			write(ped);
 	}
 
 	/**
-	 * Write all entries and close the writer.
+	 * Close the underlying writer.
+	 * 
+	 * @throws IOException
 	 */
-	public void writeAll(List<PedEntry> peds)
+	@Override
+	public void close() throws IOException
 	{
-		for (PedEntry ped : peds)
-		{
-			writer.writeRow(PedEntry.pedToTuple(ped));
-		}
-		writer.close();
+		if (writer != null) writer.close();
 	}
-
 }

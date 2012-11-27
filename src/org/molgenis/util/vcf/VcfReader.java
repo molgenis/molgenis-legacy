@@ -22,10 +22,10 @@ public class VcfReader
 	private static List<String> normalHeaders = Arrays.asList(new String[]
 	{ "#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", "" });
 
+	private static List<String> Infofields = new ArrayList<String>();
+
 	public VcfReader(File f) throws IOException, DataFormatException
 	{
-		reader = new CsvFileReader(f);
-
 		// iterate through file to find the last line with ##, that is the
 		// blockstart
 		String blockStart = null;
@@ -40,6 +40,14 @@ public class VcfReader
 				{
 					fileHeaders.add(strLine);
 					blockStart = strLine;
+
+					if (strLine.startsWith("##INFO=<"))
+					{
+						String[] tmp = strLine.substring(11, 30).split(",");
+						System.out.println(tmp[0]);
+
+						if (!Infofields.contains(tmp[0])) Infofields.add(tmp[0]);
+					}
 				}
 				else
 					break;
@@ -49,7 +57,7 @@ public class VcfReader
 		{
 			IOUtils.closeQuietly(br);
 		}
-		reader.setBlockStart(blockStart);
+		reader = new CsvFileReader(f, blockStart);
 	}
 
 	public List<VcfFilter> getFilters()
@@ -199,5 +207,10 @@ public class VcfReader
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	public List<String> getInfoFields()
+	{
+		return Infofields;
 	}
 }

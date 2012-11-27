@@ -121,7 +121,7 @@ public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
 	@Override
 	public String toHtml(Tuple params) throws HtmlInputException
 	{
-		return new MrefInput(params).render();
+		return new MrefInput<E>(params).render();
 	}
 
 	@Override

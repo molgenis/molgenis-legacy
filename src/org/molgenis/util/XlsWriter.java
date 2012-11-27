@@ -14,6 +14,7 @@ import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
+import jxl.write.biff.RowsExceededException;
 
 /**
  * Write values to an Excel file
@@ -69,14 +70,41 @@ public class XlsWriter implements TupleWriter
 	}
 
 	@Override
-	public void writeHeader() throws Exception
+	public void writeHeader() throws IOException
 	{
 		// Add and store headers
-		for (int i = 0; i < headers.size(); i++)
+		try
 		{
-			String header = headers.get(i);
-			Label l = new Label(i, 0, header, headerFormat);
-			sheet.addCell(l);
+			for (int i = 0; i < headers.size(); i++)
+			{
+				String header = headers.get(i);
+				Label l = new Label(i, 0, header, headerFormat);
+				sheet.addCell(l);
+			}
+		}
+		catch (RowsExceededException e)
+		{
+			throw new IOException(e);
+		}
+		catch (WriteException e)
+		{
+			throw new IOException(e);
+		}
+	}
+
+	public void writeCell(int col, int row, String value) throws IOException
+	{
+		try
+		{
+			sheet.addCell(new Label(col, row, value));
+		}
+		catch (RowsExceededException e)
+		{
+			throw new IOException(e);
+		}
+		catch (WriteException e)
+		{
+			throw new IOException(e);
 		}
 	}
 
@@ -94,11 +122,18 @@ public class XlsWriter implements TupleWriter
 	}
 
 	@Override
-	public void close() throws Exception
+	public void close() throws IOException
 	{
 		// close the excel file; no writing allowed anymore
 		workbook.write();
-		workbook.close();
+		try
+		{
+			workbook.close();
+		}
+		catch (WriteException e)
+		{
+			throw new IOException(e);
+		}
 	}
 
 	/**
@@ -109,50 +144,37 @@ public class XlsWriter implements TupleWriter
 	 * @param colNames
 	 * @param elements
 	 */
+	@Override
 	public void writeMatrix(List<String> rowNames, List<String> colNames, Object[][] elements)
 	{
 
 	}
 
 	@Override
-	public void writeRow(Entity e) throws Exception
+	public void writeRow(Entity e) throws IOException
 	{
 		for (int i = 0; i < headers.size(); i++)
 		{
-			StringBuilder contentsBuilder = new StringBuilder();
-
+			String contents;
 			Object fieldValue = e.get(headers.get(i));
-			if (fieldValue != null)
+			if (fieldValue == null) contents = "";
+			else if (fieldValue instanceof List<?>) contents = ListEscapeUtils.toString((List<?>) fieldValue);
+			else
+				contents = fieldValue.toString();
+
+			Label l = new Label(i, rowIndex, contents, cellFormat);
+			try
 			{
-
-				if (fieldValue instanceof List<?>)
-				{
-					List<?> list = (List<?>) fieldValue;
-					for (int j = 0; j < list.size(); j++)
-					{
-						if (j != 0)
-						{
-							contentsBuilder.append(',');
-						}
-						if (list.get(j) != null)
-						{
-							contentsBuilder.append(list.get(j).toString());
-						}
-						else
-						{
-							throw new Exception("List contains null value(s)");
-						}
-					}
-
-				}
-				else
-				{
-					contentsBuilder.append(fieldValue.toString());
-				}
-
+				sheet.addCell(l);
 			}
-			Label l = new Label(i, rowIndex, contentsBuilder.toString(), cellFormat);
-			sheet.addCell(l);
+			catch (RowsExceededException e1)
+			{
+				throw new IOException(e1);
+			}
+			catch (WriteException e1)
+			{
+				throw new IOException(e1);
+			}
 		}
 		rowIndex++;
 	}

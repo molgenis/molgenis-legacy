@@ -2,7 +2,9 @@ package org.molgenis.framework.db.jpa;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
@@ -12,7 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.molgenis.framework.db.Database;
-import org.molgenis.util.HandleException;
+import org.molgenis.util.ExceptionHandler;
 
 public class JpaUtil
 {
@@ -116,7 +118,7 @@ public class JpaUtil
 		BufferedReader br = null;
 		try
 		{
-			br = new BufferedReader(new FileReader(file));
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8")));
 
 			EntityManager em = db.getEntityManager();
 			em.getTransaction().begin();
@@ -143,7 +145,7 @@ public class JpaUtil
 		}
 		catch (Exception e)
 		{
-			HandleException.handle(e, logger);
+			ExceptionHandler.handle(e, logger);
 		}
 		finally
 		{

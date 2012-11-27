@@ -20,6 +20,7 @@ public class JTextAreaAppender extends AppenderSkeleton
 		this.jtext = jtext;
 	}
 
+	@Override
 	protected void append(LoggingEvent event)
 	{
 		jtext.append(layout.format(event));
@@ -40,12 +41,14 @@ public class JTextAreaAppender extends AppenderSkeleton
 		jtext.setCaretPosition(jtext.getText().length());
 	}
 
+	@Override
 	public boolean requiresLayout()
 	{
 		// TODO Auto-generated method stub
 		return true;
 	}
 
+	@Override
 	public void close()
 	{
 		if (closed) return;

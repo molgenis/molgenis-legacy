@@ -136,7 +136,8 @@ public class Table extends HtmlWidget
 	/**
 	 * Set the containing div's css style.
 	 */
-	public HtmlInput setStyle(String style)
+	@Override
+	public HtmlInput<String> setStyle(String style)
 	{
 		this.style = style;
 		return this;

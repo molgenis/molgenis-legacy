@@ -7,7 +7,6 @@ import java.io.PrintStream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
@@ -15,13 +14,8 @@ import org.molgenis.framework.server.MolgenisService;
 
 public class MolgenisBashService implements MolgenisService
 {
-	Logger logger = Logger.getLogger(MolgenisBashService.class);
-
-	private MolgenisContext mc;
-
 	public MolgenisBashService(MolgenisContext mc)
 	{
-		this.mc = mc;
 	}
 
 	/**
@@ -31,6 +25,7 @@ public class MolgenisBashService implements MolgenisService
 	 * @param response
 	 * @throws IOException
 	 */
+	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws IOException
 	{
 

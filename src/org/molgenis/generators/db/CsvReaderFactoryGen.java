@@ -19,7 +19,7 @@ import freemarker.template.Template;
 
 public class CsvReaderFactoryGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(CsvReaderFactoryGen.class);
+	private static final Logger logger = Logger.getLogger(CsvReaderFactoryGen.class);
 
 	@Override
 	public String getDescription()

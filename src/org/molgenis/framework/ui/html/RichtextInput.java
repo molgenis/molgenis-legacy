@@ -35,6 +35,7 @@ public class RichtextInput extends StringInput
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
 	public String getCustomHtmlHeaders()
 	{
 		return "<script type=\"text/javascript\" src=\"generated-res/lib/tinymce-3.4.4/tiny_mce.js\"></script>"
@@ -56,6 +57,7 @@ public class RichtextInput extends StringInput
 				+ "\n		 onchange_callback : function (editor){tinyMCE.triggerSave();}" + "});" + "</script>";
 	}
 
+	@Override
 	public String toHtml()
 	{
 		return String.format(
@@ -66,6 +68,7 @@ public class RichtextInput extends StringInput
 	/**
 	 * Override because hyperlink must not be escaped
 	 */
+	@Override
 	public String getHtmlValue()
 	{
 		return this.getValue();

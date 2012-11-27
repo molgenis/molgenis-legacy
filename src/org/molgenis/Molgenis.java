@@ -5,10 +5,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.BasicConfigurator;
@@ -206,10 +208,10 @@ public class Molgenis
 
 		this.options = options;
 
-		if (generatorsToUse != null && generatorsToUse.length > 0)
-		{
-			this.options.delete_generated_folder = false;
-		}
+		// if (generatorsToUse != null && generatorsToUse.length > 0)
+		// {
+		// this.options.delete_generated_folder = false;
+		// }
 
 		Logger.getLogger("freemarker.cache").setLevel(Level.INFO);
 		logger.info("\nMOLGENIS version " + org.molgenis.Version.convertToString());
@@ -582,7 +584,8 @@ public class Molgenis
 		if (generatedFolder.exists() && options.delete_generated_folder)
 		{
 			logger.info("removing previous generated folder " + generatedFolder);
-			deleteContentOfDirectory(generatedFolder);
+			deleteContentOfDirectory(new File(options.output_src));
+			deleteContentOfDirectory(new File(options.output_sql));
 		}
 
 		List<Thread> threads = new ArrayList<Thread>();
@@ -591,6 +594,7 @@ public class Molgenis
 			Runnable runnable = new Runnable()
 			{
 
+				@Override
 				public void run()
 				{
 					try
@@ -794,22 +798,27 @@ public class Molgenis
 			data_src.setUrl(options.db_uri);
 
 			conn = data_src.getConnection();
-			String create_tables_file = options.output_sql + File.separator + "create_tables.sql";
-			logger.debug("using file " + create_tables_file);
-			// String create_tables_file = "generated" + File.separator + "sql"
-			// + File.separator + "create_tables.sql";
+			String create_tables_file_str = options.output_sql + File.separator + "create_tables.sql";
 
 			// READ THE FILE
 			StringBuilder create_tables_sqlBuilder = new StringBuilder();
 			try
 			{
-				BufferedReader in = new BufferedReader(new FileReader(create_tables_file));
-				String line;
-				while ((line = in.readLine()) != null)
+				BufferedReader in = new BufferedReader(new InputStreamReader(
+						new FileInputStream(create_tables_file_str), Charset.forName("UTF-8")));
+
+				try
 				{
-					create_tables_sqlBuilder.append(line).append('\n');
+					String line;
+					while ((line = in.readLine()) != null)
+					{
+						create_tables_sqlBuilder.append(line).append('\n');
+					}
 				}
-				in.close();
+				finally
+				{
+					IOUtils.closeQuietly(in);
+				}
 			}
 			catch (IOException e)
 			{
@@ -824,13 +833,20 @@ public class Molgenis
 				// READ THE FILE
 				try
 				{
-					BufferedReader in = new BufferedReader(new FileReader(insert_metadata_file));
-					String line;
-					while ((line = in.readLine()) != null)
+					BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(
+							insert_metadata_file), Charset.forName("UTF-8")));
+					try
 					{
-						create_tables_sqlBuilder.append(line).append('\n');
+						String line;
+						while ((line = in.readLine()) != null)
+						{
+							create_tables_sqlBuilder.append(line).append('\n');
+						}
 					}
-					in.close();
+					finally
+					{
+						IOUtils.closeQuietly(in);
+					}
 				}
 				catch (IOException e)
 				{
@@ -885,23 +901,15 @@ public class Molgenis
 		}
 		finally
 		{
-			if (stmt != null)
+			try
 			{
-				try
-				{
-					stmt.close();
-				}
-				catch (SQLException e)
-				{
-					if (conn != null)
-					{
-						conn.close();
-					}
-				}
+				if (stmt != null) stmt.close();
 			}
-
+			finally
+			{
+				if (conn != null) conn.close();
+			}
 		}
-
 	}
 
 	/**

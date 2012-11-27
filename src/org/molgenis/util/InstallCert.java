@@ -39,6 +39,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.security.cert.CertificateException;
@@ -56,7 +57,7 @@ import org.apache.log4j.Logger;
 
 public class InstallCert
 {
-	private static final transient Logger logger = Logger.getLogger(InstallCert.class);
+	private static final Logger logger = Logger.getLogger(InstallCert.class);
 
 	public static void main(String[] args) throws Exception
 	{
@@ -125,7 +126,7 @@ public class InstallCert
 			return;
 		}
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, Charset.forName("UTF-8")));
 
 		logger.info("Server sent " + chain.length + " certificate(s):");
 		MessageDigest sha1 = MessageDigest.getInstance("SHA1");
@@ -143,7 +144,9 @@ public class InstallCert
 		}
 
 		logger.info("Enter certificate to add to trusted keystore or 'q' to quit: [1]");
-		String line = reader.readLine().trim();
+		String line = reader.readLine();
+		if (line == null) throw new RuntimeException("unexpected end of stream");
+		line = line.trim();
 		int k;
 		try
 		{
@@ -194,16 +197,19 @@ public class InstallCert
 			this.tm = tm;
 		}
 
+		@Override
 		public X509Certificate[] getAcceptedIssuers()
 		{
 			throw new UnsupportedOperationException();
 		}
 
+		@Override
 		public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException
 		{
 			throw new UnsupportedOperationException();
 		}
 
+		@Override
 		public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException
 		{
 			this.chain = chain;

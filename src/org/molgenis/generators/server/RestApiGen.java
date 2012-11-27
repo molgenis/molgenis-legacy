@@ -21,7 +21,7 @@ import freemarker.template.Template;
 
 public class RestApiGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(RestApiGen.class);
+	private static final Logger logger = Logger.getLogger(RestApiGen.class);
 
 	@Override
 	public String getDescription()

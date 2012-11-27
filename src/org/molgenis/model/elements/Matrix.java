@@ -175,6 +175,7 @@ public class Matrix extends DBSchema
 		this.content = content;
 	}
 
+	@Override
 	public String toString()
 	{
 		return "Matrix(name=" + getName() + " content_entity=" + getContentEntity() + " container=" + container

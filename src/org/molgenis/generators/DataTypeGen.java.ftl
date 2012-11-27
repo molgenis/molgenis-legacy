@@ -7,8 +7,6 @@
 <#--                                                                   ##-->
 <#--#####################################################################-->
 /* File:        ${model.getName()}/model/${entity.getName()}.java
- * Copyright:   GBIC 2000-${year?c}, all rights reserved
- * Date:        ${date}
  * Generator:   ${generator} ${version}
  *
  * THIS FILE HAS BEEN GENERATED, PLEASE DO NOT EDIT!
@@ -19,7 +17,6 @@ package ${package};
 
 /**
  * ${Name(entity)}: ${entity.description}.
- * @version ${date} 
  * @author MOLGENIS generator
  */
 <#if entity.abstract>
