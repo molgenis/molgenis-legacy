@@ -17,7 +17,7 @@ import freemarker.template.Template;
 
 public class MolgenisContextListenerGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(MolgenisContextListenerGen.class);
+	private static final Logger logger = Logger.getLogger(MolgenisContextListenerGen.class);
 
 	@Override
 	public String getDescription()

@@ -24,10 +24,8 @@ package org.molgenis.util;
  * });
  * </pre>
  */
-public interface CsvReader extends TupleReader
+public interface CsvReader extends CsvParser, TupleReader
 {
-	public static final String ROWNAME_COLUMN = "_row_name";
-
 	/**
 	 * Default the reader guesses the separator. Use this method to set it
 	 * explicitly

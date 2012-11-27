@@ -4,12 +4,8 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Vector;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
@@ -53,9 +49,9 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 		delegate(request.getAction(), db, request, null);
 	}
 
+	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
 	{
-		final HttpServletRequest realRequest = ((MolgenisRequest) request).getRequest();
 		// automatically calls functions with same name as action
 		delegate(request.getAction(), db, request, out);
 
@@ -195,11 +191,13 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 			this.messages.add(m);
 	}
 
+	@Override
 	public void setSuccess(String message)
 	{
 		this.setMessages(new ScreenMessage(message, true));
 	}
 
+	@Override
 	public void setError(String message)
 	{
 		this.setMessages(new ScreenMessage(message, false));

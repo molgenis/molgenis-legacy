@@ -16,6 +16,7 @@
  */
 package org.molgenis.framework.db;
 
+import java.io.Closeable;
 import java.io.File;
 import java.sql.Connection;
 import java.text.ParseException;
@@ -39,7 +40,7 @@ import org.molgenis.util.TupleWriter;
  * operation (ensuring all actions are complete succesfully or if it fails
  * halfway, it gets undone).
  */
-public interface Database
+public interface Database extends Closeable
 {
 	/**
 	 * Create tables.
@@ -414,13 +415,6 @@ public interface Database
 	 * @throws Exception
 	 */
 	public File getFilesource() throws Exception;
-
-	/**
-	 * Stop using the database. Optional method.
-	 * 
-	 * @throws DatabaseException
-	 */
-	public void close() throws DatabaseException;
 
 	/**
 	 * Return a list of the classes of the entities managed.

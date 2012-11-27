@@ -62,6 +62,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements Mol
 	public abstract void createLogin(MolgenisRequest request) throws Exception;
 
 	// the one and only service() used in the molgenis app
+	@Override
 	public void service(HttpServletRequest request, HttpServletResponse response)
 	{
 		try
@@ -97,16 +98,20 @@ public abstract class MolgenisFrontController extends HttpServlet implements Mol
 	{
 		HttpServletRequest req = request.getRequest();
 
-		// block spiders
-		String userAgent = req.getHeader("User-Agent");
-		for (String spider : new String[]
-		{ "Googlebot", "Yammybot", "Openbot", "Yahoo", "Slurp", "msnbot", "ia_archiver", "Lycos", "Scooter",
-				"AltaVista", "Teoma", "Gigabot", "Googlebot-Mobile" })
+		if (usedOptions.block_webspiders)
 		{
-			if (userAgent.contains(spider))
+			// block spiders (webcrawlers) if the option has been set (default
+			// is false)
+			String userAgent = req.getHeader("User-Agent");
+			for (String spider : new String[]
+			{ "Googlebot", "Yammybot", "Openbot", "Yahoo", "Slurp", "msnbot", "ia_archiver", "Lycos", "Scooter",
+					"AltaVista", "Teoma", "Gigabot", "Googlebot-Mobile" })
 			{
-				response.response.sendError(403, "This page is forbidden for spiders.");
-				return;
+				if (userAgent.contains(spider))
+				{
+					response.response.sendError(403, "This page is forbidden for spiders.");
+					return;
+				}
 			}
 		}
 
@@ -236,11 +241,11 @@ public abstract class MolgenisFrontController extends HttpServlet implements Mol
 		}
 	}
 
-	protected void createLogger(MolgenisOptions mo) throws ServletException
+	protected void createLogger() throws ServletException
 	{
 		try
 		{
-			if (StringUtils.isEmpty(mo.log4j_properties_uri))
+			if (StringUtils.isEmpty(usedOptions.log4j_properties_uri))
 			{
 				// get logger and remove appenders added by classpath JARs. (=
 				// evil)
@@ -251,27 +256,27 @@ public abstract class MolgenisFrontController extends HttpServlet implements Mol
 				PatternLayout pattern = new PatternLayout("%-4r %-5p [%c] %m%n");
 
 				// get the level from the molgenis options
-				rootLogger.setLevel(mo.log_level);
+				rootLogger.setLevel(usedOptions.log_level);
 
 				// console appender
-				if (mo.log_target.equals(MolgenisOptions.LogTarget.CONSOLE))
+				if (usedOptions.log_target.equals(MolgenisOptions.LogTarget.CONSOLE))
 				{
 					rootLogger.addAppender(new ConsoleAppender(pattern));
-					System.out.println("Log4j CONSOLE appender added log level " + mo.log_level);
+					System.out.println("Log4j CONSOLE appender added log level " + usedOptions.log_level);
 				}
 
 				// file appender
-				if (mo.log_target.equals(MolgenisOptions.LogTarget.FILE))
+				if (usedOptions.log_target.equals(MolgenisOptions.LogTarget.FILE))
 				{
 					RollingFileAppender fa = new RollingFileAppender(pattern, "logger.out");
 					fa.setMaximumFileSize(100000000); // 100MB
 					rootLogger.addAppender(fa);
-					System.out.println("Log4j FILE appender added with level " + mo.log_level + ", writing to: "
-							+ new File(fa.getFile()).getAbsolutePath());
+					System.out.println("Log4j FILE appender added with level " + usedOptions.log_level
+							+ ", writing to: " + new File(fa.getFile()).getAbsolutePath());
 				}
 
 				// add no appender at all
-				if (mo.log_target.equals(MolgenisOptions.LogTarget.OFF))
+				if (usedOptions.log_target.equals(MolgenisOptions.LogTarget.OFF))
 				{
 					System.out.println("Log4j logger turned off");
 				}
@@ -279,7 +284,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements Mol
 			else
 			{
 				ClassLoader loader = this.getClass().getClassLoader();
-				URL urlLog4jProp = loader.getResource(mo.log4j_properties_uri);
+				URL urlLog4jProp = loader.getResource(usedOptions.log4j_properties_uri);
 				if (urlLog4jProp == null)
 				{
 					System.out

@@ -31,6 +31,7 @@ public class MapperSecurityDecoratorGen extends ForEachEntityGenerator
 	}
 
 	// @Override
+	@Override
 	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
 		Template template = this.createTemplate(this.getClass().getSimpleName() + getExtension() + ".ftl");

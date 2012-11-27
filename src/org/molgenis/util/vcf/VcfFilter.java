@@ -53,6 +53,7 @@ public class VcfFilter
 		this.description = description;
 	}
 
+	@Override
 	public String toString()
 	{
 		return String.format("VcfFilter(ID=%s,Description=\"%s\")", getId(), getDescription());

@@ -5,17 +5,16 @@ import java.io.PrintStream;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 
-/*
- * The idea is to use this in every exception, then exception is
- * handle in the same way.
- * At the moment after every exception System.exit(1) is called. This should
- * be changed in the future, for example in test & development
- * but continue in production (some flag in for example molgenis.properties, could
+/**
+ * The idea is to use this in every exception, then exception is handle in the
+ * same way. At the moment after every exception System.exit(1) is called. This
+ * should be changed in the future, for example in test & development but
+ * continue in production (some flag in for example molgenis.properties, could
  * be an idea).
  * 
  * @author Joris Lops
  */
-public class HandleException
+public class ExceptionHandler
 {
 	public static void handle(Throwable t, Log l)
 	{

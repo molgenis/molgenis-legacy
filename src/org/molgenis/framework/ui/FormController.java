@@ -16,13 +16,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.molgenis.fieldtypes.MrefField;
-import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
@@ -46,16 +45,16 @@ import org.molgenis.util.Tuple;
  */
 public abstract class FormController<E extends Entity> extends SimpleScreenController<FormModel<E>>
 {
-	// member variables
-	/** */
-	private static final transient Logger logger = Logger.getLogger(FormController.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(FormController.class);
+
+	private static final long serialVersionUID = 7813540700458832850L;
+
+	private static final int MAX_FILTERS = 100;
+	private static final String FILTER_ATTRIBUTE_ALL = "all";
 
 	/** Helper object that takes care of database paging */
 	protected DatabasePager<E> pager;
-	/** */
-	private static final long serialVersionUID = 7813540700458832850L;
 
-	// constructor
 	/**
 	 * @param model
 	 * @throws DatabaseException
@@ -69,14 +68,10 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		resetSystemHiddenColumns();
 		model.resetUserHiddenColumns();
 
-		// setViewMacro(FormModel.class.getSimpleName().replace("Model",
-		// "View"));
 		// FIXME: this assumes first column is sortable...
 		try
 		{
 			this.pager = new LimitOffsetPager<E>(getEntityClass(), model.create().getFields().firstElement());
-			// this.pager = new PrimaryKeyPager<E>(view.getEntityClass(),
-			// view.getDatabase(), view.create().getIdField());
 
 			// copy default sort from view
 			pager.setOrderByField(model.getSort());
@@ -117,7 +112,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 			// get the current command if any
 			ScreenCommand command = model.getCommand(action);
 
-			if (action == null || action == "")
+			if (action == null || action.isEmpty())
 			{
 				logger.debug("action or command does not exist");
 				return Show.SHOW_MAIN;
@@ -131,43 +126,25 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 			}
 			else if (action.equals("filter_add"))
 			{
-				this.addFilter(pager, db, request);
+				this.addFilters(pager, db, request);
 			}
 			else if (action.equals("filter_remove"))
 			{
+				// remove filter
 				int index = request.getInt("filter_id");
-				// watch out not to remove system level filters!
-				// pager.removeFilter(index + this.systemRules.size() - 1);
 				model.getUserRules().remove(index);
 
-				// reset the filters...
-				pager.resetFilters();
-				for (QueryRule rewrittenRule : this.rewriteAllRules(db, model.getUserRules()))
-				{
-					pager.addFilter(rewrittenRule);
-				}
-				for (QueryRule r : model.getSystemRules())
-				{
-					pager.addFilter(r);
-				}
+				// update pager
+				List<QueryRule> rules = new ArrayList<QueryRule>();
+				rules.addAll(model.getUserRules());
+				rules.addAll(model.getSystemRules());
+				pager.resetFilters(rules);
 			}
 			else if (action.equals("filter_set"))
 			{
 				// remove all existing filters and than add this as a new one.
 				model.setUserRules(new ArrayList<QueryRule>());
-
-				this.addFilter(pager, db, request);
-
-				// go to this screen if it is not selected
-				// DISABLED/DEPRECATED: use &select=${screenName} to go to the
-				// desired screen instead
-				// this is the default application behaviour and should be
-				// respected
-				// if (getParent() != null)
-				// {
-				// getParent().setSelected(model.getName());
-				// }
-
+				this.addFilters(pager, db, request);
 			}
 			else if (action.equals("update"))
 			{
@@ -241,53 +218,6 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 				if (UserHiddencols.contains(attribute)) UserHiddencols.remove(attribute);
 				model.setUserHiddenColumns(UserHiddencols);
 			}
-			// ACTIONS BELOW HAVE BEEN MOVED TO 'form.command' package
-			// else if (action.equals("createMassupdate"))
-			// {
-			// this.view.setMode(Mode.EDIT_VIEW);
-			// }
-			// else if (action.equals("removeselected"))
-			// {
-			// this.doRemoveSelected(request);
-			// }
-			// else if (action.equals("recordview"))
-			// {
-			// this.view.setMode(Mode.RECORD_VIEW);
-			// Integer offset = request.getInt("__offset");
-			// if (offset != null) pager.setOffset(offset - 1);
-			// }
-			// else if (action.equals("editview"))
-			// {
-			// this.view.setMode(Mode.EDIT_VIEW);
-			// Integer offset = request.getInt("__offset");
-			// if (offset != null) pager.setOffset(offset - 1);
-			// }
-			// else if (action.equals("listview"))
-			// {
-			// this.view.setMode(Mode.LIST_VIEW);
-			// Integer offset = request.getInt("__offset");
-			// if (offset != null)
-			// {
-			// pager.setOffset(offset - 1);
-			// }
-			// else
-			// {
-			// pager.setOffset(view.getOffset());
-			// }
-			// }
-			// else if (action.equals("limit"))
-			// {
-			// view.setLimit(request.getInt("limit"));
-			// }
-			// else if (action.equals("massUpdate"))
-			// {
-			// this.view.setMode(Mode.LIST_VIEW);
-			// this.doMassUpdate(request);
-			// }
-			// else if (action.equals("upload"))
-			// {
-			// this.doCsvUpload(request);
-			// }
 			else
 			{
 				logger.debug("action '" + action + "' unknown");
@@ -303,201 +233,131 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		return Show.SHOW_MAIN;
 	}
 
-	private Show addFilter(DatabasePager<E> pager, Database db, Tuple request) throws DatabaseException,
+	private Show addFilters(DatabasePager<E> pager, Database db, Tuple request) throws DatabaseException,
 			MolgenisModelException
 	{
+		List<QueryRule> userRules = new ArrayList<QueryRule>();
+		for (int i = 0; i < MAX_FILTERS; ++i)
+		{
+			// suffix: __filter_value, __filter_value1, __filter_value2 etc.
+			String suffix = i > 0 ? i + "" : "";
+
+			String filterAttr = request.getString("__filter_attribute" + suffix);
+			if (filterAttr == null) break;
+
+			String operatorStr = request.getString("__filter_operator" + suffix);
+			Operator operator = QueryRule.Operator.valueOf(operatorStr);
+			String filterValue = request.getString("__filter_value" + suffix);
+
+			QueryRule filterRule;
+			if (filterAttr.equals(FILTER_ATTRIBUTE_ALL))
+			{
+				filterRule = createFilterRule(db, operator, filterValue);
+			}
+			else
+			{
+				String fieldName = toFieldName(filterAttr);
+				filterRule = createFilterRule(db, fieldName, operator, filterValue);
+			}
+			userRules.add(filterRule);
+		}
+
 		FormModel<E> model = getModel();
+		model.getUserRules().addAll(userRules);
 
+		// reset pager
 		List<QueryRule> rules = new ArrayList<QueryRule>();
-
-		// support for multiple filters in a request URL
-		// example and syntax: get all markers between basepair position 150 and
-		// 300:
-		// ?__target=Markers&__action=filter_set&__filter_attribute=Marker_bpstart&__filter_operator=GREATER&__filter_value=150&__filter_attribute1=Marker_bpstart&__filter_operator1=LESS&__filter_value1=300
-		// keep adding numbers for multiple filters, e.g. __filter_attribute2,
-		// __filter_attribute3 and so on
-		for (int filterIndex = 0; filterIndex < 100; filterIndex++)
-		{
-			// for the first filter, usually the only one, keep the normal
-			// 'getters':
-			// e.g. "__filter_attribute" and not "__filter_attribute1"
-			// for subsequent ones, add a number to get multiple filters from
-			// the request
-			String getThisFilter = "";
-			if (filterIndex != 0)
-			{
-				getThisFilter = filterIndex + "";
-			}
-
-			try
-			{
-				// get the operator
-				Operator operator = QueryRule.Operator.valueOf(request.getString("__filter_operator" + getThisFilter));
-
-				// get the value
-				String value = request.getString("__filter_value" + getThisFilter);
-
-				if (StringUtils.isEmpty(value))
-				{ // to prevent null-pointer exception
-					value = "";
-				}
-
-				// automatically add LIKE delimiters %
-				if (operator.equals(Operator.LIKE) && !value.contains("%"))
-				{
-					value = "%" + value + "%";
-				}
-
-				// create the rule
-				QueryRule rule = new QueryRule(request.getString("__filter_attribute" + getThisFilter), operator, value);
-
-				rules.add(rule);
-			}
-			catch (Exception e)
-			{
-				break;
-			}
-		}
-
-		model.getUserRules().addAll(rules);
-
-		// reload the filters...
-		pager.resetFilters();
-		for (QueryRule rewrittenRule : this.rewriteAllRules(db, model.getUserRules()))
-		{
-			pager.addFilter(rewrittenRule);
-		}
-
-		for (QueryRule r : model.getSystemRules())
-		{
-			pager.addFilter(r);
-		}
+		rules.addAll(model.getUserRules());
+		rules.addAll(model.getSystemRules());
+		pager.resetFilters(rules);
 		pager.first(db);
 
 		return Show.SHOW_MAIN;
 	}
 
+	QueryRule createFilterRule(Database db, String fieldName, Operator operator, String value)
+			throws DatabaseException, MolgenisModelException
+	{
+		if (StringUtils.isEmpty(fieldName) || operator == null || StringUtils.isEmpty(value)) return null;
+
+		QueryRule queryRule = null;
+		for (Field field : getAllFields(db))
+		{
+			if (field.getName().equals(fieldName))
+			{
+				fieldName = getSearchField(fieldName);
+				queryRule = new QueryRule(fieldName, operator, value);
+				break;
+			}
+		}
+		return queryRule;
+	}
+
+	QueryRule createFilterRule(Database db, Operator operator, String value) throws DatabaseException,
+			MolgenisModelException
+	{
+		if (operator == null || StringUtils.isEmpty(value)) return null;
+
+		List<QueryRule> queryRules = new ArrayList<QueryRule>();
+		for (Field field : getAllFields(db))
+		{
+			String fieldName = getSearchField(field.getName());
+			if (!queryRules.isEmpty()) queryRules.add(new QueryRule(Operator.OR));
+			queryRules.add(new QueryRule(fieldName, operator, value));
+		}
+		return !queryRules.isEmpty() ? new QueryRule(queryRules) : null;
+	}
+
 	/**
-	 * the 'all' field needs special treatment
+	 * returns all non-system, non-hidden fields for this entity
 	 * 
+	 * @param db
+	 * @return
 	 * @throws DatabaseException
 	 * @throws MolgenisModelException
 	 */
-	public QueryRule[] rewriteAllRules(Database db, List<QueryRule> rulesToRewrite) throws DatabaseException,
-			MolgenisModelException
+	private Vector<Field> getAllFields(Database db) throws DatabaseException, MolgenisModelException
 	{
-		List<QueryRule> result = new ArrayList<QueryRule>();
-		for (QueryRule r : rulesToRewrite)
+		String simpleName = this.getEntityClass().getSimpleName();
+		org.molgenis.model.elements.Entity entity = db.getMetaData().getEntity(simpleName);
+		Vector<Field> allFields = entity.getAllFields();
+		for (Iterator<Field> it = entity.getAllFields().iterator(); it.hasNext();)
 		{
-			if ("all".equals(r.getField()))
-			{
-				List<QueryRule> all = new ArrayList<QueryRule>();
-
-				Class<? extends Entity> entityClass = this.getEntityClass();
-
-				org.molgenis.model.elements.Entity eType = db.getMetaData().getEntity(entityClass.getSimpleName()); // TODO
-
-				QueryRule orRule = new QueryRule(Operator.OR);
-				boolean first = true;
-
-				// 2 - iterate fields and build the queryrules - if field !=
-				// "__Type"
-				for (Field field : eType.getFields())
-				{
-					// System.out.println("*** FIELD NAME : " +
-					// field.getName().toLowerCase());
-					if (!field.getName().equals(Field.TYPE_FIELD))
-					{
-
-						// getsSearchField will map the field to field_name in
-						// case of xref/mref
-						QueryRule fieldRule = new QueryRule(this.getSearchField(field.getName()), r.getOperator(),
-								r.getValue());
-
-						if (field.getType() instanceof XrefField || field.getType() instanceof MrefField)
-						{
-							List<Field> labels = field.getXrefLabels();
-							if (labels.size() > 0) fieldRule.setField(field.getXrefLabels().get(0).getName());
-						}
-
-						// if(field.getType().getClass().getSimpleName().equals("XrefField")
-						// ||
-						// field.getType().getClass().getSimpleName().equals("MrefField")
-						// )
-						// {
-						// fieldRule = new QueryRule(field.getName(),
-						// r.getOperator(), r.getValue());
-						// }
-						// System.out.println("*** QUERYRULE : " +
-						// fieldRule.toString());
-						// add 'or' except for first filter rule
-						if (first) first = false;
-						else
-							all.add(orRule);
-						all.add(fieldRule);
-					}
-				}
-
-				// return pager.addFilter(new QueryRule(all));
-				result.add(new QueryRule(all));
-			}
-			else
-			{
-				// pager.addFilter(r);
-				result.add(r);
-			}
+			Field field = it.next();
+			if (field.isSystem() || field.isHidden()) it.remove();
 		}
-		return result.toArray(new QueryRule[result.size()]);
+		return allFields;
 	}
 
-	// overrides
+	private String toFieldName(String entityUnderscoreFieldName)
+	{
+		String simpleName = this.getEntityClass().getSimpleName();
+		return entityUnderscoreFieldName.substring(simpleName.length() + 1);
+	}
+
 	@Override
 	public void reload(Database db)
 	{
 		logger.info("reloading...");
 		FormModel<E> model = getModel();
 
-		// FIXME
 		try
 		{
-			// reload login only on login/logout events
-			// view.getRootScreen().getLogin().reload(db);
-
 			pager.setDirty(true);
 
-			// check whether the parent has changed and then reset
-			List<QueryRule> newSystemRules = model.getSystemRules();
-
-			// if (!newSystemRules.equals(model.getSystemRules()))
-			// {
-			// remember old user filters
-			// List<QueryRule> oldRules = Arrays.asList(pager.getFilters());
-			pager.resetFilters();
-			for (QueryRule rule : newSystemRules)
-			{
-				pager.addFilter(rule);
-			}
-
-			model.setSystemRules(newSystemRules);
-
-			for (QueryRule rule : this.rewriteAllRules(db, model.getUserRules()))
-			{
-				pager.addFilter(rule);
-			}
-			// }
+			// reset pager
+			List<QueryRule> rules = new ArrayList<QueryRule>();
+			rules.addAll(model.getUserRules());
+			rules.addAll(model.getSystemRules());
+			pager.resetFilters(rules);
 
 			// check view and set limit accordingly
-			// if (view.getMode().equals(Mode.EDIT_VIEW) && !view.isReadonly())
-			// view.setMode(Mode.RECORD_VIEW);
-
 			if (model.getMode().equals(Mode.EDIT_VIEW)) pager.setLimit(1);
 			else
 				pager.setLimit(model.getLimit());
 
 			// refresh pager and options
-			if (model.isReadonly())
-			// view.getDatabase().cacheXrefOptions(view.getEntityClass());
-			pager.refresh(db);
+			if (model.isReadonly()) pager.refresh(db);
 
 			// update view
 
@@ -509,16 +369,6 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 			model.setOffset(pager.getOffset());
 			model.setSort(pager.getOrderByField());
 			model.setSortMode(pager.getOrderByOperator());
-
-			// show filters without system level filters
-			// FIXME make simpler
-			// List<QueryRule> allRules = Arrays.asList(pager.getFilters());
-			// for(QueryRule r: allRules)
-			// {
-			// logger.debug("current rules: "+r);
-			// }
-			// view.setUserRules(allRules.subList(systemRules.size(),
-			// allRules.size()));
 
 			// update child views
 			if (model.getMode().equals(Mode.EDIT_VIEW))
@@ -547,7 +397,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	 * @return list of entity objects currently in view
 	 * @throws DatabaseException
 	 */
-	public List<E> getData(Database db) throws DatabaseException
+	private List<E> getData(Database db) throws DatabaseException
 	{
 		// TODO: move the row level security to the entitymapper...
 		FormModel<E> model = getModel();
@@ -695,7 +545,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	 * @param request
 	 * @throws DatabaseException
 	 */
-	public void doXrefselect(Tuple request) throws DatabaseException
+	private void doXrefselect(Tuple request) throws DatabaseException
 	{
 		// also set the parent menu
 		if (getParent() != null && getParent() instanceof MenuController)
@@ -730,175 +580,6 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		return pager;
 	}
 
-	// Actions below have been moved to form.command package
-	// public void doRemoveSelected(Tuple request) throws DatabaseException,
-	// ParseException, IOException
-	// {
-	// Database db = view.getDatabase();
-	// ScreenMessage msg = null;
-	// try
-	// {
-	// // get ids
-	// List<Object> idList = request.getList("massUpdate");
-	// if (idList == null || idList.size() == 0) throw new
-	// Exception("no items selected");
-	// for (Object id : idList)
-	// {
-	// logger.info("mass removing id: " + id);
-	// }
-	//
-	// // find selected entities
-	// Query q =
-	// view.getDatabase().query(view.getEntityClass()).in(view.create()
-	// .getIdField(), idList);
-	// List selection = q.find();
-	//
-	// // delete selected entities
-	// db.remove(selection);
-	// msg = new ScreenMessage("REMOVED " + selection.size() + " records",
-	// null, true);
-	// }
-	// catch (Exception e)
-	// {
-	// msg = new ScreenMessage("REMOVE SELECTION FAILED: " + e.getMessage(),
-	// null, false);
-	// }
-	// view.getMessages().add(msg);
-	//
-	// // **make sure the user sees a record**/
-	// if (msg.isSuccess())
-	// {
-	// pager.prev();
-	// // resetChildren();
-	// }
-	// }
-	// // FIXME move to mapper
-	// public void doMassUpdate(Tuple request)
-	// {
-	// List<Object> idList = request.getList("massUpdate");
-	// for (Object id : idList)
-	// {
-	// logger.info("mass updating id: " + id);
-	// }
-	//
-	// ScreenMessage msg = null;
-	// Database db = view.getDatabase();
-	// int row = 0;
-	// try
-	// {
-	// Query q = db.query(view.getEntityClass()).in(view.create().getIdField(),
-	// idList);
-	// List entities = q.find();
-	//
-	// db.beginTx();
-	// for (E e : entities)
-	// {
-	// row++;
-	// e.set(request, false);
-	// db.update(e);
-	// }
-	// db.commitTx();
-	// msg = new ScreenMessage("MASS UPDATE SUCCESS: updated " +
-	// entities.size() + " rows", null, true);
-	// }
-	//
-	// catch (Exception e)
-	// {
-	// try
-	// {
-	// db.rollbackTx();
-	// }
-	// catch (DatabaseException e1)
-	// {
-	// logger.error("doMassUpdate() Should never happen: "+e1);
-	// e1.printStackTrace();
-	// }
-	// msg = new ScreenMessage("MASS UPDATE FAILED on item '" + row + "': " +
-	// e, null, false);
-	// }
-	//
-	// view.getMessages().add(msg);
-	// }
-
-	// public void doCsvUpload(Tuple request)
-	// {
-	// logger.debug("doCsvUpload: " + request);
-	// ScreenMessage msg = null;
-	// try
-	// {
-	// CsvEntityReader csvReader = this.view.getCsvReader();
-	//
-	// int updatedRows = csvReader.importCsv(view.getDatabase(), new
-	// CsvStringReader(request.getString("__csvdata")), request);
-	// //for (E entity : entities)
-	// // logger.debug("parsed: " + entity);
-	// //view.getDatabase().add(entities);
-	// msg = new ScreenMessage("CSV UPLOAD SUCCESS: added " + updatedRows +
-	// " rows", null, true);
-	// logger.debug("CSV UPLOAD SUCCESS: added " + updatedRows + " rows");
-	// pager.resetFilters();
-	// pager.last();
-	// }
-	// catch (Exception e)
-	// {
-	// e.printStackTrace();
-	// msg = new ScreenMessage("CSV UPLOAD FAILED: " + e.getMessage(), null,
-	// false);
-	// logger.error("CSV UPLOAD FAILED: " + e.getMessage());
-	// }
-	// view.getMessages().add(msg);
-	// }
-
-	// FIXME move to mapper
-	// public void getDataAsText(Tuple requestTuple, PrintWriter out) throws
-	// DatabaseException
-	// {
-	//
-	// if (requestTuple.getString("limit").equals("selected"))
-	// {
-	//
-	// Object recordsObject = requestTuple.getObject("massUpdate");
-	// List<String> records = new ArrayList<String>();
-	//
-	// if (recordsObject != null)
-	// {
-	// if (recordsObject.getClass().equals(Vector.class)) records =
-	// (Vector<String>) recordsObject;
-	// else
-	// records.add(recordsObject.toString());
-	// }
-	//
-	// if(records.size() == 0)
-	// {
-	// out.println("No records selected.");
-	// return;
-	// }
-	// // watch out, the "IN" operator expects an Object[]
-	// view.getDatabase().find(view.getEntityClass(), new CsvWriter(out),
-	// new QueryRule("id", Operator.IN, records));
-	// }
-	// else if (requestTuple.getString("limit").equals("all"))
-	// {
-	// // remove limit/offset
-	// int oldLimit = view.getLimit();
-	// int oldOffset = view.getOffset();
-	// view.setLimit(0);
-	// view.setOffset(0);
-	//
-	// view.getDatabase().find(view.getEntityClass(), new CsvWriter(out),
-	// view.getRules());
-	//
-	// // restore limit/offset
-	// view.setOffset(oldOffset);
-	// view.setLimit(oldLimit);
-	// }
-	// else
-	// {
-	// view.getDatabase().find(view.getEntityClass(), new CsvWriter(out),
-	// view.getRules());
-	// }
-	// }
-
 	/**
 	 * Calculates visible columns. Needed for downloads.
 	 */
@@ -932,6 +613,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		return showColumns;
 	}
 
+	@Override
 	public ScreenView getView()
 	{
 		return new FreemarkerView("FormView.ftl", getModel());
@@ -971,4 +653,12 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	 * showing that in the UI).
 	 */
 	public abstract String getSearchField(String fieldName);
+
+	/**
+	 * Returns fields name for the given search field name
+	 * 
+	 * @param searchFieldName
+	 * @return
+	 */
+	public abstract String getField(String searchFieldName);
 }

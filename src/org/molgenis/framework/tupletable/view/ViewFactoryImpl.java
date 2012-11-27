@@ -8,6 +8,7 @@ import org.molgenis.framework.tupletable.view.renderers.Renderers.SPSSRenderer;
 
 public class ViewFactoryImpl implements ViewFactory
 {
+	@Override
 	public Renderer createView(String viewName)
 	{
 		if (viewName.equals("JQ_GRID"))

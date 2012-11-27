@@ -20,7 +20,6 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
-import org.apache.log4j.Logger;
 import org.molgenis.fieldtypes.CharField;
 import org.molgenis.fieldtypes.EnumField;
 import org.molgenis.fieldtypes.FieldType;
@@ -42,49 +41,10 @@ import org.molgenis.util.Tree;
  */
 public class Field implements Serializable
 {
-
-	public final static String TYPE_FIELD = "__Type";
-	public final transient Logger logger = Logger.getLogger(Field.class);
-
-	/**
-     * 
-     */
-	public class XRefLabel
-	{
-
-		/**
-         */
-		public Vector<String> getFields()
-		{
-			return fields;
-		}
-
-		/**
-         */
-		public String getFormat()
-		{
-			return format;
-		}
-
-		/**
-         */
-		public String toString()
-		{
-			return "XRefLabel: " + String.format(format, fields.toArray());
-		}
-
-		/** */
-		public Vector<String> fields = new Vector<String>();
-		/** */
-		public String format;
-	};
-
+	public static final String TYPE_FIELD = "__Type";
 	/** Fixed value used for determining the not-set value for the varchar. */
-	public static final int LENGTH_NOT_SET = 0;
+	private static final int LENGTH_NOT_SET = 0;
 
-	/**
-	 * Empty constructor
-	 */
 	public Field(Entity parent, String name, FieldType type)
 	{
 		this(parent, type, name, name, false, false, false, null, null);
@@ -423,6 +383,7 @@ public class Field implements Serializable
 	 * 
 	 * @return Whether this field is a xref.
 	 */
+	// FIXME rename to isXref
 	public boolean isXRef()
 	{
 		return type instanceof XrefField || type instanceof MrefField;
@@ -433,6 +394,7 @@ public class Field implements Serializable
 	 * 
 	 * @return Whether this field is a mref.
 	 */
+	// FIXME rename to isMref
 	public boolean isMRef()
 	{
 		return type instanceof MrefField;
@@ -905,6 +867,7 @@ public class Field implements Serializable
 	 * 
 	 * @return The string-representation.
 	 */
+	@Override
 	public String toString()
 	{
 		String str = "Field(";
@@ -969,6 +932,7 @@ public class Field implements Serializable
 	 * @return True if this object is the same as the obj argument, false
 	 *         otherwise.
 	 */
+	@Override
 	public boolean equals(Object obj)
 	{
 		if (obj != null && obj instanceof Field)
@@ -985,6 +949,7 @@ public class Field implements Serializable
 	 * 
 	 * @return The hash-value for this field.
 	 */
+	@Override
 	public int hashCode()
 	{
 		return this.name.hashCode();

@@ -108,6 +108,7 @@ public class MenuModel extends SimpleScreenModel
 	// return getController().getRootController().getLogin();
 	// }
 
+	@Override
 	public ScreenModel getSelected()
 	{
 
@@ -152,6 +153,7 @@ public class MenuModel extends SimpleScreenModel
 
 	}
 
+	@Override
 	public String toString()
 	{
 		return "MenuModel(name=" + getName() + ")";

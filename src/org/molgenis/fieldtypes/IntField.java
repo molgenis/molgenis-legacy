@@ -43,6 +43,7 @@ public class IntField extends FieldType
 		return "NUMBER (10,0)";
 	}
 
+	@Override
 	public String getJavaSetterType() throws MolgenisModelException
 	{
 		return "Int";
@@ -84,16 +85,19 @@ public class IntField extends FieldType
 		return "Ljava/lang/Integer;";
 	}
 
+	@Override
 	public Class<?> getJavaType()
 	{
 		return Integer.class;
 	}
 
+	@Override
 	public Object getTypedValue(String value) throws ParseException
 	{
 		return Integer.parseInt(value);
 	}
 
+	@Override
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.INT;

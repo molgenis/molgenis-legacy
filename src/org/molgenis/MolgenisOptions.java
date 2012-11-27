@@ -304,6 +304,9 @@ public class MolgenisOptions implements Serializable
 	@Option(name = "hibernate_search_index_base", param = Option.Param.STRING, type = Type.OPTIONAL_ARGUMENT, usage = "Directory where the full text index is created. Default: /tmp/lucene")
 	public String hibernate_search_index_base = "/tmp/lucene";
 
+	@Option(name = "block_webspiders", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Expert option: Block webcrawler user agents in FrontController")
+	public boolean block_webspiders = false;
+
 	// @Option(name = "force_lowercase_names", param = "force_lowercase_names",
 	// type = Option.Type.REQUIRED_ARGUMENT, usage =
 	// "Expert option. Wether all names should be converted to lowercase. Default: true"
@@ -476,6 +479,7 @@ public class MolgenisOptions implements Serializable
 		}
 	}
 
+	@Override
 	public String toString()
 	{
 		try

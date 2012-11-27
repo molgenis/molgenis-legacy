@@ -9,7 +9,6 @@ import org.molgenis.util.Tuple;
  * The ActionInput defines action buttons. When clicked, it will result in a new
  * request(__action=&lt;name&gt;)
  */
-@SuppressWarnings("deprecation")
 public class ActionInput extends HtmlInput<Object>
 {
 	public enum Type
@@ -37,6 +36,7 @@ public class ActionInput extends HtmlInput<Object>
 
 		public final String tag;
 
+		@Override
 		public String toString()
 		{
 			return tag;

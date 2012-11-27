@@ -2,7 +2,11 @@ package org.molgenis.util;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+
+import org.apache.commons.io.IOUtils;
 
 public class DirectoryCompare
 {
@@ -88,8 +92,11 @@ public class DirectoryCompare
 	public static boolean compareFileContent(File fileInDir1, File fileInDir2) throws Exception
 	{
 		boolean filesAreEqual = true;
-		BufferedReader input1 = new BufferedReader(new FileReader(fileInDir1));
-		BufferedReader input2 = new BufferedReader(new FileReader(fileInDir2));
+		;
+		BufferedReader input1 = new BufferedReader(new InputStreamReader(new FileInputStream(fileInDir1),
+				Charset.forName("UTF-8")));
+		BufferedReader input2 = new BufferedReader(new InputStreamReader(new FileInputStream(fileInDir2),
+				Charset.forName("UTF-8")));
 		try
 		{
 			String line1 = null;
@@ -141,8 +148,8 @@ public class DirectoryCompare
 		}
 		finally
 		{
-			input1.close();
-			input2.close();
+			IOUtils.closeQuietly(input1);
+			IOUtils.closeQuietly(input2);
 		}
 
 		return filesAreEqual;

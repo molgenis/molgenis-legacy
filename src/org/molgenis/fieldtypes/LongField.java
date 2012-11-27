@@ -79,16 +79,19 @@ public class LongField extends FieldType
 		return "Ljava/lang/Long;";
 	}
 
+	@Override
 	public Class<?> getJavaType()
 	{
 		return Long.class;
 	}
 
+	@Override
 	public Long getTypedValue(String value) throws ParseException
 	{
 		return Long.parseLong(value);
 	}
 
+	@Override
 	public FieldTypeEnum getEnumType()
 	{
 		return FieldTypeEnum.LONG;

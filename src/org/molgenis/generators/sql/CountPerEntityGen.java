@@ -17,7 +17,7 @@ import freemarker.template.Template;
 
 public class CountPerEntityGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(CountPerEntityGen.class);
+	private static final Logger logger = Logger.getLogger(CountPerEntityGen.class);
 
 	@Override
 	public String getDescription()

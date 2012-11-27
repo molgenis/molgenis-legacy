@@ -1,7 +1,7 @@
 <!-- org.molgenis.framework.ui.MolgenisForm -->
 <form method="post" enctype="multipart/form-data" id="${screen.name}" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
-	<input type="hidden" name="__target" value="${screen.name}">
+	<input type="hidden" name="__target" value="${screen.name}"/>
 	<!--needed in every form: to define the action. This can be set by the submit button-->
 	<@hidden name="__action"/>
 	

@@ -189,6 +189,7 @@ public class SelectMultipleInput extends OptionInput<List<String>>
 		this.getOptions().add(new ValueLabel(value.toString(), label.toString()));
 	}
 
+	@Override
 	public void setOptions(String... choices)
 	{
 		List<ValueLabel> choicePairs = new ArrayList<ValueLabel>();

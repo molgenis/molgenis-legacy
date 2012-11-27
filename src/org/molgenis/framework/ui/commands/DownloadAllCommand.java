@@ -4,7 +4,6 @@
 package org.molgenis.framework.ui.commands;
 
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -17,7 +16,6 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.model.MolgenisModelException;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -30,7 +28,7 @@ import org.molgenis.util.Tuple;
 public class DownloadAllCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = -2682113764135477871L;
-	public static final transient Logger logger = Logger.getLogger(DownloadAllCommand.class);
+	private static final Logger logger = Logger.getLogger(DownloadAllCommand.class);
 
 	public DownloadAllCommand(String name, ScreenController<?> parentScreen)
 	{
@@ -51,21 +49,8 @@ public class DownloadAllCommand<E extends Entity> extends SimpleCommand
 
 		List<String> fieldsToExport = controller.getVisibleColumnNames();
 
-		// TODO : remove entity name, capitals to small , and remove all _name
-		// fields
-		// we need to rewrite rules to accomodate the 'all'
-		QueryRule[] rules;
-		try
-		{
-			rules = controller.rewriteAllRules(db, Arrays.asList(model.getRulesExclLimitOffset()));
-		}
-		catch (MolgenisModelException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new DatabaseException(e);
-		}
-
+		// TODO remove entity name, capitals to small , and remove _name fields
+		QueryRule[] rules = model.getRulesExclLimitOffset();
 		db.find(model.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport, rules);
 
 		return ScreenModel.Show.SHOW_MAIN;

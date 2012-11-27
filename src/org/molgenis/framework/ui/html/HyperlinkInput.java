@@ -79,6 +79,7 @@ public class HyperlinkInput extends HtmlInput<String>
 	/**
 	 * Override because hyperlink must not be escaped
 	 */
+	@Override
 	public String getHtmlValue()
 	{
 		return this.getValue();

@@ -9,14 +9,13 @@ import java.util.zip.DataFormatException;
 public interface TupleReader extends TupleIterable, Closeable
 {
 	/** Iterate through available tuples */
+	@Override
 	public Iterator<Tuple> iterator();
 
 	/**
 	 * The values of the first row.
 	 * 
-	 * @return columnnames list as long as each datarow. If necessary an
-	 *         artificial first column is added named
-	 *         {@link CsvFileReader#ROWNAME_COLUMN}
+	 * @return columnnames list as long as each datarow.
 	 * @throws Exception
 	 */
 	public List<String> colnames() throws Exception;
@@ -100,7 +99,7 @@ public interface TupleReader extends TupleIterable, Closeable
 	 * @throws DataFormatException
 	 * @throws IOException
 	 */
-	public void reset() throws IOException, DataFormatException;
+	public void reset() throws IOException;
 
 	/** ask whether the source of the reader is closed **/
 	public boolean isClosed();

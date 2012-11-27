@@ -18,18 +18,12 @@ import org.apache.log4j.Logger;
  */
 public abstract class CsvBufferedReaderMultiline extends AbstractTupleReader implements CsvReader, TupleIterable
 {
+	private static final Logger logger = Logger.getLogger(CsvFileReader.class.getSimpleName());
 	/** default separators */
-	public static char[] separators =
+	private static final char[] separators =
 	{ ',', '\t', ';', ' ' };
-
 	/** Wrapper around the resource that is read */
-	protected BufferedReader reader = null;
-
-	/** for log messages */
-	private static final transient Logger logger = Logger.getLogger(CsvFileReader.class.getSimpleName());
-
-	/** character for escaping " */
-	private char quoteEscape = '"';
+	protected BufferedReader reader;
 
 	protected CsvBufferedReaderMultiline()
 	{
@@ -151,6 +145,7 @@ public abstract class CsvBufferedReaderMultiline extends AbstractTupleReader imp
 	}
 
 	/** This method gets next tuple, if available */
+	@Override
 	public Tuple next()
 	{
 		try
@@ -202,7 +197,11 @@ public abstract class CsvBufferedReaderMultiline extends AbstractTupleReader imp
 			}
 
 			// next is null
-			if (reader != null) reader.close();
+			if ((reader != null) && !isClosed())
+			{
+				reader.close();
+			}
+
 			return null;
 		}
 		catch (Exception e)
@@ -231,6 +230,7 @@ public abstract class CsvBufferedReaderMultiline extends AbstractTupleReader imp
 		return result.toString();
 	}
 
+	@Override
 	public void close() throws IOException
 	{
 		this.reader.close();
@@ -238,7 +238,7 @@ public abstract class CsvBufferedReaderMultiline extends AbstractTupleReader imp
 
 	/**
 	 * Guesses the separator of a String, such as ',' or '\t' by counting the
-	 * occurence of well known separators.
+	 * occurrence of well known separators.
 	 * 
 	 * @see CsvFileReader#separators
 	 * @param aLine
@@ -327,7 +327,7 @@ public abstract class CsvBufferedReaderMultiline extends AbstractTupleReader imp
 				if (inQuotes)
 				{
 					// skip escaping of quotes
-					if (chars[i] == this.quoteEscape && (i + 1) < chars.length && chars[i + 1] == '"')
+					if (chars[i] == CSV_DEFAULT_QUOTE_CHARACTER && (i + 1) < chars.length && chars[i + 1] == '"')
 					{
 						// escape quote once and skip next
 						currentRecord += chars[i];
@@ -423,12 +423,14 @@ public abstract class CsvBufferedReaderMultiline extends AbstractTupleReader imp
 	}
 
 	// @Override
+	@Override
 	public void setMissingValues(String missingValue)
 	{
 		this.missingValueIndicator = missingValue;
 	}
 
 	// @Override
+	@Override
 	public String getMissingValues()
 	{
 		return this.missingValueIndicator;
@@ -447,6 +449,7 @@ public abstract class CsvBufferedReaderMultiline extends AbstractTupleReader imp
 
 	}
 
+	@Override
 	public void renameField(String from, String to) throws Exception
 	{
 		List<String> colnames = this.colnames();

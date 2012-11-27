@@ -34,7 +34,7 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends 
 	private MODEL model;
 
 	/** */
-	protected final transient Logger logger = Logger.getLogger(this.getClass());
+	protected static final Logger logger = Logger.getLogger(SimpleScreenController.class);
 	/** */
 	static final long serialVersionUID = 5286068849305140609L;
 	/** Determines which of the subscreens should be shown */
@@ -60,6 +60,7 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends 
 	 * 
 	 * @throws Exception
 	 */
+	@Override
 	public abstract void reload(Database db) throws Exception;
 
 	/**
@@ -130,11 +131,13 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends 
 		}
 	}
 
+	@Override
 	public ApplicationController getApplicationController()
 	{
 		return (ApplicationController) this.getRoot();
 	}
 
+	@Override
 	public MODEL getModel()
 	{
 		return model;
@@ -219,6 +222,7 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends 
 		return null;
 	}
 
+	@Override
 	public String render() throws HtmlInputException
 	{
 		String result = this.getView().render();

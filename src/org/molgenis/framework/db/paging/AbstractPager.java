@@ -28,10 +28,6 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 		FIRST, PREV, NEXT, LAST, UPTODATE, REFRESH;
 	}
 
-	/** Logger */
-	// private Logger logger =
-	// Logger.getLogger(this.getClass().getSimpleName());
-
 	/** Class of this pager */
 	private Class<E> entityClass;
 
@@ -60,7 +56,7 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 	private List<QueryRule> filters = new ArrayList<QueryRule>();
 
 	/** Logger **/
-	private final static transient Logger logger = Logger.getLogger(AbstractPager.class.getSimpleName());
+	private final static Logger logger = Logger.getLogger(AbstractPager.class);
 
 	/**
 	 * @param entityClass
@@ -223,12 +219,11 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 	@Override
 	public void addFilter(QueryRule filter) throws DatabaseException
 	{
-		if (filter == null) throw new DatabaseException("cannot add null filter");
-
-		filters.add(filter);
-		// pagingState = State.FIRST;
-		// FIXME: would be great if we kept the original object!!!
-		logger.debug("added filter '" + filter + "'.");
+		if (filter != null)
+		{
+			filters.add(filter);
+			logger.debug("added filter: " + filter);
+		}
 	}
 
 	@Override
@@ -240,16 +235,23 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 	@Override
 	public void removeFilter(int index) throws DatabaseException
 	{
-		logger.debug("removed filter: " + filters.get(index));
-		filters.remove(index);
-		// pagingState = State.FIRST;
+		if (index >= 0 && index < filters.size())
+		{
+			filters.remove(index);
+			logger.debug("removed filter: " + filters.get(index));
+		}
 	}
 
 	@Override
 	public void resetFilters()
 	{
-		filters = new ArrayList<QueryRule>();
-		// pagingState = State.FIRST;
+		resetFilters(new ArrayList<QueryRule>());
+	}
+
+	@Override
+	public void resetFilters(List<QueryRule> filters)
+	{
+		this.filters = filters;
 	}
 
 	// PROTECTED HELPERS
@@ -264,6 +266,7 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 	}
 
 	/** will check whether it is dirty, the refresh */
+	@Override
 	public abstract void refresh(Database db) throws DatabaseException;
 
 	protected State getPagingState()

@@ -11,7 +11,7 @@ public abstract class AbstractTupleReader implements TupleReader
 {
 
 	/** for log messages */
-	protected static final transient Logger logger = Logger.getLogger(CsvFileReader.class.getSimpleName());
+	protected static final Logger logger = Logger.getLogger(CsvFileReader.class.getSimpleName());
 	/**
 	 * a matching String that indicates where the Csv starts; empty means first
 	 * line
@@ -28,36 +28,40 @@ public abstract class AbstractTupleReader implements TupleReader
 	protected List<String> columnnames;
 	/** guessed separator */
 	protected char separator = 0;
-	/** boolean indicating the parser is working */
-	protected boolean isParsing = false;
 	/** boolean indicating that the resource parsed has headers... */
 	protected boolean hasHeader = true;
 
+	@Override
 	public String getBlockEnd()
 	{
 		return blockEnd;
 	}
 
+	@Override
 	public void setBlockEnd(String blockEnd)
 	{
 		this.blockEnd = blockEnd;
 	}
 
+	@Override
 	public String getBlockStart()
 	{
 		return blockStart;
 	}
 
+	@Override
 	public void setBlockStart(String blockStart)
 	{
 		this.blockStart = blockStart;
 	}
 
+	@Override
 	public void setMissingValues(String missingValue)
 	{
 		this.missingValueIndicator = missingValue;
 	}
 
+	@Override
 	public String getMissingValues()
 	{
 		return this.missingValueIndicator;
@@ -69,6 +73,7 @@ public abstract class AbstractTupleReader implements TupleReader
 		this.columnnames = fields;
 	}
 
+	@Override
 	public void renameField(String from, String to) throws Exception
 	{
 		if ((from != null && from.equals(to)) || (from == null && to == null)) return;
@@ -86,6 +91,7 @@ public abstract class AbstractTupleReader implements TupleReader
 
 	}
 
+	@Override
 	public List<String> rownames() throws IOException, DataFormatException
 	{
 		List<String> rownames = new ArrayList<String>();

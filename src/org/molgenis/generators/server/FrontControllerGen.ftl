@@ -52,8 +52,11 @@ public class FrontController extends MolgenisFrontController
 	@Override
 	public void init(javax.servlet.ServletConfig conf) throws javax.servlet.ServletException
 	{
+		//save options so they can be passed to superclass
+		this.usedOptions = new UsedMolgenisOptions();
+	
 		//create fresh logger based on MolgenisOptions
-		createLogger(new UsedMolgenisOptions());
+		createLogger();
 		logger = Logger.getLogger(FrontController.class);
 		
 		//first, we initialize so the ServletContext is created from the webserver
