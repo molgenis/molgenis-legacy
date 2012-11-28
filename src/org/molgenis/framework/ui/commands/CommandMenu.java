@@ -37,6 +37,7 @@ public class CommandMenu extends SimpleCommand
 	 * 
 	 * @param command
 	 */
+	@Override
 	public void addCommand(ScreenCommand command)
 	{
 		if (menu_items.containsKey(command.getName()))
@@ -61,6 +62,7 @@ public class CommandMenu extends SimpleCommand
 	 * 
 	 * @param name
 	 */
+	@Override
 	public ScreenCommand getCommand(String name)
 	{
 		return menu_items.get(name);

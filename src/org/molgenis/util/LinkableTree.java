@@ -14,7 +14,7 @@ package org.molgenis.util;
 /**
  * Implementation of a simple tree
  */
-public class LinkableTree<T extends Tree> extends SimpleTree<T>
+public class LinkableTree<T extends Tree<T>> extends SimpleTree<T>
 {
 
 	/**

@@ -19,6 +19,7 @@ public abstract class PluginCommand extends SimpleCommand
 	}
 
 	/** Optional function if you need a dialog */
+	@Override
 	public abstract List<HtmlInput<?>> getInputs();
 
 	/**
@@ -28,7 +29,9 @@ public abstract class PluginCommand extends SimpleCommand
 	 */
 	public abstract void handleRequest(Tuple request);
 
+	@Override
 	public abstract String getMacro();
 
+	@Override
 	public abstract String getTemplate();
 }
