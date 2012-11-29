@@ -198,18 +198,6 @@ public class Entity extends DBSchema implements Record
 
 	public void setAbstract(boolean is_abstract)
 	{
-		// if (is_abstract)
-		// {
-		// try
-		// {
-		// this.removeField(this.getField(Field.TYPE_FIELD));
-		// }
-		// catch (MolgenisModelException e)
-		// {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// }
 		this.abstract_type = is_abstract;
 	}
 
