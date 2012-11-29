@@ -33,13 +33,11 @@ public abstract class EntityForm<E extends Entity> extends HtmlForm
 		}
 		catch (InstantiationException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 		catch (IllegalAccessException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 

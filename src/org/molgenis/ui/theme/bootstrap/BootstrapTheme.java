@@ -1,5 +1,7 @@
 package org.molgenis.ui.theme.bootstrap;
 
+import org.apache.log4j.Logger;
+import org.molgenis.framework.ui.ApplicationController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.ui.Button;
@@ -17,6 +19,8 @@ import org.molgenis.ui.theme.base.BaseTheme;
  */
 public class BootstrapTheme extends BaseTheme implements ScreenView
 {
+	private static final Logger logger = Logger.getLogger(ApplicationController.class);
+
 	private MolgenisComponent component;
 
 	public BootstrapTheme(MolgenisComponent c)
@@ -43,8 +47,7 @@ public class BootstrapTheme extends BaseTheme implements ScreenView
 		}
 		catch (RenderException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.warn(e);
 			return e.getMessage();
 		}
 	}
