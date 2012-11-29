@@ -70,10 +70,17 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 			HtmlSettings.defaultRenderDecorator = (RenderDecorator) Class.forName(options.render_decorator)
 					.newInstance();
 		}
-		catch (Exception e)
+		catch (ClassNotFoundException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		catch (InstantiationException e)
+		{
+			throw new RuntimeException(e);
+		}
+		catch (IllegalAccessException e)
+		{
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -177,8 +184,7 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 			}
 			catch (Exception e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn(e);
 				s.getModel().getMessages().add(new ScreenMessage("reload failed: " + e.getMessage(), false));
 			}
 		}
@@ -258,27 +264,6 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 	{
 		this.emailService = emailService;
 	}
-
-	// @Override
-	// public boolean isVisible()
-	// {
-	// // TODO Auto-generated method stub
-	// return true;
-	// }
-	//
-	// @Override
-	// public String getViewTemplate()
-	// {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
-	//
-	// @Override
-	// public void reset()
-	// {
-	// // TODO Auto-generated method stub
-	//
-	// }
 
 	public void clearAllMessages()
 	{
