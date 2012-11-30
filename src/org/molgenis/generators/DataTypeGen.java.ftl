@@ -99,6 +99,8 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 	</#foreach>	
 <#--concrete class has method bodies-->
 <#else>
+    /** default serial version ID */
+    private static final long serialVersionUID = 1L;
 	// fieldname constants
     <#foreach field in entity.getImplementedFields()>
 	public final static String ${field.name?upper_case} = "${field.name}";<#if field.type == "xref" || field.type == "mref"><#list field.xrefLabelNames as label>
@@ -478,10 +480,10 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 	 */
 	public java.util.List<${type(field.xrefLabels[label_index])}> get${JavaName(field)}_${JavaName(label)}()
 	{
-<#if databaseImp = 'JPA'>
-		if(this.${name(field)} != null && this.${name(field)}.size() > 0)
+<#-- <#if databaseImp = 'JPA'> -->
+		if(this.${name(field)} != null && !this.${name(field)}.isEmpty())
 		{
-			java.util.List<${type(field.xrefLabels[label_index])}> result = new java.util.ArrayList<${type(field.xrefLabels[label_index])}>();
+			java.util.List<${type(field.xrefLabels[label_index])}> result = new java.util.ArrayList<${type(field.xrefLabels[label_index])}>(this.${name(field)}.size());
 			for(${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)} o: ${name(field)}) result.add(o.get${JavaName(label)}().toString());
 			return java.util.Collections.unmodifiableList(result);
 		}	
@@ -489,9 +491,10 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 		{	
 			return ${name(field)}_${label};
 		}
-<#else>
-		return ${name(field)}_${label};
-</#if>
+<#-- <#else> -->
+		
+		<#-- return ${name(field)}_${label};-->
+     <#-- </#if> -->
 	}
 	
 	/**
