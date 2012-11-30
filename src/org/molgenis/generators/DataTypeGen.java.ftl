@@ -480,7 +480,6 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 	 */
 	public java.util.List<${type(field.xrefLabels[label_index])}> get${JavaName(field)}_${JavaName(label)}()
 	{
-<#-- <#if databaseImp = 'JPA'> -->
 		if(this.${name(field)} != null && !this.${name(field)}.isEmpty())
 		{
 			java.util.List<${type(field.xrefLabels[label_index])}> result = new java.util.ArrayList<${type(field.xrefLabels[label_index])}>(this.${name(field)}.size());
@@ -491,10 +490,6 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 		{	
 			return ${name(field)}_${label};
 		}
-<#-- <#else> -->
-		
-		<#-- return ${name(field)}_${label};-->
-     <#-- </#if> -->
 	}
 	
 	/**
