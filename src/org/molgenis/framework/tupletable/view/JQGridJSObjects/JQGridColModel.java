@@ -1,6 +1,8 @@
 package org.molgenis.framework.tupletable.view.JQGridJSObjects;
 
+import org.apache.log4j.Logger;
 import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
+import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
 
 @SuppressWarnings("unused")
@@ -8,6 +10,8 @@ import org.molgenis.model.elements.Field;
 { "URF_UNREAD_FIELD", "UUF_UNUSED_FIELD" }, justification = "Gson reads private fields")
 public class JQGridColModel
 {
+	private static final Logger logger = Logger.getLogger(JQGridColModel.class);
+
 	private String name;
 	private String label;
 	private String index;
@@ -104,10 +108,9 @@ public class JQGridColModel
 			}
 
 		}
-		catch (Exception e)
+		catch (MolgenisModelException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		}
 
 	}
@@ -118,7 +121,7 @@ public class JQGridColModel
 		private boolean searchhidden = true;
 		private String value;
 		private String[] sopt = new String[]
-		{ "eq", "ne", "bw", "bn", "ew", "en", "cn", "nc" };
+		{ "eq", "bw", "ew", "cn" };
 
 		private String dataInit = "function(elem){ $(elem).datepicker({dateFormat:\"mm/dd/yyyy\"});}}";
 
@@ -141,7 +144,7 @@ public class JQGridColModel
 				case DATE:
 				case DATE_TIME:
 					return new SearchOptions(new String[]
-					{ "eq", "ne", "lt", "le", "gt", "ge" });
+					{ "eq", "lt", "le", "gt", "ge" });
 
 				default:
 					return new SearchOptions();
