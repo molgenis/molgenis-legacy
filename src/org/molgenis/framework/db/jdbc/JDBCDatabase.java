@@ -466,8 +466,7 @@ public class JDBCDatabase extends AbstractDatabase
 			}
 			catch (SQLException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e);
 			}
 		}
 	}
