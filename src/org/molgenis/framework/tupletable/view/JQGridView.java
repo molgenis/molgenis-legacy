@@ -222,12 +222,9 @@ public class JQGridView extends HtmlWidget
 
 					if (CollectionUtils.isNotEmpty(filterRules))
 					{
-						if (tupleTable instanceof FilterableTupleTable)
-						{
-							rules.addAll(filterRules);
-							((FilterableTupleTable) tupleTable).setFilters(rules);
-						}
+						rules.addAll(filterRules);
 					}
+
 					int residue = 0;
 					final int rowCount = tupleTable.getCount();
 					if (rowCount % postData.getRows() != 0)
@@ -249,14 +246,15 @@ public class JQGridView extends HtmlWidget
 						tupleTable.setOffset(offset);
 					}
 
-					if (StringUtils.isNotEmpty(postData.getSidx()) && tupleTable instanceof FilterableTupleTable)
+					if (StringUtils.isNotEmpty(postData.getSidx()))
 					{
 						final Operator sortOperator = StringUtils.equals(postData.getSord(), "asc") ? QueryRule.Operator.SORTASC
 								: QueryRule.Operator.SORTDESC;
 						rules.add(new QueryRule(sortOperator, postData.getSidx()));
 					}
 
-					if (tupleTable instanceof FilterableTupleTable)
+					if ((tupleTable instanceof FilterableTupleTable) && !request.isNull("_search")
+							&& request.getBoolean("_search"))
 					{
 						((FilterableTupleTable) tupleTable).setFilters(rules);
 					}

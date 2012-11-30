@@ -1,5 +1,6 @@
 package org.molgenis.framework.tupletable.view.JQGridJSObjects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.molgenis.util.Tuple;
 
 import com.google.gson.Gson;
@@ -48,7 +49,8 @@ public class JQGridPostData
 			String searchField = request.getString("searchField");
 			String searchOper = request.getString("searchOper");
 
-			if ((searchString != null) && (searchField != null) && (searchOper != null))
+			if (StringUtils.isNotBlank(searchString) && StringUtils.isNotBlank(searchField)
+					&& StringUtils.isNotBlank(searchOper))
 			{
 				JQGridRule.JQGridOp op = JQGridRule.JQGridOp.valueOf(searchOper);
 				gridFilter = new JQGridFilter();

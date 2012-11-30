@@ -75,8 +75,19 @@ $.fn.extend({
 						} 
        				}
        				
-       				grid = $('#' + options.tableId, container).jqGrid(config).jqGrid('navGrid', config.pager, config.settings, editRecordConfig, addRecordConfig, deleteRecordConfig, config.searchOptions);
-       			
+       				//Set search to true if the reset button on the search dialog is clicked, so server can distinquish between
+       				// a request to clear the filters and another (for example hide column) where we want to keep the filters
+       				var searchConfig = config.searchOptions;
+       				searchConfig.onReset = function(){
+       					$('#' + options.tableId, container).jqGrid('setGridParam', { search: true });
+       					
+       					//closeAfterReset setting doesn't work, is a bug in jqGrid, we do it ourselfs
+       					var gridid = grid[0].id;
+        				$.jgrid.hideModal("#searchmodfbox_" + gridid,{gb: "#gbox_" + gridid, jqm: true, onClose: null});
+       				};
+       				
+       				grid = $('#' + options.tableId, container).jqGrid(config).jqGrid('navGrid', config.pager, config.settings, editRecordConfig, addRecordConfig, deleteRecordConfig, searchConfig);
+       				 
        				addColumnRemoveButtons(config);
 					
        				//Put the columnpager in the grid toolbar

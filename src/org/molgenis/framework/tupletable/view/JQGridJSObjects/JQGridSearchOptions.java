@@ -8,6 +8,9 @@ public class JQGridSearchOptions
 	private boolean multipleSearch;
 	private boolean multipleGroup;
 	private boolean showQuery;
+	private int width = 650;// Width of the search dialog
+	private boolean closeAfterSearch = true;
+	private boolean closeAfterReset = true;
 	private List<JQGridRule.JQGridOp> sopt;
 
 	public JQGridSearchOptions()
@@ -62,6 +65,36 @@ public class JQGridSearchOptions
 	public void setSopt(List<JQGridRule.JQGridOp> sopt)
 	{
 		this.sopt = sopt;
+	}
+
+	public int getWidth()
+	{
+		return width;
+	}
+
+	public void setWidth(int width)
+	{
+		this.width = width;
+	}
+
+	public boolean isCloseAfterSearch()
+	{
+		return closeAfterSearch;
+	}
+
+	public void setCloseAfterSearch(boolean closeAfterSearch)
+	{
+		this.closeAfterSearch = closeAfterSearch;
+	}
+
+	public boolean isCloseAfterReset()
+	{
+		return closeAfterReset;
+	}
+
+	public void setCloseAfterReset(boolean closeAfterReset)
+	{
+		this.closeAfterReset = closeAfterReset;
 	}
 
 }

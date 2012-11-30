@@ -121,7 +121,7 @@ public class JQGridColModel
 		private boolean searchhidden = true;
 		private String value;
 		private String[] sopt = new String[]
-		{ "eq", "ne", "bw", "bn", "ew", "en", "cn", "nc" };
+		{ "eq", "bw", "ew", "cn" };
 
 		private String dataInit = "function(elem){ $(elem).datepicker({dateFormat:\"mm/dd/yyyy\"});}}";
 
@@ -144,7 +144,7 @@ public class JQGridColModel
 				case DATE:
 				case DATE_TIME:
 					return new SearchOptions(new String[]
-					{ "eq", "ne", "lt", "le", "gt", "ge" });
+					{ "eq", "lt", "le", "gt", "ge" });
 
 				default:
 					return new SearchOptions();
