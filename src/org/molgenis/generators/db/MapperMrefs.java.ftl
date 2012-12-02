@@ -98,7 +98,7 @@ Common parts for saving multiplicative references (mrefs) to an entity.
 <#assign mref_remote_field = f.mrefRemoteid/>
 <#assign mref_local_field = f.mrefLocalid/>		
 			//remove duplicates using Set
-			entity.set${JavaName(f)}(new ArrayList(new LinkedHashSet(entity.get${JavaName(f)}_${JavaName(f.xrefField)}())));
+			entity.set${JavaName(f)}_${JavaName(f.xrefField)}(new ArrayList(new LinkedHashSet(entity.get${JavaName(f)}_${JavaName(f.xrefField)}())));
 			for(${pkeyJavaType(f.xrefEntity)} id: entity.get${JavaName(f)}_${JavaName(pkey(f.xrefEntity))}())
 			{
 				${JavaName(mref_entity)} new_mref = new ${JavaName(mref_entity)}();
