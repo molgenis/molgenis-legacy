@@ -433,7 +433,6 @@ public class JDBCDatabase extends AbstractDatabase
 			conn = this.getConnection();
 			StringBuilder create_tables_sqlBuilder = new StringBuilder();
 
-			// this resolves the issue : DM_DEFAULT_ENCODING
 			InputStream fis = this.getClass().getResourceAsStream(filename);
 			BufferedReader in = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
 			try
