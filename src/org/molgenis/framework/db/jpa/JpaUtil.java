@@ -118,7 +118,6 @@ public class JpaUtil
 		BufferedReader br = null;
 		try
 		{
-			// This resolves the DM_DEFAULT_ENCODING
 			br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8")));
 
 			EntityManager em = db.getEntityManager();
