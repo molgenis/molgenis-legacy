@@ -26,8 +26,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jxl.Sheet;
-import jxl.Workbook;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.Sheet;
+
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.model.MolgenisModelException;
@@ -59,13 +61,15 @@ public class ImportWizardExcelPrognosis {
 
 	public ImportWizardExcelPrognosis(Database db, File excelFile) throws Exception {
 
-		Workbook workbook = Workbook.getWorkbook(excelFile);
+		Workbook workbook = WorkbookFactory.create(excelFile);
+		
 		ArrayList<String> lowercasedSheetNames = new ArrayList<String>();
 		Map<String, String> lowerToOriginalName = new LinkedHashMap<String, String>();
 
 		try {
 
-			for (String sheetName : workbook.getSheetNames()) {
+			for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+				String sheetName = workbook.getSheetName(i);
 				lowercasedSheetNames.add(sheetName.toLowerCase());
 				lowerToOriginalName.put(sheetName.toLowerCase(), sheetName);
 			}
@@ -91,9 +95,7 @@ public class ImportWizardExcelPrognosis {
 
 		} catch (Exception e) {
 			throw e;
-		} finally {
-			workbook.close();
-		}
+		} 
 	}
 	
 	public void headersToMaps(String originalSheetname, List<String> allHeaders, List<Field> entityFields)
