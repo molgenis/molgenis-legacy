@@ -840,8 +840,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		}
 		catch (DatabaseException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.warn(e);
 		}
 		return true;
 	}
@@ -857,8 +856,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.warn(e);
 			return null;
 		}
 		return new File(file);
