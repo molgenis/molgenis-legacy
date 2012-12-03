@@ -804,7 +804,6 @@ public class Molgenis
 			StringBuilder create_tables_sqlBuilder = new StringBuilder();
 			try
 			{
-				// this fixes the findbug issue DM_DEFAULT_ENCODING
 				BufferedReader in = new BufferedReader(new InputStreamReader(
 						new FileInputStream(create_tables_file_str), Charset.forName("UTF-8")));
 
