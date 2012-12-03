@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +39,10 @@ public class SPSSExporter extends CsvExporter
 		writeSPSFile(spssOs, csvFileName);
 	}
 
-	private void writeSPSFile(OutputStream spssOs, String csvFileName) throws TableException
+	private void writeSPSFile(OutputStream spssOs, String csvFileName) throws TableException,
+			UnsupportedEncodingException
 	{
-		BufferedWriter spsWriter = new BufferedWriter(new OutputStreamWriter(spssOs));
+		BufferedWriter spsWriter = new BufferedWriter(new OutputStreamWriter(spssOs, "UTF8"));
 
 		List<Field> columns = tupleTable.getColumns();
 		StringWriter valLabels = new StringWriter();
