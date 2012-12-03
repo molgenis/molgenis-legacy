@@ -38,6 +38,7 @@ import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.ExcelUtils;
 
 import ${entity.namespace}.${JavaName(entity)};
 import ${entity.namespace}.csv.${JavaName(entity)}CsvReader;
@@ -65,7 +66,7 @@ public class ${JavaName(entity)}ExcelReader
 		if(!createSuccess){
 			throw new Exception("Creation of tmp file 'tmp${JavaName(entity)}.txt' failed, cannot proceed.");
 		}
-		boolean fileHasHeaders = writeSheetToFile(sheet, tmp${JavaName(entity)});
+		boolean fileHasHeaders = ExcelUtils.writeSheetToFile(sheet, tmp${JavaName(entity)}, true);
 		if(fileHasHeaders){
 			int count = new ${JavaName(entity)}CsvReader().importCsv(db, tmp${JavaName(entity)}, defaults, dbAction, missingValue);
 			tmp${JavaName(entity)}.delete();
@@ -100,88 +101,4 @@ public class ${JavaName(entity)}ExcelReader
 		return headers;
 	}
 	
-	private boolean writeSheetToFile(Sheet sheet, File file) throws IOException
-	{
-		List<String> headers = new ArrayList<String>();
-
-		Row header = sheet.getRow(0); // assume headers are on first line
-		if ((header == null) || (header.getPhysicalNumberOfCells() == 0))
-		{
-			return false;
-		}
-
-		ArrayList<Integer> namelessHeaderLocations = new ArrayList<Integer>(); // allow
-																				// for
-																				// empty
-																				// columns,
-																				// also
-																				// column
-																				// order
-																				// does
-																				// not
-																				// matter
-		int i = 0;
-		Iterator<Cell> it = header.cellIterator();
-		while (it.hasNext())
-		{
-			Cell cell = it.next();
-			if (cell != null)
-			{
-				String value = cell.getStringCellValue();
-				if (StringUtils.isNotBlank(value))
-				{
-					headers.add(value);
-				}
-				else
-				{
-					headers.add("nameless" + i);
-					namelessHeaderLocations.add(i);
-				}
-			}
-			i++;
-		}
-
-		CsvWriter cw = new CsvWriter(new FileOutputStream(file), Charset.forName("UTF-8"), headers);
-		try
-		{
-			cw.setMissingValue("");
-			cw.writeHeader();
-
-			Iterator<Row> rowIterator = sheet.rowIterator();
-			if (rowIterator.hasNext())
-			{
-				rowIterator.next();
-				while (rowIterator.hasNext())
-				{
-					Row row = rowIterator.next();
-					Tuple t = new SimpleTuple();
-
-					for (int colIndex = 0; colIndex < row.getLastCellNum(); colIndex++)
-					{
-						if (!namelessHeaderLocations.contains(colIndex) && colIndex < headers.size())
-						{
-							Cell cell = row.getCell(colIndex);
-							String value = "";
-
-							if (cell != null)
-							{
-								cell.setCellType(Cell.CELL_TYPE_STRING);
-								value = cell.getStringCellValue();
-							}
-
-							t.set(headers.get(colIndex), value);
-						}
-					}
-
-					cw.writeRow(t);
-				}
-
-			}
-		}
-		finally
-		{
-			cw.close();
-		}
-		return true;
-	}
 }
