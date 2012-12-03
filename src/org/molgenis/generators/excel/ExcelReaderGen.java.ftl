@@ -24,10 +24,13 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
-import jxl.Cell;
-import jxl.Sheet;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Row;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -73,51 +76,106 @@ public class ${JavaName(entity)}ExcelReader
 		}
 	}
 	
-	public List<String> getNonEmptyHeaders(Sheet sheet){
+	public List<String> getNonEmptyHeaders(Sheet sheet)
+	{
 		List<String> headers = new ArrayList<String>();
-		Cell[] headerCells = sheet.getRow(0); //assume headers are on first line
-		for(int i = 0; i < headerCells.length; i++){
-			if(!headerCells[i].getContents().equals("")){
-				headers.add(headerCells[i].getContents());
+		Row header = sheet.getRow(0); // assume headers are on first line
+		if (header != null)
+		{
+			Iterator<Cell> it = header.cellIterator();
+			while (it.hasNext())
+			{
+				Cell cell = it.next();
+				if (cell != null)
+				{
+					String value = cell.getStringCellValue();
+					if (StringUtils.isNotBlank(value))
+					{
+						headers.add(value);
+					}
+				}
 			}
 		}
+
 		return headers;
 	}
 	
-	private boolean writeSheetToFile(Sheet sheet, File file) throws IOException{
+	private boolean writeSheetToFile(Sheet sheet, File file) throws IOException
+	{
 		List<String> headers = new ArrayList<String>();
-		Cell[] headerCells = sheet.getRow(0); //assume headers are on first line
-		if(headerCells.length == 0){
+
+		Row header = sheet.getRow(0); // assume headers are on first line
+		if ((header == null) || (header.getPhysicalNumberOfCells() == 0))
+		{
 			return false;
 		}
-		ArrayList<Integer> namelessHeaderLocations = new ArrayList<Integer>(); //allow for empty columns, also column order does not matter
-		for(int i = 0; i < headerCells.length; i++){
-			if(!headerCells[i].getContents().equals("")){
-				headers.add(headerCells[i].getContents());
-			}else{
-				headers.add("nameless"+i);
-				namelessHeaderLocations.add(i);
+
+		ArrayList<Integer> namelessHeaderLocations = new ArrayList<Integer>(); // allow
+																				// for
+																				// empty
+																				// columns,
+																				// also
+																				// column
+																				// order
+																				// does
+																				// not
+																				// matter
+		int i = 0;
+		Iterator<Cell> it = header.cellIterator();
+		while (it.hasNext())
+		{
+			Cell cell = it.next();
+			if (cell != null)
+			{
+				String value = cell.getStringCellValue();
+				if (StringUtils.isNotBlank(value))
+				{
+					headers.add(value);
+				}
+				else
+				{
+					headers.add("nameless" + i);
+					namelessHeaderLocations.add(i);
+				}
 			}
+			i++;
 		}
+
 		CsvWriter cw = new CsvWriter(new FileOutputStream(file), Charset.forName("UTF-8"), headers);
 		try
 		{
 			cw.setMissingValue("");
 			cw.writeHeader();
-			for (int rowIndex = 1; rowIndex < sheet.getRows(); rowIndex++)
+
+			Iterator<Row> rowIterator = sheet.rowIterator();
+			if (rowIterator.hasNext())
 			{
-				Tuple t = new SimpleTuple();
-				int colIndex = 0;
-				for (Cell c : sheet.getRow(rowIndex))
+				rowIterator.next();
+				while (rowIterator.hasNext())
 				{
-					if (!namelessHeaderLocations.contains(colIndex) && colIndex < headers.size()
-							&& c.getContents() != null)
+					Row row = rowIterator.next();
+					Tuple t = new SimpleTuple();
+
+					for (int colIndex = 0; colIndex < row.getLastCellNum(); colIndex++)
 					{
-						t.set(headers.get(colIndex), c.getContents());
+						if (!namelessHeaderLocations.contains(colIndex) && colIndex < headers.size())
+						{
+							Cell cell = row.getCell(colIndex);
+							String value = "";
+
+							if (cell != null)
+							{
+								cell.setCellType(Cell.CELL_TYPE_STRING);
+								value = cell.getStringCellValue();
+							}
+
+							t.set(headers.get(colIndex), value);
+						}
 					}
-					colIndex++;
+
+					cw.writeRow(t);
 				}
-				cw.writeRow(t);
+
 			}
 		}
 		finally
