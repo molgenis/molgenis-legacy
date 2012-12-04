@@ -99,7 +99,8 @@ public class ExcelImport
 							count = new ${JavaName(entity)}ExcelReader().importSheet(db, workbook.getSheetAt(sheetNames.indexOf("${entity.name?lower_case}")), defaults, dbAction, missingValue);
 						}
 						result.getProgressLog().add("${entity.name?lower_case}");
-						result.getMessages().put("${entity.name?lower_case}", "evaluated "+count+" ${entity.name?lower_case} elements");
+						if(count > 0)
+							result.getMessages().put("${entity.name?lower_case}", "evaluated "+count+" ${entity.name?lower_case} elements");
 					} catch (Exception e) {
 						result.setErrorItem("${entity.name?lower_case}");
 						result.getMessages().put("${entity.name?lower_case}", e.getMessage() != null ? e.getMessage() : "null");
@@ -120,7 +121,8 @@ public class ExcelImport
 							count = new ${JavaName(entity)}ExcelReader().importSheet(db, workbook.getSheetAt(sheetNames.indexOf("${entity.name?lower_case}")), defaults, dbAction, missingValue);
 						}
 						result.getProgressLog().add("${entity.name?lower_case}");
-						result.getMessages().put("${entity.name?lower_case}",  "evaluated "+count+" ${entity.name?lower_case} elements");
+						if(count > 0)
+							result.getMessages().put("${entity.name?lower_case}",  "evaluated "+count+" ${entity.name?lower_case} elements");
 					} catch (Exception e) {
 						result.setErrorItem("${entity.name?lower_case}");
 						result.getMessages().put("${entity.name?lower_case}", e.getMessage() != null ? e.getMessage() : "null");
