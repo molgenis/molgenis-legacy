@@ -136,10 +136,10 @@ public class JpaUtil
 				}
 				catch (Exception ex)
 				{
-					logger.error(String.format("Error executing '%s'\n %s", sql, ex.getMessage()));
+					logger.error(String.format("Error executing '%s'%n %s", sql, ex.getMessage()));
 					throw ex;
 				}
-				logger.info(String.format("Got result %d from '%s'\n", result, sql));
+				logger.info(String.format("Got result %d from '%s'%n", result, sql));
 			}
 			em.getTransaction().commit();
 		}

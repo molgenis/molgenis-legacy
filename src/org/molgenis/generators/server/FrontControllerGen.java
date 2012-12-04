@@ -19,7 +19,7 @@ import freemarker.template.Template;
 
 public class FrontControllerGen extends Generator
 {
-	private static transient final Logger logger = Logger.getLogger(FrontControllerGen.class);
+	private static final Logger logger = Logger.getLogger(FrontControllerGen.class);
 
 	@Override
 	public String getDescription()

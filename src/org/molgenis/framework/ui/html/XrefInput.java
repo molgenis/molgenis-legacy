@@ -26,6 +26,7 @@ import org.molgenis.util.Tuple;
  * for the values. Use xrefLabels to select which field(s) should be shown as
  * labels to the user (optional).
  */
+@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "VA_FORMAT_STRING_USES_NEWLINE", justification = "Always use \n for newlines")
 public class XrefInput<E extends Entity> extends AbstractRefInput<E>
 {
 	protected XrefInput()
