@@ -19,7 +19,7 @@ import freemarker.template.Template;
 
 public class MolgenisGuiServiceGen extends Generator
 {
-	private static transient final Logger logger = Logger.getLogger(MolgenisGuiServiceGen.class);
+	private static final Logger logger = Logger.getLogger(MolgenisGuiServiceGen.class);
 
 	@Override
 	public String getDescription()
