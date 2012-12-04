@@ -20,7 +20,7 @@ import freemarker.template.Template;
 
 public class JpaDatabaseGen extends Generator
 {
-	public static final transient Log logger = LogFactory.getLog(JpaDatabaseGen.class);
+	private static final Log logger = LogFactory.getLog(JpaDatabaseGen.class);
 
 	@Override
 	public String getDescription()

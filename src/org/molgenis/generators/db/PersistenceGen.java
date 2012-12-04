@@ -18,7 +18,7 @@ import freemarker.template.Template;
 
 public class PersistenceGen extends Generator
 {
-	public static final transient Log logger = LogFactory.getLog(PersistenceGen.class);
+	private static final Log logger = LogFactory.getLog(PersistenceGen.class);
 
 	@Override
 	public String getDescription()
