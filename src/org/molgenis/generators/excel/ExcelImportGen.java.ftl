@@ -64,7 +64,11 @@ public class ExcelImport
 		ArrayList<String> sheetNames = new ArrayList<String>();
 		for (int i = 0; i < workbook.getNumberOfSheets(); i++)
 		{
-			sheetNames.add(workbook.getSheetName(i));
+			String sheetName = workbook.getSheetName(i);
+			if (sheetName != null)
+			{
+				sheetNames.add(sheetName.toLowerCase());
+			}
 		}
 		
 		ImportResult result = new ImportResult();
