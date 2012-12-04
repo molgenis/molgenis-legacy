@@ -720,31 +720,6 @@ public class MolgenisModelValidator
 					"there should be only one auto column and it must be the primary key for entity '" + entityname
 							+ "'");
 
-			// should have secondary key if there is a reference to this entity
-			// if (!entity.isAbstract() && autocount >= 1)
-			// {
-			// if (entity.getAllKeys().size() < 2)
-			// {
-			// // check references
-			// for (Entity otherEntity : model.getEntities())
-			// {
-			// for (Field f : otherEntity.getAllFields())
-			// {
-			// if ((f.getType() instanceof XrefField || f.getType() instanceof
-			// MrefField)
-			// && entity.getName().equals(f.getXrefEntityName()))
-			// {
-			// throw new MolgenisModelException(
-			// "if primary key is autoid, there should be secondary key for entity '"
-			// + entityname + "' because of reference by " +
-			// otherEntity.getName()
-			// + "." + f.getName());
-			// }
-			// }
-			// }
-			// }
-			// }
-
 			// to strict, the unique field may be non-automatic
 			if (!entity.isAbstract() && autocount < 1)
 			{
