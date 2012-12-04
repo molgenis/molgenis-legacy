@@ -42,7 +42,7 @@ ${imports(model, model.getEntity(entity), "ui", "Form")}
 <#if parent_form?exists>
 //imports parent forms
 <#assign xrefentity = parent_form.getRecord()>
-import ${xrefentity.getNamespace()}.${Name(xrefentity)};
+import ${xrefentity.getNamespace()}.${JavaName(xrefentity)};
 </#if>
 
 /**
