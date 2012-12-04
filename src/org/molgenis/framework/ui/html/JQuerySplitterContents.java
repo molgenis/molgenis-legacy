@@ -2,13 +2,14 @@ package org.molgenis.framework.ui.html;
 
 public class JQuerySplitterContents
 {
-	private static String leftPane;
-	private static String rightTopPane;
-	private static String rightBottomPane;
+	private String leftPane;
+	private String rightTopPane;
+	private String rightBottomPane;
+	private JQuerySplitterContents jqsplcon = new JQuerySplitterContents();
 
 	public void setLeftPane(String leftPane)
 	{
-		JQuerySplitterContents.leftPane = leftPane;
+		jqsplcon.leftPane = leftPane;
 	}
 
 	public String getLeftPane()
@@ -18,7 +19,7 @@ public class JQuerySplitterContents
 
 	public void setRightTopPane(String rightTopPane)
 	{
-		JQuerySplitterContents.rightTopPane = rightTopPane;
+		jqsplcon.rightTopPane = rightTopPane;
 	}
 
 	public String getRightTopPane()
@@ -28,12 +29,12 @@ public class JQuerySplitterContents
 
 	public void setRightBottomPane(String rightBottomPane)
 	{
-		JQuerySplitterContents.rightBottomPane = rightBottomPane;
+		jqsplcon.rightBottomPane = rightBottomPane;
 	}
 
 	public String getRightBottomPane()
 	{
-		return rightBottomPane;
+		return jqsplcon.rightBottomPane;
 	}
 
 }
