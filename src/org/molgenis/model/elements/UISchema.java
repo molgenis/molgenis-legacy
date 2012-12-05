@@ -37,6 +37,8 @@ public class UISchema extends SimpleTree<UISchema>
 
 	private String group;
 
+	private String groupRead;
+
 	// constructor(s)
 	/**
 	 * The standard constructor, which links the object in the tree (with the
@@ -177,14 +179,32 @@ public class UISchema extends SimpleTree<UISchema>
 	public ArrayList<String> getAllUniqueGroups()
 	{
 		ArrayList<String> res = new ArrayList<String>();
+
+		// first add all unique read/write groups
+		// FIXME: are these hardcoded excludes OK ?
 		for (UISchema schema : getAllChildren())
 		{
 			if (schema.getGroup() != null && !res.contains(schema.getGroup()) && !schema.getGroup().equals("admin")
-					&& !schema.getGroup().equals("anonymous"))
+					&& !schema.getGroup().equals("anonymous") && !schema.getGroup().equals("AllUsers")
+					&& !schema.getGroup().equals("system"))
 			{
 				res.add(schema.getGroup());
 			}
 		}
+
+		// now add all unique read groups that were NOT part of the regular
+		// read/write groups
+		// FIXME: are these hardcoded excludes OK ?
+		for (UISchema schema : getAllChildren())
+		{
+			if (schema.getGroupRead() != null && !res.contains(schema.getGroupRead())
+					&& !schema.getGroupRead().equals("admin") && !schema.getGroupRead().equals("anonymous")
+					&& !schema.getGroupRead().equals("AllUsers") && !schema.getGroupRead().equals("system"))
+			{
+				res.add(schema.getGroupRead());
+			}
+		}
+
 		return res;
 	}
 
@@ -301,6 +321,16 @@ public class UISchema extends SimpleTree<UISchema>
 	public void setGroup(String group)
 	{
 		this.group = group;
+	}
+
+	public String getGroupRead()
+	{
+		return groupRead;
+	}
+
+	public void setGroupRead(String groupRead)
+	{
+		this.groupRead = groupRead;
 	}
 
 	// public String getNearestParentRole(){
