@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import org.molgenis.framework.ui.JQueryDateFormatMapper;
 import org.molgenis.util.Tuple;
 
 /**
@@ -29,7 +30,7 @@ public class DateInput extends HtmlInput<Date>
 	/** String constants for property name 'hidden' */
 	public static final String DATEFORMAT = "dateformat";
 	/** Description. Defaults to 'name'. */
-	private String dateformat = "dd-MM-yyyy";
+	private String javaDataFormat = "dd-MM-yyyy";
 
 	/**
 	 * Construct date input with name and using default value of today as value
@@ -209,7 +210,11 @@ public class DateInput extends HtmlInput<Date>
 	{
 		String description = getName().equals(getDescription()) ? "" : " title=\"" + getDescription() + "\"";
 		// set defaults:
-		String options = "dateFormat: 'dd-mm-yy', changeMonth: true, changeYear: true, showButtonPanel: true";
+
+		String options = "dateFormat: '"
+				+ JQueryDateFormatMapper.toJQueryDateFormat(this.getDateFormat(), this.getDateFormat())
+				+ "', changeMonth: true, changeYear: true, showButtonPanel: true";
+
 		String datevalue = this.getValue(this.getDateFormat());
 		// change defaults to Jquery scriptvalues if set
 		if (this.getJqueryproperties() != null)
@@ -246,11 +251,11 @@ public class DateInput extends HtmlInput<Date>
 
 	public String getDateFormat()
 	{
-		return dateformat;
+		return javaDataFormat;
 	}
 
 	public void setDateFormat(String dateformat)
 	{
-		this.dateformat = dateformat;
+		this.javaDataFormat = dateformat;
 	}
 }
