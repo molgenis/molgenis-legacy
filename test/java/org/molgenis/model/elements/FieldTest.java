@@ -331,19 +331,6 @@ public class FieldTest
 	}
 
 	@Test
-	public void testGetSetXrefLabelNames_dotsToUnderscores() throws MolgenisModelException
-	{
-		Entity xrefEntity = mock(Entity.class);
-		Model model = when(mock(Model.class).getEntity("xrefEntity")).thenReturn(xrefEntity).getMock();
-		Entity entity = when(mock(Entity.class).getModel()).thenReturn(model).getMock();
-
-		Field field = new Field(entity, "field", new XrefField());
-		field.setXRefEntity("xrefEntity");
-		field.setXrefLabelNames(Arrays.asList("a.1", "b.2", "c.3"));
-		assertEquals(field.getXrefLabelNames(), Arrays.asList("a_1", "b_2", "c_3"));
-	}
-
-	@Test
 	public void testGetSetXrefLabelNames_removeXrefEntityName() throws MolgenisModelException
 	{
 		Entity xrefEntity = mock(Entity.class);
