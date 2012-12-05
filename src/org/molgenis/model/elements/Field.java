@@ -611,7 +611,7 @@ public class Field implements Serializable
 		List<String> label_names = new ArrayList<String>();
 		for (String label : this.getXrefLabelsTemp())
 		{
-			label_names.add(label.replace(".", "_").replace(this.getXrefEntityName() + "_", ""));
+			label_names.add(label.replace(this.getXrefEntityName() + ".", ""));
 		}
 		return label_names;
 	}
