@@ -39,7 +39,11 @@ public class FillMetadata {
 		fillMetadata(db, true);
 	}
 	
-	public static void fillMetadata(Database db, boolean useLogin) throws Exception {
+	public static void fillMetadata(Database db, boolean useLogin) {
+		fillMetadata(db, useLogin, "UserLoginPlugin");
+	}
+	
+	public static void fillMetadata(Database db, boolean useLogin, String loginPluginName) throws Exception {
         System.out.println("fillMetadata start");
 
 		Login login = db.getLogin();
@@ -113,7 +117,7 @@ public class FillMetadata {
 			db.add(group);
 		}
 </#list>
-		
+
 		MolgenisRoleGroupLink mrgl1 = new MolgenisRoleGroupLink();
 		mrgl1.setGroup_Id(group1.getId());
 		mrgl1.setRole(user1.getId());
@@ -146,45 +150,38 @@ public class FillMetadata {
 
 <#assign schema = model.getUserinterface()>		
 <#list schema.getAllChildren() as screen>
-	<#if screen.getGroup()?exists>
+	<#if screen.getGroup()?exists || screen.getGroupRead()?exists>
 		<#if screen.getType() == "FORM">
-		//INSERT INTO MolgenisPermission (role_, entity, permission) SELECT (
-		//SELECT id FROM MolgenisRole WHERE name = '${screen.getGroup()}'), id, 'write' FROM MolgenisEntity WHERE MolgenisEntity.name = '${screen.getName()}${screen.getType()?lower_case?cap_first}Controller';
 		{
-			MolgenisGroup role = MolgenisGroup.findByName(db, "${screen.getGroup()}");	
+			MolgenisGroup role = MolgenisGroup.findByName(db, "<#if screen.getGroup()?exists>${screen.getGroup()}<#else>${screen.getGroupRead()}</#if>");	
 			MolgenisEntity entity = db.find(MolgenisEntity.class, new QueryRule("name", Operator.EQUALS, "${screen.getName()}${screen.getType()?lower_case?cap_first}Controller")).get(0);
 			
 			MolgenisPermission mp = new MolgenisPermission();
 			mp.setRole(role.getId());
 			mp.setEntity(entity.getId());
-			mp.setPermission("write");
+			mp.setPermission("<#if screen.getGroup()?exists>write<#else>read</#if>");
 			db.add(mp);
 		}		
-		//INSERT INTO MolgenisPermission (role_, entity, permission) 
-		//			SELECT (SELECT id FROM MolgenisRole WHERE name = '${screen.getGroup()}'), id, 'write' 
-		//			FROM MolgenisEntity WHERE MolgenisEntity.id = (SELECT id FROM MolgenisEntity WHERE className = '${screen.getEntity().namespace}.${screen.getEntity().name}');		
 		{
 			MolgenisEntity id = db.find(MolgenisEntity.class, new QueryRule("className", Operator.EQUALS, "${screen.getEntity().namespace}.${screen.getEntity().name}")).get(0);
-			MolgenisGroup role = MolgenisGroup.findByName(db, "${screen.getGroup()}");
+			MolgenisGroup role = MolgenisGroup.findByName(db, "<#if screen.getGroup()?exists>${screen.getGroup()}<#else>${screen.getGroupRead()}</#if>");
 			MolgenisEntity entity = db.find(MolgenisEntity.class, new QueryRule("id", Operator.EQUALS, id.getId())).get(0);
 			
 			MolgenisPermission mp = new MolgenisPermission();
 			mp.setRole(role.getId());
 			mp.setEntity(entity.getId());
-			mp.setPermission("write");
+			mp.setPermission("<#if screen.getGroup()?exists>write<#else>read</#if>");
 			db.add(mp);
 		}
 		<#else>
-		//INSERT INTO MolgenisPermission (role_, entity, permission) SELECT (
-		//	SELECT id FROM MolgenisRole WHERE name = '${screen.getGroup()}'), id, 'write' FROM MolgenisEntity WHERE MolgenisEntity.name = '${screen.getName()}${screen.getType()?lower_case?cap_first}';
 		{
-			MolgenisGroup role = MolgenisGroup.findByName(db,"${screen.getGroup()}");		
+			MolgenisGroup role = MolgenisGroup.findByName(db,"<#if screen.getGroup()?exists>${screen.getGroup()}<#else>${screen.getGroupRead()}</#if>");		
 			MolgenisEntity entity = db.find(MolgenisEntity.class, new QueryRule("name", Operator.EQUALS, "${screen.getName()}${screen.getType()?lower_case?cap_first}")).get(0);
 			
 			MolgenisPermission mp = new MolgenisPermission();
 			mp.setRole(role.getId());
 			mp.setEntity(entity.getId());
-			mp.setPermission("write");
+			mp.setPermission("<#if screen.getGroup()?exists>write<#else>read</#if>");
 			db.add(mp);
 		}			
 		</#if>
@@ -192,7 +189,7 @@ public class FillMetadata {
 </#list>
 		{
 			//INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 3, id, 'read' FROM MolgenisEntity WHERE MolgenisEntity.name = 'UserLoginPlugin';
-			MolgenisEntity insertEntities = db.find(MolgenisEntity.class, new QueryRule("name", Operator.EQUALS, "UserLoginPlugin")).get(0);		
+			MolgenisEntity insertEntities = db.find(MolgenisEntity.class, new QueryRule("name", Operator.EQUALS, loginPluginName)).get(0);		
 			MolgenisPermission mp = new MolgenisPermission();
 			mp.setRole(user2.getId());
 			mp.setEntity(insertEntities.getId());

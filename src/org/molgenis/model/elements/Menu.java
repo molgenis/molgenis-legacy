@@ -86,7 +86,7 @@ public class Menu extends UISchema
 	@Override
 	public String toString()
 	{
-		return String.format("Menu(name=%s, group=%s)", getName(), getGroup());
+		return String.format("Menu(name=%s, group=%s, groupRead=%s)", getName(), getGroup(), getGroupRead());
 	}
 
 	//

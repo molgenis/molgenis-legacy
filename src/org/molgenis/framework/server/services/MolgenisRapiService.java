@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -229,7 +230,7 @@ public class MolgenisRapiService implements MolgenisService
 	private String printScript(URL source) throws IOException
 	{
 		StringBuilder strBuilder = new StringBuilder();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(source.openStream()));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(source.openStream(), Charset.forName("UTF-8")));
 		try
 		{
 			String sourceLine;
