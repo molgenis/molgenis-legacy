@@ -1,9 +1,20 @@
 package org.molgenis.util;
 
-import ch.ethz.ssh2.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import org.apache.log4j.Logger;
 
-import java.io.*;
+import ch.ethz.ssh2.ChannelCondition;
+import ch.ethz.ssh2.Connection;
+import ch.ethz.ssh2.InteractiveCallback;
+import ch.ethz.ssh2.LocalPortForwarder;
+import ch.ethz.ssh2.SCPClient;
+import ch.ethz.ssh2.Session;
 
 /**
  * Wrapper arround ssh. Build on top of
@@ -298,11 +309,11 @@ public class Ssh
 		{
 			String dir = remoteFile.substring(0, remoteFile.lastIndexOf("/"));
 			String file = remoteFile.substring(remoteFile.lastIndexOf("/") + 1);
-			scp.put(string.getBytes(), file, dir, "0600");
+			scp.put(string.getBytes("UTF-8"), file, dir, "0600");
 		}
 		else
 		{
-			scp.put(string.getBytes(), remoteFile, "", "0600");
+			scp.put(string.getBytes("UTF-8"), remoteFile, "", "0600");
 		}
 		logger.debug("upload file complete");
 
