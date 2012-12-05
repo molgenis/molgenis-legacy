@@ -9,6 +9,13 @@ import org.molgenis.util.Tuple;
  */
 public class TextLineInput<E> extends HtmlInput<E>
 {
+	private boolean disabled = false;
+
+	public void setDisabled(boolean disabled)
+	{
+		this.disabled = disabled;
+	}
+
 	public TextLineInput(String name)
 	{
 		super(name, null);
@@ -46,19 +53,21 @@ public class TextLineInput<E> extends HtmlInput<E>
 		String classAtt = (this.getClazz() != null ? this.getClazz() : "");
 		classAtt += (this.isReadonly()) ? " readonly " : "";
 
+		String disabledProperty = (disabled ? " disabled=\"disabled\"" : "");
+
 		// 'disabled' doesn't send the value. We need the value if it is
 		// key...therefore we use 'readonly'.
 
 		if (this.isHidden())
 		{
 			return "<input type=\"hidden\" id=\"" + getId() + "\" name=\"" + getName() + "\" value=\"" + getValue()
-					+ "\">";
+					+ disabledProperty + "\">";
 		}
 
 		String attributes = "";
 
 		return "<input type=\"text\" id=\"" + getId() + "\" class=\"" + classAtt + "\" name=\"" + getName()
-				+ "\" value=\"" + getValue() + "\" " + attributes + tabIndex + " />";
+				+ "\" value=\"" + getValue() + "\" " + attributes + tabIndex + disabledProperty + " />";
 	}
 
 	@Override
