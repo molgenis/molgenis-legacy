@@ -77,7 +77,7 @@ public class HSqlCreateSubclassPerTableGen extends Generator
 		}
 		catch (Exception e)
 		{
-			logger.debug("Something wrong with Code:" + out.toString() + " \n Error:" + e.getMessage());
+			logger.debug("Something wrong with Code:" + out.toString("UTF-8") + " \n Error:" + e.getMessage());
 			e.printStackTrace();
 			System.exit(-1);
 		}

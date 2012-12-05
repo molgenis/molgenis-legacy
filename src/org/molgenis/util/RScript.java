@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 import org.apache.log4j.Logger;
 
@@ -26,7 +27,7 @@ public class RScript
 {
 	/** command to run R */
 	// don't make final; this is assigned at runtime
-	public static String R_COMMAND = "R CMD BATCH --vanilla --slave";
+	public static final String R_COMMAND = "R CMD BATCH --vanilla --slave";
 
 	/** logger */
 	private static final Logger logger = Logger.getLogger(RScript.class.getSimpleName());
@@ -234,7 +235,8 @@ public class RScript
 	private String streamToString(InputStream inputStream) throws IOException
 	{
 		StringBuffer fileContents = new StringBuffer();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
+
 		String line;
 		while ((line = reader.readLine()) != null)
 		{
