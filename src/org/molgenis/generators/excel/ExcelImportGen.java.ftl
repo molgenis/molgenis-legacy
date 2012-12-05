@@ -21,7 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import jxl.Workbook;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
@@ -57,16 +58,17 @@ public class ExcelImport
 	}
 
 	public static ImportResult importAll(File excelFile, Database db, Tuple defaults, List<String> components, DatabaseAction dbAction, String missingValue, boolean useDbTransaction) throws Exception
-	{
-		//fixes the problem where, even though decimals have a "." they are still read as "," because of the locale!
-		//TODO: dangerous: entire application locale changes! but workbook locale settings don't seem to have an effect...
-		Locale saveTheDefault = Locale.getDefault();
-		Locale.setDefault(Locale.US);
-		
-		Workbook workbook = Workbook.getWorkbook(excelFile);
+	{	
+		Workbook workbook = WorkbookFactory.create(excelFile);
+
 		ArrayList<String> sheetNames = new ArrayList<String>();
-		for(String sheetName : workbook.getSheetNames()){
-			sheetNames.add(sheetName.toLowerCase());
+		for (int i = 0; i < workbook.getNumberOfSheets(); i++)
+		{
+			String sheetName = workbook.getSheetName(i);
+			if (sheetName != null)
+			{
+				sheetNames.add(sheetName.toLowerCase());
+			}
 		}
 		
 		ImportResult result = new ImportResult();
@@ -94,7 +96,7 @@ public class ExcelImport
 					try {
 						int count = 0;
 						if(sheetNames.contains("${entity.name?lower_case}")){
-							count = new ${JavaName(entity)}ExcelReader().importSheet(db, workbook.getSheet(sheetNames.indexOf("${entity.name?lower_case}")), defaults, dbAction, missingValue);
+							count = new ${JavaName(entity)}ExcelReader().importSheet(db, workbook.getSheetAt(sheetNames.indexOf("${entity.name?lower_case}")), defaults, dbAction, missingValue);
 						}
 						result.getProgressLog().add("${entity.name?lower_case}");
 						result.getMessages().put("${entity.name?lower_case}", "evaluated "+count+" ${entity.name?lower_case} elements");
@@ -115,7 +117,7 @@ public class ExcelImport
 					try {
 						int count = 0;
 						if(sheetNames.contains("${entity.name?lower_case}")){
-							count = new ${JavaName(entity)}ExcelReader().importSheet(db, workbook.getSheet(sheetNames.indexOf("${entity.name?lower_case}")), defaults, dbAction, missingValue);
+							count = new ${JavaName(entity)}ExcelReader().importSheet(db, workbook.getSheetAt(sheetNames.indexOf("${entity.name?lower_case}")), defaults, dbAction, missingValue);
 						}
 						result.getProgressLog().add("${entity.name?lower_case}");
 						result.getMessages().put("${entity.name?lower_case}",  "evaluated "+count+" ${entity.name?lower_case} elements");
@@ -151,11 +153,8 @@ public class ExcelImport
 				}
 			}
 			throw e;
-		}finally{
-			//restore the locale settings (important!)
-			Locale.setDefault(saveTheDefault);
-			workbook.close();
 		}
+		
 		return result;
 	}
 }
