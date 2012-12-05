@@ -690,7 +690,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 		//${name(uniqueFields)}
 		<#if uniqueFields.type != "mref" && uniqueFields.type != "xref">
 			<#if name(uniqueFields) != "type_" >
-				.append(${name(uniqueFields)}, rhs.get${Name(uniqueFields)}())
+				.append(${name(uniqueFields)}, rhs.get${JavaName(uniqueFields)}())
 			</#if>
 		</#if>
 	</#list>
@@ -787,23 +787,23 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 				<#assign multipleXrefs = model.getNumberOfReferencesTo(entity)/>
 	//${multipleXrefs}
     @javax.persistence.ManyToMany(fetch=javax.persistence.FetchType.LAZY, mappedBy="${name(f)}"/*, cascade={javax.persistence.CascadeType.MERGE, javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.REFRESH}*/)
-    private java.util.Collection<${f.entity.namespace}.${Name(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection = new java.util.ArrayList<${f.entity.namespace}.${Name(f.entity)}>();
+    private java.util.Collection<${f.entity.namespace}.${JavaName(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 1 >${JavaName(f.entity)}</#if>Collection = new java.util.ArrayList<${f.entity.namespace}.${JavaName(f.entity)}>();
 
 	@javax.xml.bind.annotation.XmlTransient
-	public java.util.Collection<${f.entity.namespace}.${Name(f.entity)}> get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection()
+	public java.util.Collection<${f.entity.namespace}.${JavaName(f.entity)}> get${JavaName(f)}<#if multipleXrefs &gt; 1 >${JavaName(f.entity)}</#if>Collection()
 	{
-        return ${name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection;
+        return ${name(f)}<#if multipleXrefs &gt; 1 >${JavaName(f.entity)}</#if>Collection;
 	}
 
 	@javax.xml.bind.annotation.XmlTransient
-	public java.util.Collection<${f.entity.namespace}.${Name(f.entity)}> get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection(org.molgenis.framework.db.Database db)
+	public java.util.Collection<${f.entity.namespace}.${JavaName(f.entity)}> get${JavaName(f)}<#if multipleXrefs &gt; 1 >${JavaName(f.entity)}</#if>Collection(org.molgenis.framework.db.Database db)
 	{
-        return get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection();
+        return get${JavaName(f)}<#if multipleXrefs &gt; 1 >${JavaName(f.entity)}</#if>Collection();
 	}
 
-    public void set${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection(java.util.Collection<${f.entity.namespace}.${Name(f.entity)}> collection)
+    public void set${JavaName(f)}<#if multipleXrefs &gt; 1 >${JavaName(f.entity)}</#if>Collection(java.util.Collection<${f.entity.namespace}.${JavaName(f.entity)}> collection)
     {
-    	${name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection.addAll(collection);
+    	${name(f)}<#if multipleXrefs &gt; 1 >${JavaName(f.entity)}</#if>Collection.addAll(collection);
     }	
 			</#if>
 		</#list>
