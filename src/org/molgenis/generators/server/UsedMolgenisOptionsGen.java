@@ -17,7 +17,7 @@ import freemarker.template.Template;
 
 public class UsedMolgenisOptionsGen extends Generator
 {
-	private static transient final Logger logger = Logger.getLogger(UsedMolgenisOptionsGen.class);
+	private static final Logger logger = Logger.getLogger(UsedMolgenisOptionsGen.class);
 
 	@Override
 	public String getDescription()

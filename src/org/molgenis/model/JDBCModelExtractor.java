@@ -532,7 +532,7 @@ public class JDBCModelExtractor
 		}
 	}
 
-	private static String toString(Model model) throws JAXBException
+	public static String toString(Model model) throws JAXBException
 	{
 		// save to xml (FIXME: now print only)
 		ByteArrayOutputStream out = new ByteArrayOutputStream();

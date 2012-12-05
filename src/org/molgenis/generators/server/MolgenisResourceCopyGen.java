@@ -20,7 +20,7 @@ import org.molgenis.model.elements.Model;
 public class MolgenisResourceCopyGen extends Generator
 {
 	public static final String RESOURCE_FOLDER = "org/molgenis/framework/ui/res/";
-	private final static transient Logger logger = Logger.getLogger(MolgenisResourceCopyGen.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(MolgenisResourceCopyGen.class.getSimpleName());
 
 	@Override
 	public String getDescription()

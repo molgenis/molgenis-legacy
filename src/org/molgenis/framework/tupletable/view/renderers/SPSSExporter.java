@@ -25,12 +25,12 @@ import org.molgenis.model.elements.Field;
  *         Exporter that writes to two streams; one of comma-separated values,
  *         and one SPSS script file to read them.
  */
+@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "VA_FORMAT_STRING_USES_NEWLINE", justification = "Always use \n for newlines")
 public class SPSSExporter extends CsvExporter
 {
 	public SPSSExporter(TupleTable matrix)
 	{
 		super(matrix);
-		// SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 	}
 
 	public void export(OutputStream csvOs, OutputStream spssOs, String csvFileName) throws IOException, TableException
