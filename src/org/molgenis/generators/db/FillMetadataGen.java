@@ -53,7 +53,7 @@ public class FillMetadataGen extends Generator
 		OutputStream targetOut = new FileOutputStream(target);
 		template.process(templateArgs, new OutputStreamWriter(targetOut, Charset.forName("UTF-8")));
 		targetOut.close();
-
+		
 		logger.info("generated " + target);
 	}
 

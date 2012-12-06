@@ -86,7 +86,7 @@ public class VcfRecord
 
 	public List<String> getFormat()
 	{
-		return Arrays.asList(record.getString("FORMAT"));
+		return Arrays.asList(record.getString("FORMAT").split(":"));
 	}
 
 	public List<String> getSamples()

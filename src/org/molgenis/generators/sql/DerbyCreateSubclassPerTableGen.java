@@ -47,7 +47,7 @@ public class DerbyCreateSubclassPerTableGen extends Generator
 			stmt.executeUpdate(out.toString("UTF-8"));
 
 			// send to log
-			logger.debug("created hsql table: " + out.toString());
+			logger.debug("created hsql table: " + out.toString("UTF-8"));
 		}
 
 		// shutdown
