@@ -116,7 +116,8 @@ public class CsvImport
 					try {
 						int count = new ${JavaName(entity)}CsvReader().importCsv(db, new File(directory+"/${entity.name?lower_case}.txt"), defaults, dbAction, missingValue);
 						result.getProgressLog().add("${entity.name?lower_case}");
-						result.getMessages().put("${entity.name?lower_case}", "evaluated "+count+" ${entity.name?lower_case} elements");
+						if(count > 0)
+							result.getMessages().put("${entity.name?lower_case}", "evaluated "+count+" ${entity.name?lower_case} elements");
 					} catch (Exception e) {
 						result.setErrorItem("${entity.name?lower_case}");
 						result.getMessages().put("${entity.name?lower_case}", e.getMessage() != null ? e.getMessage() : "null");
@@ -134,7 +135,8 @@ public class CsvImport
 					try {
 						int count = new ${JavaName(entity)}CsvReader().importCsv(db, new File(directory+"/${entity.name?lower_case}.txt"), defaults, dbAction, missingValue);
 						result.getProgressLog().add("${entity.name?lower_case}");
-						result.getMessages().put("${entity.name?lower_case}",  "evaluated "+count+" ${entity.name?lower_case} elements");
+						if(count > 0)
+							result.getMessages().put("${entity.name?lower_case}",  "evaluated "+count+" ${entity.name?lower_case} elements");
 					} catch (Exception e) {
 						result.setErrorItem("${entity.name?lower_case}");
 						result.getMessages().put("${entity.name?lower_case}", e.getMessage() != null ? e.getMessage() : "null");
