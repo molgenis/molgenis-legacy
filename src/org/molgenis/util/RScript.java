@@ -26,11 +26,10 @@ import org.apache.log4j.Logger;
 public class RScript
 {
 	/** command to run R */
-	// don't make final; this is assigned at runtime
-	public static final String R_COMMAND = "R CMD BATCH --vanilla --slave";
+	public String R_COMMAND = "R CMD BATCH --vanilla --slave";
 
 	/** logger */
-	private static final Logger logger = Logger.getLogger(RScript.class.getSimpleName());
+	private Logger logger = Logger.getLogger(RScript.class.getSimpleName());
 
 	/** buffer containing the script */
 	private StringBuffer script = new StringBuffer();
@@ -57,6 +56,16 @@ public class RScript
 	public String getResult()
 	{
 		return result;
+	}
+
+	public String getR_COMMAND()
+	{
+		return R_COMMAND;
+	}
+
+	public void setR_COMMAND(String r_COMMAND)
+	{
+		R_COMMAND = r_COMMAND;
 	}
 
 	/** Construct an R script object */
