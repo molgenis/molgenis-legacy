@@ -50,7 +50,7 @@
 			value="do not insert" />
 		<setting
 			id="org.eclipse.jdt.core.formatter.keep_else_statement_on_same_line"
-			value="false" />
+			value="true" />
 		<setting id="org.eclipse.jdt.core.formatter.insert_space_after_ellipsis"
 			value="insert" />
 		<setting
