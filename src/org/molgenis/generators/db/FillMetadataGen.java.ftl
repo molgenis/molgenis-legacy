@@ -39,7 +39,7 @@ public class FillMetadata {
 		fillMetadata(db, true);
 	}
 	
-	public static void fillMetadata(Database db, boolean useLogin) {
+	public static void fillMetadata(Database db, boolean useLogin) throws Exception{
 		fillMetadata(db, useLogin, "UserLoginPlugin");
 	}
 	
