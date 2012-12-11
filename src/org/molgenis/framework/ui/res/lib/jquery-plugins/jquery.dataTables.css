@@ -31,6 +31,12 @@ table.dataTable td {
 	font-size: 13px;
 }
 
+table.dataTable th {
+	padding: 3px 10px;
+	font-weight: bold;
+	font-size: 13px;
+}
+
 table.dataTable td.center,
 table.dataTable td.dataTables_empty {
 	text-align: center;
