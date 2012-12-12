@@ -1,6 +1,5 @@
 package org.molgenis.util.trityper.reader;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 /**
@@ -70,7 +69,6 @@ public class SNP
 	}
 
 	public void setAlleles(byte[] allele1, byte[] allele2, Boolean[] indIncluded, Boolean[] indIsFemale)
-			throws UnsupportedEncodingException
 	{
 		this.alleles1 = allele1;
 		this.alleles2 = allele2;
@@ -146,20 +144,14 @@ public class SNP
 						System.out.println("ERROR!!!: Number of different alleles for SNP\t" + name
 								+ "\t is more than two!");
 
-						byte[] utf8Bytes = "{ alleles[0] }".getBytes("UTF-8");
-						System.out.println("Allele 1:\t" + alleles[0] + " / " + utf8Bytes);
-						// System.out.println("Allele 1:\t" + alleles[0] + " / "
-						// + new String(new byte[] { alleles[0] }));
+						System.out.println("Allele 1:\t" + alleles[0] + " / " + new String(new byte[]
+						{ alleles[0] }));
 
-						utf8Bytes = "{ alleles[0] }".getBytes("UTF-8");
-						System.out.println("Allele 1:\t" + alleles[1] + " / " + utf8Bytes);
-						// System.out.println("Allele 2:\t" + alleles[1] + " / "
-						// + new String(new byte[] { alleles[1] }));
+						System.out.println("Allele 2:\t" + alleles[1] + " / " + new String(new byte[]
+						{ alleles[1] }));
 
-						utf8Bytes = "{ alleles[0] }".getBytes("UTF-8");
-						System.out.println("Allele 1:\t" + alleles[2] + " / " + utf8Bytes);
-						// System.out.println("Allele 3:\t" + alleles[2] + " / "
-						// + new String(new byte[] alleles[2] }));
+						System.out.println("Allele 3:\t" + alleles[2] + " / " + new String(new byte[]
+						{ alleles[2] }));
 						break;
 					}
 				}
