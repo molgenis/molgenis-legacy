@@ -14,16 +14,27 @@ table.dataTable thead th {
 	font-weight: bold;
 	cursor: pointer;
 	*cursor: hand;
+	font-weight: bold;
+	font-size: 12px;
 }
 
 table.dataTable tfoot th {
 	padding: 3px 18px 3px 10px;
 	border-top: 1px solid black;
 	font-weight: bold;
+	font-size: 12px;
 }
 
 table.dataTable td {
 	padding: 3px 10px;
+	font-weight: bold;
+	font-size: 13px;
+}
+
+table.dataTable th {
+	padding: 3px 10px;
+	font-weight: bold;
+	font-size: 13px;
 }
 
 table.dataTable td.center,
