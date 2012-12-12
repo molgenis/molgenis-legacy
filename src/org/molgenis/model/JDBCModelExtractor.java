@@ -26,8 +26,6 @@ import org.molgenis.model.jaxb.Field;
 import org.molgenis.model.jaxb.Field.Type;
 import org.molgenis.model.jaxb.Model;
 import org.molgenis.model.jaxb.Unique;
-import org.molgenis.util.ResultSetTuple;
-import org.molgenis.util.Tuple;
 
 /**
  * java.sql.Types public static final int ARRAY 2003 public static final int
@@ -70,8 +68,7 @@ public class JDBCModelExtractor
 		}
 		catch (JAXBException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 			return null;
 		}
 	}
@@ -97,8 +94,7 @@ public class JDBCModelExtractor
 		}
 		catch (JAXBException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 			return null;
 		}
 	}
@@ -115,20 +111,6 @@ public class JDBCModelExtractor
 
 		return extractModel(data_src);
 
-	}
-
-	private static String extractXml(BasicDataSource data_src)
-	{
-		try
-		{
-			return toString(extractModel(data_src));
-		}
-		catch (JAXBException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 	public static Model extractModel(BasicDataSource data_src)
@@ -160,11 +142,10 @@ public class JDBCModelExtractor
 
 			m.setName(SCHEMA_NAME);
 
-			ResultSet rs = md.getTables(SCHEMA_NAME, null, null, new String[]
+			ResultSet tableInfo = md.getTables(SCHEMA_NAME, null, null, new String[]
 			{ "TABLE" });
 
-			Tuple tableInfo = new ResultSetTuple(rs);
-			while (rs.next())
+			while (tableInfo.next())
 			{
 				logger.debug("TABLE: " + tableInfo);
 
@@ -173,10 +154,9 @@ public class JDBCModelExtractor
 				m.getEntities().add(e);
 
 				// ADD THE COLUMNS
-				ResultSet rsCol = md.getColumns(SCHEMA_NAME, null, tableInfo.getString("TABLE_NAME"), null);
-				while (rsCol.next())
+				ResultSet fieldInfo = md.getColumns(SCHEMA_NAME, null, tableInfo.getString("TABLE_NAME"), null);
+				while (fieldInfo.next())
 				{
-					Tuple fieldInfo = new ResultSetTuple(rsCol);
 					logger.debug("COLUMN: " + fieldInfo);
 
 					Field f = new Field();
@@ -201,13 +181,13 @@ public class JDBCModelExtractor
 
 					if (fieldInfo.getString("REMARKS") != null && !"".equals(fieldInfo.getString("REMARKS").trim())) f
 							.setDescription(fieldInfo.getString("REMARKS"));
-					if (fieldInfo.getBool("NULLABLE")) f.setNillable(true);
+					if (fieldInfo.getBoolean("NULLABLE")) f.setNillable(true);
 
 					// auto increment?
 					if (f.getType().equals(Field.Type.INT))
 					{
 						if (fieldInfo.getObject("IS_AUTOINCREMENT") != null) f.setAuto(fieldInfo
-								.getBool("IS_AUTOINCREMENT"));
+								.getBoolean("IS_AUTOINCREMENT"));
 					}
 
 					if (f.getType().equals(Field.Type.STRING) || f.getType().equals(Field.Type.CHAR))
@@ -224,10 +204,9 @@ public class JDBCModelExtractor
 						}
 					}
 
-					ResultSet rsXref = md.getImportedKeys(SCHEMA_NAME, null, tableInfo.getString("TABLE_NAME"));
-					while (rsXref.next())
+					ResultSet xrefInfo = md.getImportedKeys(SCHEMA_NAME, null, tableInfo.getString("TABLE_NAME"));
+					while (xrefInfo.next())
 					{
-						Tuple xrefInfo = new ResultSetTuple(rsXref);
 						if (xrefInfo.getString("FKCOLUMN_NAME").equals(fieldInfo.getString("COLUMN_NAME")))
 						{
 							f.setType(Field.Type.XREF_SINGLE);
@@ -276,17 +255,16 @@ public class JDBCModelExtractor
 				Map<String, List<String>> uniques = new LinkedHashMap<String, List<String>>();
 				while (rsIndex.next())
 				{
-					Tuple index = new ResultSetTuple(rsIndex);
-					logger.debug("UNIQUE: " + index);
+					logger.debug("UNIQUE: " + rsIndex);
 
 					// TABLE_CAT='molgenistest' TABLE_SCHEM='null'
 					// TABLE_NAME='boolentity' NON_UNIQUE='false'
 					// INDEX_QUALIFIER='' INDEX_NAME='PRIMARY' TYPE='3'
 					// ORDINAL_POSITION='1' COLUMN_NAME='id' ASC_OR_DESC='A'
 					// CARDINALITY='0' PAGES='0' FILTER_CONDITION='null'
-					if (uniques.get(index.getString("INDEX_NAME")) == null) uniques.put(index.getString("INDEX_NAME"),
-							new ArrayList<String>());
-					uniques.get(index.getString("INDEX_NAME")).add(index.getString("COLUMN_NAME"));
+					if (uniques.get(rsIndex.getString("INDEX_NAME")) == null) uniques.put(
+							rsIndex.getString("INDEX_NAME"), new ArrayList<String>());
+					uniques.get(rsIndex.getString("INDEX_NAME")).add(rsIndex.getString("COLUMN_NAME"));
 				}
 				for (List<String> index : uniques.values())
 				{
