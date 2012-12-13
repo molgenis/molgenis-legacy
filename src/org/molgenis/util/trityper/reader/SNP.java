@@ -143,10 +143,13 @@ public class SNP
 					{
 						System.out.println("ERROR!!!: Number of different alleles for SNP\t" + name
 								+ "\t is more than two!");
+
 						System.out.println("Allele 1:\t" + alleles[0] + " / " + new String(new byte[]
 						{ alleles[0] }));
+
 						System.out.println("Allele 2:\t" + alleles[1] + " / " + new String(new byte[]
 						{ alleles[1] }));
+
 						System.out.println("Allele 3:\t" + alleles[2] + " / " + new String(new byte[]
 						{ alleles[2] }));
 						break;

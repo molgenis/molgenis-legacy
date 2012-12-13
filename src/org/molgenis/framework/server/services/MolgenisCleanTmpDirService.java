@@ -42,10 +42,10 @@ public class MolgenisCleanTmpDirService implements MolgenisService
 
 class CleanTmpDirProcess implements Runnable
 {
-	private int mfa;
-	private int hox;
+	private long mfa;
+	private long hox;
 
-	CleanTmpDirProcess(int howOftenExecutedInSeconds, int maxFileAgeInHours)
+	CleanTmpDirProcess(int howOftenExecutedInSeconds, long maxFileAgeInHours)
 	{
 		hox = howOftenExecutedInSeconds;
 		mfa = maxFileAgeInHours;
@@ -81,7 +81,7 @@ class CleanTmpDirProcess implements Runnable
 				File tmpDir = new File(tmpDirLoc);
 
 				long curDate = new Date().getTime();
-				long maxAge = 1000 * 60 * 60 * mfa;
+				long maxAge = 1000L * 60 * 60 * mfa;
 
 				for (File f : tmpDir.listFiles())
 				{
