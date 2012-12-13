@@ -3,35 +3,7 @@
 	//@Implements
 	public void set( org.molgenis.util.Tuple tuple, boolean strict )  throws Exception
 	{
-		//optimization :-(
-		if(tuple instanceof org.molgenis.util.ResultSetTuple)
-		{
-	<#list allFields(entity) as f>
-		<#assign type_label = f.getType().toString()>
-		<#if f.type == "mref">
-			//mrefs can not be directly retrieved
-			//set ${JavaName(f)}			
-		<#else>
-			//set ${JavaName(f)}
-			<#if f.type == "nsequence">
-			this.set${JavaName(f)}(tuple.getNSequence("${f.name}"));
-			<#elseif f.type == "onoff">
-			this.set${JavaName(f)}(tuple.getOnoff("${f.name}"));
-			<#else>
-			this.set${JavaName(f)}(tuple.get${settertype(f)}("${f.name}"));
-		</#if>
-		<#if f.type == "file"  || type_label=="image" >
-		</#if>			
-		<#if f.type == "xref">			
-			<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>		
-			//set label ${label} for xref field ${JavaName(f)}
-			this.set${JavaName(f)}_${JavaName(label)}(tuple.get${settertype(f.xrefLabels[label_index])}("${f.name}_${label}"));	
-			</#list></#if>			
-		</#if>				
-		</#if>
-	</#list>		
-		}
-		else if(tuple != null)
+		if(tuple != null)
 		{
 	<#list allFields(entity) as f>
 		<#assign type_label = f.getType().toString()>
