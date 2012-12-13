@@ -26,6 +26,7 @@ import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.TupleReader;
 import org.molgenis.util.TupleWriter;
+import org.molgenis.util.tuple.DeprecatedTupleTuple;
 
 public abstract class AbstractDatabase implements Database
 {
@@ -493,7 +494,7 @@ public abstract class AbstractDatabase implements Database
 					}
 					try
 					{
-						entityInDb.set(newValues, false);
+						entityInDb.set(new DeprecatedTupleTuple(newValues), false);
 					}
 					catch (Exception ex)
 					{

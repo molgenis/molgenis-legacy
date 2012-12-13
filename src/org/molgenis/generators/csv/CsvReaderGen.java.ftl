@@ -37,6 +37,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.DeprecatedTupleTuple;
 
 ${imports(model, entity, "")}
 
@@ -82,8 +83,8 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 		{
 			//parse object, setting defaults and values from file
 			${JavaName(entity)} object = new ${JavaName(entity)}();
-			object.set(defaults, false); 
-			object.set(tuple, false);				
+			object.set(new DeprecatedTupleTuple(defaults), false); 
+			object.set(new DeprecatedTupleTuple(tuple), false);				
 			${name(entity)}List.add(object);		
 			
 			//add to db when batch size is reached

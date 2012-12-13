@@ -63,12 +63,12 @@
 		if( tuple.get${settertype(f)}("${entity.name?lower_case}_${f.name?lower_case}_${f.xrefField.name?lower_case}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${entity.name?lower_case}_${f.name?lower_case}_${f.xrefField.name?lower_case}"));
 		//alias of xref
 		<#if databaseImp = 'JPA'>
-		if( tuple.get("${f.name}") != null) { 
+		if( tuple.get("${f.name?lower_case}") != null) { 
 			if(org.molgenis.util.AbstractEntity.isObjectRepresentation(tuple.get("${f.name?lower_case}").toString())) {
 				${f.xrefEntity.namespace}.${JavaName(f.xrefEntity)} instance = org.molgenis.util.AbstractEntity.setValuesFromString((String)tuple.get("${f.name?lower_case}"), ${f.xrefEntity.namespace}.${JavaName(f.xrefEntity)}.class);
 				this.set${JavaName(f)}(instance);				
 			} else {
-				this.set${JavaName(f)}_${JavaName(f.xrefField)}(tuple.get${settertype(f.xrefField)?lower_case}("investigation")); // FIXME bug?!
+				this.set${JavaName(f)}_${JavaName(f.xrefField)}(tuple.get${settertype(f.xrefField)}("investigation")); // FIXME bug?!
 			}
 		}
 		if( tuple.get("${entity.name?lower_case}_${f.name?lower_case}") != null)
@@ -85,12 +85,6 @@
 		if( strict || tuple.get("${f.name?lower_case}_${label?lower_case}") != null) this.set${JavaName(f)}_${JavaName(label)}(tuple.get${settertype(f.xrefLabels[label_index])}("${f.name?lower_case}_${label?lower_case}"));			
 		if( tuple.get("${entity.name?lower_case}_${f.name?lower_case}_${label?lower_case}") != null ) this.set${JavaName(f)}_${JavaName(label)}(tuple.get${settertype(f.xrefLabels[label_index])}("${entity.name?lower_case}_${f.name?lower_case}_${label?lower_case}"));		
 		</#list></#if>
-		<#elseif f.type == "nsequence">
-		if( strict || tuple.getNSequence("${f.name?lower_case}") != null)this.set${JavaName(f)}(tuple.getNSequence("${f.name?lower_case}")); //FIXME
-		if(tuple.getNSequence("${entity.name?lower_case}_${f.name?lower_case}") != null) this.set${JavaName(f)}(tuple.getNSequence("${entity.name?lower_case}_${f.name?lower_case}")); //FIXME
-		<#elseif f.type == "onoff">
-		if( strict || tuple.getOnoff("${f.name?lower_case}") != null) this.set${JavaName(f)}(tuple.getOnoff("${f.name?lower_case}")); //FIXME
-		if( tuple.getOnoff("${entity.name?lower_case}_${f.name?lower_case}") != null) this.set${JavaName(f)}(tuple.getOnoff("${entity.name?lower_case}_${f.name?lower_case}")); //FIXME
 		<#else>
 		if( strict || tuple.get${settertype(f)}("${f.name?lower_case}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${f.name?lower_case}"));
 		if( tuple.get${settertype(f)}("${entity.name?lower_case}_${f.name?lower_case}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${entity.name?lower_case}_${f.name?lower_case}"));

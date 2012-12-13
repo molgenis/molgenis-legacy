@@ -18,6 +18,9 @@ import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
 
+/**
+ * Export TupleTable to Excel file
+ */
 public class ExcelExporter extends AbstractExporter
 {
 

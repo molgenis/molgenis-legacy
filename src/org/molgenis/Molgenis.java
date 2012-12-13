@@ -42,8 +42,6 @@ import org.molgenis.fieldtypes.ImageField;
 import org.molgenis.fieldtypes.IntField;
 import org.molgenis.fieldtypes.LongField;
 import org.molgenis.fieldtypes.MrefField;
-import org.molgenis.fieldtypes.NSequenceField;
-import org.molgenis.fieldtypes.OnoffField;
 import org.molgenis.fieldtypes.StringField;
 import org.molgenis.fieldtypes.TextField;
 import org.molgenis.fieldtypes.XrefField;
@@ -53,11 +51,13 @@ import org.molgenis.generators.R.RApiGen;
 import org.molgenis.generators.R.REntityGen;
 import org.molgenis.generators.R.RMatrixGen;
 import org.molgenis.generators.cpp.CPPCassette;
+import org.molgenis.generators.csv.CsvEntityImporterGen;
 import org.molgenis.generators.csv.CsvExportGen;
 import org.molgenis.generators.csv.CsvImportByIdGen;
 import org.molgenis.generators.csv.CsvImportGen;
 import org.molgenis.generators.csv.CsvReaderGen;
 import org.molgenis.generators.db.DatabaseFactoryGen;
+import org.molgenis.generators.db.EntityImporterGen;
 import org.molgenis.generators.db.FillMetadataGen;
 import org.molgenis.generators.db.JDBCDatabaseGen;
 import org.molgenis.generators.db.JDBCMetaDatabaseGen;
@@ -73,6 +73,7 @@ import org.molgenis.generators.doc.DotDocMinimalGen;
 import org.molgenis.generators.doc.DotDocModuleDependencyGen;
 import org.molgenis.generators.doc.FileFormatDocGen;
 import org.molgenis.generators.doc.ObjectModelDocGen;
+import org.molgenis.generators.excel.ExcelEntityImporterGen;
 import org.molgenis.generators.excel.ExcelExportGen;
 import org.molgenis.generators.excel.ExcelImportGen;
 import org.molgenis.generators.excel.ExcelReaderGen;
@@ -371,6 +372,7 @@ public class Molgenis
 				generators.add(new FillMetadataTablesGen());
 			}
 
+			generators.add(new EntityImporterGen());
 			generators.add(new FillMetadataGen());
 
 			// authorization
@@ -408,6 +410,7 @@ public class Molgenis
 		// CSV
 		if (options.generate_csv)
 		{
+			generators.add(new CsvEntityImporterGen());
 			generators.add(new CsvReaderGen());
 			generators.add(new CsvImportByIdGen());
 			generators.add(new CsvExportGen());
@@ -510,6 +513,7 @@ public class Molgenis
 		// Excel
 		if (options.generate_ExcelImport)
 		{
+			generators.add(new ExcelEntityImporterGen());
 			generators.add(new ExcelReaderGen());
 			generators.add(new ExcelImportGen());
 			generators.add(new ExcelExportGen());
@@ -559,11 +563,8 @@ public class Molgenis
 		MolgenisFieldTypes.addType(new FileField());
 		MolgenisFieldTypes.addType(new ImageField());
 		MolgenisFieldTypes.addType(new HyperlinkField());
-		// FieldTypeRegistry.addType(new ListField());
 		MolgenisFieldTypes.addType(new LongField());
 		MolgenisFieldTypes.addType(new MrefField());
-		MolgenisFieldTypes.addType(new NSequenceField());
-		MolgenisFieldTypes.addType(new OnoffField());
 		MolgenisFieldTypes.addType(new StringField());
 		MolgenisFieldTypes.addType(new TextField());
 		MolgenisFieldTypes.addType(new XrefField());

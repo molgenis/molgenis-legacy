@@ -12,6 +12,7 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.TupleReader;
 import org.molgenis.util.TupleWriter;
+import org.molgenis.util.tuple.DeprecatedTupleTuple;
 
 public abstract class AbstractMapper<E extends Entity> implements Mapper<E>
 {
@@ -427,7 +428,7 @@ public abstract class AbstractMapper<E extends Entity> implements Mapper<E>
 			for (Tuple line : reader) // TODO should limit not be used somehow?
 			{
 				E e = create();
-				e.set(line, false); // parse the tuple
+				e.set(new DeprecatedTupleTuple(line), false); // parse the tuple
 				entities.add(e);
 			}
 		}

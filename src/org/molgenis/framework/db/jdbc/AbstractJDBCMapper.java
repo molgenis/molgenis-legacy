@@ -26,6 +26,7 @@ import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.TupleWriter;
+import org.molgenis.util.tuple.DeprecatedTupleTuple;
 
 /**
  * Factory for creating SQL statements
@@ -67,7 +68,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 			for (Tuple rs : rsList)
 			{
 				entity = create();
-				entity.set(rs);
+				entity.set(new DeprecatedTupleTuple(rs));
 				entityBatch.add(entity);
 				i++;
 
@@ -224,7 +225,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 			for (Tuple rs : rsList)
 			{
 				E entity = create();
-				entity.set(rs);
+				entity.set(new DeprecatedTupleTuple(rs));
 				entities.add(entity);
 			}
 

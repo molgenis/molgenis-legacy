@@ -21,7 +21,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.molgenis.framework.db.CsvToDatabase;
+import org.molgenis.framework.db.CsvEntityImporter;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
@@ -169,8 +169,9 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	/** Optional description for the selected form screen */
 	private String description;
 
-	/** entity csv reader */
-	private CsvToDatabase<E> csvReader;
+	private CsvEntityImporter csvEntityImporter;
+
+	private Class<E> entityClass;
 
 	/** currently known offset */
 	private int offset;
@@ -888,14 +889,24 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		return getController().getApplicationController().getLogin();
 	}
 
-	public CsvToDatabase<E> getCsvReader()
+	public CsvEntityImporter getCsvEntityImporter()
 	{
-		return csvReader;
+		return csvEntityImporter;
 	}
 
-	public void setCsvReader(CsvToDatabase<E> csvReader)
+	public void setCsvEntityImporter(CsvEntityImporter csvReader)
 	{
-		this.csvReader = csvReader;
+		this.csvEntityImporter = csvReader;
+	}
+
+	public Class<E> getEntityClass()
+	{
+		return entityClass;
+	}
+
+	public void setEntityClass(Class<E> entityClass)
+	{
+		this.entityClass = entityClass;
 	}
 
 	public String getIdField()

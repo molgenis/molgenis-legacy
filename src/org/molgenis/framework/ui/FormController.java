@@ -39,6 +39,7 @@ import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.DeprecatedTupleTuple;
 
 /**
  * @param <E>
@@ -446,7 +447,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		try
 		{
 			db.beginTx();
-			entity.set(request, false);
+			entity.set(new DeprecatedTupleTuple(request), false);
 			int updatedRows = 0;
 			if (request.getObject(FormModel.INPUT_BATCHADD) != null && request.getInt(FormModel.INPUT_BATCHADD) > 1)
 			{
@@ -494,7 +495,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		ScreenMessage msg = null;
 		try
 		{
-			entity.set(request, false);
+			entity.set(new DeprecatedTupleTuple(request), false);
 			int updatedRows = db.update(entity);
 			msg = new ScreenMessage("UPDATE SUCCESS: affected " + updatedRows, null, true);
 		}
@@ -519,7 +520,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		ScreenMessage msg = null;
 		try
 		{
-			entity.set(request);
+			entity.set(new DeprecatedTupleTuple(request));
 			int updatedRows = db.remove(entity);
 			if (updatedRows > 0) msg = new ScreenMessage("REMOVE SUCCESS: affected " + updatedRows, null, true);
 			else

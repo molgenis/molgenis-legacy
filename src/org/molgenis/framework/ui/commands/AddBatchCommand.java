@@ -1,11 +1,12 @@
 package org.molgenis.framework.ui.commands;
 
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.molgenis.framework.db.CsvToDatabase;
+import org.molgenis.framework.db.CsvEntityImporter;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
@@ -16,7 +17,6 @@ import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.TextInput;
-import org.molgenis.util.CsvStringReader;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -87,13 +87,20 @@ public class AddBatchCommand<E extends Entity> extends SimpleCommand
 			ScreenMessage msg = null;
 			try
 			{
-				CsvToDatabase<? extends Entity> csvReader = this.getFormScreen().getCsvReader();
+				StringReader reader = new StringReader(request.getString("__csvdata"));
+				String entityName = this.getFormScreen().getEntityClass().getSimpleName();
 
-				int updatedRows = csvReader.importCsv(db, new CsvStringReader(request.getString("__csvdata")), request,
-						DatabaseAction.ADD);
-				// for (E entity : entities)
-				// logger.debug("parsed: " + entity);
-				// view.getDatabase().add(entities);
+				CsvEntityImporter csvReader = this.getFormScreen().getCsvEntityImporter();
+				int updatedRows;
+				try
+				{
+					updatedRows = csvReader.importData(reader, entityName, db, DatabaseAction.ADD);
+				}
+				finally
+				{
+					csvReader.close();
+				}
+
 				msg = new ScreenMessage("CSV UPLOAD SUCCESS: added " + updatedRows + " rows", null, true);
 				logger.debug("CSV UPLOAD SUCCESS: added " + updatedRows + " rows");
 				getFormScreen().getPager().resetFilters();

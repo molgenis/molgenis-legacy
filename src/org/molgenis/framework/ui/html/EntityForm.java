@@ -7,6 +7,7 @@ import java.util.Vector;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.DeprecatedTupleTuple;
 
 /**
  * EntityForm extends HtmlForm optimized for showing entities.
@@ -74,7 +75,7 @@ public abstract class EntityForm<E extends Entity> extends HtmlForm
 	{
 		Tuple t = new SimpleTuple();
 		t.set(name, value);
-		this.getEntity().set(t, false);
+		this.getEntity().set(new DeprecatedTupleTuple(t), false);
 	}
 
 	/**

@@ -35,6 +35,8 @@ import org.molgenis.framework.ui.html.*;
 import org.molgenis.framework.db.QueryRule.Operator;  
 import org.molgenis.framework.db.DatabaseException;
 
+import app.CsvEntityImporterImpl;
+
 ${imports(model, model.getEntity(entity), "")}
 ${imports(model, model.getEntity(entity), "csv", "CsvReader")}
 ${imports(model, model.getEntity(entity), "ui", "Form")}
@@ -79,7 +81,8 @@ public class ${JavaName(form.className)}FormController extends FormController<${
 		}
 		</#if>	
 		getModel().setMode(FormModel.Mode.${form.viewType});
-		getModel().setCsvReader(new ${entity}CsvReader());
+		getModel().setCsvEntityImporter(new CsvEntityImporterImpl(this.getDatabase()));
+		getModel().setEntityClass(${entity}.class);
 
 <#-- parent form filtering -->
 <#assign parent_xref = false>		

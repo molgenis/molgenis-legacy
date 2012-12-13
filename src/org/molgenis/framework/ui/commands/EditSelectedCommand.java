@@ -20,6 +20,7 @@ import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.DeprecatedTupleTuple;
 
 /**
  * This command shows a dialog to edit in batch It therefor uses a custom
@@ -87,7 +88,7 @@ public class EditSelectedCommand extends SimpleCommand
 				{
 					row++;
 					// set only not null values
-					e.set(updateTuple, false);
+					e.set(new DeprecatedTupleTuple(updateTuple), false);
 					db.update(e);
 				}
 				db.commitTx();

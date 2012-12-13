@@ -20,6 +20,7 @@ import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.DeprecatedTupleTuple;
 
 /**
  * The command to add a new record
@@ -123,7 +124,7 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 			try
 			{
 				db.beginTx();
-				xrefEntity.set(request);
+				xrefEntity.set(new DeprecatedTupleTuple(request));
 				int updatedRows = db.add(xrefEntity);
 				db.commitTx();
 				msg = new ScreenMessage("ADD SUCCESS: affected " + updatedRows, null, true);
