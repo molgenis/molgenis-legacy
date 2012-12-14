@@ -147,7 +147,7 @@ The following files are currently recognized by this program (grouped by topic):
 <!-- per module -->
 <ul>
 <#list model.modules as module>
-<li><b><#if module.label??>${module.label}<#else>LEEG</#if></b> files:
+<li><b><#if module.label??>${module.label}<#else>${module.name}</#if></b> files:
 <ul>
 <#list module.entities as entity><#if !entity.abstract && !entity.association>
 <li><a href="#${name(entity)}_entity">${entity.name?lower_case}.txt</a>
