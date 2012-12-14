@@ -147,7 +147,7 @@ The following files are currently recognized by this program (grouped by topic):
 <!-- per module -->
 <ul>
 <#list model.modules as module>
-<li><b>${module.label}</b> files:
+<li><b><#if module.label??>${module.label}<#else>LEEG</#if></b> files:
 <ul>
 <#list module.entities as entity><#if !entity.abstract && !entity.association>
 <li><a href="#${name(entity)}_entity">${entity.name?lower_case}.txt</a>
@@ -171,7 +171,7 @@ Below, the columns for each of these file types are detailed as well as example 
 
 <!-- entities inside modules -->
 <#list model.modules as module>
-<h2>${module.name} file types</h2>
+<h2><#if module.label??>${module.label}<#else>${module.name}</#if> file types</h2>
 <#if module.description?exists><p>${module.description}</p></#if>
 <#list module.entities as entity><#if !entity.abstract && !entity.association>
 <@render_entity entity/>
