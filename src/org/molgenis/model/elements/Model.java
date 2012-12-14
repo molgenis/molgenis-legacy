@@ -10,6 +10,7 @@
 package org.molgenis.model.elements;
 
 // jdk
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -156,6 +157,35 @@ public class Model
 	public Vector<Entity> getEntities()
 	{
 		return getEntities(true);
+	}
+
+	/**
+	 * Get entities that are NOT in modules (and are NOT mrefs).
+	 * Used in generated file format documentation.
+	 */
+	public Vector<Entity> getRootEntities()
+	{
+		Vector<Entity> entities = new Vector<Entity>();
+
+		List<String> entitiesInModules = new ArrayList<String>();
+		for (Module m : this.getDatabase().getModules())
+		{
+			for (Entity e : m.getEntities())
+			{
+				entitiesInModules.add(e.getName());
+			}
+		}
+
+		for (DBSchema element : database.getChildren())
+		{
+			if (element.getClass().equals(Entity.class) && !entitiesInModules.contains(((Entity) element).getName())
+					&& !((Entity) element).isAssociation())
+			{
+				entities.add((Entity) element);
+			}
+		}
+
+		return entities;
 	}
 
 	/**
