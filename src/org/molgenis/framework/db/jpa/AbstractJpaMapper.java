@@ -3,14 +3,11 @@ package org.molgenis.framework.db.jpa;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
-import org.apache.log4j.Logger;
-import org.hibernate.ScrollableResults;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.framework.db.AbstractMapper;
 import org.molgenis.framework.db.Database;
@@ -49,8 +46,6 @@ public abstract class AbstractJpaMapper<E extends Entity> extends AbstractMapper
 
 	@Override
 	public abstract String createFindSqlInclRules(QueryRule[] rules) throws DatabaseException;
-
-	private final static Logger logger = Logger.getLogger(AbstractJpaMapper.class);
 
 	@Override
 	public int count(QueryRule... rules) throws DatabaseException
@@ -98,53 +93,10 @@ public abstract class AbstractJpaMapper<E extends Entity> extends AbstractMapper
 		// automatically done by JPA
 	}
 
-	@SuppressWarnings("unused")
 	@Override
 	public void find(TupleWriter writer, List<String> fieldsToExport, QueryRule[] rules) throws DatabaseException
 	{
-		// TODO: implement with scrolling results set
-		try
-		{
-			// streaming result!!!!
-			ScrollableResults rs = null; // getEntityManager().getNamedQuery("GetCustomers").scroll(ScrollMode.FORWARD_ONLY);
-			// ResultSetTuple rs = new ResultSetTuple(executeSelect(rules));
-
-			/*
-			 * logger.debug("executeSelect(rules)"); for(QueryRule q : rules){
-			 * logger.debug("rule: " + q.toString()); }
-			 */
-			// transform result set in writer
-			E entity = create();
-			List<String> fields = fieldsToExport;
-			if (fieldsToExport == null) fields = entity.getFields();
-
-			writer.setHeaders(fields);
-			writer.writeHeader();
-			int i = 0;
-
-			if (true) throw new UnsupportedOperationException("needs fixing!");
-			// while (rs.next())
-			// {
-			// entity = (E) rs.get(0);
-			// writer.writeRow(entity);
-			// i++;
-			//
-			// }
-			// write remaining
-			// load mrefs
-			logger.debug("*** mapMrefs -> LEFTOVERS"); // program does NOT crash
-														// after this
-
-			rs.close();
-			writer.close();
-
-			logger.debug("find(" + create().getClass().getSimpleName() + ", TupleWriter, " + Arrays.asList(rules)
-					+ "): wrote " + i + " lines.");
-		}
-		catch (Exception e)
-		{
-			throw new DatabaseException(e);
-		}
+		throw new UnsupportedOperationException("not implemented");
 	}
 
 }

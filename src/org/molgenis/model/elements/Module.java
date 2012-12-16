@@ -56,7 +56,6 @@ public class Module implements Serializable
 
 	public String getLabel()
 	{
-		if (label == null) return getName();
 		return label;
 	}
 
