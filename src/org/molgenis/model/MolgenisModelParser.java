@@ -1004,7 +1004,7 @@ public class MolgenisModelParser
 		// construct
 		Module module = new Module(model.getName() + "." + element.getAttribute("name").trim(), model);
 
-		if (element.getAttribute("label") == null || element.getAttribute("label").isEmpty())
+		if (element.getAttribute("label") != null && !element.getAttribute("label").isEmpty())
 		{
 			module.setLabel(element.getAttribute("label"));
 		}
