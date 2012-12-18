@@ -1,6 +1,6 @@
 package org.molgenis.framework.tupletable;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /** Methods for editing a table */
 public interface EditableTupleTable extends TupleTable
