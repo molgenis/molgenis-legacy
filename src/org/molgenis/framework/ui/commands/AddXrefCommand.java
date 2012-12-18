@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -19,8 +20,6 @@ import org.molgenis.framework.ui.html.HtmlElement.UiToolkit;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.tuple.DeprecatedTupleTuple;
 
 /**
  * The command to add a new record
@@ -116,7 +115,8 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
+	public ScreenModel.Show handleRequest(Database db, MolgenisRequest request, OutputStream downloadStream)
+			throws Exception
 	{
 		if (request.getString(FormModel.INPUT_SHOW) == null)
 		{
@@ -124,7 +124,7 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 			try
 			{
 				db.beginTx();
-				xrefEntity.set(new DeprecatedTupleTuple(request));
+				xrefEntity.set(request);
 				int updatedRows = db.add(xrefEntity);
 				db.commitTx();
 				msg = new ScreenMessage("ADD SUCCESS: affected " + updatedRows, null, true);
