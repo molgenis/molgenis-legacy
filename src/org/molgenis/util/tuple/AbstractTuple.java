@@ -2,21 +2,20 @@ package org.molgenis.util.tuple;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.Iterator;
 import java.util.List;
 
 import org.molgenis.util.ListEscapeUtils;
 
 /**
- * Tuple that delegates all calls to Tuple.get and Tuple.getString
+ * Tuple that delegates all calls to Tuple.get
  */
 public abstract class AbstractTuple implements Tuple
 {
 	@Override
 	public boolean hasColNames()
 	{
-		Iterator<String> it = getColNames();
-		return it != null ? it.hasNext() : false;
+		Iterable<String> it = getColNames();
+		return it != null ? it.iterator().hasNext() : false;
 	}
 
 	@Override
