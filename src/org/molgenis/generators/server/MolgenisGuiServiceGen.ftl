@@ -27,6 +27,7 @@ public class GuiService extends MolgenisGuiService implements MolgenisService
 		super(mc);
 	}
 
+	@Override
 	public ApplicationController createUserInterface()
 	{
 		ApplicationController app = null;
