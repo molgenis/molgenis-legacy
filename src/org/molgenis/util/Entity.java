@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Vector;
 
+import org.molgenis.util.tuple.Tuple;
+
 /**
  * Typed data objects that enforce data structure.
  * <p>
