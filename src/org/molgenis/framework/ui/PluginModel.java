@@ -6,10 +6,10 @@ import java.util.Vector;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.security.Login;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.TokenFactory;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
 
 public abstract class PluginModel<E extends Entity> extends SimpleScreenController<ScreenModel> implements ScreenModel
 {
@@ -42,14 +42,14 @@ public abstract class PluginModel<E extends Entity> extends SimpleScreenControll
 		return this.getController().getApplicationController().getMolgenisContext().getTokenFactory();
 	}
 
-	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException, Exception
+	public void handleRequest(Database db, MolgenisRequest request) throws HandleRequestDelegationException, Exception
 	{
 
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException,
-			Exception
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
+			throws HandleRequestDelegationException, Exception
 	{
 		this.handleRequest(db, request);
 		return Show.SHOW_MAIN;

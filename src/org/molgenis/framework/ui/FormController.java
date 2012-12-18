@@ -28,6 +28,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.paging.DatabasePager;
 import org.molgenis.framework.db.paging.LimitOffsetPager;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.commands.ScreenCommand;
@@ -37,9 +38,9 @@ import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.tuple.DeprecatedTupleTuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
+import org.molgenis.util.tuple.WritableTuple;
 
 /**
  * @param <E>
@@ -88,7 +89,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 	{
 		logger.debug("handleRequest(" + request + ")");
 
@@ -447,9 +448,9 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		try
 		{
 			db.beginTx();
-			entity.set(new DeprecatedTupleTuple(request), false);
+			entity.set(request, false);
 			int updatedRows = 0;
-			if (request.getObject(FormModel.INPUT_BATCHADD) != null && request.getInt(FormModel.INPUT_BATCHADD) > 1)
+			if (request.get(FormModel.INPUT_BATCHADD) != null && request.getInt(FormModel.INPUT_BATCHADD) > 1)
 			{
 				// batch
 				int i;
@@ -495,7 +496,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		ScreenMessage msg = null;
 		try
 		{
-			entity.set(new DeprecatedTupleTuple(request), false);
+			entity.set(request, false);
 			int updatedRows = db.update(entity);
 			msg = new ScreenMessage("UPDATE SUCCESS: affected " + updatedRows, null, true);
 		}
@@ -520,7 +521,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		ScreenMessage msg = null;
 		try
 		{
-			entity.set(new DeprecatedTupleTuple(request));
+			entity.set(request);
 			int updatedRows = db.remove(entity);
 			if (updatedRows > 0) msg = new ScreenMessage("REMOVE SUCCESS: affected " + updatedRows, null, true);
 			else
@@ -559,16 +560,16 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 			pager.addFilter(rule);
 
 			// tell "my" menu to select me
-			Tuple parentRequest = new SimpleTuple();
+			WritableTuple tuple = new KeyValueTuple();
 			String aChildName = getModel().getName();
 			ScreenController<?> aParent = getParent();
 			while (aParent != null)
 			{
 				if (aParent instanceof MenuModel)
 				{
-					parentRequest.set("select", aChildName);
+					tuple.set("select", aChildName);
 					MenuController c = (MenuController) aParent;
-					c.doSelect(parentRequest);
+					c.doSelect(tuple);
 				}
 				aChildName = aParent.getName();
 				aParent = aParent.getParent();
