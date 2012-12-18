@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.molgenis.util.plink.datatypes.Biallele;
 import org.molgenis.util.plink.datatypes.TpedEntry;
-import org.molgenis.util.test.AbstractResourceTest;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
