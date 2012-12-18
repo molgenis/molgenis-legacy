@@ -14,11 +14,11 @@ import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.security.Login;
+import org.molgenis.io.TupleReader;
+import org.molgenis.io.TupleWriter;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.TupleReader;
-import org.molgenis.util.TupleWriter;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Mock Database implementation for use in unittests. Use setEntities for define
