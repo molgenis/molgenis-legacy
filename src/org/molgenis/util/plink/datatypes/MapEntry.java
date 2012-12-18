@@ -1,7 +1,8 @@
 package org.molgenis.util.plink.datatypes;
 
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
+import org.molgenis.util.tuple.WritableTuple;
 
 /**
  * See: http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#map
@@ -30,12 +31,12 @@ public class MapEntry
 
 	public static Tuple mapToTuple(MapEntry map)
 	{
-		Tuple t = new SimpleTuple();
-		t.set("chr", map.getChromosome());
-		t.set("snp", map.getSNP());
-		t.set("cm", map.getcM());
-		t.set("bp", map.getBpPos());
-		return t;
+		WritableTuple tuple = new KeyValueTuple();
+		tuple.set("chr", map.getChromosome());
+		tuple.set("snp", map.getSNP());
+		tuple.set("cm", map.getcM());
+		tuple.set("bp", map.getBpPos());
+		return tuple;
 	}
 
 	public String getChromosome()
