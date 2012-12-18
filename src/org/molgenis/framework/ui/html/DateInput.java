@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.molgenis.framework.ui.JQueryDateFormatMapper;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Input for date.

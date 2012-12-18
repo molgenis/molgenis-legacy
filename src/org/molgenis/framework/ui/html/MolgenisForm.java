@@ -4,7 +4,7 @@ import java.text.ParseException;
 
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class MolgenisForm extends AbstractHtmlElement
 {

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.molgenis.framework.ui.ScreenView;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * This class functions as the holder, or container, of all UI components and
@@ -53,12 +53,12 @@ public class Container extends LinkedHashMap<String, HtmlInput<?>> implements Ht
 	@SuppressWarnings("unchecked")
 	public void setAll(Tuple t)
 	{
-		for (String key : t.getFields())
+		for (String key : t.getColNames())
 		{
 			// only sets known fields!
 			if (this.containsKey(key))
 			{
-				this.get(key).setValue(t.getObject(key));
+				this.get(key).setValue(t.get(key));
 			}
 		}
 	}
@@ -98,42 +98,33 @@ public class Container extends LinkedHashMap<String, HtmlInput<?>> implements Ht
 	@Override
 	public String render(Tuple params) throws ParseException, HtmlInputException
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getId()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void setId(String id)
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public String getClazz()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void setClazz(String clazz)
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void set(Tuple properties) throws HtmlInputException
 	{
-		// TODO Auto-generated method stub
-
 	}
 }

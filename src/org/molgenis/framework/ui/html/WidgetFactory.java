@@ -5,7 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.molgenis.util.SimpleTuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.WritableTuple;
 
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
@@ -36,23 +37,23 @@ public class WidgetFactory
 		public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
 		{
 			// transform params
-			SimpleTuple t = new SimpleTuple();
+			WritableTuple tuple = new KeyValueTuple();
 			for (Object key : params.keySet())
 			{
 				if (params.get(key) instanceof SimpleScalar)
 				{
-					t.set(key.toString(), ((SimpleScalar) params.get(key)).toString());
+					tuple.set(key.toString(), ((SimpleScalar) params.get(key)).toString());
 				}
 				else
 				{
-					t.set(key.toString(), params.get(key));
+					tuple.set(key.toString(), params.get(key));
 				}
 			}
 
 			// try to get html
 			try
 			{
-				env.getOut().write(input.render(t));
+				env.getOut().write(input.render(tuple));
 			}
 			catch (Exception e)
 			{

@@ -1,6 +1,6 @@
 package org.molgenis.framework.ui.html;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Input for decimal data. DecimalInput is a ValidatingInput checking if data

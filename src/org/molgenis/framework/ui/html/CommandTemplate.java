@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Vector;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * This class is used by commands as template. It must be replaced by
@@ -43,10 +43,10 @@ public class CommandTemplate extends LinkedHashMap<String, HtmlInput<?>>
 	@SuppressWarnings("unchecked")
 	public void setAll(Tuple t)
 	{
-		for (String key : t.getFields())
+		for (String key : t.getColNames())
 		{
 			// only sets known fields!
-			if (this.containsKey(key)) this.get(key).setValue(t.getObject(key));
+			if (this.containsKey(key)) this.get(key).setValue(t.get(key));
 		}
 	}
 
