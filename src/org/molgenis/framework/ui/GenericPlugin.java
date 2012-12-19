@@ -16,7 +16,6 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.util.Entity;
-import org.molgenis.util.tuple.Tuple;
 
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
@@ -58,7 +57,7 @@ public class GenericPlugin extends PluginModel<Entity>
 		try
 		{
 			logger.debug("trying to use reflection to call " + this.getClass().getName() + "." + action);
-			Method m = this.getClass().getMethod(action, Database.class, Tuple.class);
+			Method m = this.getClass().getMethod(action, Database.class, MolgenisRequest.class);
 			m.invoke(this, db, request);
 			logger.debug("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
 					+ " completed");
