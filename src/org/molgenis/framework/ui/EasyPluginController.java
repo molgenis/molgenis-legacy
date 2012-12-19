@@ -78,7 +78,7 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 			{
 				db.beginTx();
 				logger.debug("trying to use reflection to call " + this.getClass().getName() + "." + action);
-				Method m = this.getClass().getMethod(action, Database.class, Tuple.class);
+				Method m = this.getClass().getMethod(action, Database.class, MolgenisRequest.class);
 				m.invoke(this, db, request);
 				logger.debug("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
 						+ " completed");
@@ -86,23 +86,14 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 			}
 			catch (NoSuchMethodException e1)
 			{
-				// this.getModel().setMessages(new
-				// ScreenMessage("Unknown action: " + action, false));
-				// logger.error("call of " + this.getClass().getName() +
-				// "(name=" + this.getName() + ")." + action
-				// + "(db,tuple) failed: " + e1.getMessage());
-				// db.rollbackTx();
-				// useless - can't do this on every error! we cannot distinguish
-				// exceptions because they are all InvocationTargetException
-				// anyway
-				// }catch (InvocationTargetException e){
-				// throw new RedirectedException(e);
+				logger.warn(e1);
 
 				if (out != null) try
 				{
 					// db.beginTx();
 					logger.debug("trying to use reflection to call " + this.getClass().getName() + "." + action);
-					Method m = this.getClass().getMethod(action, Database.class, Tuple.class, OutputStream.class);
+					Method m = this.getClass().getMethod(action, Database.class, MolgenisRequest.class,
+							OutputStream.class);
 					m.invoke(this, db, request, out);
 					logger.debug("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
 							+ " completed");
