@@ -24,7 +24,7 @@ public class CsvReaderTest
 	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void CsvReader()
 	{
-		new CsvReader(null);
+		new CsvReader((Reader) null);
 	}
 
 	@Test

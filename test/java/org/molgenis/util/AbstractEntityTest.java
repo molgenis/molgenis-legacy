@@ -91,10 +91,10 @@ public class AbstractEntityTest
 		}
 
 		@Override
-		public void set(Tuple values, boolean strict) throws Exception
+		public void set(org.molgenis.util.tuple.Tuple values, boolean strict) throws Exception
 		{
-			for (int i = 0; i < values.getNrColumns(); ++i)
-				map.put(values.getColName(i), values.getObject(i));
+			for (String colName : values.getColNames())
+				map.put(colName, values.get(colName));
 		}
 
 		@Override
@@ -146,7 +146,7 @@ public class AbstractEntityTest
 		}
 
 		@Override
-		public Entity create(Tuple tuple) throws Exception
+		public Entity create(org.molgenis.util.tuple.Tuple tuple) throws Exception
 		{
 			throw new UnsupportedOperationException();
 		}

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * (in progress) The listview shows a list of InputForm (sets of inputs) in an

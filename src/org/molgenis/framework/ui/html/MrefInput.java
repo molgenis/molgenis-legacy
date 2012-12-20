@@ -15,7 +15,7 @@ package org.molgenis.framework.ui.html;
 import java.util.List;
 
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Input for many-to-many cross-references (xref) to choose data entities from

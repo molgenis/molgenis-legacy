@@ -57,10 +57,6 @@
 			<#return psql_type(model, field.getXrefField())>			
 		<#case "hyperlink">
 			<#return "TEXT">
-		<#case "nsequence">
-			<#return "TEXT">
-		<#case "onoff">
-			<#return "INT">
 		<#case "ontology">
 			<#return "INT"><#-- id of ontologyTerm"-->
 		<#default>
@@ -72,43 +68,4 @@
 </#function>
 <#function mysql_type model field>
 	<#return helper.getMysqlType(model, field)/>
-
-	<#--switch field.type>
-		<#case "bool">
-			<#return "BOOL">
-		<#case "date">
-			<#return "DATE">
-		<#case "datetime">
-			<#return "DATETIME">
-		<#case "decimal">
-			<#return "DOUBLE">
-		<#case "enum">
-			<#return "ENUM("+csv( field.getEnumOptions() )+")">
-		<#case "file">
-			<#return "VARCHAR(1024)">
-		<#case "int">
-			<#return "INT">
-		<#case "long">
-			<#return "LONG">			
-		<#case "text">
-			<#return "TEXT">
-		<#case "user">
-			<#return "VARCHAR(32)">
-		<#case "string">
-			<#return "VARCHAR("+field.getVarCharLength()+")">				
-		<#case "xref">
-			<#return mysql_type(model, model.getEntity(field.getXRefEntity()).getField(field.getXRefField()))>
-		<#case "mref">
-			<#return mysql_type(model, model.getEntity(field.getXRefEntity()).getField(field.getXRefField()))>			
-		<#case "hyperlink">
-			<#return "TEXT">
-		<#case "nsequence">
-			<#return "TEXT">
-		<#case "onoff">
-			<#return "INT">
-		<#case "ontology">
-			<#return "INT"><
-		<#default>
-			<#return "UNKNOWN '"+field.type + "'">
-	</#switch-->
 </#function>

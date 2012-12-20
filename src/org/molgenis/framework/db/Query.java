@@ -3,8 +3,8 @@ package org.molgenis.framework.db;
 import java.text.ParseException;
 import java.util.List;
 
+import org.molgenis.io.TupleWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.TupleWriter;
 
 /**
  * Easily build complex QueryRules for Database.

@@ -8,8 +8,9 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.tupletable.FilterableTupleTable;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
+import org.molgenis.util.tuple.WritableTuple;
 
 /** Will change all row values to become edit boxes */
 public class EditableTableDecorator implements FilterableTupleTable
@@ -42,31 +43,21 @@ public class EditableTableDecorator implements FilterableTupleTable
 
 			for (Tuple t : this.decoratedTable.getRows())
 			{
-				Tuple editable = new SimpleTuple();
-
-				for (String field : t.getFieldNames())
+				WritableTuple tuple = new KeyValueTuple();
+				for (String colName : t.getColNames())
 				{
-					editable.set(field,
-							"<input style=\"width:100%; padding:0px \" type=\"text\" value=\"" + t.getObject(field)
-									+ "\">");
+					tuple.set(colName,
+							"<input style=\"width:100%; padding:0px \" type=\"text\" value=\"" + t.get(colName) + "\">");
 
 				}
 
-				// for (Field field : t.getFieldTypes()) {
-				// HtmlInput<Object> i = (HtmlInput<Object>) field.getType()
-				// .createInput(field.getName());
-				// i.setValue(t.getObject(field.getName()));
-				//
-				// editable.set(field.getName(), i);
-				// }
-				editableRows.add(editable);
+				editableRows.add(tuple);
 			}
 
 			return editableRows;
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
 			throw new TableException(e);
 		}
 	}

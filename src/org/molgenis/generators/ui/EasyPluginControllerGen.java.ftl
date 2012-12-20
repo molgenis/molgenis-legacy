@@ -18,7 +18,7 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.StringInput;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class ${clazzName} extends EasyPluginController<${clazzName}>
 {
@@ -45,7 +45,7 @@ public class ${clazzName} extends EasyPluginController<${clazzName}>
 	private String helloName = "UNKNOWN";
 	
 	//matches ActionInput("sayHello")
-	public void sayHello(Database db, Tuple request)
+	public void sayHello(Database db, MolgenisRequest request)
 	{
 		if(!request.isNull("helloName"))
 		{

@@ -3,7 +3,7 @@ package org.molgenis.ui;
 import java.util.UUID;
 
 import org.molgenis.framework.ui.html.HtmlInputException;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public abstract class MolgenisComponent<T>
 {

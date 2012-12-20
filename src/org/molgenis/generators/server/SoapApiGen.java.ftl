@@ -1,7 +1,6 @@
 <#include "GeneratorHelper.ftl">
 package ${package};
 
-//import java.io.File;
 import java.util.List;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
@@ -12,7 +11,6 @@ import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.jws.soap.SOAPBinding.Style;
-//import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 <#list model.entities as entity>
@@ -21,17 +19,10 @@ import ${entity.namespace}.${JavaName(entity)};
 </#if>
 </#list>
 
-//import org.apache.commons.dbcp.BasicDataSource;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-//import org.molgenis.framework.db.jdbc.JndiDataSourceWrapper;
-//import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.Query;
-import org.molgenis.util.CsvWriter;
-
-
-
-
+import org.molgenis.io.csv.CsvWriter;
 
 @WebService()
 @SOAPBinding(style = Style.DOCUMENT)
@@ -98,8 +89,15 @@ public class SoapApi
 			<#list allFields(entity) as f>
 			if(${name(f)} != null) q.equals("${name(f)}", ${name(f)});
 			</#list>
-			q.limit(1000).find(new CsvWriter(out)); //safety net of 1000
-			out.close();
+			CsvWriter csvWriter = new CsvWriter(out, '\t');
+			try
+			{
+				q.limit(1000).find(csvWriter); // safety net of 1000
+			}
+			finally
+			{
+				csvWriter.close();
+			}
 			return _result.toString();
 		} 
 		catch (Exception e)

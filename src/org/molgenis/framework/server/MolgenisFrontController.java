@@ -184,9 +184,6 @@ public abstract class MolgenisFrontController extends HttpServlet implements Mol
 					{
 						manageConnection(connId, startTime);
 					}
-
-					// printSessionInfo(req.getSession());
-					// context.getTokenFactory().printTokens();
 				}
 
 				return;

@@ -11,12 +11,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import org.molgenis.io.processor.CellProcessor;
-import org.molgenis.util.tuple.HeaderTuple;
 import org.molgenis.util.tuple.KeyValueTuple;
 import org.molgenis.util.tuple.Tuple;
 import org.molgenis.util.tuple.ValueTuple;
@@ -35,7 +32,7 @@ public class ExcelSheetWriterTest
 	{
 		bos = new ByteArrayOutputStream();
 		excelWriter = new ExcelWriter(bos);
-		excelSheetWriter = excelWriter.createSheet("sheet");
+		excelSheetWriter = (ExcelSheetWriter) excelWriter.createTupleWriter("sheet");
 	}
 
 	@AfterMethod
@@ -48,18 +45,14 @@ public class ExcelSheetWriterTest
 	public void addCellProcessor() throws IOException
 	{
 		CellProcessor processor = when(mock(CellProcessor.class).processHeader()).thenReturn(true).getMock();
-		Tuple headerTuple = mock(Tuple.class);
-		when(headerTuple.getNrCols()).thenReturn(2);
-		when(headerTuple.getColNames()).thenReturn(Arrays.asList("col1", "col2").iterator());
 
-		Tuple dataTuple = mock(Tuple.class);
-		when(dataTuple.getNrCols()).thenReturn(2);
-		when(dataTuple.get("col1")).thenReturn("val1");
-		when(dataTuple.get("col2")).thenReturn("val2");
+		KeyValueTuple row1 = new KeyValueTuple();
+		row1.set("col1", "val1");
+		row1.set("col2", "val2");
 
 		excelSheetWriter.addCellProcessor(processor);
-		excelSheetWriter.writeColNames(headerTuple);
-		excelSheetWriter.write(dataTuple);
+		excelSheetWriter.writeColNames(Arrays.asList("col1", "col2"));
+		excelSheetWriter.write(row1);
 
 		verify(processor).process("col1");
 		verify(processor).process("col2");
@@ -96,16 +89,16 @@ public class ExcelSheetWriterTest
 	@Test
 	public void writeColNames() throws IOException
 	{
-		Map<String, String> row1 = new HashMap<String, String>();
-		row1.put("col1", "val1");
-		row1.put("col2", "val2");
-		Map<String, String> row2 = new HashMap<String, String>();
-		row2.put("col1", "val3");
-		row2.put("col2", "val4");
+		KeyValueTuple row1 = new KeyValueTuple();
+		row1.set("col1", "val1");
+		row1.set("col2", "val2");
+		KeyValueTuple row2 = new KeyValueTuple();
+		row2.set("col1", "val3");
+		row2.set("col2", "val4");
 
-		excelSheetWriter.writeColNames(new HeaderTuple(Arrays.asList("col1", "col2")));
-		excelSheetWriter.write(new KeyValueTuple(row1));
-		excelSheetWriter.write(new KeyValueTuple(row2));
+		excelSheetWriter.writeColNames(Arrays.asList("col1", "col2"));
+		excelSheetWriter.write(row1);
+		excelSheetWriter.write(row2);
 		excelWriter.close();
 
 		ExcelReader excelReader = new ExcelReader(new ByteArrayInputStream(bos.toByteArray()), true);

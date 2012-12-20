@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Input for datetime data..
@@ -91,10 +91,11 @@ public class DatetimeInput extends HtmlInput<Date>
 	public String toJquery()
 	{
 		String description = getName().equals(getDescription()) ? "" : " title=\"" + getDescription() + "\"";
-
-		String options = "dateFormat: 'dd-mm-yy', changeMonth: true, changeYear: true, showButtonPanel: true";
+		String options = "dateFormat: 'yy-mm-dd', timeFormat: 'hh:mm:ss', changeMonth: true, changeYear: true, showButtonPanel: true";
+		// String options =
+		// "dateFormat: 'dd-mm-yy', changeMonth: true, changeYear: true, showButtonPanel: true";
 		// add clear button if nillable
-		String createScript = "function( input ) {setTimeout(function() {var buttonPane = $( input ).datepicker( \"widget\" ).find( \".ui-datepicker-buttonpane\" );"
+		String createScript = "function( input ) {setTimeout(function() {var buttonPane = $( input ).datetimepicker( \"widget\" ).find( \".ui-datepicker-buttonpane\" );"
 				+ "$( \"<button>\", {text: \"Clear\", click: function() { $(input).datetimepicker( 'setDate', null );}}).addClass(\"ui-datepicker-close ui-state-default ui-priority-secondary ui-corner-all\").appendTo( buttonPane );}, 1 );}";
 
 		if (this.isNillable()) options += ", beforeShow: " + createScript;
@@ -104,7 +105,9 @@ public class DatetimeInput extends HtmlInput<Date>
 		if (!this.isNillable()) validate = " required";
 		String result = "<input type=\"text\" readonly=\"readonly\" class=\"" + (this.isReadonly() ? "readonly " : "")
 				+ "text ui-widget-content ui-corner-all" + validate + "\" id=\"" + this.getName() + "\" value=\""
-				+ this.getValue("dd-MM-yyyy HH:mm") + "\" name=\"" + this.getName() + "\" autocomplete=\"off\" "
+				+ this.getValue("yyyy-MM-dd HH:mm:ss") + "\" name=\"" + this.getName() + "\" autocomplete=\"off\" "
+				// + this.getValue("dd-MM-yyyy HH:mm") + "\" name=\"" +
+				// this.getName() + "\" autocomplete=\"off\" "
 				+ description + "/>";
 
 		// add the dialog unless readonly (input is always readonly, i.e.,

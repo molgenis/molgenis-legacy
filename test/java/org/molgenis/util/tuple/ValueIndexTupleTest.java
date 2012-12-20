@@ -25,7 +25,7 @@ public class ValueIndexTupleTest
 		colNamesIndex.put("col1", 0);
 		colNamesIndex.put("col2", 1);
 		colNamesIndex.put("col3", 2);
-		indexedTuple = new ValueIndexTuple(values, colNamesIndex);
+		indexedTuple = new ValueIndexTuple(colNamesIndex, values);
 	}
 
 	@Test(expectedExceptions = IllegalArgumentException.class)
@@ -53,7 +53,7 @@ public class ValueIndexTupleTest
 	@Test
 	public void getColNames()
 	{
-		Iterator<String> it = indexedTuple.getColNames();
+		Iterator<String> it = indexedTuple.getColNames().iterator();
 		assertTrue(it.hasNext());
 		assertEquals(it.next(), "col1");
 		assertTrue(it.hasNext());

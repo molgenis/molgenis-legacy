@@ -16,9 +16,9 @@ import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
 import org.molgenis.framework.server.MolgenisServiceAuthenticationHelper;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.io.TupleWriter;
+import org.molgenis.io.csv.CsvWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.TupleWriter;
 
 public class MolgenisDownloadService implements MolgenisService
 {
@@ -250,9 +250,7 @@ public class MolgenisDownloadService implements MolgenisService
 		// use post
 		else
 		{
-			// System.out.println("handle find query via http-post with parameters: "
-			// + req.getFields());
-			for (String name : req.getFieldNames())
+			for (String name : req.getColNames())
 			{
 				if (klazz.newInstance().getFields().contains(name))
 				{
@@ -281,9 +279,15 @@ public class MolgenisDownloadService implements MolgenisService
 		List<QueryRule> rulesList = createQueryRules(req, klazz);
 
 		// execute query
-		TupleWriter writer = new CsvWriter(out);
-
-		db.find(klazz, writer, rulesList.toArray(new QueryRule[rulesList.size()]));
+		TupleWriter csvWriter = new CsvWriter(out);
+		try
+		{
+			db.find(klazz, csvWriter, rulesList.toArray(new QueryRule[rulesList.size()]));
+		}
+		finally
+		{
+			csvWriter.close();
+		}
 	}
 
 }

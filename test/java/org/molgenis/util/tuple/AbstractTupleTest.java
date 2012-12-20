@@ -7,7 +7,6 @@ import static org.testng.Assert.assertTrue;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import org.testng.annotations.BeforeMethod;
@@ -34,9 +33,9 @@ public class AbstractTupleTest
 			}
 
 			@Override
-			public Iterator<String> getColNames()
+			public Iterable<String> getColNames()
 			{
-				return header.iterator();
+				return header;
 			}
 
 			@Override

@@ -2,7 +2,7 @@ package org.molgenis.framework.ui.html;
 
 import java.text.ParseException;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Show text within a div (html <code>div</code> tag).

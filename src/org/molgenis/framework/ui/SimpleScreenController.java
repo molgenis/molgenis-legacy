@@ -74,7 +74,7 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends 
 	 * @throws HandleRequestDelegationException
 	 * @throws Exception
 	 */
-	// public abstract void handleRequest(Database db, Tuple request) throws
+	// public abstract void handleRequest(Database db, MolgenisRequest request) throws
 	// Exception, HandleRequestDelegationException;
 
 	// public String getFromRequest(Tuple request, String name)
@@ -211,14 +211,6 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends 
 		{
 			return getChild(selectedId).getModel();
 		}
-		// below code only holds for menu's so commented. Whole concept of
-		// getSelected is wrong here...
-		// if (getChildren().size() > 0)
-		// {
-		// if (getChildren().firstElement() instanceof ScreenModel) return
-		// getChildren()
-		// .firstElement().getModel();
-		// }
 		return null;
 	}
 
@@ -226,19 +218,12 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends 
 	public String render() throws HtmlInputException
 	{
 		String result = this.getView().render();
-		if (result == null || "".equals(result))
+		if (result == null || result.isEmpty())
 		{
 			throw new HtmlInputException("render showed nothing for " + this);
 		}
 		return result;
 	}
-
-	// @Override
-	// public void setParent(Object parent)
-	// {
-	// // TODO Auto-generated method stub
-	//
-	// }
 
 	@Override
 	public Database getDatabase()

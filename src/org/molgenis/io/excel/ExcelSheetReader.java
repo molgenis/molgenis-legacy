@@ -24,6 +24,8 @@ public class ExcelSheetReader implements TupleReader
 
 	/** process cells after reading */
 	private List<CellProcessor> cellProcessors;
+	/** column names index */
+	private Map<String, Integer> colNamesMap;
 
 	ExcelSheetReader(org.apache.poi.ss.usermodel.Sheet sheet, boolean hasHeader, List<CellProcessor> cellProcessors)
 	{
@@ -47,6 +49,18 @@ public class ExcelSheetReader implements TupleReader
 	public boolean hasColNames()
 	{
 		return hasHeader;
+	}
+
+	@Override
+	public Iterator<String> colNamesIterator() throws IOException
+	{
+		if (!hasHeader) return null;
+
+		Iterator<Row> it = sheet.iterator();
+		if (!it.hasNext()) return null;
+
+		if (colNamesMap == null) colNamesMap = toColNamesMap(it.next());
+		return colNamesMap != null ? colNamesMap.keySet().iterator() : null;
 	}
 
 	@Override
@@ -167,7 +181,7 @@ public class ExcelSheetReader implements TupleReader
 		}
 
 		@Override
-		public Iterator<String> getColNames()
+		public Iterable<String> getColNames()
 		{
 			throw new UnsupportedOperationException();
 		}
@@ -204,7 +218,7 @@ public class ExcelSheetReader implements TupleReader
 		@Override
 		public int getNrCols()
 		{
-			return row.getLastCellNum();
+			return colNamesMap.size();
 		}
 
 		@Override
@@ -214,9 +228,9 @@ public class ExcelSheetReader implements TupleReader
 		}
 
 		@Override
-		public Iterator<String> getColNames()
+		public Iterable<String> getColNames()
 		{
-			return Collections.unmodifiableSet(colNamesMap.keySet()).iterator();
+			return Collections.unmodifiableSet(colNamesMap.keySet());
 		}
 
 		@Override

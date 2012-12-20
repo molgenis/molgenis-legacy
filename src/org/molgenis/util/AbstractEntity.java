@@ -14,6 +14,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.molgenis.model.elements.Field;
+import org.molgenis.util.tuple.EntityTuple;
+import org.molgenis.util.tuple.SingletonTuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Abstract Entity class that implements common parts for each Entity.
@@ -31,8 +34,8 @@ public abstract class AbstractEntity implements Entity, Serializable
 
 	public static boolean isObjectRepresentation(String objStr)
 	{
-		int left = objStr.indexOf("(");
-		int right = objStr.lastIndexOf(")");
+		int left = objStr.indexOf('(');
+		int right = objStr.lastIndexOf(')');
 		return (left == -1 || right == -1) ? false : true;
 	}
 
@@ -40,8 +43,8 @@ public abstract class AbstractEntity implements Entity, Serializable
 	{
 		T result = klass.newInstance();
 
-		int left = objStr.indexOf("(");
-		int right = objStr.lastIndexOf(")");
+		int left = objStr.indexOf('(');
+		int right = objStr.lastIndexOf(')');
 
 		String content = objStr.substring(left + 1, right);
 
@@ -63,10 +66,7 @@ public abstract class AbstractEntity implements Entity, Serializable
 	@Override
 	public void set(String name, Object value) throws Exception
 	{
-		// inefficient
-		Tuple t = new SimpleTuple();
-		t.set(name, value);
-		this.set(t, false);
+		this.set(new SingletonTuple<Object>(name, value), false);
 	}
 
 	@Override
@@ -78,12 +78,7 @@ public abstract class AbstractEntity implements Entity, Serializable
 	@Override
 	public Tuple getValues()
 	{
-		Tuple t = new SimpleTuple();
-		for (String field : this.getFields())
-		{
-			t.set(field, this.get(field));
-		}
-		return t;
+		return new EntityTuple(this);
 	}
 
 	@Override
@@ -120,22 +115,24 @@ public abstract class AbstractEntity implements Entity, Serializable
 
 	public static java.sql.Date string2date(String str) throws ParseException
 	{
+		String dateFormat = "MMMM d, yyyy";
+		String dateFormat2 = "dd-MM-yyyy";
 		try
 		{
-			DateFormat formatter = new SimpleDateFormat(SimpleTuple.DATEFORMAT, Locale.US);
+			DateFormat formatter = new SimpleDateFormat(dateFormat, Locale.US);
 			return new java.sql.Date(formatter.parse(str).getTime());
 		}
 		catch (ParseException pe)
 		{
 			try
 			{
-				DateFormat formatter = new SimpleDateFormat(SimpleTuple.DATEFORMAT2, Locale.US);
+				DateFormat formatter = new SimpleDateFormat(dateFormat2, Locale.US);
 				return new java.sql.Date(formatter.parse(str).getTime());
 			}
 			catch (ParseException pe2)
 			{
-				throw new ParseException("parsing failed: expected date value formatted '" + SimpleTuple.DATEFORMAT
-						+ " or " + SimpleTuple.DATEFORMAT2, 0);
+				throw new ParseException("parsing failed: expected date value formatted '" + dateFormat + " or "
+						+ dateFormat2, 0);
 			}
 		}
 	}

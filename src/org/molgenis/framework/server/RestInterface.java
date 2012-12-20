@@ -13,11 +13,11 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.io.TupleWriter;
+import org.molgenis.io.csv.CsvWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.TupleWriter;
+import org.molgenis.util.tuple.HttpServletRequestTuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Implementation of the REST interface
@@ -108,13 +108,19 @@ public class RestInterface
 				}
 				else
 				{
-
-					TupleWriter writer = new CsvWriter(out);
-					if (rulesList != null) db.find(getClassForName(entityName), writer,
-							rulesList.toArray(new QueryRule[rulesList.size()]));
-					else
+					TupleWriter csvWriter = new CsvWriter(out);
+					try
 					{
-						db.find(getClassForName(entityName), writer);
+						if (rulesList != null) db.find(getClassForName(entityName), csvWriter,
+								rulesList.toArray(new QueryRule[rulesList.size()]));
+						else
+						{
+							db.find(getClassForName(entityName), csvWriter);
+						}
+					}
+					finally
+					{
+						csvWriter.close();
 					}
 				}
 			}
@@ -160,7 +166,7 @@ public class RestInterface
 		{
 			Tuple requestTuple = new HttpServletRequestTuple(request);
 			StringBuilder queryStringBuilder = new StringBuilder();
-			for (String name : requestTuple.getFields())
+			for (String name : requestTuple.getColNames())
 			{
 				queryStringBuilder.append(URLDecoder.decode(name, "UTF-8")).append('=');
 				queryStringBuilder.append(URLDecoder.decode(requestTuple.getString(name), "UTF-8"));

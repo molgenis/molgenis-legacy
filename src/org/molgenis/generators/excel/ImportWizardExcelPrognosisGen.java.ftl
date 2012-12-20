@@ -17,6 +17,7 @@
 package ${package};
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,18 +27,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.ss.usermodel.Sheet;
-
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.io.excel.ExcelReader;
+import org.molgenis.io.excel.ExcelSheetReader;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
 <#list model.entities as entity><#if !entity.abstract>
 import ${entity.namespace}.${JavaName(entity)};
-import ${entity.namespace}.excel.${JavaName(entity)}ExcelReader;
 </#if></#list>
+
+import com.google.common.collect.Lists;
 
 public class ImportWizardExcelPrognosis {
 
@@ -60,16 +60,15 @@ public class ImportWizardExcelPrognosis {
 	private List<String> importOrder = new ArrayList<String>();
 
 	public ImportWizardExcelPrognosis(Database db, File excelFile) throws Exception {
-
-		Workbook workbook = WorkbookFactory.create(excelFile);
+		ExcelReader excelReader = new ExcelReader(excelFile);
 		
 		ArrayList<String> lowercasedSheetNames = new ArrayList<String>();
 		Map<String, String> lowerToOriginalName = new LinkedHashMap<String, String>();
 
 		try {
 
-			for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-				String sheetName = workbook.getSheetName(i);
+			for (int i = 0; i < excelReader.getNumberOfSheets(); i++) {
+				String sheetName = excelReader.getSheetName(i);
 				lowercasedSheetNames.add(sheetName.toLowerCase());
 				lowerToOriginalName.put(sheetName.toLowerCase(), sheetName);
 			}
@@ -77,11 +76,10 @@ public class ImportWizardExcelPrognosis {
 			<#list entities as entity><#if !entity.abstract>
 			if (lowercasedSheetNames.contains("${entity.name?lower_case}")) {
 				String originalSheetname = lowerToOriginalName.get("${entity.name?lower_case}");
-				Sheet sheet = workbook.getSheet(originalSheetname);
-				${JavaName(entity)}ExcelReader excelReader = new ${JavaName(entity)}ExcelReader();
-				List<String> allHeaders = excelReader.getNonEmptyHeaders(sheet);
+				ExcelSheetReader sheetReader = excelReader.getSheet(originalSheetname);
+				List<String> colNames = Lists.newArrayList(sheetReader.colNamesIterator());
 				List<Field> entityFields = db.getMetaData().getEntity(${JavaName(entity)}.class.getSimpleName()).getAllFields();
-				headersToMaps(originalSheetname, allHeaders, entityFields);
+				headersToMaps(originalSheetname, colNames, entityFields);
 			}
 			</#if></#list>
 			
@@ -93,9 +91,11 @@ public class ImportWizardExcelPrognosis {
 				}
 			}
 
-		} catch (Exception e) {
-			throw e;
 		} 
+		finally 
+		{
+			excelReader.close();
+		}
 	}
 	
 	public void headersToMaps(String originalSheetname, List<String> allHeaders, List<Field> entityFields)
@@ -139,6 +139,8 @@ public class ImportWizardExcelPrognosis {
 		List<String> unknownFieldNames = new ArrayList<String>();
 		for (String header : allHeaders)
 		{
+			if (header == null || header.isEmpty()) continue;
+			
 			String fieldName = header.toLowerCase();
 			if (requiredFields.containsKey(fieldName))
 			{

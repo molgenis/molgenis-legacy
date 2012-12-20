@@ -10,8 +10,10 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 
+import org.molgenis.io.TupleReader;
 import org.molgenis.io.processor.CellProcessor;
 import org.molgenis.util.tuple.Tuple;
 import org.testng.annotations.AfterMethod;
@@ -38,7 +40,7 @@ public class ExcelReaderTest
 	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void ExcelReader() throws IOException
 	{
-		new ExcelReader(null);
+		new ExcelReader((InputStream) null);
 	}
 
 	@Test
@@ -46,7 +48,7 @@ public class ExcelReaderTest
 	{
 		CellProcessor processor = when(mock(CellProcessor.class).processHeader()).thenReturn(true).getMock();
 		excelReader.addCellProcessor(processor);
-		for (ExcelSheetReader sheetReader : excelReader)
+		for (TupleReader sheetReader : excelReader)
 		{
 			for (@SuppressWarnings("unused")
 			Tuple tuple : sheetReader)
@@ -62,7 +64,7 @@ public class ExcelReaderTest
 	{
 		CellProcessor processor = when(mock(CellProcessor.class).processData()).thenReturn(true).getMock();
 		excelReader.addCellProcessor(processor);
-		for (ExcelSheetReader sheetReader : excelReader)
+		for (TupleReader sheetReader : excelReader)
 			for (Tuple tuple : sheetReader)
 				tuple.get("col2");
 		verify(processor).process("val2");
@@ -94,25 +96,15 @@ public class ExcelReaderTest
 	}
 
 	@Test
-	public void getSheetName()
-	{
-		Iterator<ExcelSheetReader> it = excelReader.iterator();
-		assertEquals("test", it.next().getName());
-		assertEquals("Blad2", it.next().getName());
-		assertEquals("Blad3", it.next().getName());
-		assertFalse(it.hasNext());
-	}
-
-	@Test
 	public void iterator()
 	{
-		Iterator<ExcelSheetReader> it = excelReader.iterator();
+		Iterator<TupleReader> it = excelReader.iterator();
 		assertTrue(it.hasNext());
-		assertEquals("test", it.next().getName());
+		assertNotNull(it.next());
 		assertTrue(it.hasNext());
-		assertEquals("Blad2", it.next().getName());
+		assertNotNull(it.next());
 		assertTrue(it.hasNext());
-		assertEquals("Blad3", it.next().getName());
+		assertNotNull(it.next());
 		assertFalse(it.hasNext());
 	}
 }
