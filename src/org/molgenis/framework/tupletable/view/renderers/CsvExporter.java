@@ -2,7 +2,6 @@ package org.molgenis.framework.tupletable.view.renderers;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
@@ -11,9 +10,8 @@ import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.io.csv.CsvWriter;
 import org.molgenis.model.elements.Field;
-import org.molgenis.util.Tuple;
 import org.molgenis.util.tuple.AbstractTuple;
-import org.molgenis.util.tuple.DeprecatedTupleTuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Export TupleTable to CSV file
@@ -30,12 +28,12 @@ public class CsvExporter extends AbstractExporter
 	@Override
 	public void export(OutputStream os) throws IOException, TableException
 	{
-		CsvWriter csvWriter = new CsvWriter(new OutputStreamWriter(os, CHARSET_UTF8));
+		CsvWriter csvWriter = new CsvWriter(os);
 		try
 		{
-			csvWriter.writeColNames(new FieldHeaderTuple(tupleTable.getColumns()));
+			csvWriter.writeColNames(new FieldHeaderTuple(tupleTable.getColumns()).getColNames());
 			for (Tuple row : tupleTable)
-				csvWriter.write(new DeprecatedTupleTuple(row));
+				csvWriter.write(row);
 		}
 		finally
 		{
@@ -65,30 +63,37 @@ public class CsvExporter extends AbstractExporter
 		}
 
 		@Override
-		public Iterator<String> getColNames()
+		public Iterable<String> getColNames()
 		{
-			return new Iterator<String>()
+			return new Iterable<String>()
 			{
-				private Iterator<Field> it = fields.iterator();
-
 				@Override
-				public boolean hasNext()
+				public Iterator<String> iterator()
 				{
-					return it.hasNext();
-				}
+					return new Iterator<String>()
+					{
+						private Iterator<Field> it = fields.iterator();
 
-				@Override
-				public String next()
-				{
-					return it.next().getSqlName();
-				}
+						@Override
+						public boolean hasNext()
+						{
+							return it.hasNext();
+						}
 
-				@Override
-				public void remove()
-				{
-					throw new UnsupportedOperationException();
-				}
+						@Override
+						public String next()
+						{
+							return it.next().getSqlName();
+						}
 
+						@Override
+						public void remove()
+						{
+							throw new UnsupportedOperationException();
+						}
+
+					};
+				}
 			};
 		}
 

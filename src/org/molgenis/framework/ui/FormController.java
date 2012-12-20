@@ -235,7 +235,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		return Show.SHOW_MAIN;
 	}
 
-	private Show addFilters(DatabasePager<E> pager, Database db, Tuple request) throws DatabaseException,
+	private Show addFilters(DatabasePager<E> pager, Database db, MolgenisRequest request) throws DatabaseException,
 			MolgenisModelException
 	{
 		List<QueryRule> userRules = new ArrayList<QueryRule>();
@@ -439,7 +439,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	 * @throws DatabaseException
 	 * @throws IOException
 	 */
-	public boolean doAdd(Database db, Tuple request) throws ParseException, DatabaseException, IOException
+	public boolean doAdd(Database db, MolgenisRequest request) throws ParseException, DatabaseException, IOException
 	{
 		ScreenMessage msg = null;
 		Entity entity = getModel().create();
@@ -490,7 +490,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	}
 
 	// helper method
-	protected void doUpdate(Database db, Tuple request) throws DatabaseException, IOException, ParseException
+	protected void doUpdate(Database db, MolgenisRequest request) throws DatabaseException, IOException, ParseException
 	{
 		Entity entity = getModel().create();
 		ScreenMessage msg = null;
@@ -515,7 +515,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	}
 
 	// helper method
-	protected void doRemove(Database db, Tuple request) throws DatabaseException, ParseException, IOException
+	protected void doRemove(Database db, MolgenisRequest request) throws DatabaseException, ParseException, IOException
 	{
 		Entity entity = getModel().create();
 		ScreenMessage msg = null;

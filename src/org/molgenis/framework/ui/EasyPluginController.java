@@ -9,7 +9,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.tuple.Tuple;
 
 /**
  * Simplified controller that handles a lot of the hard stuff in handleRequest.
@@ -62,12 +61,12 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 	}
 
 	@Deprecated
-	public void delegate(String action, Database db, Tuple request) throws HandleRequestDelegationException
+	public void delegate(String action, Database db, MolgenisRequest request) throws HandleRequestDelegationException
 	{
 		this.delegate(action, db, request, null);
 	}
 
-	public void delegate(String action, Database db, Tuple request, OutputStream out)
+	public void delegate(String action, Database db, MolgenisRequest request, OutputStream out)
 			throws HandleRequestDelegationException
 	{
 		// try/catch for db.rollbackTx

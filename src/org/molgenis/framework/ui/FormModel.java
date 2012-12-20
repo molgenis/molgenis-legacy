@@ -21,9 +21,9 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.molgenis.framework.db.CsvEntityImporter;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.EntitiesImporter;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.paging.DatabasePager;
@@ -50,7 +50,7 @@ import org.molgenis.framework.ui.html.FileInput;
 import org.molgenis.framework.ui.html.HtmlForm;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class FormModel<E extends Entity> extends SimpleScreenModel
 {
@@ -169,7 +169,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	/** Optional description for the selected form screen */
 	private String description;
 
-	private CsvEntityImporter csvEntityImporter;
+	private EntitiesImporter csvEntityImporter;
 
 	private Class<E> entityClass;
 
@@ -889,12 +889,12 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		return getController().getApplicationController().getLogin();
 	}
 
-	public CsvEntityImporter getCsvEntityImporter()
+	public EntitiesImporter getCsvEntityImporter()
 	{
 		return csvEntityImporter;
 	}
 
-	public void setCsvEntityImporter(CsvEntityImporter csvReader)
+	public void setCsvEntityImporter(EntitiesImporter csvReader)
 	{
 		this.csvEntityImporter = csvReader;
 	}

@@ -76,14 +76,14 @@ public abstract class AbstractTuple implements Tuple
 	public Boolean getBoolean(String colName)
 	{
 		String str = getString(colName);
-		return str != null ? Boolean.parseBoolean(str) : null;
+		return str != null ? (str.equalsIgnoreCase("true") || str.equalsIgnoreCase("1")) : null;
 	}
 
 	@Override
 	public Boolean getBoolean(int col)
 	{
 		String str = getString(col);
-		return str != null ? Boolean.parseBoolean(str) : null;
+		return str != null ? (str.equalsIgnoreCase("true") || str.equalsIgnoreCase("1")) : null;
 	}
 
 	@Override
@@ -140,5 +140,16 @@ public abstract class AbstractTuple implements Tuple
 	{
 		String str = getString(col);
 		return str != null ? ListEscapeUtils.toList(str) : null;
+	}
+
+	@Override
+	public String toString()
+	{
+		StringBuilder strBuilder = new StringBuilder();
+		for (String colName : getColNames())
+			strBuilder.append(colName).append('=').append(get(colName)).append(',');
+		if (strBuilder.length() > 0) strBuilder.deleteCharAt(strBuilder.length() - 1);
+
+		return "Tuple[" + strBuilder.toString() + ']';
 	}
 }

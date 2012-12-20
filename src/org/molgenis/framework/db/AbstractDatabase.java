@@ -24,8 +24,8 @@ import org.molgenis.io.TupleWriter;
 import org.molgenis.model.elements.Field;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.Entity;
+import org.molgenis.util.tuple.CaseInsensitiveKeyValueTuple;
 import org.molgenis.util.tuple.EntityTuple;
-import org.molgenis.util.tuple.KeyValueTuple;
 import org.molgenis.util.tuple.Tuple;
 import org.molgenis.util.tuple.WritableTuple;
 
@@ -745,7 +745,7 @@ public abstract class AbstractDatabase implements Database
 			{
 				while (rs.next())
 				{
-					WritableTuple tuple = new KeyValueTuple();
+					WritableTuple tuple = new CaseInsensitiveKeyValueTuple();
 					for (int i = 1; i <= colcount; i++)
 					{
 						tuple.set(rs.getMetaData().getColumnLabel(i), rs.getObject(i));

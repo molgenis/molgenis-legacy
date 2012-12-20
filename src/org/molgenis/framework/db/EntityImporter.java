@@ -7,6 +7,6 @@ import org.molgenis.io.TupleReader;
 
 public interface EntityImporter
 {
-	public int importData(TupleReader tupleReader, Database db, DatabaseAction dbAction) throws IOException,
+	public int importEntity(TupleReader tupleReader, Database db, DatabaseAction dbAction) throws IOException,
 			DatabaseException;
 }

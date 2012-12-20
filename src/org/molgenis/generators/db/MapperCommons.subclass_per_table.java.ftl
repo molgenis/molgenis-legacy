@@ -9,7 +9,7 @@
 	
 			
 		return "SELECT <#list viewFields(entity) as f>${SqlName(f.entity)}.${SqlName(f)}<#if f_has_next>"
-			+", </#if></#list>"<#list viewFields(entity,"xref") as f><#list f.xrefLabelTree.getAllChildren(true) as path><#if path.value.type != "xref">
+			+", </#if></#list>"<#list viewFields(entity,"xref") as f><#list f.getXrefLabelTree(false).getAllChildren(true) as path><#if path.value.type != "xref">
 			//parent is ${path.getParent()}
 			+", xref_${path.getParent().name}.${SqlName(path.value.name)} AS ${SqlName(path.name)}"</#if></#list></#list>
 			+" FROM ${SqlName(entity)} "<#list superclasses(entity)?reverse as superclass><#if name(superclass) != name(entity)>

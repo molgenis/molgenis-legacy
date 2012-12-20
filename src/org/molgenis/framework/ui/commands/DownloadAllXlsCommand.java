@@ -7,14 +7,14 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.io.excel.ExcelWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.XlsWriter;
 
 public class DownloadAllXlsCommand<E extends Entity> extends SimpleCommand
 {
@@ -31,7 +31,8 @@ public class DownloadAllXlsCommand<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream xlsDownload) throws Exception
+	public ScreenModel.Show handleRequest(Database db, MolgenisRequest request, OutputStream xlsDownload)
+			throws Exception
 	{
 		logger.debug(this.getName());
 
@@ -40,16 +41,17 @@ public class DownloadAllXlsCommand<E extends Entity> extends SimpleCommand
 
 		List<String> fieldsToExport = controller.getVisibleColumnNames();
 
-		// TODO : remove entity name, capitals to small , and remove all _name
-		// fields
-
-		// Comments from Despoina:
-		// TODO : the actual xls headers/formatting
-		// TODO : this needs different call or TODO just an extra if in
-		// abstractMolgenisServlet for the different suffix (.xls) ?
-
 		QueryRule[] rules = model.getRulesExclLimitOffset();
-		db.find(model.getController().getEntityClass(), new XlsWriter(xlsDownload), fieldsToExport, rules);
+		ExcelWriter excelWriter = new ExcelWriter(xlsDownload);
+		try
+		{
+			Class<? extends Entity> entityClass = model.getController().getEntityClass();
+			db.find(entityClass, excelWriter.createTupleWriter(entityClass.getSimpleName()), fieldsToExport, rules);
+		}
+		finally
+		{
+			excelWriter.close();
+		}
 
 		return ScreenModel.Show.SHOW_MAIN;
 	}
@@ -57,15 +59,12 @@ public class DownloadAllXlsCommand<E extends Entity> extends SimpleCommand
 	@Override
 	public List<ActionInput> getActions()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public List<HtmlInput<?>> getInputs() throws DatabaseException
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

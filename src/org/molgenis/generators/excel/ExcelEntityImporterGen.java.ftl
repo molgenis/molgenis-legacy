@@ -16,6 +16,8 @@
 
 package ${package};
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -54,8 +56,16 @@ public class ExcelEntityImporter
 		this.db = db;
 	}
 	
+	public EntityImportReport importData(File file, DatabaseAction dbAction) throws IOException, DatabaseException
+	{
+		return importData(new FileInputStream(file), dbAction);
+	}
+	
 	public EntityImportReport importData(InputStream is, DatabaseAction dbAction) throws IOException, DatabaseException
 	{
+		if(dbAction == DatabaseAction.REMOVE || dbAction == DatabaseAction.REMOVE_IGNORE_MISSING)
+			throw new IllegalArgumentException("remove action not allowed: " + dbAction);
+		
 		ExcelReader reader = new ExcelReader(is);
 
 		EntityImportReport importReport = new EntityImportReport();
@@ -80,7 +90,7 @@ public class ExcelEntityImporter
 				if (sheet != null)
 				{
 					EntityImporter entityImporter = entry.getValue();
-					int nr = entityImporter.importData(sheet, db, dbAction);
+					int nr = entityImporter.importEntity(sheet, db, dbAction);
 					if(nr > 0)
 						importReport.getMessages().put(entry.getKey(), "imported " + nr + " " + entry.getKey() + " entities");
 				}

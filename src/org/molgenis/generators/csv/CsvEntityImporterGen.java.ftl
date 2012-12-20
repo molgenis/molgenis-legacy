@@ -21,14 +21,6 @@ import java.io.Reader;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.molgenis.auth.db.MolgenisGroupEntityImporter;
-import org.molgenis.auth.db.MolgenisPermissionEntityImporter;
-import org.molgenis.auth.db.MolgenisRoleEntityImporter;
-import org.molgenis.auth.db.MolgenisRoleGroupLinkEntityImporter;
-import org.molgenis.auth.db.MolgenisUserEntityImporter;
-import org.molgenis.core.db.MolgenisEntityEntityImporter;
-import org.molgenis.core.db.MolgenisFileEntityImporter;
-import org.molgenis.core.db.RuntimePropertyEntityImporter;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
@@ -37,7 +29,7 @@ import org.molgenis.framework.db.EntityImporter;
 import org.molgenis.framework.db.CsvEntityImporter;
 import org.molgenis.io.csv.CsvReader;
 
-<#list entities as entity><#if !entity.abstract>
+<#list entities as entity><#if !entity.abstract && !entity.system>
 import ${entity.namespace}.db.${JavaName(entity)}EntityImporter;
 </#if></#list>
 
@@ -49,21 +41,18 @@ public class CsvEntityImporterImpl implements CsvEntityImporter
 	static {
 		// entities added in import order
 		ENTITIES_IMPORTABLE = new LinkedHashMap<String, EntityImporter>();
-	<#list entities as entity><#if !entity.abstract>
+	<#list entities as entity><#if !entity.abstract && !entity.system>
 		ENTITIES_IMPORTABLE.put("${entity.name?lower_case}", new ${JavaName(entity)}EntityImporter());
 	</#if></#list>
 	}
 	
-	private final Database db;
-	
-	public CsvEntityImporterImpl(Database db) {
-		if(db == null) throw new IllegalArgumentException("db is null");
-		this.db = db;
-	}
-	
-	public int importData(Reader reader, String entityName, Database db, DatabaseAction dbAction) throws IOException,
+	@Override	
+	public int importEntity(Reader reader, String entityName, Database db, DatabaseAction dbAction) throws IOException,
 			DatabaseException
 	{
+		if(dbAction == DatabaseAction.REMOVE || dbAction == DatabaseAction.REMOVE_IGNORE_MISSING)
+			throw new IllegalArgumentException("remove action not allowed: " + dbAction);
+			
 		EntityImporter entityImporter = ENTITIES_IMPORTABLE.get(entityName.toLowerCase());
 		if (entityImporter == null) throw new IllegalArgumentException("unknown entity: " + entityName);
 
@@ -74,7 +63,7 @@ public class CsvEntityImporterImpl implements CsvEntityImporter
 		try
 		{
 			if (doTx) db.beginTx();
-			nrImportedEntities = entityImporter.importData(csvReader, db, dbAction);
+			nrImportedEntities = entityImporter.importEntity(csvReader, db, dbAction);
 			if (doTx) db.commitTx();
 		}
 		catch (IOException e)
@@ -93,5 +82,11 @@ public class CsvEntityImporterImpl implements CsvEntityImporter
 			reader.close();
 		}
 		return nrImportedEntities;
+	}
+	
+	@Override
+	public void close()
+	{
+		// noop
 	}
 }

@@ -73,7 +73,7 @@ public class ${JavaName(entity)}EntityImporter implements EntityImporter
 	 * @return number of elements imported
 	 */
 	@Override
-	public int importData(TupleReader reader, Database db, DatabaseAction dbAction) throws IOException, DatabaseException 
+	public int importEntity(TupleReader reader, Database db, DatabaseAction dbAction) throws IOException, DatabaseException 
 	{
 		// normalize column headers
 		reader.addCellProcessor(new LowerCaseProcessor(true, false));

@@ -10,6 +10,7 @@ public class EntityImportReport
 	private List<String> progressLog;
 	private Map<String, String> messages;
 	private String errorItem;
+	private int nrImported;
 
 	public EntityImportReport()
 	{
@@ -46,5 +47,15 @@ public class EntityImportReport
 	public void setErrorItem(String errorItem)
 	{
 		this.errorItem = errorItem;
+	}
+
+	public int getNrImported()
+	{
+		return nrImported;
+	}
+
+	public void addNrImported(int nrImported)
+	{
+		this.nrImported += nrImported;
 	}
 }

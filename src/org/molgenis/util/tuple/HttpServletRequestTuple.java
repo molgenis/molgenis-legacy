@@ -122,8 +122,7 @@ public class HttpServletRequestTuple extends AbstractTuple
 		}
 
 		// get the separate elements
-		final int size = multipart.size();
-		for (int i = 0; i < size; i++)
+		for (int i = 0; i < multipart.size(); i++)
 		{
 			FileItem item = (FileItem) multipart.get(i);
 			if (item.isFormField())

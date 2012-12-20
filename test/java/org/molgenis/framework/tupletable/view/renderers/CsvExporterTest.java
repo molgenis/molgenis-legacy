@@ -11,7 +11,7 @@ import java.util.Arrays;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.model.elements.Field;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -31,13 +31,18 @@ public class CsvExporterTest
 		Field field2 = when(mock(Field.class).getSqlName()).thenReturn("col2").getMock();
 		when(tupleTable.getColumns()).thenReturn(Arrays.asList(field1, field2));
 		Tuple row1 = mock(Tuple.class);
-		when(row1.getNrColumns()).thenReturn(2);
-		when(row1.getObject("col1")).thenReturn("val1");
-		when(row1.getObject("col2")).thenReturn("val2");
+		when(row1.getNrCols()).thenReturn(2);
+		when(row1.get("col1")).thenReturn("val1");
+		when(row1.get("col2")).thenReturn("val2");
+		when(row1.hasColNames()).thenReturn(true);
+		when(row1.getColNames()).thenReturn(Arrays.asList("col1", "col2"));
+
 		Tuple row2 = mock(Tuple.class);
-		when(row2.getNrColumns()).thenReturn(2);
-		when(row2.getObject("col1")).thenReturn("val3");
-		when(row2.getObject("col2")).thenReturn("val4");
+		when(row2.getNrCols()).thenReturn(2);
+		when(row2.get("col1")).thenReturn("val3");
+		when(row2.get("col2")).thenReturn("val4");
+		when(row2.hasColNames()).thenReturn(true);
+		when(row2.getColNames()).thenReturn(Arrays.asList("col1", "col2"));
 		when(tupleTable.iterator()).thenReturn(Arrays.asList(row1, row2).iterator());
 
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();

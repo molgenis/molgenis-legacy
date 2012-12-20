@@ -218,7 +218,7 @@ public class ExcelSheetReader implements TupleReader
 		@Override
 		public int getNrCols()
 		{
-			return row.getLastCellNum();
+			return colNamesMap.size();
 		}
 
 		@Override

@@ -16,7 +16,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.model.elements.Field;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Export TupleTable to Excel file
