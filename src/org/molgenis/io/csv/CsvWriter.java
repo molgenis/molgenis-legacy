@@ -1,9 +1,14 @@
 package org.molgenis.io.csv;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.molgenis.io.TupleWriter;
@@ -14,11 +19,15 @@ import org.molgenis.util.tuple.Tuple;
 
 public class CsvWriter implements TupleWriter
 {
-	private final au.com.bytecode.opencsv.CSVWriter csvWriter;
-	private Tuple header;
+	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
+	public static final char DEFAULT_SEPARATOR = ',';
+
+	private final au.com.bytecode.opencsv.CSVWriter csvWriter;
 	/** process cells before writing */
 	private List<CellProcessor> cellProcessors;
+
+	private List<String> cachedColNames;
 
 	public CsvWriter(Writer writer)
 	{
@@ -31,24 +40,45 @@ public class CsvWriter implements TupleWriter
 		this.csvWriter = new au.com.bytecode.opencsv.CSVWriter(writer, separator);
 	}
 
-	@Override
-	public void writeColNames(Tuple tuple) throws IOException
+	public CsvWriter(OutputStream os)
 	{
-		if (header == null)
-		{
-			// write header
-			int size = tuple.getNrCols();
-			String[] values = new String[size];
-			Iterator<String> it = tuple.getColNames();
-			// get and process header values
-			for (int i = 0; i < size; ++i)
-				values[i] = AbstractCellProcessor.processCell(it.next(), true, this.cellProcessors);
+		this(new OutputStreamWriter(os, DEFAULT_CHARSET));
+	}
 
-			this.csvWriter.writeNext(values);
+	public CsvWriter(OutputStream os, char separator)
+	{
+		this(new OutputStreamWriter(os, DEFAULT_CHARSET), separator);
+	}
+
+	public CsvWriter(File file) throws FileNotFoundException
+	{
+		this(new OutputStreamWriter(new FileOutputStream(file), DEFAULT_CHARSET), DEFAULT_SEPARATOR);
+	}
+
+	public CsvWriter(File file, char separator) throws FileNotFoundException
+	{
+		this(new OutputStreamWriter(new FileOutputStream(file), DEFAULT_CHARSET), separator);
+	}
+
+	@Override
+	public void writeColNames(Iterable<String> colNames) throws IOException
+	{
+		if (cachedColNames == null)
+		{
+			List<String> processedColNames = new ArrayList<String>();
+			for (String colName : colNames)
+			{
+				// process column name
+				String processedColName = AbstractCellProcessor.processCell(colName, true, this.cellProcessors);
+				processedColNames.add(processedColName);
+			}
+
+			// write column names
+			this.csvWriter.writeNext(processedColNames.toArray(new String[0]));
 			if (this.csvWriter.checkError()) throw new IOException();
 
-			// store header
-			header = tuple;
+			// store filtered column names
+			cachedColNames = processedColNames;
 		}
 	}
 
@@ -56,12 +86,13 @@ public class CsvWriter implements TupleWriter
 	public void write(Tuple tuple) throws IOException
 	{
 		String[] values;
-		if (header != null && tuple.hasColNames())
+		if (cachedColNames != null)
 		{
+			if (!tuple.hasColNames()) throw new IllegalArgumentException("tuple has no column names");
 			int i = 0;
-			values = new String[tuple.getNrCols()];
-			for (Iterator<String> it = header.getColNames(); it.hasNext();)
-				values[i++] = toValue(tuple.get(it.next()));
+			values = new String[cachedColNames.size()];
+			for (String colName : cachedColNames)
+				values[i++] = toValue(tuple.get(colName));
 		}
 		else
 		{
@@ -84,13 +115,7 @@ public class CsvWriter implements TupleWriter
 	@Override
 	public void close() throws IOException
 	{
-		try
-		{
-			this.csvWriter.close();
-		}
-		catch (IOException e)
-		{
-		}
+		this.csvWriter.close();
 	}
 
 	private String toValue(Object obj)

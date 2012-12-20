@@ -1,6 +1,8 @@
 package org.molgenis.io.excel;
 
-import java.io.Closeable;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -9,9 +11,11 @@ import java.util.List;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.molgenis.io.TableWriter;
+import org.molgenis.io.TupleWriter;
 import org.molgenis.io.processor.CellProcessor;
 
-public class ExcelWriter implements Closeable
+public class ExcelWriter implements TableWriter
 {
 	private final Workbook workbook;
 	private final OutputStream os;
@@ -37,9 +41,20 @@ public class ExcelWriter implements Closeable
 		this.workbook = format == FileFormat.XLS ? new HSSFWorkbook() : new XSSFWorkbook();
 	}
 
-	public ExcelSheetWriter createSheet(String sheetName)
+	public ExcelWriter(File file) throws FileNotFoundException
 	{
-		org.apache.poi.ss.usermodel.Sheet poiSheet = this.workbook.createSheet(sheetName);
+		this(new FileOutputStream(file), FileFormat.XLS);
+	}
+
+	public ExcelWriter(File file, FileFormat format) throws FileNotFoundException
+	{
+		this(new FileOutputStream(file), format);
+	}
+
+	@Override
+	public TupleWriter createTupleWriter(String tableName) throws IOException
+	{
+		org.apache.poi.ss.usermodel.Sheet poiSheet = this.workbook.createSheet(tableName);
 		return new ExcelSheetWriter(poiSheet, cellProcessors);
 	}
 
@@ -58,13 +73,7 @@ public class ExcelWriter implements Closeable
 		}
 		finally
 		{
-			try
-			{
-				this.os.close();
-			}
-			catch (IOException e)
-			{
-			}
+			this.os.close();
 		}
 	}
 }

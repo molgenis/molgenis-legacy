@@ -2,7 +2,7 @@ package org.molgenis.framework.ui.html;
 
 import java.text.ParseException;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Input that only has a label but will not show an input (i.e., doesn't have a

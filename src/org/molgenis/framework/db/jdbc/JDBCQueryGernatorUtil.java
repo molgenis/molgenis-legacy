@@ -219,16 +219,8 @@ public class JDBCQueryGernatorUtil
 						}
 					}
 					else
-					// where clause
 					{
-						// check validity of the rule
-						// if(rule.getField() == null ||
-						// columnInfoMap.get(rule.getField()) == null )
-						// {
-						// throw new DatabaseException("Invalid rule: field '"+
-						// rule.getField() + "' not known.");
-						// }
-
+						// where clause
 						String operator = "";
 						switch (rule.getOperator())
 						{

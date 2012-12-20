@@ -21,11 +21,12 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.io.TupleWriter;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.TupleWriter;
+import org.molgenis.util.tuple.EntityTuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Factory for creating SQL statements
@@ -51,23 +52,15 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 			// streaming result!!!!
 			List<Tuple> rsList = executeSelect(rules);
 
-			/*
-			 * logger.debug("executeSelect(rules)"); for(QueryRule q : rules){
-			 * logger.debug("rule: " + q.toString()); }
-			 */
 			// transform result set in writer
 			E entity = create();
-			List<String> fields = fieldsToExport;
-			if (fieldsToExport == null) fields = entity.getFields();
-
-			writer.setHeaders(fields);
-			writer.writeHeader();
+			writer.writeColNames(fieldsToExport);
 			int i = 0;
 			List<E> entityBatch = new ArrayList<E>();
-			for (Tuple rs : rsList)
+			for (Tuple row : rsList)
 			{
 				entity = create();
-				entity.set(rs);
+				entity.set(row);
 				entityBatch.add(entity);
 				i++;
 
@@ -79,7 +72,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 			mapMrefs(entityBatch);
 			for (E e : entityBatch)
 			{
-				writer.writeRow(e);
+				writer.write(new EntityTuple(e));
 			}
 			entityBatch.clear();
 			writer.close();
@@ -221,10 +214,10 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 			List<Tuple> rsList = executeSelect(rules);
 			// transform result set in entity list
 			List<E> entities = createList(10);
-			for (Tuple rs : rsList)
+			for (Tuple row : rsList)
 			{
 				E entity = create();
-				entity.set(rs);
+				entity.set(row);
 				entities.add(entity);
 			}
 
@@ -268,7 +261,6 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 			}
 		}
 		// execute the query
-		// logger.info("TEST\n"+sql);
 		return getDatabase().sql(sql);
 	}
 
@@ -549,16 +541,8 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 						}
 					}
 					else
-					// where clause
 					{
-						// check validity of the rule
-						// if(rule.getField() == null ||
-						// columnInfoMap.get(rule.getField()) == null )
-						// {
-						// throw new DatabaseException("Invalid rule: field '"+
-						// rule.getField() + "' not known.");
-						// }
-
+						// where clause
 						String operator = "";
 						switch (rule.getOperator())
 						{

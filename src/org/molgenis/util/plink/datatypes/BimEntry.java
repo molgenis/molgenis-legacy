@@ -1,7 +1,8 @@
 package org.molgenis.util.plink.datatypes;
 
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
+import org.molgenis.util.tuple.WritableTuple;
 
 public class BimEntry extends MapEntry
 {
@@ -27,14 +28,13 @@ public class BimEntry extends MapEntry
 
 	public static Tuple bimToTuple(BimEntry bim)
 	{
-		Tuple t = new SimpleTuple();
-		t.set("chr", bim.getChromosome());
-		t.set("snp", bim.getSNP());
-		t.set("cm", bim.getcM());
-		t.set("bp", bim.getBpPos());
-		t.set("al1", bim.getBiallele().getAllele1());
-		t.set("al2", bim.getBiallele().getAllele2());
-		return t;
+		WritableTuple tuple = new KeyValueTuple();
+		tuple.set("chr", bim.getChromosome());
+		tuple.set("snp", bim.getSNP());
+		tuple.set("cm", bim.getcM());
+		tuple.set("bp", bim.getBpPos());
+		tuple.set("al1", bim.getBiallele().getAllele1());
+		tuple.set("al2", bim.getBiallele().getAllele2());
+		return tuple;
 	}
-
 }

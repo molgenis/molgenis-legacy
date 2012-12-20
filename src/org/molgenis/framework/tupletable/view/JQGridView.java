@@ -37,7 +37,7 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import com.google.gson.Gson;
 
@@ -136,7 +136,7 @@ public class JQGridView extends HtmlWidget
 	 * @param out
 	 *            The {@link OutputStream} to render to.
 	 */
-	public void handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
+	public void handleRequest(Database db, MolgenisRequest request, OutputStream out) throws HandleRequestDelegationException
 	{
 		try
 		{
@@ -597,10 +597,9 @@ public class JQGridView extends HtmlWidget
 			Tuple row = it.next();
 			final LinkedHashMap<String, String> rowMap = new LinkedHashMap<String, String>();
 
-			final List<String> fieldNames = row.getFieldNames();
-			for (final String fieldName : fieldNames)
+			for (String fieldName : row.getColNames())
 			{
-				final String rowValue = !row.isNull(fieldName) ? row.getString(fieldName) : "null";
+				String rowValue = !row.isNull(fieldName) ? row.getString(fieldName) : "null";
 				rowMap.put(fieldName, rowValue); // TODO encode to HTML
 			}
 			result.addRow(rowMap);

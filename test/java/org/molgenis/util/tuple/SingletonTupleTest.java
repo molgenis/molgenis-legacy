@@ -2,7 +2,6 @@ package org.molgenis.util.tuple;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 import java.util.Iterator;
@@ -14,21 +13,19 @@ public class SingletonTupleTest
 	@Test
 	public void getString()
 	{
-		assertEquals(new SingletonTuple<Integer>(1, "col1").get("col1"), 1);
-		assertNull(new SingletonTuple<Integer>(1).get("col_unknown"));
+		assertEquals(new SingletonTuple<Integer>("col1", 1).get("col1"), 1);
 	}
 
-	@Test
+	@Test(expectedExceptions = UnsupportedOperationException.class)
 	public void getint()
 	{
-		assertEquals(new SingletonTuple<Integer>(1).get(0), 1);
-		assertNull(new SingletonTuple<Integer>(1).get(1));
+		new SingletonTuple<Integer>("col1", 1).get(0);
 	}
 
 	@Test
 	public void getColNames()
 	{
-		Iterator<String> it = new SingletonTuple<Integer>(1, "col1").getColNames();
+		Iterator<String> it = new SingletonTuple<Integer>("col1", 1).getColNames().iterator();
 		assertTrue(it.hasNext());
 		assertEquals(it.next(), "col1");
 		assertFalse(it.hasNext());
@@ -37,7 +34,6 @@ public class SingletonTupleTest
 	@Test
 	public void getNrCols()
 	{
-		assertEquals(new SingletonTuple<Integer>(1, "col1").getNrCols(), 1);
-		assertEquals(new SingletonTuple<Integer>(1).getNrCols(), 1);
+		assertEquals(new SingletonTuple<Integer>("col1", 1).getNrCols(), 1);
 	}
 }

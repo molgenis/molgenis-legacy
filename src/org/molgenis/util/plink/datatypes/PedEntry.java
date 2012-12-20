@@ -2,8 +2,9 @@ package org.molgenis.util.plink.datatypes;
 
 import java.util.List;
 
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
+import org.molgenis.util.tuple.WritableTuple;
 
 public class PedEntry extends FamEntry
 {
@@ -31,14 +32,14 @@ public class PedEntry extends FamEntry
 
 	public static Tuple pedToTuple(PedEntry ped)
 	{
-		Tuple t = new SimpleTuple();
-		t.set("fam", ped.getFamily());
-		t.set("ind", ped.getIndividual());
-		t.set("fa", ped.getFather());
-		t.set("mo", ped.getMother());
-		t.set("sex", ped.getSex());
-		t.set("phen", ped.getPhenotype());
-		t.set("bial", ped.getBialleles());
-		return t;
+		WritableTuple tuple = new KeyValueTuple();
+		tuple.set("fam", ped.getFamily());
+		tuple.set("ind", ped.getIndividual());
+		tuple.set("fa", ped.getFather());
+		tuple.set("mo", ped.getMother());
+		tuple.set("sex", ped.getSex());
+		tuple.set("phen", ped.getPhenotype());
+		tuple.set("bial", ped.getBialleles());
+		return tuple;
 	}
 }

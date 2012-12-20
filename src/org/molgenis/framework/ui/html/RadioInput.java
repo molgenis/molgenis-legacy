@@ -4,7 +4,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Vector;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.molgenis.util.ValueLabel;
 
 /**

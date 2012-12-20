@@ -1,7 +1,8 @@
 package org.molgenis.util.plink.datatypes;
 
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
+import org.molgenis.util.tuple.WritableTuple;
 
 public class FamEntry
 {
@@ -32,14 +33,14 @@ public class FamEntry
 
 	public static Tuple famToTuple(FamEntry fam)
 	{
-		Tuple t = new SimpleTuple();
-		t.set("fam", fam.getFamily());
-		t.set("ind", fam.getIndividual());
-		t.set("fa", fam.getFather());
-		t.set("mo", fam.getMother());
-		t.set("sex", fam.getSex());
-		t.set("phen", fam.getPhenotype());
-		return t;
+		WritableTuple tuple = new KeyValueTuple();
+		tuple.set("fam", fam.getFamily());
+		tuple.set("ind", fam.getIndividual());
+		tuple.set("fa", fam.getFather());
+		tuple.set("mo", fam.getMother());
+		tuple.set("sex", fam.getSex());
+		tuple.set("phen", fam.getPhenotype());
+		return tuple;
 	}
 
 	public String getFamily()

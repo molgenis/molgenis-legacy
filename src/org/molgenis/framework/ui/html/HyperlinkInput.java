@@ -13,7 +13,7 @@ package org.molgenis.framework.ui.html;
 
 import java.text.ParseException;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Input for hyperlinks. This will automatically create a hyperlink to outside
@@ -67,7 +67,7 @@ public class HyperlinkInput extends HtmlInput<String>
 	public HyperlinkInput(Tuple properties)
 	{
 		this(properties.getString(NAME), properties.getString(LABEL), properties.getString(VALUE), properties
-				.getBool(NILLABLE), properties.getBool(READONLY));
+				.getBoolean(NILLABLE), properties.getBoolean(READONLY));
 	}
 
 	@Override

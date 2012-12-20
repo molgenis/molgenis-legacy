@@ -28,6 +28,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.paging.DatabasePager;
 import org.molgenis.framework.db.paging.LimitOffsetPager;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.commands.ScreenCommand;
@@ -37,8 +38,9 @@ import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
+import org.molgenis.util.tuple.WritableTuple;
 
 /**
  * @param <E>
@@ -87,7 +89,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 	{
 		logger.debug("handleRequest(" + request + ")");
 
@@ -233,7 +235,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		return Show.SHOW_MAIN;
 	}
 
-	private Show addFilters(DatabasePager<E> pager, Database db, Tuple request) throws DatabaseException,
+	private Show addFilters(DatabasePager<E> pager, Database db, MolgenisRequest request) throws DatabaseException,
 			MolgenisModelException
 	{
 		List<QueryRule> userRules = new ArrayList<QueryRule>();
@@ -437,7 +439,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	 * @throws DatabaseException
 	 * @throws IOException
 	 */
-	public boolean doAdd(Database db, Tuple request) throws ParseException, DatabaseException, IOException
+	public boolean doAdd(Database db, MolgenisRequest request) throws ParseException, DatabaseException, IOException
 	{
 		ScreenMessage msg = null;
 		Entity entity = getModel().create();
@@ -448,7 +450,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 			db.beginTx();
 			entity.set(request, false);
 			int updatedRows = 0;
-			if (request.getObject(FormModel.INPUT_BATCHADD) != null && request.getInt(FormModel.INPUT_BATCHADD) > 1)
+			if (request.get(FormModel.INPUT_BATCHADD) != null && request.getInt(FormModel.INPUT_BATCHADD) > 1)
 			{
 				// batch
 				int i;
@@ -488,7 +490,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	}
 
 	// helper method
-	protected void doUpdate(Database db, Tuple request) throws DatabaseException, IOException, ParseException
+	protected void doUpdate(Database db, MolgenisRequest request) throws DatabaseException, IOException, ParseException
 	{
 		Entity entity = getModel().create();
 		ScreenMessage msg = null;
@@ -513,7 +515,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	}
 
 	// helper method
-	protected void doRemove(Database db, Tuple request) throws DatabaseException, ParseException, IOException
+	protected void doRemove(Database db, MolgenisRequest request) throws DatabaseException, ParseException, IOException
 	{
 		Entity entity = getModel().create();
 		ScreenMessage msg = null;
@@ -558,16 +560,16 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 			pager.addFilter(rule);
 
 			// tell "my" menu to select me
-			Tuple parentRequest = new SimpleTuple();
+			WritableTuple tuple = new KeyValueTuple();
 			String aChildName = getModel().getName();
 			ScreenController<?> aParent = getParent();
 			while (aParent != null)
 			{
 				if (aParent instanceof MenuModel)
 				{
-					parentRequest.set("select", aChildName);
+					tuple.set("select", aChildName);
 					MenuController c = (MenuController) aParent;
-					c.doSelect(parentRequest);
+					c.doSelect(tuple);
 				}
 				aChildName = aParent.getName();
 				aParent = aParent.getParent();

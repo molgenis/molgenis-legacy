@@ -17,13 +17,13 @@ import java.io.OutputStream;
 import java.io.Serializable;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.FileLink;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tree;
-import org.molgenis.util.Tuple;
 
 /**
  * A controller changes the state of a ScreenModel.
@@ -57,30 +57,6 @@ public interface ScreenController<MODEL extends ScreenModel> extends Serializabl
 	public void reload(Database db) throws Exception;
 
 	/**
-	 * Handle screen events.
-	 * <p>
-	 * handleRequest() can be called to change a screen, or any resources
-	 * managed by the Screen. Such requests are passed as Tuple, typically with
-	 * the {@link ScreenModel#INPUT_ACTION} that indicates to the Screen what
-	 * action to execute. For example:
-	 * <ul>
-	 * <li>a database backed screen can receive an "delete" action to remove
-	 * data from the database underlying the screen. In this case an underlying
-	 * model is changed too.
-	 * <li>a screen has to show data in a different way, e.g. receives a
-	 * "listview" action showing it as list instead of record-by-record.
-	 * <li>Etc.
-	 * </ul>
-	 * 
-	 * @param request
-	 *            a request
-	 * @throws HandleRequestDelegationException
-	 * @throws Exception
-	 */
-	// public void handleRequest(Database db, Tuple request) throws Exception,
-	// HandleRequestDelegationException;
-
-	/**
 	 * Handle a user request (typically implemented in the subclass).
 	 * 
 	 * @param db
@@ -92,13 +68,8 @@ public interface ScreenController<MODEL extends ScreenModel> extends Serializabl
 	 * @throws Exception
 	 * @throws HandleRequestDelegationException
 	 */
-	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException,
-			Exception;
-
-	/**
-	 * Get the view
-	 */
-	// public Templateable getScreen();
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
+			throws HandleRequestDelegationException, Exception;
 
 	/**
 	 * Get the model for this controller

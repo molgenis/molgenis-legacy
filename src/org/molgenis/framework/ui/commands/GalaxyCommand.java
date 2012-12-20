@@ -1,6 +1,5 @@
 package org.molgenis.framework.ui.commands;
 
-//import java.io.IOException;
 //import java.io.PrintWriter;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.util.Tuple;
 
 /**
  * This command returns JavaScript code to download all records in CSV format.
@@ -98,7 +96,7 @@ public class GalaxyCommand extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream)
+	public ScreenModel.Show handleRequest(Database db, MolgenisRequest request, OutputStream downloadStream)
 	{
 		logger.debug("galaxy button clicked: " + this.getController().getApplicationController().getGalaxyUrl());
 		appLoc = ((MolgenisRequest) request).getAppLocation();

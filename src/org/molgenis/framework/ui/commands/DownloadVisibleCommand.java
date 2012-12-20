@@ -8,15 +8,16 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.io.csv.CsvWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.EntityTuple;
 
 /**
  * This command downloads the records currently shown as csv.
@@ -39,29 +40,38 @@ public class DownloadVisibleCommand extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream csvDownload) throws Exception
+	public ScreenModel.Show handleRequest(Database db, MolgenisRequest request, OutputStream csvDownload)
+			throws Exception
 	{
 		FormModel<?> view = this.getFormScreen();
 		List<String> fieldsToExport = ((FormController<?>) this.getController()).getVisibleColumnNames();
-		CsvWriter writer = new CsvWriter(csvDownload, fieldsToExport);
-		writer.writeHeader();
-		for (Entity e : view.getRecords())
-			writer.writeRow(e);
-		writer.close();
+
+		CsvWriter csvWriter = new CsvWriter(csvDownload);
+
+		try
+		{
+			csvWriter.writeColNames(fieldsToExport);
+
+			for (Entity e : view.getRecords())
+				csvWriter.write(new EntityTuple(e));
+		}
+		finally
+		{
+			csvWriter.close();
+		}
+
 		return ScreenModel.Show.SHOW_MAIN;
 	}
 
 	@Override
 	public List<ActionInput> getActions()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public List<HtmlInput<?>> getInputs() throws DatabaseException
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 }
