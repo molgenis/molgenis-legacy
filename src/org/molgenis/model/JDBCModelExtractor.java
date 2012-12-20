@@ -2,6 +2,7 @@ package org.molgenis.model;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -519,6 +520,13 @@ public class JDBCModelExtractor
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 		marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
 		marshaller.marshal(model, out);
-		return out.toString().trim();
+		try
+		{
+			return out.toString("UTF-8").trim();
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 }
