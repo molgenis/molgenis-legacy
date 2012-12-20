@@ -2,12 +2,14 @@
 
 package org.molgenis.model.elements;
 
-// imports
+import java.io.Serializable;
 import java.util.Vector;
+// imports
 
-public class MethodQuery
+public class MethodQuery implements Serializable
 {
-	//
+	private static final long serialVersionUID = 1L;
+
 	public static class Rule
 	{
 		public Rule(String field, String operator, String parameter)
