@@ -37,6 +37,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.EntityImporter;
 import org.molgenis.framework.db.EntityImportReport;
+import org.molgenis.framework.db.Query;
 import org.molgenis.io.processor.CellProcessor;
 import org.molgenis.io.processor.LowerCaseProcessor;
 import org.molgenis.io.TupleReader;
