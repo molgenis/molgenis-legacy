@@ -136,7 +136,8 @@ public class JQGridView extends HtmlWidget
 	 * @param out
 	 *            The {@link OutputStream} to render to.
 	 */
-	public void handleRequest(Database db, MolgenisRequest request, OutputStream out) throws HandleRequestDelegationException
+	public void handleRequest(Database db, MolgenisRequest request, OutputStream out)
+			throws HandleRequestDelegationException
 	{
 		try
 		{
@@ -161,19 +162,19 @@ public class JQGridView extends HtmlWidget
 				case LOAD_CONFIG:
 					if (callback != null)
 					{
-						callback.beforeLoadConfig((MolgenisRequest) request, tupleTable);
+						callback.beforeLoadConfig(request, tupleTable);
 					}
-					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
+					loadTupleTableConfig(db, request, tupleTable);
 					break;
 				case HIDE_COLUMN:
 					String columnToRemove = request.getString("column");
 					tupleTable.hideColumn(columnToRemove);
-					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
+					loadTupleTableConfig(db, request, tupleTable);
 					break;
 				case SHOW_COLUMN:
 					String columnToShow = request.getString("column");
 					tupleTable.showColumn(columnToShow);
-					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
+					loadTupleTableConfig(db, request, tupleTable);
 					break;
 				case SET_COLUMN_PAGE:
 
@@ -201,15 +202,15 @@ public class JQGridView extends HtmlWidget
 					colOffset = Math.max(colOffset, 0);
 
 					tupleTable.setColOffset(colOffset);
-					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
+					loadTupleTableConfig(db, request, tupleTable);
 					break;
 				case NEXT_COLUMNS:
 					tupleTable.setColOffset(tupleTable.getColOffset() + maxVisibleColumnCount);
-					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
+					loadTupleTableConfig(db, request, tupleTable);
 					break;
 				case PREVIOUS_COLUMNS:
 					tupleTable.setColOffset(tupleTable.getColOffset() - maxVisibleColumnCount);
-					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
+					loadTupleTableConfig(db, request, tupleTable);
 					break;
 				case RENDER_DATA:
 					final List<QueryRule> rules = new ArrayList<QueryRule>();
@@ -259,7 +260,7 @@ public class JQGridView extends HtmlWidget
 						((FilterableTupleTable) tupleTable).setFilters(rules);
 					}
 
-					renderData(((MolgenisRequest) request), postData, totalPages, tupleTable);
+					renderData(request, postData, totalPages, tupleTable);
 					break;
 
 				case EDIT_RECORD:
@@ -289,7 +290,7 @@ public class JQGridView extends HtmlWidget
 					}
 
 					// Send this json string back the html.
-					((MolgenisRequest) request).getResponse().getOutputStream().println(result.toString());
+					request.getResponse().getOutputStream().println(result.toString());
 					break;
 
 				case ADD_RECORD:
@@ -320,7 +321,7 @@ public class JQGridView extends HtmlWidget
 					}
 
 					// Send this json string back the html.
-					((MolgenisRequest) request).getResponse().getOutputStream().println(result.toString());
+					request.getResponse().getOutputStream().println(result.toString());
 					break;
 
 				case DELETE_RECORD:
@@ -349,7 +350,7 @@ public class JQGridView extends HtmlWidget
 					}
 
 					// Send this json string back the html.
-					((MolgenisRequest) request).getResponse().getOutputStream().println(result.toString());
+					request.getResponse().getOutputStream().println(result.toString());
 					break;
 				default:
 					break;
