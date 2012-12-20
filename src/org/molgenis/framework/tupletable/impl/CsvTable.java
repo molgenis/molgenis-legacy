@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -82,7 +83,8 @@ public class CsvTable extends AbstractTupleTable
 	{
 		if (rowCount == -1)
 		{
-			LineNumberReader lineReader = new LineNumberReader(new InputStreamReader(countStream));
+			LineNumberReader lineReader = new LineNumberReader(new InputStreamReader(countStream,
+					Charset.forName("UTF-8")));
 			try
 			{
 				String line = null;
@@ -178,7 +180,7 @@ public class CsvTable extends AbstractTupleTable
 		else
 		{
 			csvReader = new CsvReader(new StringReader(csvString));
-			countStream = new ByteArrayInputStream(csvString.getBytes());
+			countStream = new ByteArrayInputStream(csvString.getBytes(Charset.forName("UTF-8")));
 		}
 	}
 

@@ -68,14 +68,12 @@ public class DownloadVisibleXlsCommand extends SimpleCommand
 	@Override
 	public List<ActionInput> getActions()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public List<HtmlInput<?>> getInputs() throws DatabaseException
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

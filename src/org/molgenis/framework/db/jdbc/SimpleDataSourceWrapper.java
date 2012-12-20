@@ -9,15 +9,13 @@ public class SimpleDataSourceWrapper extends AbstractDataSourceWrapper
 
 	public SimpleDataSourceWrapper(DataSource dSource)
 	{
-		if (dSource == null || !(dSource instanceof DataSource)) throw new IllegalArgumentException(
-				"DataSource cannot be null");
+		if (dSource == null) throw new IllegalArgumentException("DataSource cannot be null");
 		this.dSource = dSource;
 	}
 
 	@Override
 	protected DataSource getDataSource() throws NamingException
 	{
-		// logger.debug("Getting dataSource");
 		return this.dSource;
 	}
 }

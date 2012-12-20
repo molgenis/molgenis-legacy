@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
@@ -79,7 +80,7 @@ public class MolgenisTmpFileService implements MolgenisService
 		}
 		catch (Exception e)
 		{
-			byte[] header = ("Temporary file " + variant + " location error:\n").getBytes();
+			byte[] header = ("Temporary file " + variant + " location error:\n").getBytes(Charset.forName("UTF-8"));
 			out.write(header, 0, header.length);
 			byte[] exception = ("loading of failed: " + e).getBytes();
 			out.write(exception, 0, exception.length);

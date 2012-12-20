@@ -10,6 +10,7 @@
 package org.molgenis.model.elements;
 
 // jdk
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -20,8 +21,10 @@ import org.molgenis.model.MolgenisModelException;
 /**
  * 
  */
-public class Model
+public class Model implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	// constructor
 	/**
 	 * 
@@ -160,8 +163,8 @@ public class Model
 	}
 
 	/**
-	 * Get entities that are NOT in modules (and are NOT mrefs).
-	 * Used in generated file format documentation.
+	 * Get entities that are NOT in modules (and are NOT mrefs). Used in
+	 * generated file format documentation.
 	 */
 	public Vector<Entity> getRootEntities()
 	{
