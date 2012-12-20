@@ -3,7 +3,7 @@ package org.molgenis.framework.ui.html;
 import java.text.ParseException;
 
 import org.molgenis.framework.server.services.MolgenisGuiService;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * The ActionInput defines action buttons. When clicked, it will result in a new

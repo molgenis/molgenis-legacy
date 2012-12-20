@@ -4,9 +4,9 @@ import java.text.ParseException;
 import java.util.List;
 
 import org.molgenis.fieldtypes.FieldType;
+import org.molgenis.io.TupleReader;
+import org.molgenis.io.TupleWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.TupleReader;
-import org.molgenis.util.TupleWriter;
 
 /**
  * Interface for the Molgenis mappers. Mappers are an intermediate between
@@ -62,7 +62,7 @@ public interface Mapper<E extends Entity>
 	/** Implementation of {@link Database#remove(List)} */
 	public int remove(List<E> entities) throws DatabaseException;
 
-	/** Implementation of  */
+	/** Implementation of */
 	public int remove(TupleReader reader) throws DatabaseException;
 
 	public List<E> toList(TupleReader reader, int limit) throws DatabaseException;

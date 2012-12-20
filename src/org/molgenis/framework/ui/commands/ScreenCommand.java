@@ -8,12 +8,12 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.util.Tuple;
 
 /**
  * A command defines a button on a screen, including the logic when the command
@@ -200,7 +200,8 @@ public interface ScreenCommand extends Serializable, ScreenModel
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception;
+	public ScreenModel.Show handleRequest(Database db, MolgenisRequest request, OutputStream downloadStream)
+			throws Exception;
 
 	/**
 	 * @return boolean whether this action should be treated as a download

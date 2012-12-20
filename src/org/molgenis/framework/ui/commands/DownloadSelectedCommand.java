@@ -12,6 +12,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FormModel.Mode;
@@ -19,9 +20,8 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.io.csv.CsvWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 /**
  * This command downloads the currently selected records as csv
@@ -51,7 +51,8 @@ public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream csvDownload) throws Exception
+	public ScreenModel.Show handleRequest(Database db, MolgenisRequest request, OutputStream csvDownload)
+			throws Exception
 	{
 		logger.debug(this.getName());
 
@@ -79,22 +80,28 @@ public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand
 		List<String> fieldsToExport = ((FormController<?>) this.getController()).getVisibleColumnNames();
 
 		// watch out, the "IN" operator expects an Object[]
-		db.find(view.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport, new QueryRule("id",
-				Operator.IN, records));
+		CsvWriter csvWriter = new CsvWriter(csvDownload);
+		try
+		{
+			db.find(view.getController().getEntityClass(), csvWriter, fieldsToExport, new QueryRule("id", Operator.IN,
+					records));
+		}
+		finally
+		{
+			csvWriter.close();
+		}
 		return ScreenModel.Show.SHOW_MAIN;
 	}
 
 	@Override
 	public List<ActionInput> getActions()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public List<HtmlInput<?>> getInputs() throws DatabaseException
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

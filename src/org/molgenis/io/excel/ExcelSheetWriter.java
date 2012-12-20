@@ -2,7 +2,6 @@ package org.molgenis.io.excel;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -15,11 +14,12 @@ import org.molgenis.util.tuple.Tuple;
 public class ExcelSheetWriter implements TupleWriter
 {
 	private final org.apache.poi.ss.usermodel.Sheet sheet;
-	private Tuple header;
 	private int row;
 
 	/** process cells after reading */
 	private List<CellProcessor> cellProcessors;
+
+	private List<String> cachedColNames;
 
 	ExcelSheetWriter(org.apache.poi.ss.usermodel.Sheet sheet, List<CellProcessor> cellProcessors)
 	{
@@ -30,22 +30,25 @@ public class ExcelSheetWriter implements TupleWriter
 	}
 
 	@Override
-	public void writeColNames(Tuple tuple) throws IOException
+	public void writeColNames(Iterable<String> colNames) throws IOException
 	{
-		if (header == null)
+		if (cachedColNames == null)
 		{
 			org.apache.poi.ss.usermodel.Row poiRow = sheet.createRow(row++);
 
 			// write header
 			int i = 0;
-			for (Iterator<String> it = tuple.getColNames(); it.hasNext();)
+			List<String> processedColNames = new ArrayList<String>();
+			for (String colName : colNames)
 			{
+				// process column name
 				Cell cell = poiRow.createCell(i++, Cell.CELL_TYPE_STRING);
-				cell.setCellValue(AbstractCellProcessor.processCell(it.next(), true, this.cellProcessors));
+				cell.setCellValue(AbstractCellProcessor.processCell(colName, true, this.cellProcessors));
+				processedColNames.add(colName);
 			}
 
 			// store header
-			this.header = tuple;
+			this.cachedColNames = processedColNames;
 		}
 	}
 
@@ -54,13 +57,15 @@ public class ExcelSheetWriter implements TupleWriter
 	{
 		org.apache.poi.ss.usermodel.Row poiRow = sheet.createRow(row++);
 
-		if (header != null && tuple.hasColNames())
+		if (cachedColNames != null)
 		{
+			if (!tuple.hasColNames()) throw new IllegalArgumentException("tuple has no column names");
+
 			int i = 0;
-			for (Iterator<String> it = header.getColNames(); it.hasNext();)
+			for (String colName : cachedColNames)
 			{
 				Cell cell = poiRow.createCell(i++, Cell.CELL_TYPE_STRING);
-				cell.setCellValue(toValue(tuple.get(it.next())));
+				cell.setCellValue(toValue(tuple.get(colName)));
 			}
 		}
 		else

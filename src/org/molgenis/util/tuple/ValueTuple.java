@@ -1,6 +1,5 @@
 package org.molgenis.util.tuple;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -30,7 +29,7 @@ public class ValueTuple extends AbstractTuple
 	}
 
 	@Override
-	public Iterator<String> getColNames()
+	public Iterable<String> getColNames()
 	{
 		throw new UnsupportedOperationException();
 	}

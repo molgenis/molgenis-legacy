@@ -8,7 +8,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.server.QueryRuleUtil;
 import org.molgenis.framework.server.services.MolgenisGuiService;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import com.google.gson.Gson;
 
@@ -76,11 +76,11 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 		xrefEntity = klass;
 
 		xrefField = t.getString(XREF_FIELD);
-		xrefLabels = t.getStringList(XREF_LABELS);
+		xrefLabels = t.getList(XREF_LABELS);
 
 		if (!t.isNull(FILTERS))
 		{
-			filters = (List<QueryRule>) t.getList(FILTERS);
+			filters = (List<QueryRule>) t.get(FILTERS);
 		}
 		if (!t.isNull(ERRROR))
 		{
@@ -88,7 +88,7 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 		}
 		if (!t.isNull(INCLUDE_ADD_BUTTON))
 		{
-			includeAddButton = t.getBool(INCLUDE_ADD_BUTTON);
+			includeAddButton = t.getBoolean(INCLUDE_ADD_BUTTON);
 		}
 	}
 

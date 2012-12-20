@@ -17,8 +17,8 @@ import java.util.List;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.util.TupleReader;
-import org.molgenis.util.TupleWriter;
+import org.molgenis.io.TupleReader;
+import org.molgenis.io.TupleWriter;
 
 import java.text.ParseException;
 

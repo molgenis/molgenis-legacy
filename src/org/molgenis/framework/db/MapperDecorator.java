@@ -4,9 +4,9 @@ import java.text.ParseException;
 import java.util.List;
 
 import org.molgenis.fieldtypes.FieldType;
+import org.molgenis.io.TupleReader;
+import org.molgenis.io.TupleWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.TupleReader;
-import org.molgenis.util.TupleWriter;
 
 public class MapperDecorator<E extends Entity> implements Mapper<E>
 {

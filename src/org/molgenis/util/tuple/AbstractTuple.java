@@ -2,21 +2,20 @@ package org.molgenis.util.tuple;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.Iterator;
 import java.util.List;
 
 import org.molgenis.util.ListEscapeUtils;
 
 /**
- * Tuple that delegates all calls to Tuple.get and Tuple.getString
+ * Tuple that delegates all calls to Tuple.get
  */
 public abstract class AbstractTuple implements Tuple
 {
 	@Override
 	public boolean hasColNames()
 	{
-		Iterator<String> it = getColNames();
-		return it != null ? it.hasNext() : false;
+		Iterable<String> it = getColNames();
+		return it != null ? it.iterator().hasNext() : false;
 	}
 
 	@Override
@@ -77,14 +76,14 @@ public abstract class AbstractTuple implements Tuple
 	public Boolean getBoolean(String colName)
 	{
 		String str = getString(colName);
-		return str != null ? Boolean.parseBoolean(str) : null;
+		return str != null ? (str.equalsIgnoreCase("true") || str.equalsIgnoreCase("1")) : null;
 	}
 
 	@Override
 	public Boolean getBoolean(int col)
 	{
 		String str = getString(col);
-		return str != null ? Boolean.parseBoolean(str) : null;
+		return str != null ? (str.equalsIgnoreCase("true") || str.equalsIgnoreCase("1")) : null;
 	}
 
 	@Override
@@ -141,5 +140,16 @@ public abstract class AbstractTuple implements Tuple
 	{
 		String str = getString(col);
 		return str != null ? ListEscapeUtils.toList(str) : null;
+	}
+
+	@Override
+	public String toString()
+	{
+		StringBuilder strBuilder = new StringBuilder();
+		for (String colName : getColNames())
+			strBuilder.append(colName).append('=').append(get(colName)).append(',');
+		if (strBuilder.length() > 0) strBuilder.deleteCharAt(strBuilder.length() - 1);
+
+		return "Tuple[" + strBuilder.toString() + ']';
 	}
 }

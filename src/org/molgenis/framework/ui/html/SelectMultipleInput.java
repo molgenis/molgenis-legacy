@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.molgenis.util.ValueLabel;
 
 /**

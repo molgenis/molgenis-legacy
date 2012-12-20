@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /*
  * Provides a panel to order your inputs.
@@ -105,7 +105,7 @@ public class TablePanel extends HtmlWidget
 		for (@SuppressWarnings("rawtypes")
 		HtmlInput input : inputList)
 		{
-			object = request.getObject(input.getName());
+			object = request.get(input.getName());
 			if (object != null)
 			{
 				input.setValue(object);

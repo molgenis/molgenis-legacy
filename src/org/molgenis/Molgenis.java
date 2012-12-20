@@ -42,8 +42,6 @@ import org.molgenis.fieldtypes.ImageField;
 import org.molgenis.fieldtypes.IntField;
 import org.molgenis.fieldtypes.LongField;
 import org.molgenis.fieldtypes.MrefField;
-import org.molgenis.fieldtypes.NSequenceField;
-import org.molgenis.fieldtypes.OnoffField;
 import org.molgenis.fieldtypes.StringField;
 import org.molgenis.fieldtypes.TextField;
 import org.molgenis.fieldtypes.XrefField;
@@ -53,11 +51,10 @@ import org.molgenis.generators.R.RApiGen;
 import org.molgenis.generators.R.REntityGen;
 import org.molgenis.generators.R.RMatrixGen;
 import org.molgenis.generators.cpp.CPPCassette;
-import org.molgenis.generators.csv.CsvExportGen;
-import org.molgenis.generators.csv.CsvImportByIdGen;
-import org.molgenis.generators.csv.CsvImportGen;
-import org.molgenis.generators.csv.CsvReaderGen;
+import org.molgenis.generators.csv.CsvEntityExporterGen;
 import org.molgenis.generators.db.DatabaseFactoryGen;
+import org.molgenis.generators.db.EntitiesImporterGen;
+import org.molgenis.generators.db.EntityImporterGen;
 import org.molgenis.generators.db.FillMetadataGen;
 import org.molgenis.generators.db.JDBCDatabaseGen;
 import org.molgenis.generators.db.JDBCMetaDatabaseGen;
@@ -73,9 +70,7 @@ import org.molgenis.generators.doc.DotDocMinimalGen;
 import org.molgenis.generators.doc.DotDocModuleDependencyGen;
 import org.molgenis.generators.doc.FileFormatDocGen;
 import org.molgenis.generators.doc.ObjectModelDocGen;
-import org.molgenis.generators.excel.ExcelExportGen;
-import org.molgenis.generators.excel.ExcelImportGen;
-import org.molgenis.generators.excel.ExcelReaderGen;
+import org.molgenis.generators.excel.ExcelEntityExporterGen;
 import org.molgenis.generators.excel.ImportWizardExcelPrognosisGen;
 import org.molgenis.generators.python.PythonDataTypeGen;
 import org.molgenis.generators.server.FrontControllerGen;
@@ -96,9 +91,6 @@ import org.molgenis.generators.sql.MySqlAlterSubclassPerTableGen;
 import org.molgenis.generators.sql.MySqlCreateSubclassPerTableGen;
 import org.molgenis.generators.sql.OracleCreateSubclassPerTableGen;
 import org.molgenis.generators.sql.PSqlCreateSubclassPerTableGen;
-import org.molgenis.generators.tests.TestCsvGen;
-import org.molgenis.generators.tests.TestDataSetGen;
-import org.molgenis.generators.tests.TestDatabaseGen;
 import org.molgenis.generators.ui.EasyPluginControllerGen;
 import org.molgenis.generators.ui.FormControllerGen;
 import org.molgenis.generators.ui.HtmlFormGen;
@@ -208,11 +200,6 @@ public class Molgenis
 
 		this.options = options;
 
-		// if (generatorsToUse != null && generatorsToUse.length > 0)
-		// {
-		// this.options.delete_generated_folder = false;
-		// }
-
 		Logger.getLogger("freemarker.cache").setLevel(Level.INFO);
 		logger.info("\nMOLGENIS version " + org.molgenis.Version.convertToString());
 		logger.info("working dir: " + System.getProperty("user.dir"));
@@ -247,14 +234,11 @@ public class Molgenis
 		// DOCUMENTATION
 		if (options.generate_doc)
 		{
-			// not used: generators.add(new TableDocGen());
-			// not used: generators.add(new EntityModelDocGen());
 			generators.add(new DotDocGen());
 			generators.add(new FileFormatDocGen());
 			generators.add(new DotDocMinimalGen());
 			generators.add(new ObjectModelDocGen());
 			generators.add(new DotDocModuleDependencyGen());
-			// not used: generators.add(new TextUmlGen());
 		}
 		else
 		{
@@ -266,21 +250,6 @@ public class Molgenis
 			generators.add(new CPPCassette());
 		}
 
-		// TESTS
-		if (options.generate_tests)
-		{
-			generators.add(new TestDatabaseGen());
-			generators.add(new TestCsvGen());
-			generators.add(new TestDataSetGen());
-		}
-		else
-		{
-			logger.info("Skipping Tests ....");
-		}
-		// DATA
-		// generators.add(new DataPListGen());
-		// generators.add(new ViewTypeGen());
-
 		if (options.generate_sql)
 		{
 			if (options.mapper_implementation.equals(MapperImplementation.JPA))
@@ -291,19 +260,10 @@ public class Molgenis
 				generators.add(new JpaMapperGen());
 				generators.add(new JDBCMetaDatabaseGen());
 
-				// generates Entity Listeners
-				// JpaEntityListenerGen entityListGen = new
-				// JpaEntityListenerGen();
-				// entityListGen.setHandwritten(true);
-				// generators.add(entityListGen);
-
 				if (options.generate_persistence)
 				{
 					generators.add(new PersistenceGen());
 				}
-
-				// generators.add(new FillMetadataTablesGen());
-
 			}
 			else
 			{
@@ -340,7 +300,6 @@ public class Molgenis
 					generators.add(new JDBCDatabaseGen());
 					generators.add(new DataTypeGen());
 					generators.add(new HSqlCreateSubclassPerTableGen());
-					// generators.add(new MultiqueryMapperGen());
 					generators.add(new PStatementMapperGen());
 				} // postgresql
 				else if (options.db_driver.equals("org.postgresql.Driver"))
@@ -360,7 +319,6 @@ public class Molgenis
 				else
 				{
 					logger.warn("Unknown database driver " + options.db_driver);
-					// System.exit(-1);
 				}
 
 				// test
@@ -371,6 +329,8 @@ public class Molgenis
 				generators.add(new FillMetadataTablesGen());
 			}
 
+			generators.add(new EntityImporterGen());
+			generators.add(new EntitiesImporterGen());
 			generators.add(new FillMetadataGen());
 
 			// authorization
@@ -386,9 +346,7 @@ public class Molgenis
 			}
 
 			// DatabaseFactory
-			// if (!options.db_driver.equals("org.hsqldb.jdbcDriver")) {
 			generators.add(new DatabaseFactoryGen());
-			// }
 		}
 		else
 		{
@@ -403,25 +361,16 @@ public class Molgenis
 		{
 			logger.info("Skipping Python interface ....");
 		}
-		// generators.add(new HsqlDbGen());
 
 		// CSV
 		if (options.generate_csv)
 		{
-			generators.add(new CsvReaderGen());
-			generators.add(new CsvImportByIdGen());
-			generators.add(new CsvExportGen());
-			generators.add(new CsvImportGen());
+			generators.add(new CsvEntityExporterGen());
 		}
 		else
 		{
 			logger.info("Skipping CSV importers ....");
 		}
-		// generators.add(new CopyMemoryToDatabaseGen());
-		// generators.add(new CsvReaderFactoryGen());
-
-		// XML
-		// generators.add(new XmlMapperGen());
 
 		// R
 		if (options.generate_R)
@@ -463,13 +412,7 @@ public class Molgenis
 		// SCREEN PLUGIN
 		if (options.generate_plugins)
 		{
-			// generators.add(new PluginControllerGen());
-			// generators.add(new PluginScreenFTLTemplateGen());
-			// generators.add(new PluginScreenJavaTemplateGen());
-
-			// generators.add(new EasyPluginViewGen());
 			generators.add(new EasyPluginControllerGen());
-			// generators.add(new EasyPluginModelGen());
 		}
 		else
 		{
@@ -510,18 +453,8 @@ public class Molgenis
 		// Excel
 		if (options.generate_ExcelImport)
 		{
-			generators.add(new ExcelReaderGen());
-			generators.add(new ExcelImportGen());
-			generators.add(new ExcelExportGen());
+			generators.add(new ExcelEntityExporterGen());
 			generators.add(new ImportWizardExcelPrognosisGen());
-			if (!options.generate_csv)
-			{
-				logger.info("Automatically including the CSV importers needed for Excel import");
-				generators.add(new CsvReaderGen());
-				generators.add(new CsvImportByIdGen());
-				generators.add(new CsvExportGen());
-				generators.add(new CsvImportGen());
-			}
 		}
 		else
 		{
@@ -559,11 +492,8 @@ public class Molgenis
 		MolgenisFieldTypes.addType(new FileField());
 		MolgenisFieldTypes.addType(new ImageField());
 		MolgenisFieldTypes.addType(new HyperlinkField());
-		// FieldTypeRegistry.addType(new ListField());
 		MolgenisFieldTypes.addType(new LongField());
 		MolgenisFieldTypes.addType(new MrefField());
-		MolgenisFieldTypes.addType(new NSequenceField());
-		MolgenisFieldTypes.addType(new OnoffField());
 		MolgenisFieldTypes.addType(new StringField());
 		MolgenisFieldTypes.addType(new TextField());
 		MolgenisFieldTypes.addType(new XrefField());
@@ -725,18 +655,6 @@ public class Molgenis
 		out.close();
 	}
 
-	/**
-	 * Parse the model using settings in options
-	 * 
-	 * @param options
-	 * @return MOLGENIS model
-	 * @throws Exception
-	 */
-	// private void parse() throws Exception {
-	// MolgenisModel language = new MolgenisModel();
-	// model = language.parse(options);
-	// logger.debug("\nUsing metamodel:\n" + model);
-	// }
 	/**
 	 * Load the generated SQL into the database.
 	 * 

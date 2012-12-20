@@ -627,15 +627,20 @@ public class Field implements Serializable
 	 */
 	public SimpleTree<SimpleTree<?>> getXrefLabelTree() throws MolgenisModelException
 	{
+		return getXrefLabelTree(true);
+	}
+
+	public SimpleTree<SimpleTree<?>> getXrefLabelTree(boolean useJavaNames) throws MolgenisModelException
+	{
 		List<String> labels = new ArrayList<String>();
 		for (String label : this.getXrefLabelNames())
 		{
-			labels.add(getName() + "_" + GeneratorHelper.getJavaName(label));
+			labels.add(getName() + "_" + GeneratorHelper.getJavaName(label, useJavaNames));
 		}
 
 		SimpleTree<SimpleTree<?>> root = new SimpleTree<SimpleTree<?>>(getName(), null);
 		root.setValue(this);
-		this.getXrefLabelTree(labels, root);
+		this.getXrefLabelTree(labels, root, useJavaNames);
 		return root;
 	}
 
@@ -652,10 +657,26 @@ public class Field implements Serializable
 	 */
 	protected void getXrefLabelTree(List<String> labels, SimpleTree<?> parent) throws MolgenisModelException
 	{
+		getXrefLabelTree(labels, parent, true);
+	}
+
+	/**
+	 * Creates a tree with leafs that match labels and nodes that match
+	 * entities. xref fields will result in sub trees.
+	 * 
+	 * @param labels
+	 *            to be matched
+	 * @param path
+	 *            so far in the tree to allow for recursion
+	 * @return tree of paths matching labels.
+	 * @throws MolgenisModelException
+	 */
+	protected void getXrefLabelTree(List<String> labels, SimpleTree<?> parent, boolean useJavaNames)
+			throws MolgenisModelException
+	{
 		for (Field f : this.getXrefEntity().getAllFields())
 		{
-			String name = parent.getName() + "_" + GeneratorHelper.getJavaName(f.getName());
-
+			String name = parent.getName() + "_" + GeneratorHelper.getJavaName(f.getName(), useJavaNames);
 			if (!(f.getType() instanceof XrefField) && !(f.getType() instanceof MrefField))
 			{
 				if (labels.contains(name))

@@ -1,6 +1,8 @@
 package org.molgenis.io.excel;
 
 import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -10,9 +12,11 @@ import java.util.List;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.molgenis.io.TableReader;
+import org.molgenis.io.TupleReader;
 import org.molgenis.io.processor.CellProcessor;
 
-public class ExcelReader implements Iterable<ExcelSheetReader>, Closeable
+public class ExcelReader implements TableReader, Closeable
 {
 	private final Workbook workbook;
 	private final InputStream is;
@@ -41,6 +45,16 @@ public class ExcelReader implements Iterable<ExcelSheetReader>, Closeable
 		}
 	}
 
+	public ExcelReader(File file) throws IOException
+	{
+		this(new FileInputStream(file));
+	}
+
+	public ExcelReader(File file, boolean hasHeader) throws IOException
+	{
+		this(new FileInputStream(file), hasHeader);
+	}
+
 	public int getNumberOfSheets()
 	{
 		return this.workbook.getNumberOfSheets();
@@ -66,9 +80,9 @@ public class ExcelReader implements Iterable<ExcelSheetReader>, Closeable
 	}
 
 	@Override
-	public Iterator<ExcelSheetReader> iterator()
+	public Iterator<TupleReader> iterator()
 	{
-		return new Iterator<ExcelSheetReader>()
+		return new Iterator<TupleReader>()
 		{
 			private int i = 0;
 			private int nrSheets = getNumberOfSheets();
@@ -80,7 +94,7 @@ public class ExcelReader implements Iterable<ExcelSheetReader>, Closeable
 			}
 
 			@Override
-			public ExcelSheetReader next()
+			public TupleReader next()
 			{
 				return getSheet(i++);
 			}
@@ -99,15 +113,52 @@ public class ExcelReader implements Iterable<ExcelSheetReader>, Closeable
 		cellProcessors.add(cellProcessor);
 	}
 
+	@SuppressWarnings("resource")
+	@Override
+	public TupleReader getTupleReader(String tableName) throws IOException
+	{
+		org.apache.poi.ss.usermodel.Sheet poiSheet = this.workbook.getSheet(tableName);
+		return poiSheet != null ? new ExcelSheetReader(poiSheet, hasHeader, this.cellProcessors) : null;
+	}
+
+	@Override
+	public Iterable<String> getTableNames() throws IOException
+	{
+		return new Iterable<String>()
+		{
+			@Override
+			public Iterator<String> iterator()
+			{
+				return new Iterator<String>()
+				{
+					private final int nrSheets = getNumberOfSheets();
+					private int i = 0;
+
+					@Override
+					public boolean hasNext()
+					{
+						return i < nrSheets;
+					}
+
+					@Override
+					public String next()
+					{
+						return getSheetName(i++);
+					}
+
+					@Override
+					public void remove()
+					{
+						throw new UnsupportedOperationException();
+					}
+				};
+			}
+		};
+	}
+
 	@Override
 	public void close() throws IOException
 	{
-		try
-		{
-			this.is.close();
-		}
-		catch (IOException e)
-		{
-		}
+		this.is.close();
 	}
 }

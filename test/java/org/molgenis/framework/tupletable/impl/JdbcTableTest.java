@@ -12,8 +12,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.TupleTable;
-import org.molgenis.model.elements.Field;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -23,9 +22,7 @@ public class JdbcTableTest
 	public void testJDBCTable() throws SQLException, DatabaseException, TableException
 	{
 		Tuple tuple0 = mock(Tuple.class);
-		Field field0a = when(mock(Field.class).getName()).thenReturn("Name").getMock();
-		Field field0b = when(mock(Field.class).getName()).thenReturn("Continent").getMock();
-		when(tuple0.getFieldTypes()).thenReturn(Arrays.asList(field0a, field0b)).getMock();
+		when(tuple0.getColNames()).thenReturn(Arrays.asList("Name", "Continent")).getMock();
 		when(tuple0.getString("Name")).thenReturn("Netherlands");
 
 		Database db = mock(Database.class);

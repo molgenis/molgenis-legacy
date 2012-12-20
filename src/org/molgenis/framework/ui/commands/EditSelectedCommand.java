@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.ScreenController;
@@ -18,8 +19,8 @@ import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.util.Entity;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.WritableTuple;
 
 /**
  * This command shows a dialog to edit in batch It therefor uses a custom
@@ -49,7 +50,7 @@ public class EditSelectedCommand extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream out) throws Exception
+	public ScreenModel.Show handleRequest(Database db, MolgenisRequest request, OutputStream out) throws Exception
 	{
 		logger.debug(this.getName());
 
@@ -66,12 +67,12 @@ public class EditSelectedCommand extends SimpleCommand
 			ScreenMessage msg = null;
 
 			// cleanup the request, only use ticked (marked with 'use_'
-			Tuple updateTuple = new SimpleTuple();
+			WritableTuple tuple = new KeyValueTuple();
 			for (HtmlInput<?> input : this.getFormScreen().getNewRecordForm().getInputs())
 			{
 				if (!request.isNull("use_" + input.getName()))
 				{
-					updateTuple.set(input.getName(), request.getObject(input.getName()));
+					tuple.set(input.getName(), request.get(input.getName()));
 				}
 			}
 
@@ -87,7 +88,7 @@ public class EditSelectedCommand extends SimpleCommand
 				{
 					row++;
 					// set only not null values
-					e.set(updateTuple, false);
+					e.set(tuple, false);
 					db.update(e);
 				}
 				db.commitTx();

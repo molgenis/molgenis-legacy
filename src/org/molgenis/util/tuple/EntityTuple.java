@@ -1,6 +1,5 @@
 package org.molgenis.util.tuple;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 import org.molgenis.util.Entity;
@@ -26,9 +25,9 @@ public class EntityTuple extends AbstractTuple
 	}
 
 	@Override
-	public Iterator<String> getColNames()
+	public Iterable<String> getColNames()
 	{
-		return getFields().iterator();
+		return getFields();
 	}
 
 	@Override

@@ -2,7 +2,6 @@ package org.molgenis.util.plink.drivers;
 
 import static org.testng.AssertJUnit.assertEquals;
 
-import org.molgenis.util.test.AbstractResourceTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 

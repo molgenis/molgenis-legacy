@@ -1,6 +1,8 @@
 package org.molgenis.framework.ui.html;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
+import org.molgenis.util.tuple.WritableTuple;
 
 /**
  * Input that should be hidden from view. Used for hidden parameters that users
@@ -17,14 +19,16 @@ public class HiddenInput extends StringInput
 
 	public HiddenInput()
 	{
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public String toHtml(Tuple params) throws HtmlInputException
 	{
-		params.set(HIDDEN, true);
-		return super.toHtml(params);
+		WritableTuple tuple = new KeyValueTuple();
+		for (String colName : params.getColNames())
+			tuple.set(colName, params.get(colName));
+		tuple.set(HIDDEN, true);
+		return super.toHtml(tuple);
 	}
 
 }

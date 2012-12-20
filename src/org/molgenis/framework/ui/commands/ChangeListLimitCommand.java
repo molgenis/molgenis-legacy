@@ -8,13 +8,13 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 /**
  * This command changes the limit of the number of items shown in listview
@@ -49,7 +49,7 @@ public class ChangeListLimitCommand<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream)
+	public ScreenModel.Show handleRequest(Database db, MolgenisRequest request, OutputStream downloadStream)
 	{
 		getFormScreen().setLimit(getLimit());
 		return ScreenModel.Show.SHOW_MAIN;

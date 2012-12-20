@@ -80,7 +80,7 @@ public class MolgenisXrefService implements MolgenisService
 			final String xrefField = req.getString(AbstractRefInput.XREF_FIELD);
 			final Class<? extends Entity> xrefEntity = getClassForName(req.getString(AbstractRefInput.XREF_ENTITY));
 			final String xrefLabel = req.getString(AbstractRefInput.XREF_LABELS);
-			final boolean nillable = req.getBool(AbstractRefInput.NILLABLE);
+			final boolean nillable = req.getBoolean(AbstractRefInput.NILLABLE);
 
 			if (searchTerm == null || xrefField == null || xrefEntity == null || xrefLabel == null)
 			{

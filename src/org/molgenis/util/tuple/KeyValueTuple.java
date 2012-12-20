@@ -1,20 +1,19 @@
 package org.molgenis.util.tuple;
 
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Tuple backed by a {@link java.util.Map}
  */
-public class KeyValueTuple extends AbstractTuple
+public class KeyValueTuple extends AbstractTuple implements WritableTuple
 {
-	private final Map<String, ? extends Object> valueMap;
+	private final Map<String, Object> valueMap;
 
-	public KeyValueTuple(Map<String, ? extends Object> valueMap)
+	public KeyValueTuple()
 	{
-		if (valueMap == null) throw new IllegalArgumentException("map is null");
-		this.valueMap = valueMap;
+		this.valueMap = new LinkedHashMap<String, Object>();
 	}
 
 	@Override
@@ -24,9 +23,9 @@ public class KeyValueTuple extends AbstractTuple
 	}
 
 	@Override
-	public Iterator<String> getColNames()
+	public Iterable<String> getColNames()
 	{
-		return Collections.unmodifiableSet(valueMap.keySet()).iterator();
+		return Collections.unmodifiableSet(valueMap.keySet());
 	}
 
 	@Override
@@ -38,9 +37,12 @@ public class KeyValueTuple extends AbstractTuple
 	@Override
 	public Object get(int col)
 	{
-		int i = 0;
-		for (Object obj : valueMap.values())
-			if (i++ == col) return obj;
-		throw new IndexOutOfBoundsException();
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void set(String colName, Object val)
+	{
+		valueMap.put(colName, val);
 	}
 }

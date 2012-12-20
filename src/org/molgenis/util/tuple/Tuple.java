@@ -2,7 +2,6 @@ package org.molgenis.util.tuple;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -29,7 +28,7 @@ public interface Tuple
 	 * 
 	 * @return
 	 */
-	public Iterator<String> getColNames();
+	public Iterable<String> getColNames();
 
 	/**
 	 * Returns whether the value of the designated column is null
@@ -133,14 +132,4 @@ public interface Tuple
 	public List<String> getList(String colName);
 
 	public List<String> getList(int col);
-
-	// /**
-	// * Retrieves the value of the designated column as a {@link java.io.File}.
-	// *
-	// * @param columnName
-	// * @return
-	// */
-	// public File getFile(String colName);
-	//
-	// public File getFile(int col);
 }

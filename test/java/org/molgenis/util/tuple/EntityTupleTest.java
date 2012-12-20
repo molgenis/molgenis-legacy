@@ -53,7 +53,7 @@ public class EntityTupleTest
 		Entity entity = when(mock(Entity.class).getFields()).thenReturn(fields).getMock();
 
 		EntityTuple entityTuple = new EntityTuple(entity);
-		Iterator<String> colNames = entityTuple.getColNames();
+		Iterator<String> colNames = entityTuple.getColNames().iterator();
 		assertEquals(colNames.next(), "col1");
 		assertEquals(colNames.next(), "col2");
 		assertFalse(colNames.hasNext());

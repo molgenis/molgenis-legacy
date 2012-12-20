@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public abstract class PluginCommand extends SimpleCommand
 {
