@@ -126,7 +126,10 @@ public class CsvReader implements TupleReader
 							if (values != null)
 							{
 								for (int i = 0; i < values.length; ++i)
-									values[i] = processCell(values[i], false);
+								{
+									String value = values[i].isEmpty() ? null : values[i];
+									values[i] = processCell(value, false);
+								}
 								if (colNamesMap != null) next = new ValueIndexTuple(colNamesMap, Arrays.asList(values));
 								else
 									next = new ValueTuple(Arrays.asList(values));
