@@ -119,7 +119,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 
 	public List<HtmlInput<?>> getInputs()
 	{
-		return getController().getInputs((E) create(), true).getInputs();
+		return getController().getInputs(create(), true).getInputs();
 	}
 
 	public List<HtmlInput<?>> getInputs(E entity)
@@ -932,7 +932,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 
 	public DatabasePager<E> getPager()
 	{
-		return ((FormController<E>) getController()).getPager();
+		return getController().getPager();
 	}
 
 	public List<?> getSelectedIds()

@@ -4,7 +4,6 @@
 package org.molgenis.framework.ui.commands;
 
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -49,7 +48,6 @@ public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand
 		return this.getFormScreen().getMode().equals(Mode.LIST_VIEW);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ScreenModel.Show handleRequest(Database db, MolgenisRequest request, OutputStream csvDownload)
 			throws Exception
@@ -58,22 +56,10 @@ public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand
 
 		FormModel<?> view = this.getFormScreen();
 
-		Object ids = request.getList(FormModel.INPUT_SELECTED);
-		List<Object> records = new ArrayList<Object>();
+		List<String> records = request.getList(FormModel.INPUT_SELECTED);
 
-		if (ids != null)
+		if (records.isEmpty())
 		{
-			if (ids instanceof List)
-			{
-				records = (List<Object>) ids;
-			}
-			else
-				records.add(ids);
-		}
-
-		if (records.size() == 0)
-		{
-			// csvDownload.println("No records selected.");
 			return ScreenModel.Show.SHOW_MAIN;
 		}
 

@@ -1,6 +1,7 @@
 package org.molgenis.framework.ui;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 
 /**
@@ -136,7 +138,21 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 			return writer.toString();
 
 		}
-		catch (Exception e)
+		catch (TemplateException e)
+		{
+			logger.error("rendering of template " + templatePath + " failed:");
+			e.printStackTrace();
+
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw, true);
+			e.printStackTrace(pw);
+			pw.flush();
+			sw.flush();
+
+			return sw.toString().replace("\n", "<br/>");
+
+		}
+		catch (IOException e)
 		{
 			logger.error("rendering of template " + templatePath + " failed:");
 			e.printStackTrace();

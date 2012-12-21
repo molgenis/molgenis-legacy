@@ -2,10 +2,12 @@ package org.molgenis.framework.server.services;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
@@ -214,7 +216,8 @@ public class MolgenisUploadService implements MolgenisService
 				{
 					if (csvWriter != null) csvWriter.close();
 				}
-				BufferedReader reader = new BufferedReader(new FileReader(temp));
+				BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(temp),
+						Charset.forName("UTF-8")));
 				try
 				{
 					String line = null;
@@ -227,7 +230,8 @@ public class MolgenisUploadService implements MolgenisService
 				{
 					IOUtils.closeQuietly(reader);
 				}
-				temp.delete();
+				boolean ok = temp.delete();
+				if (!ok) logger.warn("failed to delete file: " + temp);
 			}
 			else if (action.equals("UPDATE"))
 			{

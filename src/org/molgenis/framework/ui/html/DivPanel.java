@@ -14,7 +14,6 @@ import org.molgenis.util.tuple.Tuple;
 public class DivPanel extends HtmlWidget
 {
 	LinkedHashMap<String, HtmlInput<?>> inputs = new LinkedHashMap<String, HtmlInput<?>>();
-	String style = null;
 	boolean makeNewDiv = true;
 
 	public DivPanel()
@@ -74,12 +73,7 @@ public class DivPanel extends HtmlWidget
 	 */
 	public String toHtml()
 	{
-		StringBuilder strBuilder = new StringBuilder("<div");
-		if (style != null)
-		{
-			strBuilder.append(" style=\"clear:both;").append(style).append('\"');
-		}
-		strBuilder.append('>');
+		StringBuilder strBuilder = new StringBuilder("<div>");
 		for (HtmlInput<?> i : this.inputs.values())
 		{
 			if (makeNewDiv)
