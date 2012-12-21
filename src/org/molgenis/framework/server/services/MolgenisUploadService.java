@@ -230,7 +230,8 @@ public class MolgenisUploadService implements MolgenisService
 				{
 					IOUtils.closeQuietly(reader);
 				}
-				temp.delete();
+				boolean ok = temp.delete();
+				if (!ok) logger.warn("failed to delete file: " + temp);
 			}
 			else if (action.equals("UPDATE"))
 			{

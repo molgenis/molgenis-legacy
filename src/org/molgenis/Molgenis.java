@@ -108,7 +108,6 @@ import org.molgenis.util.cmdline.CmdLineException;
  */
 public class Molgenis
 {
-
 	public static void main(String[] args)
 	{
 		try
@@ -580,7 +579,8 @@ public class Molgenis
 					if (f.isDirectory())
 					{
 						result &= deleteContentOfDirectory(f);
-						f.delete();
+						boolean ok = f.delete();
+						if (!ok) logger.warn("file delete failed: " + f.getName());
 					}
 					else
 					{

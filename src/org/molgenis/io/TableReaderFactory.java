@@ -118,9 +118,11 @@ public class TableReaderFactory
 			return Collections.<TupleReader> unmodifiableCollection(tupleReaders.values()).iterator();
 		}
 
-		public void addTableReader(TableReader tableReader)
+		public void addTableReader(TableReader tableReader) throws IOException
 		{
 			tableReaders.add(tableReader);
+			for (String tableName : tableReader.getTableNames())
+				tupleReaders.put(tableName, tableReader.getTupleReader(tableName));
 		}
 
 		@Override
