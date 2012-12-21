@@ -213,26 +213,26 @@ public class RScript
 	public void copyFile(String fromPath, String toPath) throws Exception
 	{
 		FileInputStream fis = new FileInputStream(fromPath);
-		FileOutputStream fos = new FileOutputStream(toPath);
 		try
 		{
-			byte[] buf = new byte[1024];
-			int i = 0;
-			while ((i = fis.read(buf)) != -1)
-			{
-				fos.write(buf, 0, i);
-			}
-		}
-		finally
-		{
+			FileOutputStream fos = new FileOutputStream(toPath);
 			try
 			{
-				fis.close();
+				byte[] buf = new byte[1024];
+				int i = 0;
+				while ((i = fis.read(buf)) != -1)
+				{
+					fos.write(buf, 0, i);
+				}
 			}
 			finally
 			{
 				fos.close();
 			}
+		}
+		finally
+		{
+			fis.close();
 		}
 	}
 

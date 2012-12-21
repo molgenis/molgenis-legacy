@@ -116,10 +116,7 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 				db.rollbackTx();
 			}
 		}
-		// catch (RedirectedException e){
-		// throw e;
-		// }
-		catch (Exception e)
+		catch (DatabaseException e)
 		{
 			e.printStackTrace();
 		}
