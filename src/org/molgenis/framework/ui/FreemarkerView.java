@@ -136,7 +136,7 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 			return writer.toString();
 
 		}
-		catch (Exception e)
+		catch (IOException e)
 		{
 			logger.error("rendering of template " + templatePath + " failed:");
 			e.printStackTrace();
