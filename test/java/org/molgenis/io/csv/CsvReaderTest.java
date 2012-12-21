@@ -70,6 +70,24 @@ public class CsvReaderTest
 	}
 
 	@Test
+	public void colNamesIterator() throws IOException
+	{
+		CsvReader csvReader = new CsvReader(new StringReader("col1,col2\nval1,val2"), ',', true);
+		try
+		{
+			Iterator<String> colNamesIt = csvReader.colNamesIterator();
+			assertTrue(colNamesIt.hasNext());
+			assertEquals(colNamesIt.next(), "col1");
+			assertTrue(colNamesIt.hasNext());
+			assertEquals(colNamesIt.next(), "col2");
+		}
+		finally
+		{
+			csvReader.close();
+		}
+	}
+
+	@Test
 	public void hasColNames_true() throws IOException
 	{
 		CsvReader csvReader = new CsvReader(new StringReader(""), ',', true);

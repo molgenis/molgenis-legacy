@@ -214,14 +214,26 @@ public class RScript
 	{
 		FileInputStream fis = new FileInputStream(fromPath);
 		FileOutputStream fos = new FileOutputStream(toPath);
-		byte[] buf = new byte[1024];
-		int i = 0;
-		while ((i = fis.read(buf)) != -1)
+		try
 		{
-			fos.write(buf, 0, i);
+			byte[] buf = new byte[1024];
+			int i = 0;
+			while ((i = fis.read(buf)) != -1)
+			{
+				fos.write(buf, 0, i);
+			}
 		}
-		fis.close();
-		fos.close();
+		finally
+		{
+			try
+			{
+				fis.close();
+			}
+			finally
+			{
+				fos.close();
+			}
+		}
 	}
 
 	/** Helper function to delete a file */
