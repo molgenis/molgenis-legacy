@@ -12,8 +12,8 @@ import org.molgenis.framework.tupletable.AbstractFilterableTupleTable;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.EntityTuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Wrap an Entity (that is stored in a database) into a TupleTable
@@ -85,16 +85,9 @@ public class EntityTable extends AbstractFilterableTupleTable
 			List<? extends Entity> entities = q.find();
 
 			List<Tuple> result = new ArrayList<Tuple>();
-			for (Entity e : entities)
+			for (Entity entity : entities)
 			{
-				final Tuple t = new SimpleTuple();
-
-				for (Field f : getColumns())
-				{
-					t.set(f.getName(), e.get(f.getName()));
-				}
-
-				result.add(t);
+				result.add(new EntityTuple(entity));
 			}
 			return result;
 		}

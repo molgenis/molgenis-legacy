@@ -6,7 +6,7 @@ import java.util.UUID;
 public class LoadingScreenFactory
 {
 
-	public class LoadingScreen
+	public static class LoadingScreen
 	{
 		public LoadingScreen(String a, String b)
 		{

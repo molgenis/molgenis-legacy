@@ -145,13 +145,13 @@ public class SNP
 								+ "\t is more than two!");
 
 						System.out.println("Allele 1:\t" + alleles[0] + " / " + new String(new byte[]
-						{ alleles[0] }));
+						{ alleles[0] }, Charset.forName("UTF-8")));
 
 						System.out.println("Allele 2:\t" + alleles[1] + " / " + new String(new byte[]
-						{ alleles[1] }));
+						{ alleles[1] }, Charset.forName("UTF-8")));
 
 						System.out.println("Allele 3:\t" + alleles[2] + " / " + new String(new byte[]
-						{ alleles[2] }));
+						{ alleles[2] }, Charset.forName("UTF-8")));
 						break;
 					}
 				}

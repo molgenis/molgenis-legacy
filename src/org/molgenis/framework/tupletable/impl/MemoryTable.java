@@ -8,8 +8,9 @@ import org.molgenis.fieldtypes.StringField;
 import org.molgenis.framework.tupletable.AbstractTupleTable;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
+import org.molgenis.util.tuple.WritableTuple;
 
 /**
  * Wrap a List<Tuple> into a TupleTable
@@ -32,7 +33,7 @@ public class MemoryTable extends AbstractTupleTable
 		// use first row
 		if (rows.size() > 0)
 		{
-			for (String field : rows.get(0).getFieldNames())
+			for (String field : rows.get(0).getColNames())
 			{
 				Field f = new Field(field);
 				f.setType(new StringField());
@@ -63,12 +64,10 @@ public class MemoryTable extends AbstractTupleTable
 			{
 				if (index > getOffset())
 				{
-					SimpleTuple copy = new SimpleTuple(columns);
+					KeyValueTuple tuple = new KeyValueTuple();
 					for (String col : columns)
-					{
-						copy.set(col, row.getObject(col));
-					}
-					result.add(new SimpleTuple(copy));
+						tuple.set(col, row.get(col));
+					result.add(tuple);
 
 					count++;
 					if (count >= getLimit()) break;
@@ -80,12 +79,10 @@ public class MemoryTable extends AbstractTupleTable
 		{
 			for (Tuple row : this.rows)
 			{
-				SimpleTuple copy = new SimpleTuple(columns);
+				WritableTuple tuple = new KeyValueTuple();
 				for (String col : columns)
-				{
-					copy.set(col, row.getObject(col));
-				}
-				result.add(new SimpleTuple(copy));
+					tuple.set(col, row.get(col));
+				result.add(tuple);
 			}
 		}
 		return result;

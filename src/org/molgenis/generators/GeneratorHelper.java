@@ -19,14 +19,13 @@ import org.molgenis.fieldtypes.ImageField;
 import org.molgenis.fieldtypes.IntField;
 import org.molgenis.fieldtypes.MrefField;
 import org.molgenis.fieldtypes.XrefField;
+import org.molgenis.io.csv.CsvReader;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
 import org.molgenis.model.elements.Model;
 import org.molgenis.model.elements.Unique;
-import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class GeneratorHelper
 {
@@ -607,6 +606,11 @@ public class GeneratorHelper
 	 */
 	public static String getJavaName(String name)
 	{
+		return getJavaName(name, true);
+	}
+
+	public static String getJavaName(String name, boolean doFirstToUpper)
+	{
 		if (name == null) return " NULL ";
 
 		String[] split = name.split("_");
@@ -614,7 +618,7 @@ public class GeneratorHelper
 		for (int i = 0; i < split.length; i++)
 		{
 			if (i > 0) strBuilder.append('_');
-			if (!split[i].isEmpty()) strBuilder.append(firstToUpper(split[i]));
+			if (!split[i].isEmpty()) strBuilder.append(doFirstToUpper ? firstToUpper(split[i]) : split[i]);
 		}
 
 		return strBuilder.toString();
@@ -805,7 +809,7 @@ public class GeneratorHelper
 		return strBuilder.toString();
 	}
 
-	public List<Tuple> loadExampleData(String fileName)
+	public List<Tuple> loadExampleData(String fileName) throws IOException
 	{
 		final List<Tuple> result = new ArrayList<Tuple>();
 
@@ -815,17 +819,18 @@ public class GeneratorHelper
 			File file = new File(dir.getAbsoluteFile() + "/" + fileName);
 			if (file.exists())
 			{
+				CsvReader csvReader = new CsvReader(file);
 				try
 				{
-					for (Tuple tuple : new CsvFileReader(file))
+					for (Tuple tuple : csvReader)
 					{
-						result.add(new SimpleTuple(tuple));
+						result.add(tuple);
 					}
 
 				}
-				catch (IOException e)
+				finally
 				{
-					logger.warn(e);
+					csvReader.close();
 				}
 			}
 		}
@@ -833,14 +838,14 @@ public class GeneratorHelper
 		return result;
 	}
 
-	public String renderExampleData(String fileName)
+	public String renderExampleData(String fileName) throws IOException
 	{
 		List<Tuple> source = this.loadExampleData(fileName);
 		StringBuilder strBuilder = new StringBuilder();
 
-		if (source.size() > 0)
+		if (!source.isEmpty())
 		{
-			List<String> fields = source.get(0).getFields();
+			Iterable<String> fields = source.get(0).getColNames();
 			for (String field : fields)
 			{
 				strBuilder.append(field).append('\t');

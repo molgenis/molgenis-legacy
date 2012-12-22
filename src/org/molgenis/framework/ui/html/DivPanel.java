@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Provides a panel to order your inputs using html <code>div</code>.
@@ -14,7 +14,6 @@ import org.molgenis.util.Tuple;
 public class DivPanel extends HtmlWidget
 {
 	LinkedHashMap<String, HtmlInput<?>> inputs = new LinkedHashMap<String, HtmlInput<?>>();
-	String style = null;
 	boolean makeNewDiv = true;
 
 	public DivPanel()
@@ -74,12 +73,7 @@ public class DivPanel extends HtmlWidget
 	 */
 	public String toHtml()
 	{
-		StringBuilder strBuilder = new StringBuilder("<div");
-		if (style != null)
-		{
-			strBuilder.append(" style=\"clear:both;").append(style).append('\"');
-		}
-		strBuilder.append('>');
+		StringBuilder strBuilder = new StringBuilder("<div>");
 		for (HtmlInput<?> i : this.inputs.values())
 		{
 			if (makeNewDiv)
@@ -128,7 +122,7 @@ public class DivPanel extends HtmlWidget
 		fillList(inputList, this);
 		for (HtmlInput input : inputList)
 		{
-			object = request.getObject(input.getName());
+			object = request.get(input.getName());
 			if (input instanceof SelectMultipleInput && object instanceof String)
 			{
 				// avoid messing up multiple select boxes

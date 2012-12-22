@@ -9,7 +9,7 @@
  */
 package org.molgenis.framework.ui.html;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Input for upload of files.

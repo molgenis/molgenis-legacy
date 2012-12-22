@@ -34,6 +34,13 @@ public class ExcelSheetReaderTest
 		excelReader.close();
 	}
 
+	@SuppressWarnings("resource")
+	@Test(expectedExceptions = IllegalArgumentException.class)
+	public void ExcelSheetReader()
+	{
+		new ExcelSheetReader(null, true, null);
+	}
+
 	@Test
 	public void addCellProcessor_header()
 	{
@@ -57,6 +64,16 @@ public class ExcelSheetReaderTest
 		verify(processor).process("val2");
 		verify(processor).process("val4");
 		verify(processor).process("val6");
+	}
+
+	@Test
+	public void colNamesIterator() throws IOException
+	{
+		Iterator<String> colNamesIt = excelSheetReader.colNamesIterator();
+		assertTrue(colNamesIt.hasNext());
+		assertEquals(colNamesIt.next(), "col1");
+		assertTrue(colNamesIt.hasNext());
+		assertEquals(colNamesIt.next(), "col2");
 	}
 
 	@Test

@@ -25,11 +25,11 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.molgenis.framework.security.Login;
+import org.molgenis.io.TupleReader;
+import org.molgenis.io.TupleWriter;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.TupleReader;
-import org.molgenis.util.TupleWriter;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Interface to manage and search persistent data Entity objects. It wraps basic

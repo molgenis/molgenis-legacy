@@ -21,9 +21,9 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.molgenis.framework.db.CsvToDatabase;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.EntitiesImporter;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.paging.DatabasePager;
@@ -50,7 +50,7 @@ import org.molgenis.framework.ui.html.FileInput;
 import org.molgenis.framework.ui.html.HtmlForm;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class FormModel<E extends Entity> extends SimpleScreenModel
 {
@@ -119,7 +119,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 
 	public List<HtmlInput<?>> getInputs()
 	{
-		return getController().getInputs((E) create(), true).getInputs();
+		return getController().getInputs(create(), true).getInputs();
 	}
 
 	public List<HtmlInput<?>> getInputs(E entity)
@@ -169,8 +169,9 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	/** Optional description for the selected form screen */
 	private String description;
 
-	/** entity csv reader */
-	private CsvToDatabase<E> csvReader;
+	private EntitiesImporter csvEntityImporter;
+
+	private Class<E> entityClass;
 
 	/** currently known offset */
 	private int offset;
@@ -888,14 +889,24 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		return getController().getApplicationController().getLogin();
 	}
 
-	public CsvToDatabase<E> getCsvReader()
+	public EntitiesImporter getCsvEntityImporter()
 	{
-		return csvReader;
+		return csvEntityImporter;
 	}
 
-	public void setCsvReader(CsvToDatabase<E> csvReader)
+	public void setCsvEntityImporter(EntitiesImporter csvReader)
 	{
-		this.csvReader = csvReader;
+		this.csvEntityImporter = csvReader;
+	}
+
+	public Class<E> getEntityClass()
+	{
+		return entityClass;
+	}
+
+	public void setEntityClass(Class<E> entityClass)
+	{
+		this.entityClass = entityClass;
 	}
 
 	public String getIdField()
@@ -921,7 +932,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 
 	public DatabasePager<E> getPager()
 	{
-		return ((FormController<E>) getController()).getPager();
+		return getController().getPager();
 	}
 
 	public List<?> getSelectedIds()

@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Vector;
 
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.io.TupleWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.TupleWriter;
 
 /**
  * Simple implementation of the Query interface.

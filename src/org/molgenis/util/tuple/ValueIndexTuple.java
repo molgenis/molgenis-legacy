@@ -1,7 +1,6 @@
 package org.molgenis.util.tuple;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -11,15 +10,15 @@ import java.util.Map;
  */
 public class ValueIndexTuple extends AbstractTuple
 {
-	private final List<? extends Object> values;
 	private final Map<String, Integer> colNamesMap;
+	private final List<? extends Object> values;
 
-	public ValueIndexTuple(List<? extends Object> values, Map<String, Integer> colNamesMap)
+	public ValueIndexTuple(Map<String, Integer> colNamesMap, List<? extends Object> values)
 	{
-		if (values == null) throw new IllegalArgumentException("values is null");
 		if (colNamesMap == null) throw new IllegalArgumentException("column names map is null");
-		this.values = values;
+		if (values == null) throw new IllegalArgumentException("values is null");
 		this.colNamesMap = colNamesMap;
+		this.values = values;
 	}
 
 	@Override
@@ -35,9 +34,9 @@ public class ValueIndexTuple extends AbstractTuple
 	}
 
 	@Override
-	public Iterator<String> getColNames()
+	public Iterable<String> getColNames()
 	{
-		return Collections.unmodifiableSet(colNamesMap.keySet()).iterator();
+		return Collections.unmodifiableSet(colNamesMap.keySet());
 	}
 
 	@Override

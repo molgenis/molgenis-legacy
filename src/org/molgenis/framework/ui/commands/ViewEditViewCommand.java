@@ -8,13 +8,13 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.util.Tuple;
 
 public class ViewEditViewCommand extends SimpleCommand
 {
@@ -30,7 +30,7 @@ public class ViewEditViewCommand extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream out)
+	public ScreenModel.Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 	{
 		getFormScreen().setMode(Mode.EDIT_VIEW);
 		Integer offset = request.getInt(FormModel.INPUT_OFFSET);

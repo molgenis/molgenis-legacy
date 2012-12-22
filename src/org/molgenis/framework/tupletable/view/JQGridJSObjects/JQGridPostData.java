@@ -1,7 +1,7 @@
 package org.molgenis.framework.tupletable.view.JQGridJSObjects;
 
 import org.apache.commons.lang3.StringUtils;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import com.google.gson.Gson;
 

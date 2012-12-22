@@ -2,7 +2,7 @@ package org.molgenis.framework.ui.html;
 
 import java.text.ParseException;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Input for string data that checks within the UI if required data is filled in

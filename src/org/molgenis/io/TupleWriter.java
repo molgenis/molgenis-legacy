@@ -14,7 +14,7 @@ public interface TupleWriter extends Closeable
 	 * @param tuple
 	 * @throws IOException
 	 */
-	public void writeColNames(Tuple tuple) throws IOException;
+	public void writeColNames(Iterable<String> colNames) throws IOException;
 
 	/**
 	 * write row of values

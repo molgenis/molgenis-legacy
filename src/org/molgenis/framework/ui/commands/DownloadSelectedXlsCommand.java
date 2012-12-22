@@ -4,7 +4,6 @@
 package org.molgenis.framework.ui.commands;
 
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -12,6 +11,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FormModel.Mode;
@@ -19,9 +19,8 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.io.excel.ExcelWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.XlsWriter;
 
 /**
  * This command downloads the currently selected records as csv
@@ -49,38 +48,33 @@ public class DownloadSelectedXlsCommand<E extends Entity> extends SimpleCommand
 		return this.getFormScreen().getMode().equals(Mode.LIST_VIEW);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream xlsDownload) throws Exception
+	public ScreenModel.Show handleRequest(Database db, MolgenisRequest request, OutputStream xlsDownload)
+			throws Exception
 	{
 		logger.debug(this.getName());
 
-		FormModel<?> view = this.getFormScreen();
+		FormModel<?> model = this.getFormScreen();
 
-		Object ids = request.getList(FormModel.INPUT_SELECTED);
-		List<Object> records = new ArrayList<Object>();
-
-		if (ids != null)
+		List<String> records = request.getList(FormModel.INPUT_SELECTED);
+		if (records.isEmpty())
 		{
-			if (ids instanceof List)
-			{
-				records = (List<Object>) ids;
-			}
-			else
-				records.add(ids);
-		}
-
-		if (records.size() == 0)
-		{
-			// xlsDownload.println("No records selected.");
 			return ScreenModel.Show.SHOW_MAIN;
 		}
 
 		List<String> fieldsToExport = ((FormController<?>) this.getController()).getVisibleColumnNames();
 
-		// watch out, the "IN" operator expects an Object[]
-		db.find(view.getController().getEntityClass(), new XlsWriter(xlsDownload), fieldsToExport, new QueryRule("id",
-				Operator.IN, records));
+		ExcelWriter excelWriter = new ExcelWriter(xlsDownload);
+		try
+		{
+			Class<? extends Entity> entityClass = model.getController().getEntityClass();
+			db.find(model.getController().getEntityClass(), excelWriter.createTupleWriter(entityClass.getSimpleName()),
+					fieldsToExport, new QueryRule("id", Operator.IN, records));
+		}
+		finally
+		{
+			excelWriter.close();
+		}
 		return ScreenModel.Show.SHOW_MAIN;
 	}
 

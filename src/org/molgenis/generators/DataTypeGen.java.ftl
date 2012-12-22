@@ -530,16 +530,16 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 	{
 		name = name.toLowerCase();
 		<#foreach field in allFields(entity)>
-		if (name.toLowerCase().equals("${name(field)?lower_case}"))
+		if (name.equals("${name(field)?lower_case}"))
 			return get${JavaName(field)}();
 		<#if field.type == "enum" >	
-		if(name.toLowerCase().equals("${name(field)?lower_case}_label"))
+		if(name.equals("${name(field)?lower_case}_label"))
 			return get${JavaName(field)}Label();
 		<#elseif field.type == "xref" || field.type == "mref">
-		if(name.toLowerCase().equals("${name(field)?lower_case}_${name(field.xrefField)?lower_case}"))
+		if(name.equals("${name(field)?lower_case}_${name(field.xrefField)?lower_case}"))
 			return get${JavaName(field)}_${JavaName(field.xrefField)}();
 <#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>	
-		if(name.toLowerCase().equals("${name(field)?lower_case}_${label?lower_case}"))
+		if(name.equals("${name(field)?lower_case}_${label?lower_case}"))
 			return get${JavaName(field)}_${JavaName(label)}();
 </#list></#if>			
 		</#if>
@@ -748,7 +748,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 	}
 	
 	@Override
-	public ${JavaName(entity)} create(org.molgenis.util.Tuple tuple) throws Exception
+	public ${JavaName(entity)} create(org.molgenis.util.tuple.Tuple tuple) throws Exception
 	{
 		${JavaName(entity)} e = new ${JavaName(entity)}();
 		e.set(tuple);

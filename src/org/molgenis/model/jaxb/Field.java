@@ -131,12 +131,6 @@ public class Field
 		/** hyperlink */
 		@XmlEnumValue("hyperlink")
 		HYPERLINK("hyperlink", "%s"),
-		/** Nucleotide sequence */
-		@XmlEnumValue("nsequence")
-		NSEQUENCE("nsequence", "%s"),
-		/** Nucleotide sequence */
-		@XmlEnumValue("onoff")
-		ONOFF("onoff", "%d"),
 		/** List of values */
 		@XmlEnumValue("list")
 		LIST("list", "%s");
@@ -263,8 +257,6 @@ public class Field
 			else if (tag.equals(XREF_SINGLE.tag)) return XREF_SINGLE;
 			else if (tag.equals(XREF_MULTIPLE.tag)) return XREF_MULTIPLE;
 			else if (tag.equals(HYPERLINK.tag)) return HYPERLINK;
-			else if (tag.equals(NSEQUENCE.tag)) return NSEQUENCE;
-			else if (tag.equals(ONOFF.tag)) return ONOFF;
 			else if (tag.equals(LIST.tag)) return LIST;
 			else
 				return UNKNOWN;

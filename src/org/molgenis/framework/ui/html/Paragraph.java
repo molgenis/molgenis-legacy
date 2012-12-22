@@ -3,7 +3,7 @@ package org.molgenis.framework.ui.html;
 import java.text.ParseException;
 import java.util.UUID;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Show text within a paragraph (html

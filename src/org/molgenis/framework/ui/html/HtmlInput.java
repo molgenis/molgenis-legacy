@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.molgenis.framework.ui.html.render.RenderDecorator;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * An HtmlInput allows a user to enter data. Thus, HtmlInput is the base-class
@@ -158,11 +158,11 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 		this.id = t.getString(NAME);
 		this.name = t.getString(NAME);
 		this.label = t.getString(LABEL);
-		this.value = (E) t.getObject(VALUE);
-		if (t.getBool(NILLABLE) != null) this.nillable = t.getBool(NILLABLE);
-		if (t.getBool(READONLY) != null) this.readonly = t.getBool(READONLY);
+		this.value = (E) t.get(VALUE);
+		if (t.getBoolean(NILLABLE) != null) this.nillable = t.getBoolean(NILLABLE);
+		if (t.getBoolean(READONLY) != null) this.readonly = t.getBoolean(READONLY);
 		this.description = t.getString(DESCRIPTION);
-		if (t.getBool(HIDDEN) != null) this.hidden = t.getBool(HIDDEN);
+		if (t.getBoolean(HIDDEN) != null) this.hidden = t.getBoolean(HIDDEN);
 		this.Jqueryproperties = t.getString(JQUERYPROPERTIES);
 
 	}
@@ -331,7 +331,6 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 

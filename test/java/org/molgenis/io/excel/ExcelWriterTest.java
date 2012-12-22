@@ -11,9 +11,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 
+import org.molgenis.io.TupleWriter;
 import org.molgenis.io.excel.ExcelWriter.FileFormat;
 import org.molgenis.io.processor.CellProcessor;
-import org.molgenis.util.tuple.HeaderTuple;
+import org.molgenis.util.tuple.KeyValueTuple;
 import org.molgenis.util.tuple.Tuple;
 import org.testng.annotations.Test;
 
@@ -23,7 +24,7 @@ public class ExcelWriterTest
 	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void ExcelWriter()
 	{
-		new ExcelWriter(null);
+		new ExcelWriter((OutputStream) null);
 	}
 
 	@Test
@@ -68,21 +69,20 @@ public class ExcelWriterTest
 		CellProcessor processor = when(mock(CellProcessor.class).processHeader()).thenReturn(true).getMock();
 		Tuple headerTuple = mock(Tuple.class);
 		when(headerTuple.getNrCols()).thenReturn(2);
-		when(headerTuple.getColNames()).thenReturn(Arrays.asList("col1", "col2").iterator());
+		when(headerTuple.getColNames()).thenReturn(Arrays.asList("col1", "col2"));
 
-		Tuple dataTuple = mock(Tuple.class);
-		when(dataTuple.getNrCols()).thenReturn(2);
-		when(dataTuple.get("col1")).thenReturn("val1");
-		when(dataTuple.get("col2")).thenReturn("val2");
+		KeyValueTuple row1 = new KeyValueTuple();
+		row1.set("col1", "val1");
+		row1.set("col2", "val2");
 
 		OutputStream os = mock(OutputStream.class);
 		ExcelWriter excelWriter = new ExcelWriter(os);
 		excelWriter.addCellProcessor(processor);
 		try
 		{
-			ExcelSheetWriter sheetWriter = excelWriter.createSheet("sheet");
-			sheetWriter.writeColNames(new HeaderTuple(Arrays.asList("col1", "col2")));
-			sheetWriter.write(dataTuple);
+			TupleWriter sheetWriter = excelWriter.createTupleWriter("sheet");
+			sheetWriter.writeColNames(Arrays.asList("col1", "col2"));
+			sheetWriter.write(row1);
 		}
 		finally
 		{
@@ -102,14 +102,15 @@ public class ExcelWriterTest
 		when(dataTuple.getNrCols()).thenReturn(2);
 		when(dataTuple.get("col1")).thenReturn("val1");
 		when(dataTuple.get("col2")).thenReturn("val2");
+		when(dataTuple.getColNames()).thenReturn(Arrays.asList("col1", "col2"));
 
 		OutputStream os = mock(OutputStream.class);
 		ExcelWriter excelWriter = new ExcelWriter(os);
 		excelWriter.addCellProcessor(processor);
 		try
 		{
-			ExcelSheetWriter sheetWriter = excelWriter.createSheet("sheet");
-			sheetWriter.writeColNames(new HeaderTuple(Arrays.asList("col1", "col2")));
+			TupleWriter sheetWriter = excelWriter.createTupleWriter("sheet");
+			sheetWriter.writeColNames(Arrays.asList("col1", "col2"));
 			sheetWriter.write(dataTuple);
 		}
 		finally
@@ -136,7 +137,7 @@ public class ExcelWriterTest
 		ExcelWriter excelWriter = new ExcelWriter(os);
 		try
 		{
-			assertNotNull(excelWriter.createSheet("sheet"));
+			assertNotNull(excelWriter.createTupleWriter("sheet"));
 		}
 		finally
 		{
@@ -151,7 +152,7 @@ public class ExcelWriterTest
 		ExcelWriter excelWriter = new ExcelWriter(os);
 		try
 		{
-			assertNotNull(excelWriter.createSheet(null));
+			assertNotNull(excelWriter.createTupleWriter(null));
 		}
 		finally
 		{

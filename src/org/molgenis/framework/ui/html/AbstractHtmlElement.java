@@ -4,7 +4,7 @@ import java.text.ParseException;
 import java.util.UUID;
 
 import org.molgenis.framework.ui.ScreenView;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Base class for all html elements. For scripting pu

@@ -17,8 +17,9 @@ import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.ScreenModel.Show;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class MenuController extends SimpleScreenController<MenuModel>
 {
@@ -39,7 +40,7 @@ public class MenuController extends SimpleScreenController<MenuModel>
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 	{
 		this.doSelect(request);
 

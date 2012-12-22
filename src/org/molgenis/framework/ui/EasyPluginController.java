@@ -6,9 +6,9 @@ import java.util.Vector;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
 
 /**
  * Simplified controller that handles a lot of the hard stuff in handleRequest.
@@ -43,14 +43,15 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 	 * 
 	 * @throws HandleRequestDelegationException
 	 */
-	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException
+	public void handleRequest(Database db, MolgenisRequest request) throws HandleRequestDelegationException
 	{
 		// automatically calls functions with same name as action
 		delegate(request.getAction(), db, request, null);
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
+			throws HandleRequestDelegationException
 	{
 		// automatically calls functions with same name as action
 		delegate(request.getAction(), db, request, out);
@@ -60,12 +61,12 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 	}
 
 	@Deprecated
-	public void delegate(String action, Database db, Tuple request) throws HandleRequestDelegationException
+	public void delegate(String action, Database db, MolgenisRequest request) throws HandleRequestDelegationException
 	{
 		this.delegate(action, db, request, null);
 	}
 
-	public void delegate(String action, Database db, Tuple request, OutputStream out)
+	public void delegate(String action, Database db, MolgenisRequest request, OutputStream out)
 			throws HandleRequestDelegationException
 	{
 		// try/catch for db.rollbackTx
@@ -76,7 +77,7 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 			{
 				db.beginTx();
 				logger.debug("trying to use reflection to call " + this.getClass().getName() + "." + action);
-				Method m = this.getClass().getMethod(action, Database.class, Tuple.class);
+				Method m = this.getClass().getMethod(action, Database.class, MolgenisRequest.class);
 				m.invoke(this, db, request);
 				logger.debug("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
 						+ " completed");
@@ -84,23 +85,14 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 			}
 			catch (NoSuchMethodException e1)
 			{
-				// this.getModel().setMessages(new
-				// ScreenMessage("Unknown action: " + action, false));
-				// logger.error("call of " + this.getClass().getName() +
-				// "(name=" + this.getName() + ")." + action
-				// + "(db,tuple) failed: " + e1.getMessage());
-				// db.rollbackTx();
-				// useless - can't do this on every error! we cannot distinguish
-				// exceptions because they are all InvocationTargetException
-				// anyway
-				// }catch (InvocationTargetException e){
-				// throw new RedirectedException(e);
+				logger.warn(e1);
 
 				if (out != null) try
 				{
 					// db.beginTx();
 					logger.debug("trying to use reflection to call " + this.getClass().getName() + "." + action);
-					Method m = this.getClass().getMethod(action, Database.class, Tuple.class, OutputStream.class);
+					Method m = this.getClass().getMethod(action, Database.class, MolgenisRequest.class,
+							OutputStream.class);
 					m.invoke(this, db, request, out);
 					logger.debug("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
 							+ " completed");
@@ -124,10 +116,7 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 				db.rollbackTx();
 			}
 		}
-		// catch (RedirectedException e){
-		// throw e;
-		// }
-		catch (Exception e)
+		catch (DatabaseException e)
 		{
 			e.printStackTrace();
 		}

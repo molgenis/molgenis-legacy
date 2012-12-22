@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.molgenis.model.elements.Field;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Iterator to be used with an AbstractTupleTable. Takes into account limit,

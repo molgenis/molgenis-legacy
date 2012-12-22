@@ -5,8 +5,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.molgenis.util.Entity;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.SingletonTuple;
 
 /**
  * EntityForm extends HtmlForm optimized for showing entities.
@@ -72,9 +71,7 @@ public abstract class EntityForm<E extends Entity> extends HtmlForm
 	 */
 	public void set(String name, Object value) throws Exception
 	{
-		Tuple t = new SimpleTuple();
-		t.set(name, value);
-		this.getEntity().set(t, false);
+		this.getEntity().set(new SingletonTuple<Object>(name, value), false);
 	}
 
 	/**

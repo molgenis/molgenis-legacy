@@ -10,7 +10,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.tupletable.AbstractFilterableTupleTable;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class JdbcTable extends AbstractFilterableTupleTable
 {
@@ -66,7 +66,10 @@ public class JdbcTable extends AbstractFilterableTupleTable
 		load();
 		if (rs.size() > 0)
 		{
-			return rs.get(0).getFieldTypes();
+			List<Field> columns = new ArrayList<Field>();
+			for (String colName : rs.get(0).getColNames())
+				columns.add(new Field(colName));
+			return columns;
 		}
 		return new ArrayList<Field>();
 	}

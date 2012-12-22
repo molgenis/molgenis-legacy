@@ -1,25 +1,20 @@
 package org.molgenis.util.tuple;
 
 import java.util.Collections;
-import java.util.Iterator;
 
 /**
  * Tuple backed by a single value
  */
 public class SingletonTuple<T> extends AbstractTuple
 {
-	private final T value;
 	private final String colName;
+	private final T value;
 
-	public SingletonTuple(T value)
+	public SingletonTuple(String colName, T value)
 	{
-		this(value, null);
-	}
-
-	public SingletonTuple(T value, String colName)
-	{
-		this.value = value;
+		if (colName == null) throw new IllegalArgumentException("col name is null");
 		this.colName = colName;
+		this.value = value;
 	}
 
 	@Override
@@ -29,21 +24,20 @@ public class SingletonTuple<T> extends AbstractTuple
 	}
 
 	@Override
-	public Iterator<String> getColNames()
+	public Iterable<String> getColNames()
 	{
-		return colName != null ? Collections.singletonList(colName).iterator() : null;
+		return Collections.singletonList(colName);
 	}
 
 	@Override
 	public Object get(String colName)
 	{
-		if (this.colName == null) return null;
 		return this.colName.equals(colName) ? value : null;
 	}
 
 	@Override
 	public Object get(int col)
 	{
-		return col == 0 ? value : null;
+		throw new UnsupportedOperationException();
 	}
 }

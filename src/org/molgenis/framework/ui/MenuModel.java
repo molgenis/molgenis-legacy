@@ -93,8 +93,7 @@ public class MenuModel extends SimpleScreenModel
 		// remove hidden children from the list, and also commands
 		for (ScreenController<?> s : subscreens)
 		{
-			if (this.hiddenScreenNames.indexOf(s.getName()) < 0 && s instanceof ScreenController<?>
-					&& s.getModel().isVisible())
+			if (this.hiddenScreenNames.indexOf(s.getName()) < 0 && s.getModel().isVisible())
 			{
 				result.add(s.getModel());
 			}

@@ -2,7 +2,7 @@ package org.molgenis.framework.tupletable.impl;
 
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.TupleTable;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -25,14 +25,9 @@ public class MemoryTableTest
 		int i = 1;
 		for (Tuple row : table)
 		{
-			Assert.assertEquals(5, row.getFieldNames().size());
-
-			Assert.assertEquals(true, row.getFieldNames().contains("col1"));
-			Assert.assertEquals(true, row.getFieldNames().contains("col2"));
-
-			Assert.assertEquals(row.getObject("col1"), "val1," + i);
-			Assert.assertEquals(row.getObject("col2"), "val2," + i);
-
+			Assert.assertEquals(5, row.getNrCols());
+			Assert.assertEquals(row.get("col1"), "val1," + i);
+			Assert.assertEquals(row.get("col2"), "val2," + i);
 			i = i + 1;
 		}
 	}
@@ -66,14 +61,10 @@ public class MemoryTableTest
 		int i = 1;
 		for (Tuple row : table.getRows())
 		{
-			Assert.assertEquals(row.getNrColumns(), 2);
-
-			// we expect col2 and col3
-			Assert.assertEquals(row.getColName(0), "col2");
-			Assert.assertEquals(row.getColName(1), "col3");
-
-			// we expect
-			Assert.assertEquals(row.getObject("col2"), "val2," + i++);
+			Assert.assertEquals(row.getNrCols(), 2);
+			Assert.assertEquals(row.get("col2"), "val2," + i);
+			Assert.assertEquals(row.get("col3"), "val3," + i);
+			++i;
 		}
 
 		// remove filters again

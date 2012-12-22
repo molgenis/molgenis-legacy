@@ -2,7 +2,7 @@ package org.molgenis.framework.ui.html;
 
 import java.text.ParseException;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Input for checkbox data (yes/no).
@@ -41,7 +41,7 @@ public class OnoffInput extends HtmlInput<Boolean>
 
 	public OnoffInput(Tuple t)
 	{
-		this(t.getString(NAME), t.getString(LABEL), t.getBool(VALUE), t.getBool(NILLABLE), t.getBool(READONLY));
+		this(t.getString(NAME), t.getString(LABEL), t.getBoolean(VALUE), t.getBoolean(NILLABLE), t.getBoolean(READONLY));
 	}
 
 	// HtmlInput overloads

@@ -1,14 +1,17 @@
 package org.molgenis.framework.ui.commands;
 
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.molgenis.framework.db.CsvToDatabase;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.EntitiesImporter;
+import org.molgenis.framework.db.EntityImportReport;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -16,9 +19,8 @@ import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.FileInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.util.CsvFileReader;
+import org.molgenis.io.csv.CsvReader;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 /**
  * The command to add in batch/upload csv
@@ -77,7 +79,8 @@ public class AddCsvFileCommand<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
+	public ScreenModel.Show handleRequest(Database db, MolgenisRequest request, OutputStream downloadStream)
+			throws Exception
 	{
 		logger.debug(this.getName());
 
@@ -87,15 +90,23 @@ public class AddCsvFileCommand<E extends Entity> extends SimpleCommand
 			ScreenMessage msg = null;
 			try
 			{
-				CsvToDatabase<? extends Entity> csvReader = this.getFormScreen().getCsvReader();
+				CsvReader csvReader = new CsvReader(new StringReader(request.getString("filefor___csvdata")));
+				String entityName = this.getFormScreen().getEntityClass().getName();
 
-				int updatedRows = csvReader.importCsv(db, new CsvFileReader(request.getFile("filefor___csvdata")),
-						request, DatabaseAction.ADD);
-				// for (E entity : entities)
-				// logger.debug("parsed: " + entity);
-				// view.getDatabase().add(entities);
-				msg = new ScreenMessage("CSV UPLOAD SUCCESS: added " + updatedRows + " rows", null, true);
-				logger.debug("CSV UPLOAD SUCCESS: added " + updatedRows + " rows");
+				EntityImportReport importReport = null;
+				try
+				{
+					EntitiesImporter entityImporter = this.getFormScreen().getCsvEntityImporter();
+					entityImporter.setDatabase(db);
+					importReport = entityImporter.importEntities(csvReader, entityName, DatabaseAction.ADD);
+				}
+				finally
+				{
+					csvReader.close();
+				}
+
+				msg = new ScreenMessage("CSV UPLOAD SUCCESS: added " + importReport.getNrImported() + " rows", null, true);
+				logger.debug("CSV UPLOAD SUCCESS: added " + importReport.getNrImported() + " rows");
 				getFormScreen().getPager().resetFilters();
 				getFormScreen().getPager().last(db);
 			}
