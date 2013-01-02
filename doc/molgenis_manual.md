@@ -17,30 +17,25 @@
 # Introduction
 This document is a hands-on guide for MOLGENIS application development.
 
-## Why MOLGENIS?
-
-Relational (SQL) databases  are the workhorses of most structured data management around the world. However it still takes surprisingly amounts of effort to design and implement a full database application. The MOLGENIS  platform allows you to automatically generate rich database software to your specifications, including web user interfaces to manage and query your data, various database back ends to store your data, and programmatic interfaces to the R language and web services.  You tell MOLGENIS what to generate using an data model and user interface model described in XML; at the push of a button MOLGENIS translates this model into SQL, Java and R program files. Also documentation is generated. While the standard generated MOLGENIS is sufficient for most data management needs, MOLGENIS also allows you to plug in handwritten software components that build on the auto-generated software platform. 
-
-## What will you achieve with this guide?
- * This guide can be used in a walk-through fashion to learn how:
- * To model rich data models using MOLGENIS data definition language 
- * To generate your own customized MOLGENIS databases from scratch 
- * To generate a MOLGENIS to access existing databases 
- * To enhance the standard generated MOLGENIS with your own UI plug-ins 
- * And how to automatically manage and retrieve your data using the Java, R and SOAP interfaces This guide assumes minimal Eclipse, Java and database experience; if not we suggest to team up with someone who does.
+MOLGENIS is a software generator + framework to generate rich database software to your specifications, including web user interfaces to manage and query your data, various database back ends to store your data, and programmatic interfaces to the R language and web services.  You tell MOLGENIS what to generate using an data model and user interface model described in XML; at the push of a button MOLGENIS translates this model into SQL, Java and R program files. Also documentation is generated. While the standard generated MOLGENIS is sufficient for most data management needs, MOLGENIS also allows you to build on top and add your own handwritten software components that build on the auto-generated software. 
 
 <a name="db_xml"/>
+
 # Database XML format
 
 <a name="db_molgenis"/>
 ## \<molgenis>
-The `<molgenis>` element is the root of each MOLGENIS database definition file and can contain data definition elements. The model can be split, i.e. there can be multiple MOLGENIS XML database files for one application, for example *_db.xml. See section on "MOLGENIS properties"
+The `<molgenis>` element is the root of each MOLGENIS database definition file.
 
 Example usage of the <molgenis> element:
 
 ```xml
-<molgenis name="myfirstdb" label="My First MOLGENIS">
-  <module name="mymodule"/>
+<molgenis name="myfirstdb">
+  <module name="mymodule">
+    <entity name="entity1">
+      <field name="f1" type="string" unique="true"/>
+    </entity>
+  </module>
   ...
 </molgenis>
 ```
@@ -49,8 +44,6 @@ Example usage of the <molgenis> element:
 <table>
 <tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
 <tr><td>name</td><td>required</td><td>Name of your MOLGENIS blueprint. This will be used by the generator to name the java packages that are generated. Example: name="name"</td><td></tr>
-<tr><td>label</td><td></td><td>Label of your MOLGENIS system. This will be shown on the screen as well as heading in the generated documentation. Example: label="My first MOLGENIS"</td></tr>
-<tr><td>version</td><td></td><td>Version of your MOLGENIS system. It is recommended to use this to manage the versions of your application. Example: version=”1.2.3”</td></tr>
 </table>
 
 ###Child elements
@@ -58,12 +51,12 @@ Example usage of the <molgenis> element:
 
 <a name="db_module"/>
 ## \<module>
-The `<module>` element allows designers to group entities in packages which will show up in the generated documentation (and in future MOLGENIS also in the package structure). Example usage:
+The `<module>` element allows designers to group entities in packages which will show up in the generated documentation and in generated code package structure). Example usage:
 
 ```xml
-<molgenis name="example">
+<molgenis name="org.example">
     <module name="module1">
-        <description>This is my first module</description>
+        <description>This is my first module (will generate to package org.example.module1</description>
           <entity name="entity1">
                 <field name="f1" type="string" unique="true"/>	
                 <field name="f2" type="string"/>
@@ -81,12 +74,12 @@ The `<module>` element allows designers to group entities in packages which will
 ###Attributes
 <table>
 <tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
-<tr><td>name</td><td>required</td><td>Globally unique name for this entity (within this blueprint).</td></tr>
+<tr><td>name</td><td>required</td><td>Globally unique name for this module. This will be used to generate the package name and will be appended to the value of '<molgenis name="package">'.</td></tr>
 </table>
 
 ###Child elements
-* `<entity>`
-* `<description>`
+* Zero or one `<description>`
+* One or more `<entity>`
 
 <a name="db_entity"/>
 ##\<entity>
@@ -108,14 +101,16 @@ The `<entity>` element defines the structure of one data entity and will result 
 ###Attributes
 <table>
 <tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
-<tr><td>name</td><td>required</td><td>Globally unique name for this entity (within this blueprint). Example: name="name"</td><tr.
-<tr><td>label</td><td></td><td>A user-friendly alias to show as form header (default: copied from name). Example: label="Nice name"</td></tr>
-<tr><td>extends</td><td></td><td>You can use inheritance to make your entity inherit the fields of its 'superclass'. Example: extends="other_entity"</td></tr>
-<tr><td>abstract</td><td></td><td>You define what programmers call 'interfaces'. This are abstract objects that you can use as 'contract' for other entities to 'implement'. Example: abstract="true"</td></tr>
-<tr><td>implements</td><td></td><td>You can use inheritance to make your entity inherit the fields of an 'interface' using implements and refering to 'abstract' entities. The implemented fields are copied to this entity. Example: implements="abstract_entity"</td></tr>
+<tr><td>name</td><td>required</td><td>Globally unique name for this entity (within this blueprint). <br/>Example: name="name"</td><tr.
+<tr><td>label</td><td></td><td>A user-friendly alias to show as form header (default: copied from name). <br/>Example: label="Nice name"</td></tr>
+<tr><td>extends</td><td></td><td>You can use inheritance to make your entity inherit the fields of its 'superclass'. <br/>Example: extends="other_entity"</td></tr>
+<tr><td>abstract</td><td></td><td>You define what programmers call 'interfaces'. This are abstract objects that you can use as 'contract' for other entities to 'implement'. <br/>
+Example: abstract="true"</td></tr>
+<tr><td>implements</td><td></td><td>You can use inheritance to make your entity inherit the fields of an 'interface' using implements and refering to 'abstract' entities. The implemented fields are copied to this entity. 
+<br/>Example: implements="abstract_entity"</td></tr>
 <tr>
 <tr><td>xref_label</td><td></td><td>Defines what field should be used by lookup lists, i.e. xref fields to this entity (default: first non-auto unique field)</td>
-<tr><td>decorator</td><td></td><td>You can add custom code to change the way entities are added, updated and removed. See the section on how to write a MappingDecorator plugin. Example: decorator="package.MyDecoratorClass"</td></tr>
+<tr><td>decorator</td><td></td><td>You can add custom code to change the way entities are added, updated and removed. See the section on how to write a MappingDecorator plugin.<br/> Example: decorator="package.MyDecoratorClass"</td></tr>
 </table>
 
 ###Child elements
@@ -142,8 +137,8 @@ Example usage of the `<field>` element:
 ###Attributes:
 <table>
 <tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
-<tr><td>name</td><td>required</td><td>Locally unique name for this entity (within this entity). Example: name="name"</td></tr>
-<tr><td>type</td><td></td><td>Define the type of data that can be stored in this field (default: string). Examples:
+<tr><td>name</td><td>required</td><td>Locally unique name for this entity (within this entity). <br/>Example: name="name"</td></tr>
+<tr><td>type</td><td></td><td>Define the type of data that can be stored in this field (default: string). <br/>Examples:
 <ul>
    <li> type="autoid":  auto incremented column (useful for entity ID).
    </li><li> type="string": a single line text string of variable length, max 255 chars.
@@ -159,16 +154,16 @@ Example usage of the `<field>` element:
    </li><li> type="enum": references to a fixed look-up list options, specificed by enum_options attribute (required for enum)
 </ul>
 </td></tr>
-<tr><td>label</td><td></td><td>A user-friendly alias to show as form header (default: copied from name). Example: label="Nice entity name"</td></tr>
-<tr><td>unique</td><td></td><td>Defines if values of this field must be unique within the entity (default: "false"). Example: unique="true"</td></tr>
-<tr><td>nillable</td><td></td><td>Definies if this field can be left without value (default: "false"). Example: nillable="true"</td></tr>
-<tr><td>readonly</td><td></td><td>Defines if this field cannot be edited once they are saved (default: "false"). Example: readonly="true"</td></tr>
-<tr><td>length</td><td></td><td>Limits the length of a string to 1<=n<=255 (default: "255"). Example: length="12"</td></tr>
-<tr><td>xref_entity</td><td>when type="xref"</td><td>Specifies a foreign key to the entity that this xref field must reference to. Example: xref_entity="OtherEntity"</td></tr>
-<tr><td>xref_cascade</td><td></td><td>This will enable cascading deletes which means that is the related element is deleted this entity will be deleted as well (default: "false"). Example: xref_cascade="true"</td></tr>
-<tr><td>enum_options</td><td>when type="enum"</td><td>The fixed list of options for this enum (required for enum). Example: enum_options="[value1,value2]"</td></tr>
-<tr><td>description</td><td></td><td>Describes this field. This will be visibible to the user in the UI when (s)he mouses over the field or visits the documentation pages. Example: description="One line description"</td></tr>
-<tr><td>default</td><td></td><td>Sets a default value for this field. This value is automatically filled in for this field unless the user decides otherwise. Example: default="Pre-filling"</td></tr>
+<tr><td>label</td><td></td><td>A user-friendly alias to show as form header (default: copied from name). <br/>Example: label="Nice entity name"</td></tr>
+<tr><td>unique</td><td></td><td>Defines if values of this field must be unique within the entity (default: "false"). <br/>Example: unique="true"</td></tr>
+<tr><td>nillable</td><td></td><td>Definies if this field can be left without value (default: "false"). <br/>Example: nillable="true"</td></tr>
+<tr><td>readonly</td><td></td><td>Defines if this field cannot be edited once they are saved (default: "false"). <br/>Example: readonly="true"</td></tr>
+<tr><td>length</td><td></td><td>Limits the length of a string to 1<=n<=255 (default: "255"). <br/>Example: length="12"</td></tr>
+<tr><td>xref_entity</td><td>when type="xref"</td><td>Specifies a foreign key to the entity that this xref field must reference to. <br/>Example: xref_entity="OtherEntity"</td></tr>
+<tr><td>xref_cascade</td><td></td><td>This will enable cascading deletes which means that is the related element is deleted this entity will be deleted as well (default: "false"). <br/>Example: xref_cascade="true"</td></tr>
+<tr><td>enum_options</td><td>when type="enum"</td><td>The fixed list of options for this enum (required for enum). <br/>Example: enum_options="[value1,value2]"</td></tr>
+<tr><td>description</td><td></td><td>Describes this field. This will be visibible to the user in the UI when (s)he mouses over the field or visits the documentation pages. <br/>Example: description="One line description"</td></tr>
+<tr><td>default</td><td></td><td>Sets a default value for this field. This value is automatically filled in for this field unless the user decides otherwise. <br/>Example: default="Pre-filling"</td></tr>
 <tr><td>hidden</td><td></td><td>Optional settings to hide field from view. This requires the fields to be nillable="true" or auto="true" or default!=""</td></tr>
 </table>
 
@@ -206,7 +201,7 @@ __A combination of two or more columns is unique__. The example below shows that
 ###Attributes
 <table>
 <tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
-<tr><td>fields</td><td>required</td><td>Comma separated enumeration of the unique fields. Example: fields="field1,field2"</td></tr>
+<tr><td>fields</td><td>required</td><td>Comma separated enumeration of the unique fields. <br/>Example: fields="field1,field2"</td></tr>
 </table>
 
 ###Child elements
@@ -237,8 +232,8 @@ Example usage of the <molgenis> element:
 ###Attributes:
 <table>
 <tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
-<tr><td>name</td><td>required</td><td>Name of your MOLGENIS blueprint. This will be used by the generator to name the java package in which the user interface is generated. Example: name="name"</td><td></tr>
-<tr><td>label</td><td></td><td>Label of your MOLGENIS system. This will be shown on the screen. Example: label="My first MOLGENIS"</td></tr>
+<tr><td>name</td><td>required</td><td>Name of your MOLGENIS blueprint. This will be used by the generator to name the java package in which the user interface is generated. <br/>Example: name="name"</td><td></tr>
+<tr><td>label</td><td></td><td>Label of your MOLGENIS system. This will be shown on the screen. <br/>Example: label="My first MOLGENIS"</td></tr>
 </table>
 
 ###Child elements
@@ -267,9 +262,9 @@ Usage example of the `<menu>` element:
 ###Attributes
 <table>
 <tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
-<tr><td>name</td><td>required</td><td>Locally unique name for this screen element. Example: name="menuname"</td></tr>
+<tr><td>name</td><td>required</td><td>Locally unique name for this screen element. <br/>Example: name="menuname"</td></tr>
 <tr><td>startwith</td><td></td><td>Subscreen tab that is selected when menu is first shown (default: first subscreen). Example: startswith="mysubelement"</td></tr>
-<tr><td>position</td><td></td><td>Position where the menu is shown, either `top_left`, `top_right` or `left` (default: top_left unless wrapped in a parent menu having other position). Example: position="top_left"</td></tr>
+<tr><td>position</td><td></td><td>Position where the menu is shown, either `top_left`, `top_right` or `left` (default: top_left unless wrapped in a parent menu having other position). <br/>Example: position="top_left"</td></tr>
 </table>
 
 ###Child elements
@@ -293,17 +288,17 @@ Example usage of `<form>` element:
 ###Attributes
 <table>
 <tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
-<tr><td>name</td><td>required</td><td>Locally unique name for this screen element (within its container). Example: name="name"</td><tr>
-<tr><td>entity</td><td>required</td><td>Which data entity will be loaded (i.e., points to a <entity name="myentity"/>). Example entity="myentity"</td></tr>
-<tr><td>label</td><td></td><td>A user-friendly alias to show as form header (default: copied from name). Example: label="Nice screen name"</td></tr>
-<tr><td>header</td><td></td><td>A user-friendly title for the screen that is displayed when this form is selected (default: copied from label). Example: header="Nice screen title"</td><tr>
-<tr><td>viewtype</td><td></td><td>Whether the form should start with a list or per-record, either 'record' or 'list' (default: "record"). Example: viewtype="record"</td></td>
-<tr><td>sortby</td><td></td><td>On what field the data should be sorted on default (default: first unique field/autoid). Example: sortby="aFieldInEntity"</td></td>
+<tr><td>name</td><td>required</td><td>Locally unique name for this screen element (within its container). <br/>Example: name="name"</td><tr>
+<tr><td>entity</td><td>required</td><td>Which data entity will be loaded (i.e., points to a <entity name="myentity"/>). <br/> Example entity="myentity"</td></tr>
+<tr><td>label</td><td></td><td>A user-friendly alias to show as form header (default: copied from name). <br/> Example: label="Nice screen name"</td></tr>
+<tr><td>header</td><td></td><td>A user-friendly title for the screen that is displayed when this form is selected (default: copied from label).<br/> Example: header="Nice screen title"</td><tr>
+<tr><td>viewtype</td><td></td><td>Whether the form should start with a list or per-record, either 'record' or 'list' (default: "record").<br/> Example: viewtype="record"</td></td>
+<tr><td>sortby</td><td></td><td>On what field the data should be sorted on default (default: first unique field/autoid).<br/> Example: sortby="aFieldInEntity"</td></td>
 <tr><td>limit</td><td></td><td>How many records must be shown in the list (default: "5"). Example: limit="10"</td></tr>
-<tr><td>readonly</td><td></td><td>Can the records be edited or is the form readonly (default: "false"). Example: readonly="true"</td></tr>
-<tr><td>compact_view</td><td></td><td>When in 'recordview' only show the selected fields on the form and have a 'show additional fields' button to expand to see all fields. Example: compact_view="field1,field2"</td></tr>
-<tr><td>commands</td><td></td><td>Optional extension point to add custom commands to the generated forms. See section on "Custom commands in generated forms". Example: commands="package.Class1,package.Class2"</td></tr>
-<tr><td>hide_fields</td><td></td><td>Optional setting to hide fields from view. This requires the fields that are hidden to be nillable="true" or auto="true" or default!="" (so no constraints are violated if the user tries to save the entity). Example: hide_fields="field1,field2"</td></tr>
+<tr><td>readonly</td><td></td><td>Can the records be edited or is the form readonly (default: "false").<br/> Example: readonly="true"</td></tr>
+<tr><td>compact_view</td><td></td><td>When in 'recordview' only show the selected fields on the form and have a 'show additional fields' button to expand to see all fields.<br/> Example: compact_view="field1,field2"</td></tr>
+<tr><td>commands</td><td></td><td>Optional extension point to add custom commands to the generated forms. See section on "Custom commands in generated forms".<br/> Example: commands="package.Class1,package.Class2"</td></tr>
+<tr><td>hide_fields</td><td></td><td>Optional setting to hide fields from view. This requires the fields that are hidden to be nillable="true" or auto="true" or default!="" (so no constraints are violated if the user tries to save the entity).<br/> Example: hide_fields="field1,field2"</td></tr>
 </table>
 
 ###Child elements
@@ -324,9 +319,9 @@ Example usage:
 
 <table>
 <tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
-<tr><td>name</td><td>required</td><td>Globally unique name for this entity (within this blueprint). Example: name="name"</td></td>
-<tr><td>type</td><td>required</td><td>Reference to a java class that implements this plugin. Example: type=”package.path.ClassName”</td></tr>
-<tr><td>label</td><td></td><td>User-friendly alias to show as form header (default: copied from name). Example: label="Nice screen name"</td></tr>
+<tr><td>name</td><td>required</td><td>Globally unique name for this entity (within this blueprint).<br/> Example: name="name"</td></td>
+<tr><td>type</td><td>required</td><td>Reference to a java class that implements this plugin.<br/> Example: type=”package.path.ClassName”</td></tr>
+<tr><td>label</td><td></td><td>User-friendly alias to show as form header (default: copied from name).<br/> Example: label="Nice screen name"</td></tr>
 </table>
 
 ###Child elements
