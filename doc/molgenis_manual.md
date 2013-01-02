@@ -30,14 +30,15 @@ Example usage of the <molgenis> element:
 </molgenis>
 ```
 
-### Required attributes
- * name="name": name of your MOLGENIS blueprint. This will be used by the generator to name the java packages that are generated..
+###Attributes:
+<table>
+<tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
+<tr><td>name="name"</td><td>required</td><td>name of your MOLGENIS blueprint. This will be used by the generator to name the java packages that are generated..</td><td></tr>
+<tr><td>label="your label"</td><td></td><td>Label of your MOLGENIS system. This will be shown on the screen as well as heading in the generated documentation.</td></tr>
+<tr><td>version=”1.2.3”</td><td></td><td>Version of your MOLGENIS system. It is recommended to use this to manage the versions of your application</td></tr>
+</table>
 
-### Optional attributes
- * label="your label": Label of your MOLGENIS system. This will be shown on the screen as well as heading in the generated documentation.
- * Version=”1.2.3”: Version of your MOLGENIS system. It is recommended to use this to manage the versions of your application.
-
-### Child elements
+###Child elements
  * One or more [MenuElement \<menu>] or [FormElement \<form>] elements.
  * Zero or one <description> elements describing the application
  * Many [EntityElement <entity>] elements describing the data structure. 
