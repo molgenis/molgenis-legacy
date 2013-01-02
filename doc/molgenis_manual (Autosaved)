@@ -210,7 +210,7 @@ __A combination of two or more columns is unique__. The example below shows that
 ###Child elements
 none.
 
-<a href="ui_xml"/>
+<a name="ui_xml"/>
 # User Interface XML format
 
 <a name="ui_molgenis"/>
