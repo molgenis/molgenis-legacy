@@ -90,17 +90,18 @@ The `<entity>` element defines the structure of one data entity and will result 
 <table>
 <tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
 <tr><td>name</td><td>required</td><td>Globally unique name for this entity (within this blueprint). Example: name="name"</td><tr.
-<tr><td>label</td><td></td>A user-friendly alias to show as form header (default: copied from name). Example: label="Nice name"</td></tr>
+<tr><td>label</td><td></td><td>A user-friendly alias to show as form header (default: copied from name). Example: label="Nice name"</td></tr>
 <tr><td>extends</td><td></td><td>You can use inheritance to make your entity inherit the fields of its 'superclass'. Example: extends="other_entity"</td></tr>
-<tr><td>abstract</td><td></td>You define what programmers call 'interfaces'. This are abstract objects that you can use as 'contract' for other entities to 'implement'. Example: abstract="true"</td></tr>
+<tr><td>abstract</td><td></td><td>You define what programmers call 'interfaces'. This are abstract objects that you can use as 'contract' for other entities to 'implement'. Example: abstract="true"</td></tr>
 <tr><td>implements</td><td></td><td>You can use inheritance to make your entity inherit the fields of an 'interface' using implements and refering to 'abstract' entities. The implemented fields are copied to this entity. Example: implements="abstract_entity"</td></tr>
 <tr>
+<tr><td>xref_label</td><td></td><td>Defines what field should be used by lookup lists, i.e. xref fields to this entity (default: first non-auto unique field)</td>
 <tr><td>decorator</td><td></td><td>You can add custom code to change the way entities are added, updated and removed. See the section on how to write a MappingDecorator plugin. Example: decorator="package.MyDecoratorClass"</td></tr>
 </table>
 
 ###Child elements
  * Zero or one `<description>` to describe this entity; a description can contain xhtml.
- * zero or more `<field>` that detail entity structure.
+ * Zero or more `<field>` that detail entity structure.
  * Zero or more `<unique>` indicating unique constraints on field(s).
 
 ###Notes
@@ -112,7 +113,7 @@ Example usage of the `<field>` element:
 ```xml
 <field name="field_name" description="this is my first field of type string"/>
 <field name="field_name" type="autoid" description="this is a id field, unique autonum integer"/>
-<field name="field_name" type="xref" xref_field="other_entity.id_field"
+<field name="field_name" type="xref" xref_entity="other_entity"
        description="this is a crossrerence to otherentity"/>
 <field name="field_name" type="enum" enum_options="[option1,option2]"
        description="this is field of type enum"/>
@@ -145,9 +146,45 @@ Example usage of the `<field>` element:
 <tr><td>xref_entity</td><td>when type="xref"</td><td>Specifies a foreign key to the entity that this xref field must reference to. Example: xref_entity="OtherEntity"</td></tr>
 <tr><td>xref_cascade</td><td></td><td>This will enable cascading deletes which means that is the related element is deleted this entity will be deleted as well (default: "false"). Example: xref_cascade="true"</td></tr>
 <tr><td>enum_options</td><td>when type="enum"</td><td>The fixed list of options for this enum (required for enum). Example: enum_options="[value1,value2]"</td></tr>
-<tr><td>description</td><td></td>Describes this field. This will be visibible to the user in the UI when (s)he mouses over the field or visits the documentation pages. Example: description="One line description"</td></tr>
+<tr><td>description</td><td></td><td>Describes this field. This will be visibible to the user in the UI when (s)he mouses over the field or visits the documentation pages. Example: description="One line description"</td></tr>
 <tr><td>default</td><td></td><td>Sets a default value for this field. This value is automatically filled in for this field unless the user decides otherwise. Example: default="Pre-filling"</td></tr>
 <tr><td>hidden</td><td></td><td>Optional settings to hide field from view. This requires the fields to be nillable="true" or auto="true" or default!=""</td></tr>
+</table>
+
+###Child elements
+none.
+
+##\<unique>
+A `<unique>` defines which properties of an entity (i.e., table columns) should be unique. There are two ways to make a field unique.
+
+__A single column is unique__. This example below shows that field "f1" is defined unique via unique="true". This means that there cannot be two entity instances - two rows in table entity1 - with the same value “x” in the f1 column.
+
+```xml
+<molgenis name="example">	
+  <entity name="entity1">
+    <field name="f1" unique="true"/>	
+    <field name="f2" />
+    <field name="f3" />
+  </entity>	
+</molgenis>
+```
+
+__A combination of two or more columns is unique__. The example below shows that the combination of field “f1” and “f2” is defined as unique via the <unique> element. This means that there cannot be two entity instances - two rows in table entity1 - with the same value “x” in the f1 AND f2 column paired.
+```xml
+<molgenis name="example">	
+  <entity name="entity1">
+    <field name="f1" />	
+    <field name="f2" />
+    <field name="f3" />
+    <unique fields="f1,f2"/>
+  </entity>	
+</molgenis>
+```
+
+###Attributes
+<table>
+<tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
+<tr><td>fields</td><td>required</td><td>Comma separated enumeration of the unique fields. Example: fields="field1,field2"</td></tr>
 </table>
 
 ###Child elements
