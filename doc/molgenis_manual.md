@@ -139,6 +139,7 @@ Example usage of the `<field>` element:
        description="this is field of type enum"/>
 ```
 
+###Attributes:
 <table>
 <tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
 <tr><td>name</td><td>required</td><td>Locally unique name for this entity (within this entity). Example: name="name"</td></tr>
@@ -266,9 +267,10 @@ Usage example of the `<menu>` element:
 ###Attributes
 <table>
 <tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
-<tr><td>name></td><td>required</td><td>Locally unique name for this screen element. Example: name="menuname"</td></tr>
+<tr><td>name</td><td>required</td><td>Locally unique name for this screen element. Example: name="menuname"</td></tr>
 <tr><td>startwith</td><td></td><td>Subscreen tab that is selected when menu is first shown (default: first subscreen). Example: startswith="mysubelement"</td></tr>
 <tr><td>position</td><td></td><td>Position where the menu is shown, either `top_left`, `top_right` or `left` (default: top_left unless wrapped in a parent menu having other position). Example: position="top_left"</td></tr>
+</table>
 
 ###Child elements
  * Zero or more `<menu>` elements to denote subscreen(s).
@@ -291,7 +293,7 @@ Example usage of `<form>` element:
 ###Attributes
 <table>
 <tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
-<tr><td>name</td><td>required</td>Locally unique name for this screen element (within its container). Example: name="name"</td><tr>
+<tr><td>name</td><td>required</td><td>Locally unique name for this screen element (within its container). Example: name="name"</td><tr>
 <tr><td>entity</td><td>required</td><td>Which data entity will be loaded (i.e., points to a <entity name="myentity"/>). Example entity="myentity"</td></tr>
 <tr><td>label</td><td></td><td>A user-friendly alias to show as form header (default: copied from name). Example: label="Nice screen name"</td></tr>
 <tr><td>header</td><td></td><td>A user-friendly title for the screen that is displayed when this form is selected (default: copied from label). Example: header="Nice screen title"</td><tr>
