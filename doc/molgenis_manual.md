@@ -34,7 +34,8 @@ Relational (SQL) databases  are the workhorses of most structured data managemen
 
 <a name="db_molgenis"/>
 ## \<molgenis>
-The `<molgenis>` element is the root of each MOLGENIS application definition file and can contain data definition and/or user interface definition elements. The model can be split, i.e. there can be multiple MOLGENIS XML files for one application, for example *_db.xml and *_ui.xml (see section on molgenis.properties file). 
+The `<molgenis>` element is the root of each MOLGENIS database definition file and can contain data definition elements. The model can be split, i.e. there can be multiple MOLGENIS XML database files for one application, for example *_db.xml. See section on "MOLGENIS properties"
+
 Example usage of the <molgenis> element:
 
 ```xml
@@ -53,7 +54,7 @@ Example usage of the <molgenis> element:
 </table>
 
 ###Child elements
-\<module>
+* One or more `<module>`
 
 <a name="db_module"/>
 ## \<module>
@@ -210,20 +211,126 @@ __A combination of two or more columns is unique__. The example below shows that
 ###Child elements
 none.
 
-<a href="ui_xml"/>
+<a name="ui_xml"/>
 # User Interface XML format
 
 <a name="ui_molgenis"/>
 ##\<molgenis>
+The `<molgenis>` element is the root of the MOLGENIS user interface definition file.
+
+Example usage of the <molgenis> element:
+
+
+```xml
+<molgenis name="my.package">
+	<menu name="my_mainmenu">
+		<form name="myfirsttab" entity="an_entity1" />
+		<menu name="my_submenu">
+			<form name="mythirdtab" entity="an_entity2" />
+			<form name="myfourthab" entity="an_entity3" />
+		</menu>
+	</menu>
+</molgenis>	
+```
+
+###Attributes:
+<table>
+<tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
+<tr><td>name</td><td>required</td><td>Name of your MOLGENIS blueprint. This will be used by the generator to name the java package in which the user interface is generated. Example: name="name"</td><td></tr>
+<tr><td>label</td><td></td><td>Label of your MOLGENIS system. This will be shown on the screen. Example: label="My first MOLGENIS"</td></tr>
+</table>
+
+###Child elements
+* Zero or more `<menu>` elements to denote subscreen(s).
+* Zero or more `<form>` elements to denote subscreen(s).
+* Zero or more `<plugin>` elements to denote subscreen(s).
 
 <a name="ui_menu"/>
 ##\<menu>
+The `<menu>` element allows the design of a hierarchical user interface with a menu on the left of the user interface and/or in tabs for each contained subscreen (menu, form, plugin). 
+
+Usage example of the `<menu>` element:
+
+```xml
+<molgenis name="my.package">
+	<menu name="my_mainmenu">
+		<form name="myfirsttab" entity="an_entity1" />
+		<menu name="my_submenu">
+			<form name="mythirdtab" entity="an_entity2" />
+			<form name="myfourthab" entity="an_entity3" />
+		</menu>
+	</menu>
+</molgenis>	
+```
+
+###Attributes
+<table>
+<tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
+<tr><td>name></td><td>required</td><td>Locally unique name for this screen element. Example: name="menuname"</td></tr>
+<tr><td>startwith</td><td></td><td>Subscreen tab that is selected when menu is first shown (default: first subscreen). Example: startswith="mysubelement"</td></tr>
+<tr><td>position</td><td></td><td>Position where the menu is shown, either `top_left`, `top_right` or `left` (default: top_left unless wrapped in a parent menu having other position). Example: position="top_left"</td></tr>
+
+###Child elements
+ * Zero or more `<menu>` elements to denote subscreen(s).
+ * Zero or more `<form>` elements to denote subscreen(s).
+ * Zero or more `<plugin>` elements to denote subscreen(s).
 
 <a name="ui_form"/>
 ##\<form>
+The `<form>` element is used to define a user element that shows the records of a certain entity on screen (including insert, update, save, search, etc). A form may have tabbed `<menu>` or un-tabbed `<form>` or `<plugin>` subscreens which are defined by nesting other user interface elements. 
+
+Example usage of `<form>` element:
+```xml
+<form name="myname" entity="myentity">
+  <form name="myname" entity="mysubentity" sortby="name"/>
+</form>
+	
+<form name="myname" entity="myentity" viewtype="list" limit="10"/>
+```
+
+###Attributes
+<table>
+<tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
+<tr><td>name</td><td>required</td>Locally unique name for this screen element (within its container). Example: name="name"</td><tr>
+<tr><td>entity</td><td>required</td><td>Which data entity will be loaded (i.e., points to a <entity name="myentity"/>). Example entity="myentity"</td></tr>
+<tr><td>label</td><td></td><td>A user-friendly alias to show as form header (default: copied from name). Example: label="Nice screen name"</td></tr>
+<tr><td>header</td><td></td><td>A user-friendly title for the screen that is displayed when this form is selected (default: copied from label). Example: header="Nice screen title"</td><tr>
+<tr><td>viewtype</td><td></td><td>Whether the form should start with a list or per-record, either 'record' or 'list' (default: "record"). Example: viewtype="record"</td></td>
+<tr><td>sortby</td><td></td><td>On what field the data should be sorted on default (default: first unique field/autoid). Example: sortby="aFieldInEntity"</td></td>
+<tr><td>limit</td><td></td><td>How many records must be shown in the list (default: "5"). Example: limit="10"</td></tr>
+<tr><td>readonly</td><td></td><td>Can the records be edited or is the form readonly (default: "false"). Example: readonly="true"</td></tr>
+<tr><td>compact_view</td><td></td><td>When in 'recordview' only show the selected fields on the form and have a 'show additional fields' button to expand to see all fields. Example: compact_view="field1,field2"</td></tr>
+<tr><td>commands</td><td></td><td>Optional extension point to add custom commands to the generated forms. See section on "Custom commands in generated forms". Example: commands="package.Class1,package.Class2"</td></tr>
+<tr><td>hide_fields</td><td></td><td>Optional setting to hide fields from view. This requires the fields that are hidden to be nillable="true" or auto="true" or default!="" (so no constraints are violated if the user tries to save the entity). Example: hide_fields="field1,field2"</td></tr>
+</table>
+
+###Child elements
+ * Zero or more ```<menu>``` elements to denote subscreen(s).
+ * Zero or more ```<form>``` elements to denote subscreen(s). __Nested forms are automatically linked to the containing form based on foreign key (xref) relationships.__
+ * Zero or more ```<plugin>``` elements to denote subscreen(s).
 
 <a name="ui_plugin"/>
 ##\<plugin>
+The `<plugin>` element allows to plug-in custom screen elements into the MOLGENIS user interface next to the auto-generated `<form>` and `<menu>` elements. The implementation of how to add your own logic to the plug-in is described in the MolgenisPluginGuide.
+
+Example usage:
+```xml
+<plugin name="myplugin" type="package.path.ClassName"/>
+```
+
+**When running the generator, a Java class for logic is automatically created, as well as a FreemarkerTemplate file for layout'. Its location and name is denoted by 'type' (and if it already exists this step is skipped).**
+
+<table>
+<tr><th>Attribute</th><th>Required</th><th>Description</th></tr>
+<tr><td>name</td><td>required</td><td>Globally unique name for this entity (within this blueprint). Example: name="name"</td></td>
+<tr><td>type</td><td>required</td><td>Reference to a java class that implements this plugin. Example: type=”package.path.ClassName”</td></tr>
+<tr><td>label</td><td></td><td>User-friendly alias to show as form header (default: copied from name). Example: label="Nice screen name"</td></tr>
+</table>
+
+###Child elements
+none.
+
+
 
 
 
