@@ -4,10 +4,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 
 import org.apache.log4j.Logger;
@@ -139,9 +140,15 @@ public class RScript
 			}
 			outputfile = File.createTempFile("run", ".output");
 
-			FileWriter fw = new FileWriter(inputfile);
-			fw.write(scriptCode);
-			fw.close();
+			Writer fw = new OutputStreamWriter(new FileOutputStream(inputfile), Charset.forName("UTF-8"));
+			try
+			{
+				fw.write(scriptCode);
+			}
+			finally
+			{
+				fw.close();
+			}
 			System.out.println("wrote script to file " + inputfile);
 
 			// execute the scripts
@@ -206,15 +213,27 @@ public class RScript
 	public void copyFile(String fromPath, String toPath) throws Exception
 	{
 		FileInputStream fis = new FileInputStream(fromPath);
-		FileOutputStream fos = new FileOutputStream(toPath);
-		byte[] buf = new byte[1024];
-		int i = 0;
-		while ((i = fis.read(buf)) != -1)
+		try
 		{
-			fos.write(buf, 0, i);
+			FileOutputStream fos = new FileOutputStream(toPath);
+			try
+			{
+				byte[] buf = new byte[1024];
+				int i = 0;
+				while ((i = fis.read(buf)) != -1)
+				{
+					fos.write(buf, 0, i);
+				}
+			}
+			finally
+			{
+				fos.close();
+			}
 		}
-		fis.close();
-		fos.close();
+		finally
+		{
+			fis.close();
+		}
 	}
 
 	/** Helper function to delete a file */

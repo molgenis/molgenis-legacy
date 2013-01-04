@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
@@ -14,8 +15,8 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.CommandTemplate;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * The command to add a new record. If the add has an error, the user gets the
@@ -24,7 +25,7 @@ import org.molgenis.util.Tuple;
 public class AddCommand2<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = -8509177499350778624L;
-	Tuple previousRequest = new SimpleTuple();
+	Tuple previousRequest = new KeyValueTuple();
 	Vector<ScreenMessage> messages = new Vector<ScreenMessage>();
 	boolean success = false;
 
@@ -72,7 +73,8 @@ public class AddCommand2<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
+	public ScreenModel.Show handleRequest(Database db, MolgenisRequest request, OutputStream downloadStream)
+			throws Exception
 	{
 		if (this.getName().equals(request.getAction()))
 		{

@@ -10,15 +10,15 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.io.csv.CsvWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 /**
  * This command returns all records currently selected as CSV download.
@@ -40,7 +40,8 @@ public class DownloadAllCommand<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream csvDownload) throws Exception
+	public ScreenModel.Show handleRequest(Database db, MolgenisRequest request, OutputStream csvDownload)
+			throws Exception
 	{
 		logger.debug(this.getName());
 
@@ -51,7 +52,15 @@ public class DownloadAllCommand<E extends Entity> extends SimpleCommand
 
 		// TODO remove entity name, capitals to small , and remove _name fields
 		QueryRule[] rules = model.getRulesExclLimitOffset();
-		db.find(model.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport, rules);
+		CsvWriter csvWriter = new CsvWriter(csvDownload);
+		try
+		{
+			db.find(model.getController().getEntityClass(), csvWriter, fieldsToExport, rules);
+		}
+		finally
+		{
+			csvWriter.close();
+		}
 
 		return ScreenModel.Show.SHOW_MAIN;
 	}

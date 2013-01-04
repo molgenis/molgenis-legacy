@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("unchecked")
 public class SimpleTree<T extends Tree> implements Tree<T>, Serializable
 {
-	private final Logger logger = Logger.getLogger(getClass());
+	private static final Logger logger = Logger.getLogger(SimpleTree.class);
 
 	/** Unique name of this element */
 	protected String name;

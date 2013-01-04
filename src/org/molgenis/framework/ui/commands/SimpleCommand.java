@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.services.MolgenisGuiService;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FreemarkerView;
@@ -13,7 +14,6 @@ import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.util.Tuple;
 
 /**
  * Implementation of screen command.
@@ -252,7 +252,8 @@ public abstract class SimpleCommand extends SimpleScreenModel implements ScreenC
 	public abstract List<ActionInput> getActions();
 
 	@Override
-	public abstract Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception;
+	public abstract Show handleRequest(Database db, MolgenisRequest request, OutputStream downloadStream)
+			throws Exception;
 
 	@Override
 	public boolean isDownload()

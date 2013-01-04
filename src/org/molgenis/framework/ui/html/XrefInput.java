@@ -17,7 +17,7 @@ import java.text.ParseException;
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Input for cross-reference (xref) entities in a MOLGENIS database. Data will

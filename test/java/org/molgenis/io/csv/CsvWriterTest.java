@@ -7,10 +7,11 @@ import static org.testng.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Arrays;
 
 import org.molgenis.io.processor.CellProcessor;
-import org.molgenis.util.tuple.HeaderTuple;
+import org.molgenis.util.tuple.KeyValueTuple;
 import org.molgenis.util.tuple.Tuple;
 import org.molgenis.util.tuple.ValueTuple;
 import org.testng.annotations.Test;
@@ -21,28 +22,24 @@ public class CsvWriterTest
 	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void CsvWriter()
 	{
-		new CsvWriter(null);
+		new CsvWriter((Writer) null);
 	}
 
 	@Test
 	public void addCellProcessor_header() throws IOException
 	{
 		CellProcessor processor = when(mock(CellProcessor.class).processHeader()).thenReturn(true).getMock();
-		Tuple headerTuple = mock(Tuple.class);
-		when(headerTuple.getNrCols()).thenReturn(2);
-		when(headerTuple.getColNames()).thenReturn(Arrays.asList("col1", "col2").iterator());
 
-		Tuple dataTuple = mock(Tuple.class);
-		when(dataTuple.getNrCols()).thenReturn(2);
-		when(dataTuple.get("col1")).thenReturn("val1");
-		when(dataTuple.get("col2")).thenReturn("val2");
+		KeyValueTuple tuple = new KeyValueTuple();
+		tuple.set("col1", "val1");
+		tuple.set("col2", "val2");
 
 		CsvWriter csvWriter = new CsvWriter(new StringWriter());
 		try
 		{
 			csvWriter.addCellProcessor(processor);
-			csvWriter.writeColNames(headerTuple);
-			csvWriter.write(dataTuple);
+			csvWriter.writeColNames(Arrays.asList("col1", "col2"));
+			csvWriter.write(tuple);
 		}
 		finally
 		{
@@ -77,15 +74,35 @@ public class CsvWriterTest
 	}
 
 	@Test
-	public void write_Csv() throws IOException
+	public void write() throws IOException
 	{
 		StringWriter strWriter = new StringWriter();
 		CsvWriter csvWriter = new CsvWriter(strWriter);
 		try
 		{
-			csvWriter.writeColNames(new HeaderTuple(Arrays.asList("col1", "col2")));
-			csvWriter.write(new ValueTuple(Arrays.asList("val1", "val2")));
+			csvWriter.writeColNames(Arrays.asList("col1", "col2"));
+			KeyValueTuple row1 = new KeyValueTuple();
+			row1.set("col1", "val1");
+			row1.set("col2", "val2");
+			csvWriter.write(row1);
 			assertEquals(strWriter.toString(), "\"col1\",\"col2\"\n\"val1\",\"val2\"\n");
+		}
+		finally
+		{
+			csvWriter.close();
+		}
+	}
+
+	@Test
+	public void write_noHeader() throws IOException
+	{
+		StringWriter strWriter = new StringWriter();
+		CsvWriter csvWriter = new CsvWriter(strWriter);
+		try
+		{
+			csvWriter.write(new ValueTuple(Arrays.asList("val1", "val2")));
+			csvWriter.write(new ValueTuple(Arrays.asList("val3", "val4")));
+			assertEquals(strWriter.toString(), "\"val1\",\"val2\"\n\"val3\",\"val4\"\n");
 		}
 		finally
 		{
@@ -100,8 +117,11 @@ public class CsvWriterTest
 		CsvWriter csvWriter = new CsvWriter(strWriter, '\t');
 		try
 		{
-			csvWriter.writeColNames(new HeaderTuple(Arrays.asList("col1", "col2")));
-			csvWriter.write(new ValueTuple(Arrays.asList("val1", "val2")));
+			csvWriter.writeColNames(Arrays.asList("col1", "col2"));
+			KeyValueTuple row1 = new KeyValueTuple();
+			row1.set("col1", "val1");
+			row1.set("col2", "val2");
+			csvWriter.write(row1);
 			assertEquals(strWriter.toString(), "\"col1\"\t\"col2\"\n\"val1\"\t\"val2\"\n");
 		}
 		finally

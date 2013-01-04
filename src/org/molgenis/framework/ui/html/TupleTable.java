@@ -2,7 +2,7 @@ package org.molgenis.framework.ui.html;
 
 import java.util.List;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class TupleTable extends HtmlWidget
 {
@@ -22,7 +22,7 @@ public class TupleTable extends HtmlWidget
 		strBuilder.append("<div><table id=\"").append(getName()).append("\"><thead><tr>");
 
 		// header
-		if (tuples.size() > 0) for (String name : tuples.get(0).getFields())
+		if (!tuples.isEmpty()) for (String name : tuples.get(0).getColNames())
 		{
 			strBuilder.append("<th>").append(name).append("</th>");
 		}
@@ -33,7 +33,7 @@ public class TupleTable extends HtmlWidget
 		{
 			strBuilder.append("<tr>");
 
-			for (String name : t.getFields())
+			for (String name : t.getColNames())
 				strBuilder.append("<td>").append(t.isNull(name) ? "" : t.getString(name)).append("</td>");
 
 			strBuilder.append("</tr>");

@@ -9,7 +9,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.TupleTable;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -21,9 +21,9 @@ public class CsvTableTest
 	public static void setUpBeforeClass()
 	{
 		StringBuilder csvBuilder = new StringBuilder();
-		csvBuilder.append("firstName").append('\t').append("lastName").append('\n');
-		csvBuilder.append("lucky").append('\t').append("luke").append('\n');
-		csvBuilder.append("calamity").append('\t').append("jane");
+		csvBuilder.append("firstName").append(',').append("lastName").append('\n');
+		csvBuilder.append("lucky").append(',').append("luke").append('\n');
+		csvBuilder.append("calamity").append(',').append("jane");
 		csvString = csvBuilder.toString();
 	}
 
@@ -54,10 +54,10 @@ public class CsvTableTest
 	public void testLimitOffsetString() throws Exception
 	{
 		// create csv
-		String csv = "firstName\tlastName";
-		csv += "\nlucky\tluke";
-		csv += "\ncalamity\tjane";
-		csv += "\njolly\tjumper";
+		String csv = "firstName,lastName";
+		csv += "\nlucky,luke";
+		csv += "\ncalamity,jane";
+		csv += "\njolly,jumper";
 
 		TupleTable table = new CsvTable(csv);
 
@@ -77,10 +77,10 @@ public class CsvTableTest
 		try
 		{
 			// create csv
-			String csvString = "firstName\tlastName";
-			csvString += "\nlucky\tluke";
-			csvString += "\ncalamity\tjane";
-			csvString += "\njolly\tjumper";
+			String csvString = "firstName,lastName";
+			csvString += "\nlucky,luke";
+			csvString += "\ncalamity,jane";
+			csvString += "\njolly,jumper";
 
 			FileUtils.write(file, csvString, Charset.forName("UTF-8"));
 			CsvTable csvTable = new CsvTable(file);
@@ -108,10 +108,10 @@ public class CsvTableTest
 	public void testColLimit() throws Exception
 	{
 		// create csv
-		String csv = "firstName\tlastName\tcity";
-		csv += "\nlucky\tluke\tdaisy town";
-		csv += "\ncalamity\tjane\tdead gulch";
-		csv += "\njolly\tjumper\tapache valley";
+		String csv = "firstName,lastName,city";
+		csv += "\nlucky,luke,daisy town";
+		csv += "\ncalamity,jane,dead gulch";
+		csv += "\njolly,jumper,apache valley";
 
 		TupleTable table = new CsvTable(csv);
 
@@ -131,9 +131,9 @@ public class CsvTableTest
 
 		table.setColLimit(1);
 
-		assertEquals(table.getColumns().get(0).getName(), "lastName");
+		assertEquals(table.getColumns().get(0).getName(), "firstName");
 
-		assertEquals(table.getRows().get(0).getString("lastName"), "luke");
+		assertEquals(table.getRows().get(0).getString("firstName"), "lucky");
 
 	}
 
@@ -148,12 +148,12 @@ public class CsvTableTest
 
 		List<Tuple> rows = table.getRows();
 		Tuple row = rows.get(0);
-		assertEquals(row.size(), 2);
+		assertEquals(row.getNrCols(), 2);
 		assertEquals(row.getString("firstName"), "lucky");
 		assertEquals(row.getString("lastName"), "luke");
 
 		row = rows.get(1);
-		assertEquals(2, row.size(), 2);
+		assertEquals(2, row.getNrCols(), 2);
 		assertEquals(row.getString("firstName"), "calamity");
 		assertEquals(row.getString("lastName"), "jane");
 	}

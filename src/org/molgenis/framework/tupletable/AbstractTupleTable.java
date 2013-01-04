@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.molgenis.model.elements.Field;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;

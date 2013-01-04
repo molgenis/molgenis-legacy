@@ -24,7 +24,7 @@ public class CsvReaderTest
 	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void CsvReader()
 	{
-		new CsvReader(null);
+		new CsvReader((Reader) null);
 	}
 
 	@Test
@@ -62,6 +62,24 @@ public class CsvReaderTest
 			}
 			verify(processor).process("val1");
 			verify(processor).process("val2");
+		}
+		finally
+		{
+			csvReader.close();
+		}
+	}
+
+	@Test
+	public void colNamesIterator() throws IOException
+	{
+		CsvReader csvReader = new CsvReader(new StringReader("col1,col2\nval1,val2"), ',', true);
+		try
+		{
+			Iterator<String> colNamesIt = csvReader.colNamesIterator();
+			assertTrue(colNamesIt.hasNext());
+			assertEquals(colNamesIt.next(), "col1");
+			assertTrue(colNamesIt.hasNext());
+			assertEquals(colNamesIt.next(), "col2");
 		}
 		finally
 		{

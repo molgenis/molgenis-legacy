@@ -4,14 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.molgenis.io.TupleReader;
+import org.molgenis.io.TupleWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.TupleReader;
-import org.molgenis.util.TupleWriter;
+import org.molgenis.util.tuple.EntityTuple;
+import org.molgenis.util.tuple.Tuple;
 
 public abstract class AbstractMapper<E extends Entity> implements Mapper<E>
 {
@@ -206,11 +206,7 @@ public abstract class AbstractMapper<E extends Entity> implements Mapper<E>
 
 			List<E> entities = toList(reader, BATCH_SIZE);
 
-			if (writer != null)
-			{
-				writer.setHeaders(entities.get(0).getFields());
-				writer.writeHeader();
-			}
+			if (writer != null) writer.writeColNames(new EntityTuple(entities.get(0)).getColNames());
 
 			while (entities.size() > 0)
 			{
@@ -222,9 +218,7 @@ public abstract class AbstractMapper<E extends Entity> implements Mapper<E>
 				if (writer != null)
 				{
 					for (E entity : entities)
-					{
-						writer.writeRow(entity);
-					}
+						writer.write(new EntityTuple(entity));
 				}
 				entities = toList(reader, BATCH_SIZE);
 			}
@@ -415,19 +409,15 @@ public abstract class AbstractMapper<E extends Entity> implements Mapper<E>
 	// FIXME: limit argument is never used?
 	public List<E> toList(TupleReader reader, int limit) throws DatabaseException
 	{
-		// hack to while over a reader until the result is empty
-		if (reader.isClosed())
-		{
-			return new ArrayList<E>();
-		}
+		// note to self: removed close-check hack, does this have side effects?
 
 		final List<E> entities = createList(10); // TODO why 10?
 		try
 		{
-			for (Tuple line : reader) // TODO should limit not be used somehow?
+			for (Tuple row : reader) // TODO should limit not be used somehow?
 			{
 				E e = create();
-				e.set(line, false); // parse the tuple
+				e.set(row, false); // parse the tuple
 				entities.add(e);
 			}
 		}

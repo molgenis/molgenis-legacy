@@ -20,7 +20,6 @@ import org.molgenis.framework.ui.html.render.RenderDecorator;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.FileLink;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
 
 /**
  * The root screen for any MOLGENIS application.
@@ -165,7 +164,7 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 	 * @param request
 	 *            with the event
 	 */
-	public void handleRequest(Database db, Tuple request) throws Exception, HandleRequestDelegationException
+	public void handleRequest(Database db, MolgenisRequest request) throws Exception, HandleRequestDelegationException
 	{
 		this.handleRequest(db, request, null);
 	}
@@ -191,8 +190,8 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException,
-			Exception
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
+			throws HandleRequestDelegationException, Exception
 	{
 		logger.info("delegating handleRequest(" + request.toString() + ")");
 		String screen = request.getString(ScreenModel.INPUT_TARGET);

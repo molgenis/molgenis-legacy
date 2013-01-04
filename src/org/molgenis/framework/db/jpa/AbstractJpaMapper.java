@@ -13,8 +13,8 @@ import org.molgenis.framework.db.AbstractMapper;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.io.TupleWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.TupleWriter;
 
 /**
  * JPA implementation of the Mapper interface.
