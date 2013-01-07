@@ -2,11 +2,11 @@ package org.molgenis.util.tuple;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -98,9 +98,22 @@ public class HttpServletRequestTuple extends AbstractTuple
 		throw new UnsupportedOperationException();
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<String> getList(String colName)
+	{
+		return isMultipartRequest ? (List<String>) multipartParams.get(colName) : null;
+	}
+
+	@Override
+	public List<String> getList(int col)
+	{
+		throw new UnsupportedOperationException();
+	}
+
 	public File getFile(String fileName)
 	{
-		return isMultipartRequest ? (File) (multipartParams.get(fileName)) : null;
+		return isMultipartRequest ? (File) multipartParams.get(fileName) : null;
 	}
 
 	private void parseMultipartContentRequest() throws IOException
@@ -197,7 +210,7 @@ public class HttpServletRequestTuple extends AbstractTuple
 	{
 		// try to find if there are more of this name
 		String name = item.getFieldName();
-		Vector<String> elements = new Vector<String>();
+		List<String> elements = new ArrayList<String>();
 
 		elements.add(item.getString());
 		for (int j = i + 1; j < multipart.size(); j++)
