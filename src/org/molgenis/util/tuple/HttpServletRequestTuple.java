@@ -3,6 +3,7 @@ package org.molgenis.util.tuple;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +103,13 @@ public class HttpServletRequestTuple extends AbstractTuple
 	@Override
 	public List<String> getList(String colName)
 	{
-		return isMultipartRequest ? (List<String>) multipartParams.get(colName) : null;
+		if (isMultipartRequest)
+		{
+			Object multipartParam = multipartParams.get(colName);
+			if (multipartParam instanceof List<?>) return (List<String>) multipartParam;
+			else if (multipartParam instanceof String) return Collections.singletonList((String) multipartParam);
+		}
+		return null;
 	}
 
 	@Override
