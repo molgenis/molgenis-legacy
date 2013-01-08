@@ -1180,7 +1180,7 @@ public class MolgenisModelValidator
 							copy.setAuto(f.isAuto());
 							e.addField(copy);
 
-							logger.warn(aKey.toString() + " cannot be enforced on " + e.getName() + ", copying "
+							logger.debug(aKey.toString() + " cannot be enforced on " + e.getName() + ", copying "
 									+ f.getEntity().getName() + "." + f.getName() + " to subclass as " + copy.getName());
 						}
 					}
