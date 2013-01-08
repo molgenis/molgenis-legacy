@@ -60,10 +60,11 @@
 	</#list></#if>					
 	<#else>
 		//set ${JavaName(f)}
+		// query formal name, else lowercase name
 		<#if f.type == "xref">
 		if(tuple.get${settertype(f)}("${f.name}_${f.xrefField.name}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${f.name}_${f.xrefField.name}"));
 		else if(tuple.get${settertype(f)}("${f.name?lower_case}_${f.xrefField.name?lower_case}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${f.name?lower_case}_${f.xrefField.name?lower_case}"));
-		else if(strict) this.set${JavaName(f)}(tuple.get${settertype(f)}("${f.name}_${f.xrefField.name}"));
+		else if(strict) this.set${JavaName(f)}(tuple.get${settertype(f)}("${f.name}_${f.xrefField.name}")); // setting null is not an option due to function overloading
 		
 		if( tuple.get${settertype(f)}("${entity.name}_${f.name}_${f.xrefField.name}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${entity.name}_${f.name}_${f.xrefField.name}"));
 		else if( tuple.get${settertype(f)}("${entity.name?lower_case}_${f.name?lower_case}_${f.xrefField.name?lower_case}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${entity.name?lower_case}_${f.name?lower_case}_${f.xrefField.name?lower_case}"));
@@ -104,14 +105,14 @@
 		<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>
 		if(tuple.get("${f.name}_${label}") != null) this.set${JavaName(f)}_${JavaName(label)}(tuple.get${settertype(f.xrefLabels[label_index])}("${f.name}_${label}"));
 		else if(tuple.get("${f.name?lower_case}_${label?lower_case}") != null) this.set${JavaName(f)}_${JavaName(label)}(tuple.get${settertype(f.xrefLabels[label_index])}("${f.name?lower_case}_${label?lower_case}"));
-		else if(strict) this.set${JavaName(f)}_${JavaName(label)}(tuple.get${settertype(f.xrefLabels[label_index])}("${f.name}_${label}"));
+		else if(strict) this.set${JavaName(f)}_${JavaName(label)}(tuple.get${settertype(f.xrefLabels[label_index])}("${f.name}_${label}")); // setting null is not an option due to function overloading
 		if( tuple.get("${entity.name}_${f.name}_${label}") != null ) this.set${JavaName(f)}_${JavaName(label)}(tuple.get${settertype(f.xrefLabels[label_index])}("${entity.name}_${f.name}_${label}"));		
 		else if( tuple.get("${entity.name?lower_case}_${f.name?lower_case}_${label?lower_case}") != null ) this.set${JavaName(f)}_${JavaName(label)}(tuple.get${settertype(f.xrefLabels[label_index])}("${entity.name?lower_case}_${f.name?lower_case}_${label?lower_case}"));
 		</#list></#if>
 		<#else>
 		if(tuple.get${settertype(f)}("${f.name?lower_case}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${f.name?lower_case}"));
 		else if(tuple.get${settertype(f)}("${f.name}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${f.name}"));
-		else if(strict) this.set${JavaName(f)}(tuple.get${settertype(f)}("${f.name?lower_case}"));
+		else if(strict) this.set${JavaName(f)}(tuple.get${settertype(f)}("${f.name?lower_case}")); // setting null is not an option due to function overloading
 		if( tuple.get${settertype(f)}("${entity.name?lower_case}_${f.name?lower_case}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${entity.name?lower_case}_${f.name?lower_case}"));
 		else if( tuple.get${settertype(f)}("${entity.name}_${f.name}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${entity.name}_${f.name}"));
 		</#if>

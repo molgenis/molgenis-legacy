@@ -4,6 +4,7 @@ import static org.testng.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 
 import org.apache.commons.io.FilenameUtils;
@@ -66,6 +67,30 @@ public class TableReaderFactoryTest
 			try
 			{
 				assertNotNull(tableReader.getTupleReader(FilenameUtils.getBaseName(file.getName())));
+			}
+			finally
+			{
+				tableReader.close();
+			}
+		}
+		finally
+		{
+			file.delete();
+		}
+	}
+
+	@Test
+	public void createFile_zip() throws IOException, URISyntaxException
+	{
+		File file = new File(this.getClass().getResource("/tables.zip").toURI());
+		try
+		{
+			TableReader tableReader = TableReaderFactory.create(file);
+			try
+			{
+				assertNotNull(tableReader.getTupleReader("0"));
+				assertNotNull(tableReader.getTupleReader("1"));
+				assertNotNull(tableReader.getTupleReader("2"));
 			}
 			finally
 			{
