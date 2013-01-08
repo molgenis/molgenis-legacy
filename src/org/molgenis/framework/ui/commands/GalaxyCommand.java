@@ -99,7 +99,7 @@ public class GalaxyCommand extends SimpleCommand
 	public ScreenModel.Show handleRequest(Database db, MolgenisRequest request, OutputStream downloadStream)
 	{
 		logger.debug("galaxy button clicked: " + this.getController().getApplicationController().getGalaxyUrl());
-		appLoc = ((MolgenisRequest) request).getAppLocation();
+		appLoc = request.getAppLocation();
 		return ScreenModel.Show.SHOW_MAIN;
 	}
 
