@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -56,6 +57,10 @@ public class TableReaderFactory
 		else if (name.endsWith(".xls") || name.endsWith(".xlsx"))
 		{
 			return new ExcelReader(file);
+		}
+		else if (name.endsWith(".zip"))
+		{
+			return new ZipTableReader(new ZipFile(file));
 		}
 		else
 		{
