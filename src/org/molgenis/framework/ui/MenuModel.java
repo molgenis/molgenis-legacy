@@ -87,7 +87,7 @@ public class MenuModel extends SimpleScreenModel
 	 */
 	public List<ScreenModel> getVisibleChildren()
 	{
-		Vector<ScreenController<? extends ScreenModel>> subscreens = this.getController().getChildren();
+		Vector<ScreenController<?>> subscreens = this.getController().getChildren();
 		List<ScreenModel> result = new ArrayList<ScreenModel>();
 
 		// remove hidden children from the list, and also commands
