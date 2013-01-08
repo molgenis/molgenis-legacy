@@ -692,7 +692,7 @@ public class Entity extends DBSchema implements Record
 		// first fields of the interfaces
 		for (Entity iface : this.getImplements())
 		{
-			Vector<Field> ifaceFields = (Vector<Field>) iface.getAllFields();
+			Vector<Field> ifaceFields = iface.getAllFields();
 			for (Field ifaceField : ifaceFields)
 			{
 				all_fields.put(ifaceField.getName().toLowerCase(), ifaceField);
