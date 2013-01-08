@@ -1037,15 +1037,8 @@ public class Entity extends DBSchema implements Record
 	public Field getAllField(String name) throws MolgenisModelException
 	{
 		for (Field field : getAllFields())
-		{
-			// logger.debug("testing: " + this.getName()+ "."+field.getName());
-
-			if (name.equalsIgnoreCase(field.getName()))
-			{
-				return field;
-			}
-		}
-		logger.warn("couldn't find " + this.getName() + "." + name);
+			if (name.equalsIgnoreCase(field.getName())) return field;
+		logger.debug("couldn't find " + this.getName() + "." + name);
 
 		return null;
 	}
