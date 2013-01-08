@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import org.molgenis.util.tuple.Tuple;
 import org.molgenis.util.ValueLabel;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Input for checkbox data.
@@ -78,12 +78,11 @@ public class CheckboxInput extends OptionInput<List<String>>
 	 * @param properties
 	 * @throws HtmlInputException
 	 */
-	@SuppressWarnings("unchecked")
 	public CheckboxInput(Tuple properties) throws HtmlInputException
 	{
 		super(properties);
-		if (!properties.isNull(VALUE)) this.setValue((List<String>) properties.getList(VALUE));
-		if (!properties.isNull(VALUES)) this.setValue((List<String>) properties.getList(VALUES));
+		if (!properties.isNull(VALUE)) this.setValue(properties.getList(VALUE));
+		if (!properties.isNull(VALUES)) this.setValue(properties.getList(VALUES));
 	}
 
 	/**

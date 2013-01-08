@@ -92,7 +92,7 @@ public class MolgenisJqGridService implements MolgenisService
 			int total_pages = 1;
 			if (recordCount > 0 && limit > 0)
 			{
-				total_pages = (int) (recordCount / limit) + 1;
+				total_pages = ((int) (recordCount / (double) limit)) + 1;
 			}
 
 			// if for some reasons the requested page is greater than the total
