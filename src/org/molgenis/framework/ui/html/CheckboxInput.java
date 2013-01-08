@@ -124,7 +124,7 @@ public class CheckboxInput extends OptionInput<List<String>>
 			{
 				if (getObject() != null)
 				{
-					checked = (((List<String>) getObject()).contains(option.getValue().toString()) ? " checked " : "");
+					checked = getObject().contains(option.getValue().toString()) ? " checked " : "";
 				}
 				optionString.append("<input id=\"" + this.getId() + "\" type=\"checkbox\" " + onchange + readonly
 						+ checked + " name=\"" + this.getName() + "\" value=\"" + option.getValue() + "\">"
