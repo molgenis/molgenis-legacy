@@ -171,6 +171,24 @@ public class CsvReaderTest
 	}
 
 	@Test
+	public void iterator_emptyValues() throws IOException
+	{
+		String csvString = "col1,col2,col3\n,,\n";
+		CsvReader csvReader = new CsvReader(new StringReader(csvString));
+		try
+		{
+			Iterator<Tuple> it = csvReader.iterator();
+			assertTrue(it.hasNext());
+			Tuple tuple = it.next();
+			assertTrue(tuple.isNull("col1"));
+		}
+		finally
+		{
+			csvReader.close();
+		}
+	}
+
+	@Test
 	public void iterator_separator() throws IOException
 	{
 		CsvReader tsvReader = new CsvReader(new StringReader("col1\tcol2\nval1\tval2\n"), '\t');
