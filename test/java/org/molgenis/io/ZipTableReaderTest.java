@@ -1,20 +1,27 @@
 package org.molgenis.io;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
-import org.apache.commons.io.FilenameUtils;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class TableReaderFactoryTest
+import com.google.common.collect.Lists;
+
+public class ZipTableReaderTest
 {
 	private static File ZIP_FILE;
 
@@ -72,132 +79,109 @@ public class TableReaderFactoryTest
 		ZIP_FILE.delete();
 	}
 
-	@Test
-	public void createFile_csv() throws IOException
+	@SuppressWarnings("resource")
+	@Test(expectedExceptions = IllegalArgumentException.class)
+	public void ZipTableReader() throws IOException
 	{
-		File file = File.createTempFile("file", ".csv");
+		new ZipTableReader(null);
+	}
+
+	@Test
+	public void getTableNames() throws IOException
+	{
+		ZipTableReader zipTableReader = new ZipTableReader(new ZipFile(ZIP_FILE));
 		try
 		{
-			TableReader tableReader = TableReaderFactory.create(file);
-			try
-			{
-				assertNotNull(tableReader.getTupleReader(FilenameUtils.getBaseName(file.getName())));
-			}
-			finally
-			{
-				tableReader.close();
-			}
+			List<String> tableNames = Lists.newArrayList(zipTableReader.getTableNames());
+			assertEquals(3, tableNames.size());
+			assertTrue(tableNames.contains("0"));
+			assertTrue(tableNames.contains("1"));
+			assertTrue(tableNames.contains("2"));
 		}
 		finally
 		{
-			file.delete();
+			zipTableReader.close();
 		}
 	}
 
 	@Test
-	public void createFile_txt() throws IOException
+	public void getTupleReader() throws IOException
 	{
-		File file = File.createTempFile("file", ".txt");
+		ZipTableReader zipTableReader = new ZipTableReader(new ZipFile(ZIP_FILE));
 		try
 		{
-			TableReader tableReader = TableReaderFactory.create(file);
+			TupleReader tupleReader0 = zipTableReader.getTupleReader("0");
 			try
 			{
-				assertNotNull(tableReader.getTupleReader(FilenameUtils.getBaseName(file.getName())));
+				Collection<String> colNames = Lists.newArrayList(tupleReader0.colNamesIterator());
+				assertEquals(2, colNames.size());
+				assertTrue(colNames.contains("col1"));
+				assertTrue(colNames.contains("col2"));
 			}
 			finally
 			{
-				tableReader.close();
+				tupleReader0.close();
+			}
+
+			TupleReader tupleReader1 = zipTableReader.getTupleReader("1");
+			try
+			{
+				Collection<String> colNames = Lists.newArrayList(tupleReader1.colNamesIterator());
+				assertEquals(2, colNames.size());
+				assertTrue(colNames.contains("col3"));
+				assertTrue(colNames.contains("col4"));
+			}
+			finally
+			{
+				tupleReader1.close();
+			}
+
+			TupleReader tupleReader2 = zipTableReader.getTupleReader("2");
+			try
+			{
+				Collection<String> colNames = Lists.newArrayList(tupleReader2.colNamesIterator());
+				assertEquals(2, colNames.size());
+				assertTrue(colNames.contains("col5"));
+				assertTrue(colNames.contains("col6"));
+			}
+			finally
+			{
+				tupleReader2.close();
 			}
 		}
 		finally
 		{
-			file.delete();
+			zipTableReader.close();
 		}
 	}
 
 	@Test
-	public void createFile_tsv() throws IOException
+	public void iterator() throws IOException
 	{
-		File file = File.createTempFile("file", ".tsv");
+		ZipTableReader zipTableReader = new ZipTableReader(new ZipFile(ZIP_FILE));
 		try
 		{
-			TableReader tableReader = TableReaderFactory.create(file);
-			try
-			{
-				assertNotNull(tableReader.getTupleReader(FilenameUtils.getBaseName(file.getName())));
-			}
-			finally
-			{
-				tableReader.close();
-			}
-		}
-		finally
-		{
-			file.delete();
-		}
-	}
+			Iterator<TupleReader> it = zipTableReader.iterator();
+			assertTrue(it.hasNext());
+			TupleReader tupleReader0 = it.next();
+			assertNotNull(tupleReader0);
+			tupleReader0.close();
 
-	@Test
-	public void createFile_zip() throws IOException, URISyntaxException
-	{
-		TableReader tableReader = TableReaderFactory.create(ZIP_FILE);
-		try
-		{
-			assertNotNull(tableReader.getTupleReader("0"));
-			assertNotNull(tableReader.getTupleReader("1"));
-			assertNotNull(tableReader.getTupleReader("2"));
-		}
-		finally
-		{
-			tableReader.close();
-		}
-	}
+			assertTrue(it.hasNext());
+			TupleReader tupleReader1 = it.next();
+			assertNotNull(tupleReader1);
+			tupleReader1.close();
 
-	@Test(expectedExceptions = IOException.class)
-	public void createFile_unknownFormat() throws IOException
-	{
-		File file = File.createTempFile("file", ".burp");
-		try
-		{
-			TableReader tableReader = TableReaderFactory.create(file);
-			try
-			{
-				assertNotNull(tableReader.getTupleReader(FilenameUtils.getBaseName(file.getName())));
-			}
-			finally
-			{
-				tableReader.close();
-			}
-		}
-		finally
-		{
-			file.delete();
-		}
-	}
+			assertTrue(it.hasNext());
+			TupleReader tupleReader2 = it.next();
+			assertNotNull(tupleReader2);
+			tupleReader2.close();
 
-	@Test
-	public void createListFile() throws IOException
-	{
-		File file1 = File.createTempFile("file1", ".csv");
-		File file2 = File.createTempFile("file2", ".tsv");
-		try
-		{
-			TableReader tableReader = TableReaderFactory.create(Arrays.asList(file1, file2));
-			try
-			{
-				assertNotNull(tableReader.getTupleReader(FilenameUtils.getBaseName(file1.getName())));
-				assertNotNull(tableReader.getTupleReader(FilenameUtils.getBaseName(file2.getName())));
-			}
-			finally
-			{
-				tableReader.close();
-			}
+			assertFalse(it.hasNext());
 		}
 		finally
 		{
-			file1.delete();
-			file2.delete();
+			zipTableReader.close();
 		}
 	}
 }

@@ -10,8 +10,8 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -127,6 +127,8 @@ public class CsvReader implements TupleReader
 							{
 								for (int i = 0; i < values.length; ++i)
 								{
+									// subsequent separators indicate null
+									// values instead of empty strings
 									String value = values[i].isEmpty() ? null : values[i];
 									values[i] = processCell(value, false);
 								}
@@ -168,7 +170,7 @@ public class CsvReader implements TupleReader
 		if (headers.length == 0) return Collections.emptyMap();
 
 		int capacity = (int) (headers.length / 0.75) + 1;
-		Map<String, Integer> columnIdx = new HashMap<String, Integer>(capacity);
+		Map<String, Integer> columnIdx = new LinkedHashMap<String, Integer>(capacity);
 		for (int i = 0; i < headers.length; ++i)
 		{
 			String header = processCell(headers[i], true);
