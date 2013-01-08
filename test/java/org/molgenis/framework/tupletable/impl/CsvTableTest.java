@@ -131,9 +131,9 @@ public class CsvTableTest
 
 		table.setColLimit(1);
 
-		assertEquals(table.getColumns().get(0).getName(), "firstName");
+		assertEquals(table.getColumns().get(0).getName(), "lastName");
 
-		assertEquals(table.getRows().get(0).getString("firstName"), "lucky");
+		assertEquals(table.getRows().get(0).getString("lastName"), "luke");
 
 	}
 
