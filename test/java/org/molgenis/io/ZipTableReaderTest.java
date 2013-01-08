@@ -26,7 +26,7 @@ public class ZipTableReaderTest
 	@BeforeMethod
 	public void setUp() throws URISyntaxException, ZipException, IOException
 	{
-		this.zipFile = new ZipFile(new File(this.getClass().getResource("/tables.zip").toURI()));
+		this.zipFile = new ZipFile(new File(this.getClass().getResource("/tables.zip").getFile()));
 	}
 
 	@SuppressWarnings("resource")
