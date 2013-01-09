@@ -90,6 +90,9 @@ public class ${JavaName(entity)}EntityImporter implements EntityImporter
 		
 		for(Tuple tuple : reader)
 		{
+			// skip empty rows
+			if (!hasValues(tuple)) continue;
+			
 			//parse object, setting defaults and values from file
 			${JavaName(entity)} object = new ${JavaName(entity)}();
 			object.set(tuple, false);				
@@ -170,6 +173,15 @@ public class ${JavaName(entity)}EntityImporter implements EntityImporter
 		} catch(Exception e) {throw new IOException(e);}
 		return total.get();
 	}	
+	
+	private boolean hasValues(Tuple tuple)
+	{
+		for (String colName : tuple.getColNames())
+		{
+			if (tuple.get(colName) != null) return true;
+		}
+		return false;
+	}
 	
 	/**
 	 * This method tries to resolve foreign keys (i.e. xref_field) based on the secondary key/key (i.e. xref_labels).
