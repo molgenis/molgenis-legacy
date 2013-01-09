@@ -66,7 +66,7 @@ public class View extends DBSchema implements Record
 	public List<Field> getFields() throws MolgenisModelException
 	{
 		// retrieve the root
-		DBSchema database = (DBSchema) getRoot();
+		DBSchema database = getRoot();
 
 		// retrieve all the fields
 		Vector<Field> fields = new Vector<Field>();
@@ -99,7 +99,7 @@ public class View extends DBSchema implements Record
 	public boolean hasXRefs()
 	{
 		// retrieve the root
-		DBSchema database = (DBSchema) getRoot();
+		DBSchema database = getRoot();
 
 		// retrieve all the fields
 		for (String viewentity : entities)
