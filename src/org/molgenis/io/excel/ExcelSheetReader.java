@@ -164,7 +164,7 @@ public class ExcelSheetReader implements TupleReader
 						// excel stores integer values as double values
 						// read an integer if the double value equals the
 						// integer value
-						double x = cell.getNumericCellValue();
+						double x = cellValue.getNumberValue();
 						if (x == Math.rint(x) && !Double.isNaN(x) && !Double.isInfinite(x)) value = String
 								.valueOf((int) x);
 						else
@@ -177,7 +177,7 @@ public class ExcelSheetReader implements TupleReader
 						value = null;
 						break;
 					default:
-						throw new RuntimeException("unsupported cell type: " + cell.getCellType());
+						throw new RuntimeException("unsupported cell type: " + cellValue.getCellType());
 				}
 				break;
 			default:
