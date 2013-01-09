@@ -128,6 +128,8 @@ public class ExcelSheetReader implements TupleReader
 		switch (cell.getCellType())
 		{
 			case Cell.CELL_TYPE_BLANK:
+				value = null;
+				break;
 			case Cell.CELL_TYPE_STRING:
 				value = cell.getStringCellValue();
 				break;

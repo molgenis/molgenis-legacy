@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.util.Entity;
-import org.molgenis.util.tuple.Tuple;
 import org.molgenis.util.ValueLabel;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Input for multiple select. This means that a user can select multiple items
@@ -54,11 +54,10 @@ public class SelectMultipleInput extends OptionInput<List<String>>
 		super(name, label, values, nillable, readonly, description, options, option_labels);
 	}
 
-	@SuppressWarnings("unchecked")
 	public SelectMultipleInput(Tuple t) throws HtmlInputException
 	{
 		super(t);
-		this.setValue((List<String>) t.getList(VALUES));
+		this.setValue(t.getList(VALUES));
 	}
 
 	@Override

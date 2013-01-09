@@ -483,8 +483,8 @@ public class MolgenisModelValidator
 			Vector<Entity> viewentities = new Vector<Entity>();
 			for (Pair<Entity, Entity> p : references)
 			{
-				if (!viewentities.contains(p.getA())) viewentities.add((Entity) p.getA());
-				if (!viewentities.contains(p.getB())) viewentities.add((Entity) p.getB());
+				if (!viewentities.contains(p.getA())) viewentities.add(p.getA());
+				if (!viewentities.contains(p.getB())) viewentities.add(p.getB());
 			}
 
 			// if (viewentities.size() != view.getEntities().size())
@@ -1180,7 +1180,7 @@ public class MolgenisModelValidator
 							copy.setAuto(f.isAuto());
 							e.addField(copy);
 
-							logger.warn(aKey.toString() + " cannot be enforced on " + e.getName() + ", copying "
+							logger.debug(aKey.toString() + " cannot be enforced on " + e.getName() + ", copying "
 									+ f.getEntity().getName() + "." + f.getName() + " to subclass as " + copy.getName());
 						}
 					}
