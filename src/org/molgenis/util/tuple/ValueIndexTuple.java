@@ -43,7 +43,14 @@ public class ValueIndexTuple extends AbstractTuple
 	public Object get(String colName)
 	{
 		Integer pos = colNamesMap.get(colName);
-		return pos != null ? values.get(pos) : null;
+		try
+		{
+			return pos != null ? values.get(pos) : null;
+		}
+		catch (IndexOutOfBoundsException e)
+		{
+			throw new IndexOutOfBoundsException("missing required value for column " + colName);
+		}
 	}
 
 	@Override
