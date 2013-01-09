@@ -1,7 +1,6 @@
 package org.molgenis.framework.ui.commands;
 
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,8 +89,8 @@ public class AddCsvFileCommand<E extends Entity> extends SimpleCommand
 			ScreenMessage msg = null;
 			try
 			{
-				CsvReader csvReader = new CsvReader(new StringReader(request.getString("filefor___csvdata")));
-				String entityName = this.getFormScreen().getEntityClass().getName();
+				CsvReader csvReader = new CsvReader(request.getFile("filefor___csvdata"));
+				String entityName = this.getFormScreen().getEntityClass().getSimpleName();
 
 				EntityImportReport importReport = null;
 				try
@@ -105,7 +104,8 @@ public class AddCsvFileCommand<E extends Entity> extends SimpleCommand
 					csvReader.close();
 				}
 
-				msg = new ScreenMessage("CSV UPLOAD SUCCESS: added " + importReport.getNrImported() + " rows", null, true);
+				msg = new ScreenMessage("CSV UPLOAD SUCCESS: added " + importReport.getNrImported() + " rows", null,
+						true);
 				logger.debug("CSV UPLOAD SUCCESS: added " + importReport.getNrImported() + " rows");
 				getFormScreen().getPager().resetFilters();
 				getFormScreen().getPager().last(db);
