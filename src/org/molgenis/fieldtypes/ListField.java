@@ -12,6 +12,8 @@ import org.molgenis.model.MolgenisModelException;
 @Deprecated
 public class ListField extends FieldType
 {
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public String getJavaPropertyDefault() throws MolgenisModelException
 	{

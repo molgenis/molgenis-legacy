@@ -30,9 +30,11 @@ public class HttpServletRequestTuple extends AbstractTuple
 {
 	private static final Logger logger = Logger.getLogger(HttpServletRequestTuple.class);
 
-	private final HttpServletRequest request;
+	private static final long serialVersionUID = 1L;
+
+	private final transient HttpServletRequest request;
 	// naughty hack but we sometimes need this as well for redirects
-	private final HttpServletResponse response;
+	private final transient HttpServletResponse response;
 
 	/** indicates whether this request contains multipart content */
 	private boolean isMultipartRequest;

@@ -229,7 +229,7 @@ public class Ssh
 				{
 					int len = stderr.read(buffer);
 					if (len > 0) // this check is somewhat paranoid
-					stdErrBuffer.append(new String(buffer, 0, len));
+					stdErrBuffer.append(new String(buffer, 0, len, Charset.forName("UTF-8")));
 				}
 			}
 

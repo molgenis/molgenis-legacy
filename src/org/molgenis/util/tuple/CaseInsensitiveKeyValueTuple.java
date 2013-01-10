@@ -5,6 +5,8 @@ package org.molgenis.util.tuple;
  */
 public class CaseInsensitiveKeyValueTuple extends KeyValueTuple
 {
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public Object get(String colName)
 	{

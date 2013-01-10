@@ -26,6 +26,9 @@ import org.molgenis.model.MolgenisModelException;
  */
 public class Unique implements Serializable
 {
+	/** Used for serialization purposes */
+	private static final long serialVersionUID = -1201614213585052020L;
+
 	// member variables
 	/** The entity this unique (key) is associated with */
 	private Entity entity;
@@ -38,9 +41,6 @@ public class Unique implements Serializable
 	 * than reduced to include 'type'
 	 */
 	private boolean subclass = false;
-
-	/** Used for serialization purposes */
-	private static final long serialVersionUID = -1201614213585052020L;
 
 	/** A description of this constraint */
 	private String description;
@@ -121,40 +121,6 @@ public class Unique implements Serializable
 		return this.entity;
 	}
 
-	// Object overloads
-	@Override
-	public String toString()
-	{
-		StringBuilder strBuilder = new StringBuilder("Unique(");
-
-		for (String field : fields)
-		{
-			strBuilder.append(field).append(", ");
-		}
-		strBuilder.append(')');
-
-		return strBuilder.toString();
-	}
-
-	/**
-	 * Indicates whether some other object is "equal to" this one.
-	 * 
-	 * @param obj
-	 *            The reference object with which to compare.
-	 * @return True if this object is the same as the obj argument, false
-	 *         otherwise.
-	 */
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (obj != null && obj.getClass() == Unique.class)
-		{
-			return toString().equals(((Unique) obj).toString());
-		}
-
-		return false;
-	}
-
 	public boolean isSubclass()
 	{
 		return subclass;
@@ -178,5 +144,42 @@ public class Unique implements Serializable
 	public void setEntity(Entity entity)
 	{
 		this.entity = entity;
+	}
+
+	@Override
+	public String toString()
+	{
+		StringBuilder strBuilder = new StringBuilder("Unique(");
+
+		for (String field : fields)
+		{
+			strBuilder.append(field).append(", ");
+		}
+		strBuilder.append(')');
+
+		return strBuilder.toString();
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((entity == null) ? 0 : entity.hashCode());
+		result = prime * result + ((fields == null) ? 0 : fields.hashCode());
+		result = prime * result + (subclass ? 1231 : 1237);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj != null && obj.getClass() == Unique.class)
+		{
+			return toString().equals(((Unique) obj).toString());
+		}
+
+		return false;
 	}
 }
