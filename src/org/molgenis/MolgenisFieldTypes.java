@@ -120,9 +120,14 @@ public class MolgenisFieldTypes
 			ft.setField(f);
 			return ft;
 		}
-		catch (final Exception e)
+		catch (InstantiationException e)
 		{
-			e.printStackTrace();
+			logger.error(e);
+			throw new MolgenisModelException(e.getMessage());
+		}
+		catch (IllegalAccessException e)
+		{
+			logger.error(e);
 			throw new MolgenisModelException(e.getMessage());
 		}
 	}
