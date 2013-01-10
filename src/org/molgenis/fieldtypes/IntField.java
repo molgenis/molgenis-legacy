@@ -12,6 +12,8 @@ import org.molgenis.model.MolgenisModelException;
 
 public class IntField extends FieldType
 {
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public String getJavaPropertyType() throws MolgenisModelException
 	{
