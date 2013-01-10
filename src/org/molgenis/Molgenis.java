@@ -838,11 +838,6 @@ public class Molgenis
 
 			logger.info("MOLGENIS database updated succesfully");
 		}
-		catch (Exception e)
-		{
-			logger.error(e);
-
-		}
 		finally
 		{
 			try
