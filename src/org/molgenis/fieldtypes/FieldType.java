@@ -1,5 +1,6 @@
 package org.molgenis.fieldtypes;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
@@ -15,8 +16,10 @@ import org.molgenis.model.elements.Field;
  * Definition of a MOLGENIS field type. For example <field name="x"
  * type="string" would relate to type StringField
  */
-public abstract class FieldType
+public abstract class FieldType implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * For xref purposes we sometimes need a handle of the field this type was
 	 * defined as part of.
