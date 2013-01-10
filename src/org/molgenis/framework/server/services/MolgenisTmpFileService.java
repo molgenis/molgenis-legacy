@@ -82,7 +82,7 @@ public class MolgenisTmpFileService implements MolgenisService
 		{
 			byte[] header = ("Temporary file " + variant + " location error:\n").getBytes(Charset.forName("UTF-8"));
 			out.write(header, 0, header.length);
-			byte[] exception = ("loading of failed: " + e).getBytes();
+			byte[] exception = ("loading of failed: " + e).getBytes(Charset.forName("UTF-8"));
 			out.write(exception, 0, exception.length);
 			logger.error("loading of failed: " + e);
 		}
