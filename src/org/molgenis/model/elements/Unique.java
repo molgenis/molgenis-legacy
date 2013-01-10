@@ -175,26 +175,11 @@ public class Unique implements Serializable
 	@Override
 	public boolean equals(Object obj)
 	{
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
-		Unique other = (Unique) obj;
-		if (description == null)
+		if (obj != null && obj.getClass() == Unique.class)
 		{
-			if (other.description != null) return false;
+			return toString().equals(((Unique) obj).toString());
 		}
-		else if (!description.equals(other.description)) return false;
-		if (entity == null)
-		{
-			if (other.entity != null) return false;
-		}
-		else if (!entity.equals(other.entity)) return false;
-		if (fields == null)
-		{
-			if (other.fields != null) return false;
-		}
-		else if (!fields.equals(other.fields)) return false;
-		if (subclass != other.subclass) return false;
-		return true;
+
+		return false;
 	}
 }
