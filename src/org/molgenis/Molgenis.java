@@ -533,7 +533,7 @@ public class Molgenis
 					catch (Exception e)
 					{
 						e.printStackTrace();
-						System.exit(-1);
+						throw new RuntimeException(e);
 					}
 				}
 			};
@@ -641,18 +641,44 @@ public class Molgenis
 
 	private static void copyFile(File src, File dst) throws IOException
 	{
-		InputStream in = new FileInputStream(src);
-		OutputStream out = new FileOutputStream(dst);
-
-		// Transfer bytes from in to out
-		byte[] buf = new byte[1024];
-		int len;
-		while ((len = in.read(buf)) > 0)
+		InputStream in = null;
+		OutputStream out = null;
+		try
 		{
-			out.write(buf, 0, len);
+			in = new FileInputStream(src);
+			out = new FileOutputStream(dst);
+
+			// Transfer bytes from in to out
+			byte[] buf = new byte[1024];
+			int len;
+			while ((len = in.read(buf)) > 0)
+			{
+				out.write(buf, 0, len);
+			}
 		}
-		in.close();
-		out.close();
+		finally
+		{
+			if (in != null)
+			{
+				try
+				{
+					in.close();
+				}
+				catch (IOException e)
+				{
+				}
+			}
+			if (out != null)
+			{
+				try
+				{
+					out.close();
+				}
+				catch (IOException e)
+				{
+				}
+			}
+		}
 	}
 
 	/**
