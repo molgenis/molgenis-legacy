@@ -87,11 +87,24 @@ public class MolgenisFieldTypes
 	public static FieldType getType(String name)
 	{
 		init();
-		try
+
+		FieldType fieldType = types.get(name + "field");
+		if (fieldType != null)
 		{
-			return types.get(name + "field").getClass().newInstance();
+			try
+			{
+				return fieldType.getClass().newInstance();
+			}
+			catch (InstantiationException e)
+			{
+				throw new RuntimeException(e);
+			}
+			catch (IllegalAccessException e)
+			{
+				throw new RuntimeException(e);
+			}
 		}
-		catch (final Exception e)
+		else
 		{
 			logger.warn("couldn't get type for name '" + name + "'");
 			return new UnknownField();
