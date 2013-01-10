@@ -236,7 +236,7 @@ public class ExcelSheetReader implements TupleReader
 	{
 		private static final long serialVersionUID = 1L;
 
-		private final Row row;
+		private final transient Row row;
 		private final Map<String, Integer> colNamesMap;
 		private final List<CellProcessor> cellProcessors;
 
