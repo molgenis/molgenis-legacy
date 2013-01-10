@@ -9,6 +9,8 @@
 
 package org.molgenis.framework.ui;
 
+import java.io.Serializable;
+
 import org.molgenis.util.Entity;
 
 // imports
@@ -21,8 +23,10 @@ import org.molgenis.util.Entity;
  * @author Richard Scheltema
  * @version 1.0.0
  */
-public class ScreenMessage
+public class ScreenMessage implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	// constructor
 	/**
 	 * Standard constructor, where all the information about the message can be

@@ -30,6 +30,8 @@ public class HttpServletRequestTuple extends AbstractTuple
 {
 	private static final Logger logger = Logger.getLogger(HttpServletRequestTuple.class);
 
+	private static final long serialVersionUID = 1L;
+
 	private final HttpServletRequest request;
 	// naughty hack but we sometimes need this as well for redirects
 	private final HttpServletResponse response;

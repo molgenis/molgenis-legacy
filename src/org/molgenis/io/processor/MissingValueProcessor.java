@@ -2,6 +2,8 @@ package org.molgenis.io.processor;
 
 public class MissingValueProcessor extends AbstractCellProcessor
 {
+	private static final long serialVersionUID = 1L;
+
 	private final String missingValue;
 	private final boolean emptyIsMissing;
 

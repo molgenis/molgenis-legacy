@@ -8,6 +8,8 @@ import java.util.List;
  */
 public class ValueTuple extends AbstractTuple
 {
+	private static final long serialVersionUID = 1L;
+
 	private final List<? extends Object> values;
 
 	public ValueTuple(List<? extends Object> values)

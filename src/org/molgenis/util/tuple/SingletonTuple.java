@@ -7,6 +7,8 @@ import java.util.Collections;
  */
 public class SingletonTuple<T> extends AbstractTuple
 {
+	private static final long serialVersionUID = 1L;
+
 	private final String colName;
 	private final T value;
 
