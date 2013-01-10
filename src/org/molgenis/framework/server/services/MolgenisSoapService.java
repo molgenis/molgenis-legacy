@@ -8,7 +8,6 @@ import javax.xml.ws.Endpoint;
 import org.apache.cxf.Bus;
 import org.apache.cxf.BusFactory;
 import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
-import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
@@ -17,7 +16,7 @@ import org.molgenis.framework.server.MolgenisService;
 
 /**
  * 
- * NOT WORKING, seems to get stuck on:
+ * FIXME NOT WORKING, seems to get stuck on:
  * 
  * Dec 6, 2011 10:59:16 PM
  * org.apache.cxf.jaxrs.impl.WebApplicationExceptionMapper toResponse WARNING:
@@ -26,7 +25,6 @@ import org.molgenis.framework.server.MolgenisService;
  */
 public class MolgenisSoapService extends CXFNonSpringServlet implements MolgenisService
 {
-	Logger logger = Logger.getLogger(MolgenisRapiService.class);
 	private static final long serialVersionUID = 1L;
 	private MolgenisContext mc;
 	private boolean cxfLoaded;
@@ -38,12 +36,6 @@ public class MolgenisSoapService extends CXFNonSpringServlet implements Molgenis
 		this.mc = mc;
 
 		super.init(mc.getServletConfig());
-
-		// Hashtable<String, Object> params = new Hashtable<String, Object>();
-		// params.put("jaxrs.serviceClasses", "app.servlet.SoapApi");
-		//
-		// //ServletConfig sc = config;
-		// //super.init(sc);
 	}
 
 	@Override

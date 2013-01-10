@@ -10,6 +10,8 @@ import java.util.Map;
  */
 public class ValueIndexTuple extends AbstractTuple
 {
+	private static final long serialVersionUID = 1L;
+
 	private final Map<String, Integer> colNamesMap;
 	private final List<? extends Object> values;
 

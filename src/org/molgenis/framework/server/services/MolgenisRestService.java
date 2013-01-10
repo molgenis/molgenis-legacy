@@ -6,7 +6,6 @@ import java.util.Hashtable;
 import javax.servlet.ServletException;
 
 import org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet;
-import org.apache.log4j.Logger;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
@@ -24,7 +23,6 @@ import org.molgenis.framework.server.ServeConfig;
 public class MolgenisRestService extends CXFNonSpringJaxrsServlet implements MolgenisService
 {
 	private static final long serialVersionUID = -6699220792069809444L;
-	Logger logger = Logger.getLogger(MolgenisRapiService.class);
 	Hashtable<String, Object> restParams;
 
 	private MolgenisContext mc;
