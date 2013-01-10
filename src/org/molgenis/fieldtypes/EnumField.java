@@ -10,6 +10,8 @@ import org.molgenis.model.MolgenisModelException;
 
 public class EnumField extends FieldType
 {
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public String getJavaPropertyType()
 	{

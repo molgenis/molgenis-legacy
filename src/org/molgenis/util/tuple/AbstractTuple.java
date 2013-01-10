@@ -9,8 +9,11 @@ import org.molgenis.util.ListEscapeUtils;
 /**
  * Tuple that delegates all calls to Tuple.get
  */
+@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "return true/false/null on purpose")
 public abstract class AbstractTuple implements Tuple
 {
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public boolean hasColNames()
 	{

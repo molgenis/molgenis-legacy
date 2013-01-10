@@ -14,6 +14,8 @@ import org.molgenis.model.MolgenisModelException;
 
 public class DateField extends FieldType
 {
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public String getJavaPropertyType() throws MolgenisModelException
 	{

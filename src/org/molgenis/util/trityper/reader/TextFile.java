@@ -4,9 +4,10 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -39,7 +40,6 @@ public class TextFile
 
 	public void open() throws IOException
 	{
-
 		File locHandle = new File(loc);
 		if (!locHandle.exists() && !writeable)
 		{
@@ -50,15 +50,13 @@ public class TextFile
 		{
 			if (writeable)
 			{
-				out = new BufferedWriter(new FileWriter(locHandle));
+				out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(locHandle), ENCODING));
 			}
 			else
 			{
-				// System.out.println("Opening file: "+loc);
 				in = new BufferedReader(new InputStreamReader(new FileInputStream(locHandle), ENCODING), 8096);
 			}
 		}
-
 	}
 
 	public String readLine() throws IOException
@@ -66,7 +64,7 @@ public class TextFile
 		String ln = in.readLine();
 		if (ln != null)
 		{
-			return new String(ln.getBytes(ENCODING));
+			return ln;
 		}
 		else
 		{
@@ -81,7 +79,6 @@ public class TextFile
 
 	public void close() throws IOException
 	{
-		// System.out.println("Closing "+loc);
 		if (writeable)
 		{
 			out.close();
@@ -164,20 +161,16 @@ public class TextFile
 
 	public ArrayList<String> readAsArrayList() throws IOException
 	{
-
 		String ln = readLine();
 		ArrayList<String> data = new ArrayList<String>();
-		int i = 0;
 		while (ln != null)
 		{
 			if (ln.trim().length() > 0)
 			{
 				data.add(ln);
-				i++;
 			}
 			ln = in.readLine();
 		}
 		return data;
 	}
-
 }
