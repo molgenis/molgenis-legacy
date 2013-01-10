@@ -14,6 +14,7 @@ import org.molgenis.model.MolgenisModelException;
  */
 public class UnknownField extends FieldType
 {
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public String getFormatString()

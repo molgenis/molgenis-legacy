@@ -4,6 +4,8 @@ import java.util.List;
 
 public abstract class AbstractCellProcessor implements CellProcessor
 {
+	private static final long serialVersionUID = 1L;
+
 	private final boolean processHeader;
 	private final boolean processData;
 
