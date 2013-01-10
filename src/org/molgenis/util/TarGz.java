@@ -208,10 +208,6 @@ public class TarGz
 		// the file. Now it will.
 		if (!nested)
 		{
-
-			System.gc(); // FIXME: MS WINDOWS BUG HACK-AROUND! See
-			// http://forums.sun.com/thread.jspa?threadID=166271
-
 			for (File f : markedDeleted)
 			{
 

@@ -589,7 +589,7 @@ public class CmdLineParser
 				try
 				{
 					String value = fields[i].get(options).toString();
-					if (opt.param().equals("password")) value = "xxxxxx";
+					if (opt.param() == Param.PASSWORD) value = "xxxxxx";
 					value_padding = Math.max(value_padding, value.length());
 				}
 				catch (IllegalAccessException e)
