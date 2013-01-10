@@ -153,7 +153,7 @@ public class TriTyperGenotypeData
 		{
 			if (line.trim().length() > 0)
 			{
-				String snp = new String(line.getBytes("UTF-8"));
+				String snp = line;
 				snpToSNPId.put(snp, snpId);
 				tmpSNP.add(snp);
 				snpId++;
