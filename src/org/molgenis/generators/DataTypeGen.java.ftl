@@ -282,6 +282,15 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 	</#list>
 	}
 	
+	/** copy constructor */
+	public ${JavaName(entity)}(${JavaName(entity)} copyMe) throws Exception
+	{	
+		for(String f : this.getFields())
+		{
+			this.set(f, copyMe.get(f));
+		}	
+	}
+	
 	//getters and setters
 	<#foreach field in entity.getImplementedFields()>
 		<#assign type_label = field.getType().toString()>
