@@ -48,4 +48,30 @@ public class SubQueryRule extends QueryRule
 		}
 		return subQueryField;
 	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((subQueryField == null) ? 0 : subQueryField.hashCode());
+		result = prime * result + ((subQueryOperator == null) ? 0 : subQueryOperator.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj) return true;
+		if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
+		SubQueryRule other = (SubQueryRule) obj;
+		if (subQueryField == null)
+		{
+			if (other.subQueryField != null) return false;
+		}
+		else if (!subQueryField.equals(other.subQueryField)) return false;
+		if (subQueryOperator != other.subQueryOperator) return false;
+		return true;
+	}
 }

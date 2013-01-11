@@ -199,39 +199,26 @@ public class TarGz
 			File subDir = new File(extractDir.getAbsolutePath() + File.separator
 					+ tarGzFile.getName().replace(".tar.gz", ""));
 			markedDeleted.add(tarGzFile);
-			// System.out.println("markedDeleted: " + tarGzFile.getName());
 			tarExtract(tarGzFile, subDir, true, markedDeleted);
-			// tarExtract(tarGzFile, subDir, true);
 		}
 
 		// When you try to delete it straight away, MS Windows will not delete
 		// the file. Now it will.
 		if (!nested)
 		{
-
-			System.gc(); // FIXME: MS WINDOWS BUG HACK-AROUND! See
-			// http://forums.sun.com/thread.jspa?threadID=166271
-
 			for (File f : markedDeleted)
 			{
-
-				// System.out.println(f.getAbsolutePath()
-				// +", exists? "+f.exists());
 				boolean delSuccess = f.delete();
 				if (!delSuccess)
 				{
 					Thread.sleep(10);
-					System.gc();
 					delSuccess = f.delete();
 					if (!delSuccess)
 					{
 						System.out.println("WARNING could not delete " + f.getAbsolutePath());
 					}
 				}
-				// System.out.println(f.getAbsolutePath() +", delete? = " +
-				// delSuccess);
 			}
-			// markedDeleted = new ArrayList<File>();
 		}
 		return extractDir;
 	}

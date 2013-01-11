@@ -1,5 +1,6 @@
 package org.molgenis.util.tuple;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 /**
  * A row of values
  */
-public interface Tuple
+public interface Tuple extends Serializable
 {
 	/**
 	 * Return the number of columns

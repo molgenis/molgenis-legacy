@@ -12,6 +12,8 @@ import org.molgenis.util.Entity;
 
 public class XrefField extends FieldType
 {
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public String getJavaAssignment(String value)
 	{

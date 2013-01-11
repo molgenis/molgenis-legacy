@@ -2,6 +2,8 @@ package org.molgenis.io.processor;
 
 public class LowerCaseProcessor extends AbstractCellProcessor
 {
+	private static final long serialVersionUID = 1L;
+
 	public LowerCaseProcessor()
 	{
 		super();

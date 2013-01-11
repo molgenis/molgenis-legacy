@@ -15,7 +15,7 @@ public class SelectInputView implements TwoStepView<SelectInput>
 		StringBuilder optionsBuilder = new StringBuilder();
 		for (ValueLabel vl : element.getOptions())
 		{
-			String selected = vl.equals(element.getValue()) ? " selected" : "";
+			String selected = vl.getValue().equals(element.getValue()) ? " selected" : "";
 			optionsBuilder.append(String.format("<option %svalue=\"%s\">%s</option>", selected, vl.getValue(),
 					vl.getLabel()));
 		}

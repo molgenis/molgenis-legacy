@@ -9,6 +9,8 @@ import org.molgenis.util.Entity;
  */
 public class EntityTuple extends AbstractTuple
 {
+	private static final long serialVersionUID = 1L;
+
 	private final Entity entity;
 	private transient Vector<String> cachedFields;
 

@@ -9,6 +9,8 @@ import java.util.Map;
  */
 public class KeyValueTuple extends AbstractTuple implements WritableTuple
 {
+	private static final long serialVersionUID = 1L;
+
 	private final Map<String, Object> valueMap;
 
 	public KeyValueTuple()
