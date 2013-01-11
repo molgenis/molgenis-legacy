@@ -592,8 +592,7 @@ public class JQGridView extends HtmlWidget
 	{
 		final JQGridResult result = new JQGridResult(page, totalPages, rowCount);
 
-		Iterator<Tuple> it = table.iterator();
-		while (it.hasNext())
+		for (Iterator<Tuple> it = table.iterator(); it.hasNext();)
 		{
 			Tuple row = it.next();
 			final LinkedHashMap<String, String> rowMap = new LinkedHashMap<String, String>();
