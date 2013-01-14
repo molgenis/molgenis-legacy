@@ -93,7 +93,7 @@ public class JQGridView extends HtmlWidget
 			@Override
 			public String getUrl()
 			{
-				return "molgenis.do?__target=" + hostController.getName() + "&__action=download_json_" + name;
+				return "molgenis.do?__target=" + hostController.getName() + "&__action=download_json_dataset";
 			}
 
 			@Override
