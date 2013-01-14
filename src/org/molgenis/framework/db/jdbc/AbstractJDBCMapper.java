@@ -54,6 +54,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 
 			// transform result set in writer
 			E entity = create();
+			if (writer != null) writer.writeColNames(new EntityTuple(entity).getColNames());
 			writer.writeColNames(fieldsToExport);
 			int i = 0;
 			List<E> entityBatch = new ArrayList<E>();

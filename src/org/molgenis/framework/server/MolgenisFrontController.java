@@ -107,7 +107,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements Mol
 			{ "Googlebot", "Yammybot", "Openbot", "Yahoo", "Slurp", "msnbot", "ia_archiver", "Lycos", "Scooter",
 					"AltaVista", "Teoma", "Gigabot", "Googlebot-Mobile" })
 			{
-				if (userAgent.contains(spider))
+				if (userAgent != null && userAgent.contains(spider))
 				{
 					response.response.sendError(403, "This page is forbidden for spiders.");
 					return;
