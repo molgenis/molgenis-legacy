@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.molgenis.util.tuple.Tuple;
 import org.molgenis.util.ValueLabel;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Common superclass for option based inputs such as xrefs, enums, radio, etc.
@@ -57,12 +57,11 @@ public abstract class OptionInput<E> extends HtmlInput<E>
 		set(t);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void set(Tuple t) throws HtmlInputException
 	{
 		super.set(t);
-		this.setOptions((List<String>) t.getList(OPTIONS), (List<String>) t.getList(OPTION_LABELS));
+		this.setOptions(t.getList(OPTIONS), t.getList(OPTION_LABELS));
 	}
 
 	protected OptionInput()

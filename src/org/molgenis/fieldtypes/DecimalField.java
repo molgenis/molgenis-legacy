@@ -13,6 +13,8 @@ import org.molgenis.model.MolgenisModelException;
 
 public class DecimalField extends FieldType
 {
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public String getJavaPropertyType()
 	{

@@ -161,7 +161,7 @@ public abstract class AbstractTupleTable implements TupleTable
 			colCount--;
 		}
 
-		int colLimit = (int) (this.colLimit == 0 ? colCount - getColOffset() : getCurrentColumnPageSize(colCount));
+		int colLimit = this.colLimit == 0 ? colCount - getColOffset() : getCurrentColumnPageSize(colCount);
 
 		if (getColOffset() > 0)
 		{

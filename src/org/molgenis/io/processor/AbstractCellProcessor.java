@@ -4,6 +4,8 @@ import java.util.List;
 
 public abstract class AbstractCellProcessor implements CellProcessor
 {
+	private static final long serialVersionUID = 1L;
+
 	private final boolean processHeader;
 	private final boolean processData;
 
@@ -42,5 +44,27 @@ public abstract class AbstractCellProcessor implements CellProcessor
 			}
 		}
 		return value;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (processData ? 1231 : 1237);
+		result = prime * result + (processHeader ? 1231 : 1237);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		AbstractCellProcessor other = (AbstractCellProcessor) obj;
+		if (processData != other.processData) return false;
+		if (processHeader != other.processHeader) return false;
+		return true;
 	}
 }

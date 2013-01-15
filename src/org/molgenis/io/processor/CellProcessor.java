@@ -1,6 +1,8 @@
 package org.molgenis.io.processor;
 
-public interface CellProcessor
+import java.io.Serializable;
+
+public interface CellProcessor extends Serializable
 {
 	public String process(String value);
 

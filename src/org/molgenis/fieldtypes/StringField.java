@@ -10,6 +10,8 @@ import org.molgenis.model.MolgenisModelException;
 
 public class StringField extends FieldType
 {
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public String getJavaAssignment(String value) throws MolgenisModelException
 	{

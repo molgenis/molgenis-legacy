@@ -22,6 +22,8 @@ import org.molgenis.model.elements.Field;
  */
 public class MrefField extends FieldType
 {
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public String getJavaAssignment(String value)
 	{

@@ -565,7 +565,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 			ScreenController<?> aParent = getParent();
 			while (aParent != null)
 			{
-				if (aParent instanceof MenuModel)
+				if (aParent instanceof MenuController)
 				{
 					tuple.set("select", aChildName);
 					MenuController c = (MenuController) aParent;

@@ -29,7 +29,7 @@ public class JarClass
 				{
 					throw new Exception("Unable to get next jar entry from jar file '" + jar + "'");
 				}
-				if (jarEntry.getName().equals(fileName))
+				if (jarEntry != null && jarEntry.getName().equals(fileName))
 				{
 					System.out.println(jarEntry.getName() + " found");
 					return jarFile.getInputStream(jarEntry);

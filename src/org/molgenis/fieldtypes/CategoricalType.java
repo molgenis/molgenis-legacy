@@ -11,6 +11,7 @@ import org.molgenis.model.MolgenisModelException;
 
 public class CategoricalType extends FieldType
 {
+	private static final long serialVersionUID = 1L;
 
 	private Map<String, String> categoryMapping = new HashMap<String, String>();
 

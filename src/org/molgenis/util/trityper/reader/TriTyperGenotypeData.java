@@ -11,7 +11,6 @@ import java.util.HashMap;
  */
 public class TriTyperGenotypeData
 {
-
 	private String[] SNPs;
 	private Boolean[] isFemale;
 	private Boolean[] isCase;
@@ -47,7 +46,7 @@ public class TriTyperGenotypeData
 		individualToId = new HashMap<String, Integer>();
 		while (lineElems != null)
 		{
-			String individual = new String(lineElems[0].getBytes("UTF-8"));
+			String individual = lineElems[0];
 			individualToId.put(individual, i);
 			alInd.add(individual);
 			i++;
@@ -154,7 +153,7 @@ public class TriTyperGenotypeData
 		{
 			if (line.trim().length() > 0)
 			{
-				String snp = new String(line.getBytes("UTF-8"));
+				String snp = line;
 				snpToSNPId.put(snp, snpId);
 				tmpSNP.add(snp);
 				snpId++;
