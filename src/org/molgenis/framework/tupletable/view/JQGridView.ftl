@@ -1,7 +1,4 @@
-<script src="jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js" type="text/javascript"></script>
 <script type="text/javascript">
-
-   
 $.fn.extend({
     molgenisGrid: function(options) { 
         return this.each(function(){

@@ -2,10 +2,11 @@ package org.molgenis.framework.tupletable.view.renderers;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
-import java.util.Iterator;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
+import org.apache.commons.io.IOUtils;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.io.csv.CsvWriter;
@@ -13,13 +14,14 @@ import org.molgenis.model.elements.Field;
 import org.molgenis.util.tuple.AbstractTuple;
 import org.molgenis.util.tuple.Tuple;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+
 /**
  * Export TupleTable to CSV file
  */
 public class CsvExporter extends AbstractExporter
 {
-	private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
-
 	public CsvExporter(TupleTable table)
 	{
 		super(table);
@@ -29,6 +31,19 @@ public class CsvExporter extends AbstractExporter
 	public void export(OutputStream os) throws IOException, TableException
 	{
 		CsvWriter csvWriter = new CsvWriter(os);
+
+		// save table state
+		int colOffset = tupleTable.getColOffset();
+		int colLimit = tupleTable.getColLimit();
+		int rowOffset = tupleTable.getOffset();
+		int rowLimit = tupleTable.getLimit();
+
+		// update table state
+		tupleTable.setColOffset(0);
+		tupleTable.setColLimit(0);
+		tupleTable.setOffset(0);
+		tupleTable.setLimit(0);
+
 		try
 		{
 			csvWriter.writeColNames(new FieldHeaderTuple(tupleTable.getColumns()).getColNames());
@@ -37,17 +52,20 @@ public class CsvExporter extends AbstractExporter
 		}
 		finally
 		{
-			csvWriter.close();
-		}
-	}
+			IOUtils.closeQuietly(csvWriter);
 
-	public void initHeaders(OutputStream os)
-	{
-		// noop
+			// restore table state
+			tupleTable.setColOffset(colOffset);
+			tupleTable.setColLimit(colLimit);
+			tupleTable.setOffset(rowOffset);
+			tupleTable.setLimit(rowLimit);
+		}
 	}
 
 	private static class FieldHeaderTuple extends AbstractTuple
 	{
+		private static final long serialVersionUID = 1L;
+
 		private final List<Field> fields;
 
 		public FieldHeaderTuple(List<Field> fields)
@@ -65,36 +83,16 @@ public class CsvExporter extends AbstractExporter
 		@Override
 		public Iterable<String> getColNames()
 		{
-			return new Iterable<String>()
+			return Iterables.transform(fields, new Function<Field, String>()
 			{
 				@Override
-				public Iterator<String> iterator()
+				@Nullable
+				public String apply(@Nullable
+				Field arg0)
 				{
-					return new Iterator<String>()
-					{
-						private Iterator<Field> it = fields.iterator();
-
-						@Override
-						public boolean hasNext()
-						{
-							return it.hasNext();
-						}
-
-						@Override
-						public String next()
-						{
-							return it.next().getSqlName();
-						}
-
-						@Override
-						public void remove()
-						{
-							throw new UnsupportedOperationException();
-						}
-
-					};
+					return arg0.getSqlName();
 				}
-			};
+			});
 		}
 
 		@Override
