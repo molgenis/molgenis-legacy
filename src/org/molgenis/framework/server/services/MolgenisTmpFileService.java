@@ -10,8 +10,8 @@ import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.Hashtable;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.apache.poi.util.IOUtils;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
