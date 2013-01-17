@@ -553,7 +553,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 </#list></#if>			
 		</#if>
 	</#foreach>		
-		return "";
+		return null;
 	}	
 	
 	public void validate() throws org.molgenis.framework.db.DatabaseException
