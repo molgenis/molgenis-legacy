@@ -470,7 +470,10 @@ public abstract class AbstractDatabase implements Database
 				}
 				for (String labelField : entityInDb.getLabelFields())
 				{
-					if (!entityInDb.get(labelField).equals(newEntity.get(labelField)))
+					Object x1 = entityInDb.get(labelField);
+					Object x2 = newEntity.get(labelField);
+
+					if (!x1.equals(x2))
 					{
 						match = false;
 						break;
@@ -480,6 +483,8 @@ public abstract class AbstractDatabase implements Database
 				{
 					try
 					{
+						// TODO: This is going wrong when we try to update an
+						// xref or mref, the list (xref/mref) looks to be empty
 						entityInDb.set(new EntityTuple(newEntity), false);
 					}
 					catch (Exception ex)
