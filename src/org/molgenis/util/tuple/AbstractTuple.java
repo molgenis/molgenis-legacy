@@ -131,16 +131,24 @@ public abstract class AbstractTuple implements Tuple
 		return str != null ? Timestamp.valueOf(str) : null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<String> getList(String colName)
 	{
+		// TODO change signature to List<Object> ?
+		if (get(colName) instanceof List) return (List<String>) get(colName);
+
 		String str = getString(colName);
 		return str != null ? ListEscapeUtils.toList(str) : null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<String> getList(int col)
 	{
+		// TODO change signature to List<Object> ?
+		if (get(col) instanceof List) return ((List<String>) get(col));
+
 		String str = getString(col);
 		return str != null ? ListEscapeUtils.toList(str) : null;
 	}
