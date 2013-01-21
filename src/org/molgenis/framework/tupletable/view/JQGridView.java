@@ -93,7 +93,7 @@ public class JQGridView extends HtmlWidget
 			@Override
 			public String getUrl()
 			{
-				return "molgenis.do?__target=" + hostController.getName() + "&__action=download_json_" + name;
+				return "molgenis.do?__target=" + hostController.getName() + "&__action=download_json_dataset";
 			}
 
 			@Override
@@ -592,8 +592,7 @@ public class JQGridView extends HtmlWidget
 	{
 		final JQGridResult result = new JQGridResult(page, totalPages, rowCount);
 
-		Iterator<Tuple> it = table.iterator();
-		while (it.hasNext())
+		for (Iterator<Tuple> it = table.iterator(); it.hasNext();)
 		{
 			Tuple row = it.next();
 			final LinkedHashMap<String, String> rowMap = new LinkedHashMap<String, String>();
