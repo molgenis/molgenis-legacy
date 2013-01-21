@@ -1,7 +1,5 @@
-<script src="jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js" type="text/javascript"></script>
+<#assign tableId = tableId?replace(" ", "_")?lower_case />
 <script type="text/javascript">
-
-   
 $.fn.extend({
     molgenisGrid: function(options) { 
         return this.each(function(){
