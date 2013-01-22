@@ -134,8 +134,14 @@ public abstract class AbstractTuple implements Tuple
 	@Override
 	public List<String> getList(String colName)
 	{
-		String str = getString(colName);
-		return str != null ? ListEscapeUtils.toList(str) : null;
+		Object obj = get(colName);
+		if (obj == null) return null;
+		else if (obj instanceof List) return (List<String>) obj;
+		else
+		{
+			String str = obj.toString();
+			return str != null ? ListEscapeUtils.toList(str) : null;
+		}
 	}
 
 	@Override

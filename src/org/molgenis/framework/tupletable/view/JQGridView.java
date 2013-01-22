@@ -357,6 +357,10 @@ public class JQGridView extends HtmlWidget
 			}
 
 		}
+		catch (RuntimeException e)
+		{
+			throw e;
+		}
 		catch (final Exception e)
 		{
 			e.printStackTrace();

@@ -53,8 +53,7 @@ public class ExcelExporter extends AbstractExporter
 				{
 					@Override
 					@Nullable
-					public String apply(@Nullable
-					Field field)
+					public String apply(Field field)
 					{
 						return field.getName();
 					}
