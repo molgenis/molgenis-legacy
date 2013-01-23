@@ -56,7 +56,7 @@ public class ExcelExporter extends AbstractExporter
 					public String apply(@Nullable
 					Field field)
 					{
-						return field != null ? field.getSqlName() : null;
+						return field != null ? field.getName() : null;
 					}
 				}));
 

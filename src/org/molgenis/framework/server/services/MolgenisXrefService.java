@@ -136,11 +136,6 @@ public class MolgenisXrefService implements MolgenisService
 		{
 			logger.warn(e);
 		}
-		// catch (Exception e)
-		// {
-		// e.printStackTrace();
-		// throw new DatabaseException(e);
-		// }
 	}
 
 	static final String JSON_KEY_VALUE = "{\"value\":\"%s\", \"text\":\"%s\"}";
