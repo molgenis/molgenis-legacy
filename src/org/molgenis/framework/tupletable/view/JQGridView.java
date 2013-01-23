@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,8 +15,10 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
@@ -281,14 +284,11 @@ public class JQGridView extends HtmlWidget
 						result.put("message", "Record updated");
 						result.put("success", true);
 					}
-					catch (Exception e)
+					catch (TableException e)
 					{
-						e.printStackTrace();
-
 						result.put("message", e.getMessage());
 						result.put("success", false);
 					}
-
 					// Send this json string back the html.
 					request.getResponse().getOutputStream().println(result.toString());
 					break;
@@ -296,7 +296,6 @@ public class JQGridView extends HtmlWidget
 				case ADD_RECORD:
 
 					if (!(tupleTable instanceof EditableTupleTable))
-
 					{
 						throw new UnsupportedOperationException("TupleTable is not editable");
 					}
@@ -308,14 +307,11 @@ public class JQGridView extends HtmlWidget
 					try
 					{
 						((EditableTupleTable) tupleTable).add(request);
-
 						result.put("message", "Record added");
 						result.put("success", true);
 					}
-					catch (Exception e)
+					catch (TableException e)
 					{
-						e.printStackTrace();
-
 						result.put("message", e.getMessage());
 						result.put("success", false);
 					}
@@ -341,10 +337,8 @@ public class JQGridView extends HtmlWidget
 						result.put("message", "Record deleted");
 						result.put("success", true);
 					}
-					catch (Exception e)
+					catch (TableException e)
 					{
-						e.printStackTrace();
-
 						result.put("message", e.getMessage());
 						result.put("success", false);
 					}
@@ -355,14 +349,27 @@ public class JQGridView extends HtmlWidget
 				default:
 					break;
 			}
-
 		}
-		catch (final Exception e)
+		catch (JSONException e)
 		{
-			e.printStackTrace();
 			throw new HandleRequestDelegationException(e);
 		}
-
+		catch (IOException e)
+		{
+			throw new HandleRequestDelegationException(e);
+		}
+		catch (TableException e)
+		{
+			throw new HandleRequestDelegationException(e);
+		}
+		catch (SQLException e)
+		{
+			throw new HandleRequestDelegationException(e);
+		}
+		catch (DatabaseException e)
+		{
+			throw new HandleRequestDelegationException(e);
+		}
 	}
 
 	/**
