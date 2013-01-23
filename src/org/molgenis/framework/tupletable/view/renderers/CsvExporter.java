@@ -90,7 +90,7 @@ public class CsvExporter extends AbstractExporter
 				public String apply(@Nullable
 				Field arg0)
 				{
-					return arg0.getSqlName();
+					return arg0 != null ? arg0.getSqlName() : null;
 				}
 			});
 		}
