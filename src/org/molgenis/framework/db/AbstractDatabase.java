@@ -483,8 +483,6 @@ public abstract class AbstractDatabase implements Database
 				{
 					try
 					{
-						// TODO: This is going wrong when we try to update an
-						// xref or mref, the list (xref/mref) looks to be empty
 						entityInDb.set(new EntityTuple(newEntity), false);
 					}
 					catch (Exception ex)
