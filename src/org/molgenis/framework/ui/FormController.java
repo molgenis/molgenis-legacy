@@ -227,10 +227,25 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 
 			logger.debug("handleRequest finished.");
 		}
+		catch (DatabaseException e)
+		{
+			logger.warn(e);
+		}
+		catch (MolgenisModelException e)
+		{
+			logger.warn(e);
+		}
+		catch (ParseException e)
+		{
+			logger.warn(e);
+		}
+		catch (IOException e)
+		{
+			logger.warn(e);
+		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
-			logger.error(e);
+			logger.warn(e);
 		}
 		return Show.SHOW_MAIN;
 	}

@@ -37,120 +37,171 @@ public abstract class AbstractTuple implements Tuple
 	public String getString(String colName)
 	{
 		Object obj = get(colName);
-		return obj != null ? obj.toString() : null;
+		if (obj == null) return null;
+		else if (obj instanceof String) return (String) obj;
+		else
+			return obj.toString();
 	}
 
 	@Override
 	public String getString(int col)
 	{
 		Object obj = get(col);
-		return obj != null ? obj.toString() : null;
+		if (obj == null) return null;
+		else if (obj instanceof String) return (String) obj;
+		else
+			return obj.toString();
 	}
 
 	@Override
 	public Integer getInt(String colName)
 	{
-		String str = getString(colName);
-		return str != null ? Integer.parseInt(str) : null;
+		Object obj = get(colName);
+		if (obj == null) return null;
+		else if (obj instanceof Integer) return (Integer) obj;
+		else
+			return Integer.parseInt(obj.toString());
 	}
 
 	@Override
 	public Integer getInt(int col)
 	{
-		String str = getString(col);
-		return str != null ? Integer.parseInt(str) : null;
+		Object obj = get(col);
+		if (obj == null) return null;
+		else if (obj instanceof Integer) return (Integer) obj;
+		else
+			return Integer.parseInt(obj.toString());
 	}
 
 	@Override
 	public Long getLong(String colName)
 	{
-		String str = getString(colName);
-		return str != null ? Long.parseLong(str) : null;
+		Object obj = get(colName);
+		if (obj == null) return null;
+		else if (obj instanceof Long) return (Long) obj;
+		else
+			return Long.parseLong(obj.toString());
 	}
 
 	@Override
 	public Long getLong(int col)
 	{
-		String str = getString(col);
-		return str != null ? Long.parseLong(str) : null;
+		Object obj = get(col);
+		if (obj == null) return null;
+		else if (obj instanceof Long) return (Long) obj;
+		else
+			return Long.parseLong(obj.toString());
 	}
 
 	@Override
 	public Boolean getBoolean(String colName)
 	{
-		String str = getString(colName);
-		return str != null ? (str.equalsIgnoreCase("true") || str.equalsIgnoreCase("1")) : null;
+		Object obj = get(colName);
+		if (obj == null) return null;
+		else if (obj instanceof Boolean) return (Boolean) obj;
+		else
+		{
+			String str = obj.toString();
+			return str.equalsIgnoreCase("true") || str.equalsIgnoreCase("1");
+		}
 	}
 
 	@Override
 	public Boolean getBoolean(int col)
 	{
-		String str = getString(col);
-		return str != null ? (str.equalsIgnoreCase("true") || str.equalsIgnoreCase("1")) : null;
+		Object obj = get(col);
+		if (obj == null) return null;
+		else if (obj instanceof Boolean) return (Boolean) obj;
+		else
+		{
+			String str = obj.toString();
+			return str.equalsIgnoreCase("true") || str.equalsIgnoreCase("1");
+		}
 	}
 
 	@Override
 	public Double getDouble(String colName)
 	{
-		String str = getString(colName);
-		return str != null ? Double.parseDouble(str) : null;
+		Object obj = get(colName);
+		if (obj == null) return null;
+		else if (obj instanceof Double) return (Double) obj; // FIXME
+		else
+			return Double.parseDouble(obj.toString());
 	}
 
 	@Override
 	public Double getDouble(int col)
 	{
-		String str = getString(col);
-		return str != null ? Double.parseDouble(str) : null;
+		Object obj = get(col);
+		if (obj == null) return null;
+		else if (obj instanceof Double) return (Double) obj;
+		else
+			return Double.parseDouble(obj.toString());
 	}
 
 	@Override
 	public Date getDate(String colName)
 	{
-		String str = getString(colName);
-		return str != null ? Date.valueOf(str) : null;
+		Object obj = get(colName);
+		if (obj == null) return null;
+		else if (obj instanceof Date) return (Date) obj;
+		else
+			return Date.valueOf(obj.toString());
 	}
 
 	@Override
 	public Date getDate(int col)
 	{
-		String str = getString(col);
-		return str != null ? Date.valueOf(str) : null;
+		Object obj = get(col);
+		if (obj == null) return null;
+		else if (obj instanceof Date) return (Date) obj;
+		else
+			return Date.valueOf(obj.toString());
 	}
 
 	@Override
 	public Timestamp getTimestamp(String colName)
 	{
-		String str = getString(colName);
-		return str != null ? Timestamp.valueOf(str) : null;
+		Object obj = get(colName);
+		if (obj == null) return null;
+		else if (obj instanceof Timestamp) return (Timestamp) obj;
+		else
+			return Timestamp.valueOf(obj.toString());
 	}
 
 	@Override
 	public Timestamp getTimestamp(int col)
 	{
-		String str = getString(col);
-		return str != null ? Timestamp.valueOf(str) : null;
+		Object obj = get(col);
+		if (obj == null) return null;
+		else if (obj instanceof Timestamp) return (Timestamp) obj;
+		else
+			return Timestamp.valueOf(obj.toString());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<String> getList(String colName)
 	{
-		// TODO change signature to List<Object> ?
-		if (get(colName) instanceof List) return (List<String>) get(colName);
 
-		String str = getString(colName);
-		return str != null ? ListEscapeUtils.toList(str) : null;
+		Object obj = get(colName);
+		if (obj == null) return null;
+		else if (obj instanceof List<?>) return (List<String>) obj;
+		else if (obj instanceof String) return ListEscapeUtils.toList((String) obj);
+		else
+			return ListEscapeUtils.toList(obj.toString());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<String> getList(int col)
 	{
-		// TODO change signature to List<Object> ?
-		if (get(col) instanceof List) return ((List<String>) get(col));
-
-		String str = getString(col);
-		return str != null ? ListEscapeUtils.toList(str) : null;
+		Object obj = get(col);
+		if (obj == null) return null;
+		else if (obj instanceof List<?>) return (List<String>) obj;
+		else if (obj instanceof String) return ListEscapeUtils.toList((String) obj);
+		else
+			return ListEscapeUtils.toList(obj.toString());
 	}
 
 	@Override
