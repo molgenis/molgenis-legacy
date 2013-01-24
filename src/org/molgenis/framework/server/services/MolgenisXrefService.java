@@ -124,10 +124,17 @@ public class MolgenisXrefService implements MolgenisService
 			out.print(json);
 			out.close();
 		}
-		catch (Exception e)
+		catch (JSONException e)
 		{
-			e.printStackTrace();
-			throw new DatabaseException(e);
+			logger.warn(e);
+		}
+		catch (ClassNotFoundException e)
+		{
+			logger.warn(e);
+		}
+		catch (IOException e)
+		{
+			logger.warn(e);
 		}
 	}
 

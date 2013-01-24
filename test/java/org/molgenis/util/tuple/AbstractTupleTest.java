@@ -21,10 +21,13 @@ public class AbstractTupleTest
 	{
 		tuple = new AbstractTuple()
 		{
+			private static final long serialVersionUID = 1L;
+
 			private final List<String> header = Arrays.<String> asList("col1", "col2", "col3", "col4", "col5", "col6",
-					"col7", "col8");
+					"col7", "col8", "col9", "col10", "col11");
 			private final List<Object> values = Arrays.<Object> asList("str", 1, true, 1.23, null, "2000-10-20",
-					"2000-10-20 10:11:12", "1,2,3");
+					"2000-10-20 10:11:12", "1,2,3", Arrays.asList("1", "2", "3"), Date.valueOf("2000-10-20"),
+					Timestamp.valueOf("2000-10-20 10:11:12"));
 
 			@Override
 			public int getNrCols()
@@ -139,6 +142,13 @@ public class AbstractTupleTest
 	}
 
 	@Test
+	public void getDate_colName_Object()
+	{
+		assertEquals(tuple.getDate("col10"), Date.valueOf("2000-10-20"));
+		assertEquals(tuple.getDate("col_unknown"), null);
+	}
+
+	@Test
 	public void getDate_colName()
 	{
 		assertEquals(tuple.getDate("col6"), Date.valueOf("2000-10-20"));
@@ -149,6 +159,13 @@ public class AbstractTupleTest
 	public void getDate_colIndex()
 	{
 		assertEquals(tuple.getDate(5), Date.valueOf("2000-10-20"));
+	}
+
+	@Test
+	public void getTimestamp_colName_Object()
+	{
+		assertEquals(tuple.getTimestamp("col11"), Timestamp.valueOf("2000-10-20 10:11:12"));
+		assertEquals(tuple.getTimestamp("col_unknown"), null);
 	}
 
 	@Test
@@ -168,7 +185,15 @@ public class AbstractTupleTest
 	public void getList_colName()
 	{
 		assertEquals(tuple.getList("col8"), Arrays.asList("1", "2", "3"));
-		assertEquals(tuple.getDate("col_unknown"), null);
+		assertEquals(tuple.getList("col_unknown"), null);
+	}
+
+	@Test
+	public void getList_colName_Object()
+	{
+		List<String> list = tuple.getList("col9");
+		assertEquals(list, Arrays.asList("1", "2", "3"));
+		assertEquals(tuple.getList("col_unknown"), null);
 	}
 
 	@Test
