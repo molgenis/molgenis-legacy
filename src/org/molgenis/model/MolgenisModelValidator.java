@@ -1125,7 +1125,7 @@ public class MolgenisModelValidator
 	 * @param model
 	 * @throws MolgenisModelException
 	 */
-	static public void copyDecoratorsToSubclass(Model model) throws MolgenisModelException
+	public static void copyDecoratorsToSubclass(Model model) throws MolgenisModelException
 	{
 		logger.debug("copying decorators to subclasses...");
 		for (Entity e : model.getEntities())
@@ -1159,7 +1159,7 @@ public class MolgenisModelValidator
 	 * @param model
 	 * @throws MolgenisModelException
 	 */
-	static public void copyFieldsToSubclassToEnforceConstraints(Model model) throws MolgenisModelException
+	public static void copyFieldsToSubclassToEnforceConstraints(Model model) throws MolgenisModelException
 	{
 		logger.debug("copy fields to subclass for constrain checking...");
 		for (Entity e : model.getEntities())
@@ -1190,10 +1190,10 @@ public class MolgenisModelValidator
 		}
 	}
 
-	public static final String[] MOLGENIS_KEYWORDS =
+	private static final String[] MOLGENIS_KEYWORDS =
 	{ "entity", "field", "form", "menu", "screen", "plugin" };
 
-	public static final String[] HSQL_KEYWORDS =
+	private static final String[] HSQL_KEYWORDS =
 	{ "ALIAS", "ALTER", "AUTOCOMMIT", "CALL", "CHECKPOINT", "COMMIT", "CONNECT", "CREATE", "COLLATION", "COUNT",
 			"DATABASE", "DEFRAG", "DELAY", "DELETE", "DISCONNECT", "DROP", "END", "EXPLAIN", "EXTRACT", "GRANT",
 			"IGNORECASE", "INDEX", "INSERT", "INTEGRITY", "LOGSIZE", "PASSWORD", "POSITION", "PLAN", "PROPERTY",
@@ -1231,17 +1231,17 @@ public class MolgenisModelValidator
 	 * https://cis.med.ucalgary.ca/http/java.sun.com/docs/books/tutorial/java/
 	 * nutsandbolts/_keywords.html
 	 */
-	protected static final String[] JAVA_KEYWORDS =
+	private static final String[] JAVA_KEYWORDS =
 	{ "abstract", "continue", "for", "new", "switch", "assert", "default", "goto", "package", "synchronized",
 			"boolean", "do", "if", "private", "this", "break", "double", "implements", "protected", "throw", "byte",
 			"else", "import", "public", "throws", "case", "enum", "instanceof", "return", "transient", "catch",
 			"extends", "int", "short", "try", "char", "final", "interface", "static", "void", "class", "finally",
 			"long", "strictfp", "volatile", "const", "float", "native", "super", "while" };
 
-	protected static final String[] JAVASCRIPT_KEYWORDS =
+	private static final String[] JAVASCRIPT_KEYWORDS =
 	{ "function" };
 
-	protected static String[] ORACLE_KEYWORDS =
+	private static final String[] ORACLE_KEYWORDS =
 	{
 
 	"ACCESS", "ELSE", "MODIFY", "START", "ADD", "EXCLUSIVE", "NOAUDIT", "SELECT", "ALL", "EXISTS", "NOCOMPRESS",
