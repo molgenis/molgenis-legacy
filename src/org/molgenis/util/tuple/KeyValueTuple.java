@@ -18,6 +18,17 @@ public class KeyValueTuple extends AbstractTuple implements WritableTuple
 		this.valueMap = new LinkedHashMap<String, Object>();
 	}
 
+	/**
+	 * Copy constructor
+	 * 
+	 * @param t
+	 */
+	public KeyValueTuple(Tuple t)
+	{
+		this();
+		this.set(t);
+	}
+
 	@Override
 	public int getNrCols()
 	{
@@ -46,5 +57,14 @@ public class KeyValueTuple extends AbstractTuple implements WritableTuple
 	public void set(String colName, Object val)
 	{
 		valueMap.put(colName, val);
+	}
+
+	@Override
+	public void set(Tuple t)
+	{
+		for (String col : t.getColNames())
+		{
+			this.set(col, t.get(col));
+		}
 	}
 }

@@ -376,7 +376,7 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 		this.placeholder = placeholder;
 	}
 
-	public static class AjaxChosenData
+	class AjaxChosenData
 	{
 		public String xrefEntity;
 		public String xrefField;
@@ -385,7 +385,7 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 		public String filters;
 	}
 
-	public static class AjaxChosenConfig
+	class AjaxChosenConfig
 	{
 		public String method = "GET";
 		public String url = "";

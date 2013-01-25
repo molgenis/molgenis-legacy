@@ -154,7 +154,7 @@ public class RestInterface
 
 	private static List<QueryRule> createQueryRulesFromRequest(HttpServletRequest request) throws Exception
 	{
-		List<QueryRule> rulesList = new ArrayList<QueryRule>();
+		List<QueryRule> rulesList;
 		// use 'get' protocol
 		if (request.getQueryString() != null)
 		{
