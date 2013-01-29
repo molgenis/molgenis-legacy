@@ -94,7 +94,8 @@ public class CsvReader implements TupleReader
 		try
 		{
 			// create column header index once and reuse
-			final Map<String, Integer> colNamesMap = hasHeader ? toColNamesMap(csvReader.readNext()) : null;
+			final Map<String, Integer> colNamesMap = hasHeader ? (this.colNamesMap == null ? toColNamesMap(csvReader
+					.readNext()) : this.colNamesMap) : null;
 
 			return new Iterator<Tuple>()
 			{
