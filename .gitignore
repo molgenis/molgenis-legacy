@@ -1,40 +1,4 @@
-
-## Build folders
-
-bin/
-build/
 target/
-tmp/
-
-*.class
-*,so
-*,si
-*,dll
-*.o
-*.tmp
-
-## Always ignore these
-*~
-*.lock
-*.DS_Store
-*.swp
-*.out
-
-## Netbeans private
-nbproject/private/
-
-## General java
-*.class
-
-## Other ignored files
-*.so
-*.si
-*.dll
-*.o
-*.tmp
-tmp*
-log*
-/.externalToolBuilders
-/.settings
-/test-output
-/target/
+.settings/
+.project
+.classpath

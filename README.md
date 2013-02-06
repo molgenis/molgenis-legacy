@@ -1,47 +1,100 @@
-MOLGENIS
---------
-MOLGENIS is an collaborative open source project on a mission to generate great 
-software infrastructure for life science research. Each app in the MOLGENIS 
-family comes with rich data management interface and plug-in integration of 
-analysis tools in R, Java and web services.
+# Welcome to MOLGENIS
 
-Developing your own
--------------------
-Generate generate your own in three steps:
+MOLGENIS is an collaborative open source project on a mission to generate great software infrastructure for life science research. Each app in the MOLGENIS family comes with rich data management interface and plug-in integration of analysis tools in R, Java and web services.
 
-1) Clone the MOLGENIS generator and an empty distro
+The procedure below tells you how to checkout the molgenis project and build one of the example apps
 
-     git clone https://www.github.com/molgenis/molgenis.git
-     git clone https://www.github.com/molgenis/molgenis_distro.git
-     cd molgenis_distro
+## 1. clone the molgenis repo
 
-2) Model what you want for your experiment in a simple XML file example db, example ui
+Go to directory
 
-     <editor> molgenis.properties
-     <editor> molgenis_db.xml
-     <editor> molgenis_ui.xml
+	cd ~/git
 
-3) Run the MOLGENIS generator, after that you're able to use your web 
-application.
 
-MOLGENIS applications
----------------------
-Many molgenis applications have been developed, a not so short overview:
+Create a new workspace
 
- - xQTL Workbench for multi-level QTL mapping ([project](http://www.xqtl.nl/ "www.xqtl.nl"))
- - Dystrophic Epidermolysis Bullosa (deb-central) mutation database ([project](http://www.deb-central.org/ "www.deb-central.org/"), publication)
- - eXtensible Genotype and Phenotype database (XGAP) ([project](http://www.xqap.nl/ "www.xqap.nl"), publication)
- - Design of Genetical Genomics Experiments (designGG)] ([project](http://gbic.biol.rug.nl/designGG "DesignGG"), publication)
- - BBMRI-NL biobank catalague ([project](http://www.phenoflow.org/wiki/BiobankCatalog "BBMRI")) 
- - MAGE-TAB microarray gene experiment object model (MAGETAB-OM)] ([project](http://www.phenoflow.org/wiki/PhenoFlow "MAGETAB"),  demo)
- - Pheno-OM Phenotype observation model ([project](http://www.phenoflow.org/wiki/PhenoFlow "Pheno-OM"), demo)
- - Mouse Resource Browser (MRB) project] (project, publication)
- - MOLGENIS as data wrapper in Taverna (publication)
- - Animal observation database (AnimalDB) ([project](http://www.animaldb.org/ "www.animaldb.org"))
- - Nordic GWAS control database (project,  publication)
- - GWAS Central curation tool (project)
- - Finnish disease database (FINDIS) (project)
- - Bacterial microarrays database (MOLGEN-IS) (publication)
- - Human Metabolic Pathway Database (project, publication)
+	mkdir molgenis
+	cd molgenis
 
-If you think your project should be listed (differently) please let us know
+
+Clone the repo
+
+	git clone https://github.com/<yourname>/molgenis.git
+
+
+Now you have a folder molgenis in your workspace directory.
+
+## 2. install and configure eclipse == 
+(tested with latest eclipse download, J2EE Juno 4.2 SR1, Mac OSX 64bit)
+
+MOLGENIS is created with help of Maven and Freemarker. You need a few eclipse plugins to work with those.
+
+start eclipse:
+
+	~/Software/eclipse-juno-4.2/eclipse
+
+
+When asked chose (new) workspace directory. I choose to simply same directory ~/git/molgenis as before
+
+Now install the plugins by choosing {{{Help -> Eclipse marketplace}}}. 
+Add the following (you can restart Eclipse when done):
+* maven integration for eclipse
+* Apt M2E connector
+* JBoss Tools (ONLY SELECT THE 'FreeMarker IDE feature' later in the wizard!)
+
+Now you have configure Eclipse. Restart eclipse.
+
+## 3. import the molgenis project into eclipse
+
+Start Eclipse, select your workspace if asked.
+
+Click: File -> Import ... -> Existing Maven Projects 
+
+Set root directory to your git checkout folder. E.g. ~/git/molgenis.
+(you can still see the molgenis13.2 folder).
+
+Eclipse discovers all molgenis modules (should be all checked).
+
+Click next/okay; eclipse will now import the modules. Also Eclipse will automatically install maven connector plugins when needed (restart follows)
+
+## 4. generate the code for the first time
+
+If still open, close the 'Welcome' screen
+
+Eclipse will automatically build and download jars
+
+Right mouse 'molgenis13.2' -> Run as -> Maven generate-sources
+
+After generation eclipse will compile automagically
+
+## 5. create mysql database for omicsconnect app
+
+Assumed is that you installed mysql
+Log in via terminal using your root credentials
+
+	mysql -u root -p
+
+Give create a database with permissions to molgenis user
+
+	create database omicsconnect;
+	grant all privileges on omicsconnect.* to molgenis@localhost identified by 'molgenis';
+	flush privileges;
+
+Load schema:
+
+TODO: this should use JPA so that database need not to this additional setup
+
+	use omicsconnect;
+	\. /path/git/molgenis13.2/molgenis-app-omicsconnect/target/generated-sources/molgenis/sql/create_tables.sql
+
+## 6. run the omicsconnect app (example)
+
+TODO: this needs to be improved so it starts immediately without generate/build if not needed
+
+Right click 'molgenis-app-omicsconnect' -> Run as ... -> Maven build ...
+
+In the 'goals' box type in 'jetty:run'
+
+Choose Run. Now jetty will be started.
+
+Open your browser at http://localhost:8080/
