@@ -231,6 +231,20 @@ public class Table extends HtmlWidget
 		{
 			return ((HtmlInput<?>) o).toHtml();
 		}
+		if (o instanceof List)
+		{
+			StringBuilder result = new StringBuilder();
+			for (Object element : (List) o)
+			{
+				if (element instanceof HtmlInput<?>)
+				{
+					result.append(((HtmlInput<?>) element).toHtml());
+					continue;
+				}
+				result.append(element.toString());
+			}
+			return result.toString();
+		}
 		return o.toString();
 	}
 
