@@ -229,8 +229,25 @@ public class Table extends HtmlWidget
 		}
 		if (o instanceof HtmlInput<?>)
 		{
+			// System.out.println("TOHTML:\n" + ((HtmlInput<?>) o).toHtml() +
+			// "\n\n");
 			return ((HtmlInput<?>) o).toHtml();
 		}
+		if (o instanceof List)
+		{
+			StringBuilder result = new StringBuilder();
+			for (Object element : (List) o)
+			{
+				if (element instanceof HtmlInput<?>)
+				{
+					result.append(((HtmlInput<?>) element).toHtml());
+					continue;
+				}
+				result.append(element.toString());
+			}
+			return result.toString();
+		}
+		// System.out.println("PRINTING:\n" + o.toString() + "\n\n");
 		return o.toString();
 	}
 
