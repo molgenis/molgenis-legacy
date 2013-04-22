@@ -229,8 +229,6 @@ public class Table extends HtmlWidget
 		}
 		if (o instanceof HtmlInput<?>)
 		{
-			// System.out.println("TOHTML:\n" + ((HtmlInput<?>) o).toHtml() +
-			// "\n\n");
 			return ((HtmlInput<?>) o).toHtml();
 		}
 		if (o instanceof List)
@@ -247,7 +245,6 @@ public class Table extends HtmlWidget
 			}
 			return result.toString();
 		}
-		// System.out.println("PRINTING:\n" + o.toString() + "\n\n");
 		return o.toString();
 	}
 
